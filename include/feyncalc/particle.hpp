@@ -13,14 +13,23 @@ namespace Feyncalc
     using std::string;
     class Particle
     {
+    public:
+        enum class Type
+        {
+            Majorana,
+            Particle,
+            AntiParticle
+        };
     private:
         string _name;
-        double mass;
-        std::function<double(double)> _width;
+        Type _type;
+        double _mass;
         int _charge;
         Angular_Momentum _spin;
         Angular_Momentum _isospin;
+        std::function<double(double)> _width;
     public:
+        Particle(string&& name, Type type, double mass = 0, int charge = 0, Angular_Momentum spin = 0);
     };
 
     using Particle_Ptr = std::shared_ptr<Particle>;

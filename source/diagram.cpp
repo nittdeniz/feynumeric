@@ -13,4 +13,8 @@ namespace Feyncalc
     }
 
 
+
+    template class Diagram<Topology::Double_Wrench>;
+
+
 }
