@@ -2,14 +2,14 @@
 
 #include <feyncalc/diagram.hpp>
 #include <feyncalc/process.hpp>
-#include <feyncalc/topology.hpp>
+#include <feyncalc/graph.hpp>
 
 #include "particles.hpp"
 
 int main()
 {
     using namespace Feyncalc;
-    Diagram<Topology::Double_Wrench> s_channel_N1440({Photon, Proton}, {N1440p}, {Pi_Zero, Proton});
+    Diagram s_channel_N1440({Photon, Proton}, {N1440p}, {Pi_Zero, Proton});
 //    Diagram<Topology::Double_Wrench> s_channel_N1520({Photon, Proton}, {N1520p}, {Pi_Zero, Proton});
 //    Diagram<Topology::Double_Wrench> s_channel_N1535({Photon, Proton}, {N1535p}, {Pi_Zero, Proton});
 

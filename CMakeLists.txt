@@ -9,14 +9,15 @@ add_library(feyncalc
         include/feyncalc/units.hpp
         include/feyncalc/table.hpp
         source/range.cpp include/feyncalc/range.hpp
-        include/feyncalc/topology.hpp
+        include/feyncalc/graph.hpp
         source/diagram.cpp include/feyncalc/diagram.hpp
         source/particle.cpp include/feyncalc/particle.hpp
         source/process.cpp include/feyncalc/process.hpp
         source/angular_momentum.cpp include/feyncalc/angular_momentum.hpp
         source/momentum.cpp include/feyncalc/momentum.hpp
         source/matrix.cpp include/feyncalc/matrix.hpp
-)
+        source/kinematics.cpp include/feyncalc/kinematics.hpp
+        source/graph.cpp include/feyncalc/topologies.cpp include/feyncalc/topologies.hpp)
 
 target_include_directories(feyncalc PRIVATE include/feyncalc)
 target_compile_options(feyncalc PRIVATE -Werror -Wall -Wextra)

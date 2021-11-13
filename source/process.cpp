@@ -2,7 +2,7 @@
 
 namespace Feyncalc
 {
-    void Process::add_diagrams(vector<Diagram<Topology::Double_Wrench>> const&)
+    void Process::add_diagrams(vector<Diagram> const&)
     {
 
     }

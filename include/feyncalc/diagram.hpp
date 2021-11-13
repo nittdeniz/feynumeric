@@ -4,13 +4,12 @@
 #include <vector>
 
 #include "particle.hpp"
-#include "topology.hpp"
+#include "graph.hpp"
 
 namespace Feyncalc
 {
     using std::vector;
 
-    template<Topology topology>
     class Diagram
     {
     private:
@@ -20,6 +19,8 @@ namespace Feyncalc
 
     public:
         Diagram(vector<Particle_Ptr>&& incoming_list, vector<Particle_Ptr>&& virtual_list, vector<Particle_Ptr>&& outgoing_list);
+
+
     };
 }
 #endif // FEYNCALC_DIAGRAM
