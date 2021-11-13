@@ -1,6 +1,7 @@
 #ifndef FEYNCALC_GRAPH_HPP
 #define FEYNCALC_GRAPH_HPP
 
+#include <array>
 #include <map>
 #include <memory>
 #include <vector>
@@ -12,6 +13,7 @@
 
 namespace Feyncalc
 {
+    using std::array;
     using std::function;
     using std::map;
     using std::vector;
@@ -22,14 +24,11 @@ namespace Feyncalc
         vector<int> _virtual_vertices;
         vector<int> _outgoing_vertices;
         map<int, map<int, vector<Particle_Ptr>>> _adjacency_map;
-        vector<function<Complex(Kinematics const&)>> _amplitude;
     public:
-        Graph(vector<int>&& incoming_vertices, vector<int>&& virtual_vertices, vector<int>&& outgoing_vertices, vector<vector<int>>&& edges);
+        Graph(vector<int>&& incoming_vertices, vector<int>&& virtual_vertices, vector<int>&& outgoing_vertices, vector<array<int, 2>>&& edges);
         Graph& add_edge(int v1, int v2, Particle_Ptr particle);
-        void generate_amplitude();
-        Complex amplitude(Kinematics const& kinematics);
 
-
+        friend class Diagram;
     };
 
     using Graph_Ptr = std::shared_ptr<Graph>;

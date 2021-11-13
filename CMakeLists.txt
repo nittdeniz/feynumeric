@@ -17,7 +17,7 @@ add_library(feyncalc
         source/momentum.cpp include/feyncalc/momentum.hpp
         source/matrix.cpp include/feyncalc/matrix.hpp
         source/kinematics.cpp include/feyncalc/kinematics.hpp
-        source/graph.cpp include/feyncalc/topologies.cpp include/feyncalc/topologies.hpp)
+        source/graph.cpp source/topologies.cpp include/feyncalc/topologies.hpp include/feyncalc/vertex_manager.cpp include/feyncalc/vertex_manager.hpp include/feyncalc/vertex.cpp include/feyncalc/vertex.hpp include/feyncalc/integrate.cpp include/feyncalc/integrate.hpp)
 
 target_include_directories(feyncalc PRIVATE include/feyncalc)
 target_compile_options(feyncalc PRIVATE -Werror -Wall -Wextra)

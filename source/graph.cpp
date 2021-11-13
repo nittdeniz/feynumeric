@@ -2,12 +2,16 @@
 
 namespace Feyncalc
 {
-    Graph::Graph(vector<int> &&incoming_vertices, vector<int> &&virtual_vertices, vector<int> &&outgoing_vertices, vector<vector<int>>&& edges)
+    Graph::Graph(vector<int> &&incoming_vertices, vector<int> &&virtual_vertices, vector<int> &&outgoing_vertices, vector<array<int, 2>>&& edges)
     : _incoming_vertices(std::move(incoming_vertices))
     , _virtual_vertices(std::move(virtual_vertices))
     , _outgoing_vertices(std::move(outgoing_vertices))
     {
-        edges.size();
+        for( auto edge : edges )
+        {
+            _adjacency_map[edge[0]][edge[1]];
+            _adjacency_map[edge[1]][edge[0]];
+        }
     }
 
     Graph& Graph::add_edge(int v1, int v2, Particle_Ptr particle)
@@ -17,15 +21,5 @@ namespace Feyncalc
         return *this;
     }
 
-    void Graph::generate_amplitude()
-    {
-
-    }
-
-    Complex Graph::amplitude(const Kinematics &kinematics)
-    {
-        kinematics.f();
-        return Feyncalc::Complex();
-    }
 }
 

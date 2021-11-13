@@ -7,7 +7,7 @@ namespace Feyncalc
 {
     namespace Topology
     {
-        [[maybe_unused]] extern Graph_Ptr Double_Wrench;
+        [[maybe_unused]] extern const Graph Double_Wrench;
     }
 }
 

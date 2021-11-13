@@ -13,12 +13,23 @@ namespace Feyncalc
     class Diagram
     {
     private:
+        const Graph _graph;
         vector<Particle_Ptr> _incoming_particles;
         vector<Particle_Ptr> _virtual_particles;
         vector<Particle_Ptr> _outgoing_particles;
+        vector<function<Complex(Kinematics const&)>> _amplitude;
+
+        #ifdef CATCH2_TESTING_ENABLED
+        bool assert_diagram_validity() const;
+        #else
+        void assert_diagram_validity() const;
+        #endif
+
 
     public:
-        Diagram(vector<Particle_Ptr>&& incoming_list, vector<Particle_Ptr>&& virtual_list, vector<Particle_Ptr>&& outgoing_list);
+        Diagram(Graph const& graph, vector<Particle_Ptr>&& incoming_list, vector<Particle_Ptr>&& virtual_list, vector<Particle_Ptr>&& outgoing_list);
+        void generate_amplitude();
+        Complex calculate_amplitude(const double sqrt_s, const double cos_theta) const;
 
 
     };

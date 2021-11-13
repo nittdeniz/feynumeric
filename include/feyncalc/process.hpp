@@ -12,11 +12,14 @@ namespace Feyncalc
     class Process
     {
     private:
+        vector<Diagram> _diagrams;
     public:
-        void add_diagrams(vector<Diagram> const& diagram_list);
+        void add_diagrams(vector<Diagram> diagram_list);
 
         vector<double> dsigma_dcos_theta(double sqrt_s, double cos_theta) const;
         vector<double> sigma(double sqrt_s) const;
+
+        double phase_space() const;
     };
 }
 
