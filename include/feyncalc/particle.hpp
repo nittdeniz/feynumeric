@@ -30,6 +30,8 @@ namespace Feyncalc
         std::function<double(double)> _width;
     public:
         Particle(string&& name, Type type, double mass = 0, int charge = 0, Angular_Momentum spin = 0);
+        bool is_fermion() const;
+        bool is_anti_fermion() const;
     };
 
     using Particle_Ptr = std::shared_ptr<Particle>;

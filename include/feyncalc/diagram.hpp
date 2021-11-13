@@ -28,7 +28,7 @@ namespace Feyncalc
 
     public:
         Diagram(Graph const& graph, vector<Particle_Ptr>&& incoming_list, vector<Particle_Ptr>&& virtual_list, vector<Particle_Ptr>&& outgoing_list);
-        void generate_amplitude();
+        void try_generate_amplitude();
         Complex calculate_amplitude(const double sqrt_s, const double cos_theta) const;
 
 

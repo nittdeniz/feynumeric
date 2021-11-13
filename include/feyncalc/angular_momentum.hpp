@@ -11,6 +11,7 @@ namespace Feyncalc
         Angular_Momentum(double value = 0.);
         operator double() const;
         static bool is_valid_spin(double value);
+        bool is_half_odd_integer() const;
     };
 
 }

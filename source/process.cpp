@@ -7,7 +7,7 @@ namespace Feyncalc
         _diagrams.reserve(_diagrams.size() + diagrams.size());
         for( auto& diagram : diagrams )
         {
-            diagram.generate_amplitude();
+            diagram.try_generate_amplitude();
             _diagrams.push_back(diagram);
         }
 

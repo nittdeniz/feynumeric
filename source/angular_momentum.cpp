@@ -27,4 +27,9 @@ namespace Feyncalc
         return value >= 0 && (static_cast<int>(2*value) - 2*value) == 0;
     }
 
+    bool Angular_Momentum::is_half_odd_integer() const
+    {
+        return (static_cast<int>(_value) - _value) != 0;
+    }
+
 }

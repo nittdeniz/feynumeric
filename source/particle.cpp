@@ -11,4 +11,14 @@ namespace Feyncalc
     {
 
     }
+
+    bool Particle::is_fermion() const
+    {
+        return _type == Type::Particle && _spin.is_half_odd_integer();
+    }
+
+    bool Particle::is_anti_fermion() const
+    {
+        return _type == Type::AntiParticle && _spin.is_half_odd_integer();
+    }
 }
