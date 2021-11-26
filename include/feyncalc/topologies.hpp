@@ -8,6 +8,7 @@ namespace Feyncalc
     namespace Topology
     {
         [[maybe_unused]] extern const Graph Double_Wrench;
+        [[maybe_unused]] extern const Graph X_Man;
     }
 }
 

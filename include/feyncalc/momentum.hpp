@@ -5,19 +5,9 @@
 
 namespace Feyncalc
 {
-    /**
-     * @brief Yes
-     * @tparam i 3 or 4 depening on the metric
-     * @class Momentum
-     */
-    template<int i>
-    class Momentum : public Matrix
-    {
-    private:
-
-    public:
-
-    };
+    double kallen_lambda(double a, double b, double c);
+    double momentum(double M, double m1, double m2);
+    Matrix four_momentum(double mass, double q, double cos_theta);
 
 }
 #endif // FEYNCALC_MOMENTUM_HPP

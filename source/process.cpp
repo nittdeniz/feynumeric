@@ -7,7 +7,7 @@ namespace Feyncalc
         _diagrams.reserve(_diagrams.size() + diagrams.size());
         for( auto& diagram : diagrams )
         {
-            diagram.try_generate_amplitude();
+            diagram.generate_amplitude();
             _diagrams.push_back(diagram);
         }
 
@@ -43,6 +43,6 @@ namespace Feyncalc
 
     double Process::phase_space() const
     {
-        return 0;
+        return 1;
     }
 }

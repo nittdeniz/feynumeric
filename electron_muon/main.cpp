@@ -17,20 +17,14 @@ int main()
 
     init_particles();
 
-    Diagram s_channel_N1440(Topology::Double_Wrench, {Photon, Proton}, {N1440p}, {Pi_Zero, Proton});
-//    Diagram<Topology::Double_Wrench> s_channel_N1520({Photon, Proton}, {N1520p}, {Pi_Zero, Proton});
-//    Diagram<Topology::Double_Wrench> s_channel_N1535({Photon, Proton}, {N1535p}, {Pi_Zero, Proton});
-//
-//    Diagram u_channel_N1440(Topology::Scissors, {Photon, Proton}, {N1440p}, {Pi_Zero, Proton});
-//    Diagram u_channel_N1520(Topology::Scissors, {Photon, Proton}, {N1520p}, {Pi_Zero, Proton});
-//    Diagram u_channel_N1535(Topology::Scissors, {Photon, Proton}, {N1535p}, {Pi_Zero, Proton});
+    Diagram electron_muon_s(Topology::X_Man, {Electron, Muon_Minus}, {Photon}, {Electron, Muon_Minus});
 
-    Process photo_production;
-    photo_production.add_diagrams({
-        s_channel_N1440
+    Process electron_muon_scattering;
+    electron_muon_scattering.add_diagrams({
+        electron_muon_s
         });
 
-    auto result = photo_production.dsigma_dcos_theta(1.49_GeV, 1);
+    auto result = electron_muon_scattering.dsigma_dcos_theta(1.49_GeV, 1);
     for( auto const& data : result )
     {
         cout  << "data: " << data << "\t";

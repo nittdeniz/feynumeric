@@ -11,6 +11,12 @@ extern Feyncalc::Particle_Ptr Pi_Plus;
 // Gauge Bosons
 extern Feyncalc::Particle_Ptr Photon;
 
+// Leptons
+extern Feyncalc::Particle_Ptr Electron;
+extern Feyncalc::Particle_Ptr Positron;
+extern Feyncalc::Particle_Ptr Muon_Plus;
+extern Feyncalc::Particle_Ptr Muon_Minus;
+
 // Baryons
 extern Feyncalc::Particle_Ptr Proton;
 extern Feyncalc::Particle_Ptr Neutron;

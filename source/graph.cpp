@@ -1,25 +1,39 @@
 #include "graph.hpp"
+#include "utility.hpp"
 
 namespace Feyncalc
 {
-    Graph::Graph(vector<int> &&incoming_vertices, vector<int> &&virtual_vertices, vector<int> &&outgoing_vertices, vector<array<int, 2>>&& edges)
-    : _incoming_vertices(std::move(incoming_vertices))
-    , _virtual_vertices(std::move(virtual_vertices))
-    , _outgoing_vertices(std::move(outgoing_vertices))
+    Graph::Graph(vector<Edge>&& edges)
+    : _edges(std::move(edges))
     {
-        for( auto edge : edges )
-        {
-            _adjacency_map[edge[0]][edge[1]];
-            _adjacency_map[edge[1]][edge[0]];
+        for( auto edge_it = _edges.begin(); edge_it != _edges.end(); ++edge_it ){
+            if( edge_it->is_incoming()){
+                _incoming_edges.push_back(edge_it - _edges.begin());
+            }
+            else if( edge_it->is_outgoing()){
+                _outgoing_edges.push_back(edge_it - _edges.begin());
+            }
+            else if( edge_it->is_virtual()){
+                _virtual_edges.push_back(edge_it - _edges.begin());
+            }
+            else{
+                cerr << "Undefined edge (needs to be incoming, outgoing or virtual): " << *edge_it << "\n";
+                abort();
+            }
+            for( auto edge_jt = edge_it+1; edge_jt != _edges.end(); edge_jt ++ )
+            {
+                if( shares_vertex(*edge_it, *edge_jt) )
+                {
+                    edge_it->add_neighbour(edge_jt - _edges.begin());
+                    edge_jt->add_neighbour(edge_it - _edges.begin());
+                }
+            }
         }
     }
 
-    Graph& Graph::add_edge(int v1, int v2, Particle_Ptr particle)
+    vector<Edge> Graph::all_edges() const
     {
-        _adjacency_map[v1][v2].push_back(particle);
-        _adjacency_map[v2][v1].push_back(particle);
-        return *this;
+        return _edges;
     }
-
 }
 

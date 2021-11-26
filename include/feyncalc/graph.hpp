@@ -2,13 +2,14 @@
 #define FEYNCALC_GRAPH_HPP
 
 #include <array>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <vector>
 
 #include "complex.hpp"
+#include "edge.hpp"
 #include "kinematics.hpp"
-
 #include "particle.hpp"
 
 namespace Feyncalc
@@ -17,16 +18,20 @@ namespace Feyncalc
     using std::function;
     using std::map;
     using std::vector;
+    using std::cerr;
+    using std::abort;
     class Graph
     {
     private:
-        vector<int> _incoming_vertices;
-        vector<int> _virtual_vertices;
-        vector<int> _outgoing_vertices;
-        map<int, map<int, vector<Particle_Ptr>>> _adjacency_map;
+        vector<Edge> _edges;
+        vector<size_t> _incoming_edges;
+        vector<size_t> _outgoing_edges;
+        vector<size_t> _virtual_edges;
+
     public:
-        Graph(vector<int>&& incoming_vertices, vector<int>&& virtual_vertices, vector<int>&& outgoing_vertices, vector<array<int, 2>>&& edges);
-        Graph& add_edge(int v1, int v2, Particle_Ptr particle);
+        Graph(vector<Edge>&& edges);
+
+        std::vector<Edge> all_edges() const;
 
         friend class Diagram;
     };
