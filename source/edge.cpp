@@ -1,16 +1,15 @@
 #include <iostream>
+#include "messages.hpp"
 #include "edge.hpp"
 
 namespace Feyncalc
 {
-    Edge::Edge(size_t a, size_t b, Edge::Type type, Particle_Ptr particle, vector<int> momentum)
+    Edge::Edge(Vertex_Id a, Vertex_Id b, Edge::Type type, Particle_Ptr particle)
     : _a(a)
     , _b(b)
     , _type(type)
     , _particle(particle)
-    , _momentum(momentum)
     {
-
     }
 
     Edge::Edge(const Edge &edge)
@@ -19,7 +18,7 @@ namespace Feyncalc
     , _type(edge._type)
     , _particle(edge._particle)
     , _momentum(edge._momentum)
-    , _neighbours(edge._neighbours)
+    , _neighbour_ids(edge._neighbour_ids)
     {
 
     }
@@ -31,33 +30,18 @@ namespace Feyncalc
         _type = edge._type;
         _particle = edge._particle;
         _momentum = edge._momentum;
-        _neighbours = edge._neighbours;
+        _neighbour_ids = edge._neighbour_ids;
         return *this;
     }
 
-    size_t Edge::a() const
+    Vertex_Id Edge::a() const
     {
         return _a;
     }
 
-    size_t Edge::b() const
+    Vertex_Id Edge::b() const
     {
         return _b;
-    }
-
-    void Edge::a(size_t new_a)
-    {
-        _a = new_a;
-    }
-
-    void Edge::b(size_t new_b)
-    {
-        _b = new_b;
-    }
-
-    Edge Edge::sorted() const
-    {
-        return Edge(std::min(_a, _b), std::max(_a, _b), _type, _particle, _momentum);
     }
 
     bool Edge::is_incoming() const
@@ -80,39 +64,60 @@ namespace Feyncalc
         return _type == Type::UNDEFINED;
     }
 
-    Matrix Edge::momentum(const vector<Matrix> &momenta) const
+    void Edge::add_neighbour(Edge_Id neighbour)
     {
-        if( momenta.size() != _momentum.size() )
-        {
-            std::cerr << "Momenta size does not match size of edge_momenta vector.\n";
-            abort();
-        }
-        Matrix result;
-        for( size_t i = 0; i < _momentum.size(); ++i )
-        {
-            result += _momentum.at(i) * momenta.at(i);
-        }
-        return result;
+        _neighbour_ids.push_back(neighbour);
     }
 
-    void Edge::type(Edge::Type new_type)
+    vector<Edge_Id> Edge::neighbour_ids() const
     {
-        _type = new_type;
+        return _neighbour_ids;
     }
 
-    void Edge::add_neighbour(size_t neighbour)
+    Matrix Edge::momentum() const
     {
-        _neighbours.push_back(neighbour);
-    }
-
-    vector<size_t> Edge::neighbours() const
-    {
-        return _neighbours;
+        return _momentum;
     }
 
     std::ostream& operator<<(std::ostream &out, const Edge &edge)
     {
-        return out << "(" << edge._a << ", " << edge._b << ")";
+        return out << "(" << static_cast<std::size_t>(edge._a) << ", " << static_cast<std::size_t>(edge._b) << ")";
+    }
+
+    std::function<Matrix()> Edge::feynman_rule() const
+    {
+        if( is_incoming() )
+        {
+            return _particle->feynman_incoming;
+        }
+        else if( is_outgoing() )
+        {
+            return _particle->feynman_outgoing;
+        }
+        else if( is_virtual() )
+        {
+            return _particle->feynman_virtual;
+        }
+        else
+        {
+            critical_error("Can't assign feynman rule to edge: " + to_string() + ".");
+        }
+    }
+
+    Edge::Edge(std::size_t a, std::size_t b, Edge::Type type)
+    : _a(Vertex_Id{a})
+    , _b(Vertex_Id{b})
+    , _type(type)
+    {
+        if( _type == Type::UNDEFINED )
+        {
+            warning("Edge Type specified as UNDEFINED at " + to_string() + ".");
+        }
+    }
+
+    void Edge::momentum(const Matrix &momentum)
+    {
+        _momentum = momentum;
     }
 
     bool operator==(const Edge &lhs, const Edge &rhs)
@@ -133,6 +138,42 @@ namespace Feyncalc
     bool shares_vertex(const Edge &lhs, const Edge &rhs)
     {
         return lhs._a == rhs._a || lhs._a == rhs._b || lhs._b == rhs._a || lhs._b == rhs._b;
+    }
+
+    std::string Edge::to_string() const
+    {
+        std::stringstream in;
+        in << *this;
+        return in.str();
+    }
+
+    void Edge::assign_lorentz_index(std::size_t id)
+    {
+        _assigned_indices.emplace_back(id);
+    }
+
+    void Edge::clear_lorentz_indices()
+    {
+        _assigned_indices.clear();
+    }
+
+
+    void Edge::assign_angular_momentum(std::size_t id)
+    {
+        _angular_momentum_index = id;
+    }
+
+    std::optional<Vertex_Id> shared_vertex(Edge const& lhs, Edge const& rhs)
+    {
+        if( lhs._a == rhs._a || lhs._a == rhs._b )
+        {
+            return lhs._a;
+        }
+        if( lhs._b == rhs._a || lhs._b == rhs._b )
+        {
+            return lhs._b;
+        }
+        return std::nullopt;
     }
 
     void Edge::particle(Particle_Ptr new_particle)

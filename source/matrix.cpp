@@ -14,7 +14,10 @@ namespace Feyncalc
     , _cols(cols)
     , _data(std::move(data))
     {
-
+        if( _data.size() != _rows * _cols )
+        {
+            _data.insert(_data.end(), _rows * _cols - _data.size(), Complex());
+        }
     }
 
     Matrix::Matrix(const Matrix &other)
@@ -140,6 +143,15 @@ namespace Feyncalc
 
     Matrix operator*(const Matrix &lhs, const Matrix &rhs)
     {
+        std::cerr << "Matrix*: " << lhs << rhs << "\n";
+        if( lhs._cols == 1 && lhs._rows == 1 )
+        {
+            return lhs.at(0,0) * rhs;
+        }
+        if( rhs._cols == 1 && rhs._rows == 1 )
+        {
+            return rhs.at(0,0) * lhs;
+        }
         if( lhs._cols != rhs._rows )
         {
             cerr << "lhs._cols != rhs._rows @operator*(Matrix, matrix)\n";

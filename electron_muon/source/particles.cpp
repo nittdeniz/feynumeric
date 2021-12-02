@@ -31,26 +31,26 @@ Feyncalc::Particle_Ptr N1440n       = std::make_shared<Feyncalc::Particle>("N144
 void init_particles()
 {
     using namespace Feyncalc;
-    Photon->feynman_virtual = [](){return Matrix(1,1,1);};
-    Photon->feynman_incoming = [](){return Matrix(1,1, 1);};
+    Photon->feynman_virtual = [](){return Matrix(1,1,13);};
+    Photon->feynman_incoming = [](){return Matrix(1,1, 13);};
     Photon->feynman_outgoing = [&](){return Matrix(any_cast<double>(Proton->user_data("coupling.ppgamma")));};
     Photon->user_data("coupling.ppgammma", 0.3);
 
-    Electron->feynman_virtual = [](){return Matrix(1,1,1);};
-    Electron->feynman_incoming = [](){return Matrix(1,1,1);};
-    Electron->feynman_outgoing = [](){return Matrix(1,1,1);};
+    Electron->feynman_virtual = [](){return Matrix(4,4,2);};
+    Electron->feynman_incoming = [](){return Matrix(4,1,{3,3,3,3});};
+    Electron->feynman_outgoing = [](){return Matrix(1,4,{5,5,5,5});};
 
     Positron->feynman_virtual = [](){return Matrix(1,1,1);};
-    Positron->feynman_incoming = [](){return Matrix(1,1,1);};
-    Positron->feynman_outgoing = [](){return Matrix(1,1,1);};
+    Positron->feynman_incoming = [](){return Matrix(1,4,1);};
+    Positron->feynman_outgoing = [](){return Matrix(4,1,1);};
 
-    Muon_Minus->feynman_virtual = [](){return Matrix(1,1,1);};
-    Muon_Minus->feynman_incoming = [](){return Matrix(1,1,1);};
-    Muon_Minus->feynman_outgoing = [](){return Matrix(1,1,1);};
+    Muon_Minus->feynman_virtual = [](){return Matrix(1,1,17);};
+    Muon_Minus->feynman_incoming = [](){return Matrix(4,1,{19,19,19,19});};
+    Muon_Minus->feynman_outgoing = [](){return Matrix(1,4,{23,23,23,23});};
 
     Muon_Plus->feynman_virtual = [](){return Matrix(1,1,1);};
-    Muon_Plus->feynman_incoming = [](){return Matrix(1,1,1);};
-    Muon_Plus->feynman_outgoing = [](){return Matrix(1,1,1);};
+    Muon_Plus->feynman_incoming = [](){return Matrix(1,4,1);};
+    Muon_Plus->feynman_outgoing = [](){return Matrix(4,1,1);};
 
     Proton->feynman_virtual = [](){return Matrix(4, 4, {1,2,3,4, 5,6,7,8, 9,10,11,12, 13,14,15,16});};
     Proton->feynman_incoming = [&](){return Matrix(u12(Matrix(4, 1, {1,2,3,4}), Angular_Momentum(0.5, 0.5)));};

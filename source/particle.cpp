@@ -47,14 +47,16 @@ namespace Feyncalc
         _user_data[key] = data;
     }
 
-    bool is_fermion(Particle const& particle)
+    bool Particle::is_fermion() const
     {
-        return particle._type == Particle::Type::Particle && particle._spin.is_half_odd_integer();
+        return _type == Type::Particle
+            && _spin.is_half_odd_integer();
     }
 
-    bool is_anti_fermion(Particle const& particle)
+    bool Particle::is_anti_fermion() const
     {
-        return particle._type == Particle::Type::AntiParticle && particle._spin.is_half_odd_integer();
+        return _type == Particle::Type::AntiParticle
+            && _spin.is_half_odd_integer();
     }
 
     unsigned int Particle::n_lorentz_indices() const
@@ -66,5 +68,15 @@ namespace Feyncalc
     {
         out << p._name;
         return out;
+    }
+
+    bool is_fermion(const Particle &particle)
+    {
+        return particle.is_fermion();
+    }
+
+    bool is_anti_fermion(const Particle &particle)
+    {
+        return particle.is_anti_fermion();
     }
 }

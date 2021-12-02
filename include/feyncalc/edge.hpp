@@ -1,16 +1,49 @@
 #ifndef FEYNCALC_EDGE_HPP
 #define FEYNCALC_EDGE_HPP
 
+#include <optional>
 #include <vector>
 
 #include "particle.hpp"
 
 namespace Feyncalc
 {
-    using std::size_t;
-    using std::vector;
     class Edge;
     using Edge_Ptr = std::shared_ptr<Edge>;
+
+    struct Edge_Id
+    {
+        std::size_t id;
+        Edge_Id() : id(666666){}
+        explicit Edge_Id(std::size_t i) : id(i){}
+        Edge_Id(Edge_Id const& other) : id(other.id){}
+        Edge_Id& operator=(Edge_Id const& other){ id = other.id; return *this;}
+        operator std::size_t() const
+        {
+            return id;
+        }
+        inline friend bool operator==(Edge_Id a, Edge_Id b)
+        {
+            return a.id == b.id;
+        }
+    };
+    struct Vertex_Id
+    {
+        std::size_t id;
+        Vertex_Id() : id(666666){}
+        explicit Vertex_Id(std::size_t i) : id(i){}
+        Vertex_Id(Vertex_Id const& other) : id(other.id){}
+        Vertex_Id& operator=(Vertex_Id const& other){ id = other.id; return *this;}
+        operator std::size_t() const
+        {
+            return id;
+        }
+        inline friend bool operator==(Vertex_Id a, Vertex_Id b)
+        {
+            return a.id == b.id;
+        }
+    };
+
     class Edge
     {
     public:
@@ -22,48 +55,65 @@ namespace Feyncalc
             VIRTUAL
         };
     private:
-        size_t _a, _b;
+        Vertex_Id _a, _b;
         Type _type;
         Particle_Ptr _particle;
-        vector<int> _momentum;
-        vector<size_t> _neighbours;
+        Matrix _momentum;
+        vector<Edge_Id> _neighbour_ids;
+
+        vector<std::size_t> _assigned_indices;
+        std::size_t _angular_momentum_index;
+
+
+
     public:
-        Edge(size_t a = 0, size_t b = 0, Type type=Type::UNDEFINED, Particle_Ptr particle = nullptr, vector<int> momentum = {});
+        Edge(Vertex_Id a, Vertex_Id b = Vertex_Id{0}, Type type=Type::UNDEFINED, Particle_Ptr particle = nullptr);
+        Edge(std::size_t a, std::size_t b, Type type=Type::UNDEFINED);
         Edge(Edge const& edge);
         Edge& operator=(Edge const& edge);
 
-        size_t a() const;
-        size_t b() const;
+        Vertex_Id a() const;
+        Vertex_Id b() const;
 
-        void a(size_t new_a);
-        void b(size_t new_b);
-
-        Edge sorted() const;
-
-        void type(Type new_type);
+//        void a(Vertex_Id new_a);
+//        void b(Vertex_Id new_b);
 
         void particle(Particle_Ptr new_particle);
         Particle_Ptr particle() const;
 
-        void add_neighbour(size_t neighbour);
+        void add_neighbour(Edge_Id neighbour);
 
-        vector<size_t> neighbours() const;
+        void assign_lorentz_index(std::size_t id);
+        void clear_lorentz_indices();
+
+        void assign_angular_momentum(std::size_t id);
+
+
+        vector<Edge_Id> neighbour_ids() const;
 
         bool is_incoming() const;
         bool is_outgoing() const;
         bool is_virtual() const;
         bool is_undefined() const;
 
-        Matrix momentum(vector<Matrix> const& momenta) const;
+        void momentum(Matrix const& momentum);
+        Matrix momentum() const;
+        std::string to_string() const;
+
+        std::function<Matrix()> feynman_rule() const;
 
         friend bool shares_vertex(Edge const& lhs, Edge const& rhs);
+        friend std::optional<Vertex_Id> shared_vertex(Edge const& lhs, Edge const& rhs);
 
         friend std::ostream& operator<<(std::ostream& out, Edge const& edge);
         friend bool operator==(Edge const& lhs, Edge const& rhs);
         friend bool operator!=(Edge const& lhs, Edge const& rhs);
+
+        friend class Graph;
     };
 
     bool shares_vertex(Edge const& lhs, Edge const& rhs);
+    std::optional<Vertex_Id> shared_vertex(Edge const& lhs, Edge const& rhs);
 
     std::ostream& operator<<(std::ostream& out, Edge const& edge);
     bool operator==(Edge const& lhs, Edge const& rhs);

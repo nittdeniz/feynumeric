@@ -1,24 +1,32 @@
 #ifndef FEYNCALC_DIAGRAM
 #define FEYNCALC_DIAGRAM
 
+#include <variant>
 #include <vector>
 
-#include "matrix.hpp"
+#include "edge.hpp"
+#include "function_types.hpp"
 #include "graph.hpp"
+#include "lorentz_index.hpp"
+#include "matrix.hpp"
 #include "particle.hpp"
+#include "vertex.hpp"
 
 namespace Feyncalc
 {
-    using std::vector;
-
-    class Diagram
+    class Vertex_Manager;
+    class Diagram : public std::enable_shared_from_this<Diagram>
     {
     private:
+        std::shared_ptr<Vertex_Manager> _vertex_manager;
         Graph _graph;
-        vector<Particle_Ptr> _incoming_particles;
-        vector<Particle_Ptr> _virtual_particles;
-        vector<Particle_Ptr> _outgoing_particles;
-        vector<function<Matrix()>> _amplitude;
+        std::vector<Particle_Ptr> _incoming_particles;
+        std::vector<Particle_Ptr> _virtual_particles;
+        std::vector<Particle_Ptr> _outgoing_particles;
+        std::vector<std::function<Matrix()>> _amplitude;
+
+        std::vector<Lorentz_Index> _lorentz_indices;
+        std::vector<Angular_Momentum> _angular_momenta;
 
         #ifdef CATCH2_TESTING_ENABLED
         bool assert_diagram_validity() const;
@@ -26,15 +34,30 @@ namespace Feyncalc
         void assert_diagram_validity() const;
         #endif
 
-        void trace_fermion_line(vector<Edge>& remaining_edges, Edge const& starting_edge, Edge const& current_edge);
+        Edge_Id _starting_edge_id;
+        void trace_fermion_line(Edge_Id current_edge_id);
+
+        void add_vertex(Edge_Id a, Edge_Id b);
+
+        std::vector<Edge_Id> _remaining_edge_ids;
+        std::map<Vertex_Id, std::vector<Edge_Id>> _remaining_vertices;
+
+        void register_lorentz_indices();
+        void register_angular_momenta();
+
+        void fix_momenta();
+
+
 
     public:
-        Diagram(Graph const& graph, vector<Particle_Ptr>&& incoming_list, vector<Particle_Ptr>&& virtual_list, vector<Particle_Ptr>&& outgoing_list);
+        Diagram(std::shared_ptr<Vertex_Manager> const& vertex_manager, Graph const& graph, std::vector<Particle_Ptr>&& incoming_list, std::vector<Particle_Ptr>&& virtual_list, std::vector<Particle_Ptr>&& outgoing_list);
         Diagram(Diagram const& diagram);
         Diagram& operator=(Diagram const& diagram);
 
-        void try_generate_amplitude();
         void generate_amplitude();
+
+        std::size_t n_total_external() const;
+
         Complex calculate_amplitude(const double sqrt_s, const double cos_theta) const;
 
 

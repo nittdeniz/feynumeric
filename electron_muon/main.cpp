@@ -1,12 +1,13 @@
 #include <iostream>
 
 #include <feyncalc/diagram.hpp>
-#include <feyncalc/graph.hpp>
 #include <feyncalc/process.hpp>
 #include <feyncalc/topologies.hpp>
 #include <feyncalc/units.hpp>
 
 #include "particles.hpp"
+#include "vertices.hpp"
+
 
 int main()
 {
@@ -16,8 +17,19 @@ int main()
     using std::cout;
 
     init_particles();
+    init_vertices();
 
-    Diagram electron_muon_s(Topology::X_Man, {Electron, Muon_Minus}, {Photon}, {Electron, Muon_Minus});
+    if( VMP == nullptr )
+    {
+        std::cerr << "nullptr\n";
+        abort();
+    }
+
+    Diagram electron_muon_s(VMP,
+                            Topology::X_Man,
+                            {Photon, Muon_Minus},
+                            {Photon},
+                            {Electron, Muon_Minus});
 
     Process electron_muon_scattering;
     electron_muon_scattering.add_diagrams({

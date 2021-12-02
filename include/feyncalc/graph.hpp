@@ -11,28 +11,24 @@
 #include "edge.hpp"
 #include "kinematics.hpp"
 #include "particle.hpp"
+#include "vertex.hpp"
 
 namespace Feyncalc
 {
-    using std::array;
-    using std::function;
-    using std::map;
-    using std::vector;
-    using std::cerr;
-    using std::abort;
     class Graph
     {
     private:
-        vector<Edge> _edges;
-        vector<size_t> _incoming_edges;
-        vector<size_t> _outgoing_edges;
-        vector<size_t> _virtual_edges;
+        std::vector<Edge> _edges;
+        std::vector<Edge_Id> _incoming_edge_ids;
+        std::vector<Edge_Id> _outgoing_edge_ids;
+        std::vector<Edge_Id> _virtual_edge_ids;
 
     public:
-        Graph(vector<Edge>&& edges);
+        Graph(std::vector<Edge>&& edges);
 
-        std::vector<Edge> all_edges() const;
-
+        std::vector<Edge_Id> all_edge_ids() const;
+        std::map<Vertex_Id, std::vector<Edge_Id>> all_vertex_ids() const;
+        std::vector<Edge_Id> edge_ids_to(Vertex_Id vertex) const;
         friend class Diagram;
     };
 

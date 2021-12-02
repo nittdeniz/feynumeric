@@ -44,8 +44,8 @@ namespace Feyncalc
         Angular_Momentum spin() const;
         Angular_Momentum isospin()const;
 
-        friend bool is_fermion(Particle const& particle);
-        friend bool is_anti_fermion(Particle const& particle);
+        bool is_fermion() const;
+        bool is_anti_fermion() const;
 
         std::function<Matrix()> feynman_outgoing = [](){return Matrix();};
         std::function<Matrix()> feynman_incoming = [](){return Matrix();};
