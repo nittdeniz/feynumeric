@@ -1,5 +1,5 @@
-#ifndef FEYNCALC_GRAPH_HPP
-#define FEYNCALC_GRAPH_HPP
+#ifndef Feynumeric_GRAPH_HPP
+#define Feynumeric_GRAPH_HPP
 
 #include <array>
 #include <iostream>
@@ -13,7 +13,7 @@
 #include "particle.hpp"
 #include "vertex.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     class Graph
     {
@@ -35,4 +35,4 @@ namespace Feyncalc
     using Graph_Ptr = std::shared_ptr<Graph>;
 }
 
-#endif // FEYNCALC_GRAPH_HPP
+#endif // Feynumeric_GRAPH_HPP

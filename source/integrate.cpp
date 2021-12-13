@@ -1,6 +1,6 @@
 #include "integrate.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     double integrate(std::function<double(double)> f, double a, double b)
     {

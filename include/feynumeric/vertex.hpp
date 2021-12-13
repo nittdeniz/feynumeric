@@ -1,9 +1,9 @@
-#ifndef FEYNCALC_VERTEX_HPP
-#define FEYNCALC_VERTEX_HPP
+#ifndef Feynumeric_VERTEX_HPP
+#define Feynumeric_VERTEX_HPP
 
 #include <vector>
 
-namespace Feyncalc
+namespace Feynumeric
 {
     class Vertex
     {
@@ -13,4 +13,4 @@ namespace Feyncalc
         Vertex(std::vector<std::size_t> const& edge_ids);
     };
 }
-#endif // FEYNCALC_VERTEX_HPP
+#endif // Feynumeric_VERTEX_HPP

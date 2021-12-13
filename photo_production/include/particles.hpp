@@ -1,31 +1,31 @@
 #ifndef PARTICLES_HPP
 #define PARTICLES_HPP
 
-#include <feyncalc/particle.hpp>
+#include <Feynumeric/particle.hpp>
 
 // Mesons
-extern Feyncalc::Particle_Ptr Pi_Zero;
-extern Feyncalc::Particle_Ptr Pi_Minus;
-extern Feyncalc::Particle_Ptr Pi_Plus;
+extern Feynumeric::Particle_Ptr Pi_Zero;
+extern Feynumeric::Particle_Ptr Pi_Minus;
+extern Feynumeric::Particle_Ptr Pi_Plus;
 
 // Gauge Bosons
-extern Feyncalc::Particle_Ptr Photon;
+extern Feynumeric::Particle_Ptr Photon;
 
 // Baryons
-extern Feyncalc::Particle_Ptr Proton;
-extern Feyncalc::Particle_Ptr Neutron;
+extern Feynumeric::Particle_Ptr Proton;
+extern Feynumeric::Particle_Ptr Neutron;
 
-extern Feyncalc::Particle_Ptr N1440p;
-extern Feyncalc::Particle_Ptr N1440n;
-extern Feyncalc::Particle_Ptr N1520p;
-extern Feyncalc::Particle_Ptr N1520p;
-extern Feyncalc::Particle_Ptr N1535p;
-extern Feyncalc::Particle_Ptr N1535n;
+extern Feynumeric::Particle_Ptr N1440p;
+extern Feynumeric::Particle_Ptr N1440n;
+extern Feynumeric::Particle_Ptr N1520p;
+extern Feynumeric::Particle_Ptr N1520p;
+extern Feynumeric::Particle_Ptr N1535p;
+extern Feynumeric::Particle_Ptr N1535n;
 
-extern Feyncalc::Particle_Ptr D1232pp;
-extern Feyncalc::Particle_Ptr D1232p;
-extern Feyncalc::Particle_Ptr D1232n;
-extern Feyncalc::Particle_Ptr D1232m;
+extern Feynumeric::Particle_Ptr D1232pp;
+extern Feynumeric::Particle_Ptr D1232p;
+extern Feynumeric::Particle_Ptr D1232n;
+extern Feynumeric::Particle_Ptr D1232m;
 
 void init_particles();
 

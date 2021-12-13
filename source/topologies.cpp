@@ -2,7 +2,7 @@
 #include "topologies.hpp"
 #include <vector>
 
-namespace Feyncalc
+namespace Feynumeric
 {
     namespace Topology
     {

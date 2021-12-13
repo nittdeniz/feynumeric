@@ -6,4 +6,4 @@ add_executable(photo_production
 
 target_include_directories(photo_production PRIVATE include)
 
-target_link_libraries(photo_production PRIVATE feyncalc)
+target_link_libraries(photo_production PRIVATE Feynumeric)

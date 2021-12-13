@@ -9,4 +9,4 @@ add_executable(${EXECUTABLE_NAME}
 
 target_include_directories(${EXECUTABLE_NAME} PRIVATE include)
 
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE feyncalc)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE Feynumeric)

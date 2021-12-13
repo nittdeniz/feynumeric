@@ -1,7 +1,9 @@
 #include "dirac.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
+
+
     [[maybe_unused]] Matrix GS(const Matrix &a)
     {
         return Matrix(a);
@@ -10,6 +12,14 @@ namespace Feyncalc
     [[maybe_unused]] Matrix dirac_sigma(const Matrix &a, const Matrix &b)
     {
         return Complex(0, 1)/2. * (a*b - b*a);
+    }
+
+    [[maybe_unused]] Matrix epsilon(const Matrix& p, const Angular_Momentum &lambda)
+    {
+        if( almost_identical(dot(p, p), 0) )
+        {
+
+        }
     }
 
     [[maybe_unused]] Matrix epsilon1(const Matrix &p, const Angular_Momentum &lambda)

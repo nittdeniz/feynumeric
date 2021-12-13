@@ -1,7 +1,7 @@
 #include "graph.hpp"
 #include "utility.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     Graph::Graph(vector<Edge>&& edges)
     : _edges(std::move(edges))

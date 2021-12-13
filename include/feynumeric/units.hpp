@@ -1,5 +1,5 @@
-#ifndef FEYNCALCPP_UNITS_HPP
-#define FEYNCALCPP_UNITS_HPP
+#ifndef FeynumericPP_UNITS_HPP
+#define FeynumericPP_UNITS_HPP
 
 /*! \mainpage My Personal Index Page
  *
@@ -14,7 +14,7 @@
  * etc...
  */
 
-namespace Feyncalc
+namespace Feynumeric
 {
     /**
      * @brief Energy Units for easy conversion
@@ -53,4 +53,4 @@ namespace Feyncalc
     }
 }
 
-#endif // FEYNCALCPP_UNITS_HPP
+#endif // FeynumericPP_UNITS_HPP

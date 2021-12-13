@@ -1,5 +1,5 @@
-#ifndef FEYNCALC_DIAGRAM
-#define FEYNCALC_DIAGRAM
+#ifndef Feynumeric_DIAGRAM
+#define Feynumeric_DIAGRAM
 
 #include <variant>
 #include <vector>
@@ -12,7 +12,7 @@
 #include "particle.hpp"
 #include "vertex.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     class Vertex_Manager;
     class Diagram : public std::enable_shared_from_this<Diagram>
@@ -38,6 +38,7 @@ namespace Feyncalc
         void trace_fermion_line(Edge_Id current_edge_id);
 
         void add_vertex(Edge_Id a, Edge_Id b);
+        void add_vertex(Vertex_Id vertex_id);
 
         std::vector<Edge_Id> _remaining_edge_ids;
         std::map<Vertex_Id, std::vector<Edge_Id>> _remaining_vertices;
@@ -63,4 +64,4 @@ namespace Feyncalc
 
     };
 }
-#endif // FEYNCALC_DIAGRAM
+#endif // Feynumeric_DIAGRAM

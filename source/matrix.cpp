@@ -1,7 +1,7 @@
 #include <iostream>
-#include "feyncalc/matrix.hpp"
+#include "Feynumeric/matrix.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     using std::cerr;
     size_t Matrix::index(size_t row, size_t col) const
@@ -126,6 +126,28 @@ namespace Feyncalc
         throw dimension_exception();
     }
 
+
+
+    Complex &Matrix::operator[](size_t i)
+    {
+        return _data[i];
+    }
+
+    std::size_t Matrix::n_rows() const
+    {
+        return _rows;
+    }
+
+    std::size_t Matrix::n_cols() const
+    {
+        return _cols;
+    }
+
+    std::size_t Matrix::n_total() const
+    {
+        return _rows * _cols;
+    }
+
     std::ostream &operator<<(std::ostream &out, const Matrix &matrix)
     {
         for( size_t i = 0; i < matrix._rows; i++ )
@@ -139,6 +161,11 @@ namespace Feyncalc
             out << ")\n";
         }
         return out;
+    }
+
+    Complex const& Matrix::at(size_t i) const
+    {
+        return _data[i];
     }
 
     Matrix operator*(const Matrix &lhs, const Matrix &rhs)

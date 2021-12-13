@@ -1,6 +1,6 @@
-#include "feyncalc/particle.hpp"
+#include "Feynumeric/particle.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     Particle::Particle(string&& name, Type type, double mass, int charge, Angular_Momentum spin)
     : _name(std::move(name))

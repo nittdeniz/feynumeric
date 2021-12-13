@@ -7,7 +7,7 @@
 #include <iostream>
 #include <utility.hpp>
 
-namespace Feyncalc
+namespace Feynumeric
 {
     Diagram::Diagram(Vertex_Manager_Ptr const& vertex_manager, Graph const& graph, vector<Particle_Ptr> &&incoming_list, vector<Particle_Ptr> &&virtual_list,
                                vector<Particle_Ptr> &&outgoing_list)
@@ -68,6 +68,10 @@ namespace Feyncalc
         {
             edge.clear_lorentz_indices();
             int n_indices = edge.particle()->n_lorentz_indices();
+            if( edge.is_virtual() )
+            {
+                n_indices *= 2;
+            }
             while( n_indices --> 0 )
             {
                _lorentz_indices.emplace_back();
@@ -225,7 +229,17 @@ namespace Feyncalc
                 critical_error("There are still fermions in the remaining particles.\n");
             }
             std::cerr << "adding edge: " << edge << " with particle " << edge.particle()->name() << "\n";
+            std::cerr << "Lorentz Indices: ";
+            for( auto lorentz : edge.get_lorentz_indices() )
+            {
+                std::cerr << lorentz << " ";
+            }
+            std::cerr << "\n";
             _amplitude.push_back(edge.feynman_rule());
+        }
+        for( auto const& vertex_id : _remaining_vertices )
+        {
+            add_vertex(vertex_id.first);
         }
     }
 
@@ -295,6 +309,11 @@ namespace Feyncalc
         }
 
         std::cerr << "adding edge: " << current_edge << " with particle " << current_edge.particle()->name() << "\n";
+        std::cerr << "Lorentz Indices: ";
+        for( auto lorentz : current_edge.get_lorentz_indices() )
+        {
+            std::cerr << lorentz << " ";
+        }
         _amplitude.push_back(current_edge.feynman_rule());
 
         const auto neighbouring_edges = current_edge.neighbour_ids();
@@ -304,36 +323,37 @@ namespace Feyncalc
 
             if( contains(_remaining_edge_ids, neighbour_id) )
             {
-                if( is_same_type(*neighbour.particle()) )
+                if( is_same_type(*neighbour.particle())  &&  neighbour.is_virtual() )
                 {
-                    if( neighbour.is_virtual() )
-                    {
-                        add_vertex(current_edge_id, neighbour_id);
-                        trace_fermion_line(neighbour_id);
-                        return;
-                    }
-                    else if(   ( is_same_type(*neighbour.particle()) &&  is_opposite_direction(neighbour) )
-                            || ( is_opposite_type(*neighbour.particle()) &&  is_same_direction(neighbour) )
-                    )
-                    {
-                        if( !neighbour.is_outgoing() && !neighbour.is_incoming() )
-                        {
-                            critical_error("Inconsistent Edge along the path " + starting_edge.to_string() + " to " + neighbour.to_string() + ".");
-                        }
-                        add_vertex(current_edge_id, neighbour_id);
-                        _amplitude.push_back(neighbour.feynman_rule());
-                        std::cerr << "adding edge: " << neighbour << " with particle " << neighbour.particle()->name() << "\n";
-                        std::erase(_remaining_edge_ids, neighbour_id);
-                        return;
-                    }
-                    else
+                    add_vertex(current_edge_id, neighbour_id);
+                    trace_fermion_line(neighbour_id);
+                    return;
+                }
+                else if(   ( is_same_type(*neighbour.particle()) &&  is_opposite_direction(neighbour) )
+                        || ( is_opposite_type(*neighbour.particle()) &&  is_same_direction(neighbour) )
+                )
+                {
+                    if( !neighbour.is_outgoing() && !neighbour.is_incoming() )
                     {
                         critical_error("Inconsistent Edge along the path " + starting_edge.to_string() + " to " + neighbour.to_string() + ".");
                     }
+                    add_vertex(current_edge_id, neighbour_id);
+                    _amplitude.push_back(neighbour.feynman_rule());
+                    std::cerr << "adding edge: " << neighbour << " with particle " << neighbour.particle()->name() << "\n";
+                    std::cerr << "Lorentz Indices: ";
+                    for( auto lorentz : neighbour.get_lorentz_indices() )
+                    {
+                        std::cerr << lorentz << " ";
+                    }
+                    std::erase(_remaining_edge_ids, neighbour_id);
+                    return;
+                }
+                else
+                {
+                    critical_error("Inconsistent Edge along the path " + starting_edge.to_string() + " to " + neighbour.to_string() + ".");
                 }
             }
         }
-        critical_error("Well hello, we shouldn't be here.");
     }
 
     void Diagram::add_vertex(Edge_Id a_id, Edge_Id b_id)
@@ -345,8 +365,11 @@ namespace Feyncalc
         if( !optional_vertex.has_value() ){
             critical_error("Edges " + a.to_string() + " and " + b.to_string() + " do not share a vertex.");
         }
-        auto const vertex_id = optional_vertex.value();
+        add_vertex(optional_vertex.value());
+    }
 
+    void Diagram::add_vertex(Vertex_Id vertex_id)
+    {
         if( !_remaining_vertices.contains(vertex_id) )
         {
             return;
@@ -367,6 +390,7 @@ namespace Feyncalc
                                      this, vertex_edges);
 
         _amplitude.push_back(vertex_func);
+        _remaining_vertices.erase(vertex_id);
     }
 
 

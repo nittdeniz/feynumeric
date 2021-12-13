@@ -1,5 +1,5 @@
-#ifndef FEYNCALC_PARTICLE_HPP
-#define FEYNCALC_PARTICLE_HPP
+#ifndef Feynumeric_PARTICLE_HPP
+#define Feynumeric_PARTICLE_HPP
 
 #include <any>
 #include <functional>
@@ -7,11 +7,13 @@
 #include <map>
 #include <string>
 
-#include "angular_momentum.hpp"
-#include "momentum.hpp"
-#include "complex.hpp"
+#include "feynumeric/angular_momentum.hpp"
+#include "feynumeric/edge.hpp"
+#include "feynumeric/matrix.hpp"
+#include "feynumeric/momentum.hpp"
+#include "feynumeric/complex.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     using std::any;
     using std::map;
@@ -47,9 +49,9 @@ namespace Feyncalc
         bool is_fermion() const;
         bool is_anti_fermion() const;
 
-        std::function<Matrix()> feynman_outgoing = [](){return Matrix();};
-        std::function<Matrix()> feynman_incoming = [](){return Matrix();};
-        std::function<Matrix()> feynman_virtual = [](){return Matrix();};
+        std::function<Matrix(Edge_Ptr const& e)> feynman_outgoing;
+        std::function<Matrix(Edge_Ptr const& e)> feynman_incoming;
+        std::function<Matrix(Edge_Ptr const& e)> feynman_virtual;
 
         unsigned int n_lorentz_indices() const;
 
@@ -69,4 +71,4 @@ namespace Feyncalc
     using Particle_Ptr = std::shared_ptr<Particle>;
 }
 
-#endif // FEYNCALC_PARTICLE_HPP
+#endif // Feynumeric_PARTICLE_HPP

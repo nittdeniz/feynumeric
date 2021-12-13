@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include <feyncalc/diagram.hpp>
-#include <feyncalc/process.hpp>
-#include <feyncalc/topologies.hpp>
-#include <feyncalc/units.hpp>
+#include <Feynumeric/diagram.hpp>
+#include <Feynumeric/process.hpp>
+#include <Feynumeric/topologies.hpp>
+#include <Feynumeric/units.hpp>
 
 #include "particles.hpp"
 #include "vertices.hpp"
@@ -11,27 +11,24 @@
 
 int main()
 {
-    using namespace Feyncalc;
-    using namespace Feyncalc::Units;
-
+    using namespace Feynumeric;
+    using namespace Feynumeric::Units;
     using std::cout;
+
 
     init_particles();
     init_vertices();
 
-    if( VMP == nullptr )
-    {
-        std::cerr << "nullptr\n";
-        abort();
-    }
+    Process electron_muon_scattering;
 
     Diagram electron_muon_s(VMP,
                             Topology::X_Man,
-                            {Photon, Muon_Minus},
+                            {Electron, Muon_Minus},
                             {Photon},
                             {Electron, Muon_Minus});
 
-    Process electron_muon_scattering;
+
+
     electron_muon_scattering.add_diagrams({
         electron_muon_s
         });

@@ -1,11 +1,11 @@
-#ifndef FEYNCALC_PROCESS_HPP
-#define FEYNCALC_PROCESS_HPP
+#ifndef Feynumeric_PROCESS_HPP
+#define Feynumeric_PROCESS_HPP
 
 #include <vector>
 
 #include "diagram.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     using std::vector;
 
@@ -23,4 +23,4 @@ namespace Feyncalc
     };
 }
 
-#endif // FEYNCALC_PROCESS_HPP
+#endif // Feynumeric_PROCESS_HPP

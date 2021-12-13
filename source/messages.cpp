@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-namespace Feyncalc
+namespace Feynumeric
 {
     [[noreturn]] void critical_error(const std::string &message)
     {

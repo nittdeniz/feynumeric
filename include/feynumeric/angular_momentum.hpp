@@ -1,7 +1,7 @@
-#ifndef FEYNCALC_ANGULAR_MOMENTUM_HPP
-#define FEYNCALC_ANGULAR_MOMENTUM_HPP
+#ifndef Feynumeric_ANGULAR_MOMENTUM_HPP
+#define Feynumeric_ANGULAR_MOMENTUM_HPP
 
-namespace Feyncalc
+namespace Feynumeric
 {
     class Angular_Momentum
     {
@@ -20,4 +20,4 @@ namespace Feyncalc
 
 }
 
-#endif // FEYNCALC_ANGULAR_MOMENTUM_HPP
+#endif // Feynumeric_ANGULAR_MOMENTUM_HPP

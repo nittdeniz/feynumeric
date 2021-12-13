@@ -1,6 +1,6 @@
-#include "feyncalc/kinematics.hpp"
+#include "Feynumeric/kinematics.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     void Kinematics::f() const
     {

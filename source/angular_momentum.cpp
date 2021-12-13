@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "feyncalc/angular_momentum.hpp"
+#include "Feynumeric/angular_momentum.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     Angular_Momentum::Angular_Momentum(double j, double m)
     : _j(j)

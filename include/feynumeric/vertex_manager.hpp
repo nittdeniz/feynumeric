@@ -1,5 +1,5 @@
-#ifndef FEYNCALC_VERTEX_MANAGER_HPP
-#define FEYNCALC_VERTEX_MANAGER_HPP
+#ifndef Feynumeric_VERTEX_MANAGER_HPP
+#define Feynumeric_VERTEX_MANAGER_HPP
 
 #include <functional>
 #include <map>
@@ -13,7 +13,7 @@
 #include "matrix.hpp"
 #include "particle.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     class Vertex_Manager
     {
@@ -58,4 +58,4 @@ namespace Feyncalc
 
     using Vertex_Manager_Ptr = std::shared_ptr<Vertex_Manager>;
 }
-#endif // FEYNCALC_VERTEX_MANAGER_HPP
+#endif // Feynumeric_VERTEX_MANAGER_HPP

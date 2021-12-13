@@ -1,8 +1,9 @@
 #include <iostream>
 #include "messages.hpp"
 #include "edge.hpp"
+#include "particle.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     Edge::Edge(Vertex_Id a, Vertex_Id b, Edge::Type type, Particle_Ptr particle)
     : _a(a)
@@ -82,6 +83,11 @@ namespace Feyncalc
     std::ostream& operator<<(std::ostream &out, const Edge &edge)
     {
         return out << "(" << static_cast<std::size_t>(edge._a) << ", " << static_cast<std::size_t>(edge._b) << ")";
+    }
+
+    std::vector<std::size_t> Edge::get_lorentz_indices() const
+    {
+        return _assigned_indices;
     }
 
     std::function<Matrix()> Edge::feynman_rule() const

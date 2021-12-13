@@ -1,6 +1,6 @@
-#include "feyncalc/process.hpp"
+#include "feynumeric/process.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     void Process::add_diagrams(vector<Diagram> diagrams)
     {

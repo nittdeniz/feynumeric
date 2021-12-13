@@ -1,9 +1,9 @@
-#ifndef FEYNCALC_TOPOLOGIES_HPP
-#define FEYNCALC_TOPOLOGIES_HPP
+#ifndef Feynumeric_TOPOLOGIES_HPP
+#define Feynumeric_TOPOLOGIES_HPP
 
 #include "graph.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     namespace Topology
     {
@@ -12,4 +12,4 @@ namespace Feyncalc
     }
 }
 
-#endif // FEYNCALC_TOPOLOGIES_HPP
+#endif // Feynumeric_TOPOLOGIES_HPP

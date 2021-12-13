@@ -1,17 +1,17 @@
 #include <iostream>
 
-#include <feyncalc/diagram.hpp>
-#include <feyncalc/graph.hpp>
-#include <feyncalc/process.hpp>
-#include <feyncalc/topologies.hpp>
-#include <feyncalc/units.hpp>
+#include <Feynumeric/diagram.hpp>
+#include <Feynumeric/graph.hpp>
+#include <Feynumeric/process.hpp>
+#include <Feynumeric/topologies.hpp>
+#include <Feynumeric/units.hpp>
 
 #include "particles.hpp"
 
 int main()
 {
-    using namespace Feyncalc;
-    using namespace Feyncalc::Units;
+    using namespace Feynumeric;
+    using namespace Feynumeric::Units;
 
     using std::cout;
 

@@ -1,7 +1,7 @@
-#ifndef FEYNCALC_RANGE_HPP
-#define FEYNCALC_RANGE_HPP
+#ifndef Feynumeric_RANGE_HPP
+#define Feynumeric_RANGE_HPP
 
-namespace Feyncalc
+namespace Feynumeric
 {
     class Range
     {
@@ -15,4 +15,4 @@ namespace Feyncalc
     };
 }
 
-#endif // FEYNCALC_RANGE_HPP
+#endif // Feynumeric_RANGE_HPP

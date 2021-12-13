@@ -1,9 +1,9 @@
-#ifndef FEYNCALC_MESSAGES_HPP
-#define FEYNCALC_MESSAGES_HPP
+#ifndef Feynumeric_MESSAGES_HPP
+#define Feynumeric_MESSAGES_HPP
 
 #include <string>
 
-namespace Feyncalc
+namespace Feynumeric
 {
     [[noreturn]] void critical_error(std::string const& message);
     void error(std::string const& message);
@@ -13,4 +13,4 @@ namespace Feyncalc
 
 
 
-#endif // FEYNCALC_MESSAGES_HPP
+#endif // Feynumeric_MESSAGES_HPP

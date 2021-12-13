@@ -1,16 +1,16 @@
-#ifndef FEYNCALC_MATRIX_HPP
-#define FEYNCALC_MATRIX_HPP
+#ifndef Feynumeric_MATRIX_HPP
+#define Feynumeric_MATRIX_HPP
 
 #include "complex.hpp"
 #include <vector>
 
-namespace Feyncalc
+namespace Feynumeric
 {
     using std::size_t;
     using std::vector;
     class Matrix
     {
-    private:
+    protected:
         size_t _rows, _cols;
         vector<Complex> _data;
         size_t index(size_t row, size_t col) const;
@@ -28,6 +28,12 @@ namespace Feyncalc
         Matrix& operator=(Matrix const& other);
         Matrix& operator=(Matrix&& other);
 
+        std::size_t n_rows() const;
+        std::size_t n_cols() const;
+        std::size_t n_total() const;
+
+        Complex const& at(size_t i) const;
+        Complex& operator[](size_t i);
         Complex& operator()(size_t i, size_t j);
         Complex at(size_t i, size_t j) const;
 
@@ -110,4 +116,4 @@ namespace Feyncalc
 
     std::ostream& operator<<(std::ostream& out, Matrix const& matrix);
 }
-#endif // FEYNCALC_MATRIX_HPP
+#endif // Feynumeric_MATRIX_HPP

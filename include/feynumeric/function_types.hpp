@@ -1,11 +1,11 @@
-#ifndef FEYNCALC_FUNCTION_TYPES_HPP
+#ifndef Feynumeric_FUNCTION_TYPES_HPP
 #define FEYCNALC_FUNCTION_TYPES_HPP
 
 #include <functional>
 #include <memory>
 #include <variant>
 
-namespace Feyncalc
+namespace Feynumeric
 {
     class Diagram;
     using Edge_Function         = std::function<Matrix()>;
@@ -13,4 +13,4 @@ namespace Feyncalc
     using Amplitude_Function    = std::variant<Edge_Function, Vertex_Function>;
 }
 
-#endif // FEYNCALC_FUNCTION_TYPES_HPP
+#endif // Feynumeric_FUNCTION_TYPES_HPP

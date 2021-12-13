@@ -1,15 +1,20 @@
-#ifndef FEYNCALC_EDGE_HPP
-#define FEYNCALC_EDGE_HPP
+#ifndef FEYNUMERIC_EDGE_HPP
+#define FEYNUMERIC_EDGE_HPP
 
+#include <functional>
+#include <memory>
 #include <optional>
 #include <vector>
 
-#include "particle.hpp"
+#include "matrix.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     class Edge;
     using Edge_Ptr = std::shared_ptr<Edge>;
+
+    class Particle;
+    using Particle_Ptr = std::shared_ptr<Particle>;
 
     struct Edge_Id
     {
@@ -83,6 +88,8 @@ namespace Feyncalc
 
         void add_neighbour(Edge_Id neighbour);
 
+        std::vector<std::size_t> get_lorentz_indices() const;
+
         void assign_lorentz_index(std::size_t id);
         void clear_lorentz_indices();
 
@@ -121,4 +128,4 @@ namespace Feyncalc
 
 }
 
-#endif // FEYNCALC_EDGE_HPP
+#endif // FEYNUMERIC_EDGE_HPP

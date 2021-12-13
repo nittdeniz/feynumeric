@@ -1,6 +1,6 @@
-#include "feyncalc/range.hpp"
+#include "Feynumeric/range.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
 
 }

@@ -1,6 +1,6 @@
 #include "utility.hpp"
 
-namespace Feyncalc
+namespace Feynumeric
 {
     bool almost_identical(double a, double b, double epsilon)
     {

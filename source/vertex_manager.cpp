@@ -2,7 +2,7 @@
 #include "messages.hpp"
 #include <iostream>
 
-namespace Feyncalc
+namespace Feynumeric
 {
     void Vertex_Manager::add_vertex( Vertex_Function const& function, std::vector<std::pair<Particle_Ptr, Vertex_Manager::Direction>> const& particles)
     {
