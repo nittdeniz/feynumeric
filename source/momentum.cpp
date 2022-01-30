@@ -132,8 +132,13 @@ namespace Feynumeric
         _data[3] = z;
     }
 
-    double Four_Momentum::dot() const
+    double Four_Momentum::squared() const
     {
-        return (_data[0] * _data[0] - _data[1] * _data[1] - _data[2] * _data[2] - _data[3] * _data[3]).real();
+        return (
+                  _data[0] * std::conj(_data[0])
+                - _data[1] * std::conj(_data[1])
+                - _data[2] * std::conj(_data[2])
+                - _data[3] * std::conj(_data[3])
+        ).real();
     }
 }

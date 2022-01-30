@@ -49,9 +49,9 @@ namespace Feynumeric
         bool is_fermion() const;
         bool is_anti_fermion() const;
 
-        std::function<Matrix(Edge_Ptr const& e)> feynman_outgoing;
-        std::function<Matrix(Edge_Ptr const& e)> feynman_incoming;
-        std::function<Matrix(Edge_Ptr const& e)> feynman_virtual;
+        std::function<Matrix(Edge const* e)> feynman_outgoing;
+        std::function<Matrix(Edge const* e)> feynman_incoming;
+        std::function<Matrix(Edge const* e)> feynman_virtual;
 
         unsigned int n_lorentz_indices() const;
 

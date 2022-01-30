@@ -386,7 +386,7 @@ namespace Feynumeric
             vertex_edges.push_back(_graph._edges[edge_id]);
         }
 
-        std::function<Matrix()> vertex_func = std::bind(_vertex_manager->get_vertex_function(vertex_id, vertex_edges),
+        auto vertex_func = std::bind(_vertex_manager->get_vertex_function(vertex_id, vertex_edges),
                                      this, vertex_edges);
 
         _amplitude.push_back(vertex_func);

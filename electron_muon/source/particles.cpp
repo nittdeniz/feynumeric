@@ -1,9 +1,5 @@
-#include <Feynumeric/dirac.hpp>
-#include <Feynumeric/particle.hpp>
-#include <Feynumeric/units.hpp>
-#include <Feynumeric/edge.hpp>
-
-
+#include <feynumeric/dirac.hpp>
+#include <feynumeric/units.hpp>
 #include "particles.hpp"
 
 using namespace Feynumeric::Units;
@@ -33,24 +29,28 @@ Particle_Ptr N1440n       = std::make_shared<Particle>("N1440_0", Particle::Type
 void init_particles()
 {
     using namespace Feynumeric;
-    Photon->feynman_virtual = [](Edge const& e){
-        return Propagator_1(Photon, p);
+    Photon->feynman_virtual = [](Edge const* e){
+        if( e == nullptr )
+        {
+            critical_error("Photon virtual edge is nullptr.");
+        }
+        return Projector(e->particle(), e->four_momentum(), e->get_lorentz_indices());
     };
-    Photon->feynman_incoming = [](Edge const& e){return Matrix(1,1, 13);};
-    Photon->feynman_outgoing = [](Edge const& e){return Matrix(any_cast<double>(Proton->user_data("coupling.ppgamma")));};
+    Photon->feynman_incoming = [](Edge const* e){return Matrix(1,1, 13);};
+    Photon->feynman_outgoing = [](Edge const* e){return Matrix(any_cast<double>(Proton->user_data("coupling.ppgamma")));};
     Photon->user_data("coupling.ppgammma", 0.3);
 
-    Electron->feynman_virtual = [](Edge const& e){return Propagator_12p(Electron, p);};
-    Electron->feynman_incoming = [](Edge const& e){return u12(p, s);};
-    Electron->feynman_outgoing = [](Edge const& e){return ubar12(p, s);};
+    Electron->feynman_virtual = [](Edge const* e){return Propagator(e->particle(), e->four_momentum(), e->get_lorentz_indices());};
+    Electron->feynman_incoming = [](Edge const* e){return u(e->four_momentum(), e->spin(), e->get_lorentz_indices());};
+    Electron->feynman_outgoing = [](Edge const* e){return ubar(e->four_momentum(), e->spin(), e->get_lorentz_indices());};
 
 //    Positron->feynman_virtual = [](){return Matrix(1,1,1);};
 //    Positron->feynman_incoming = [](){return Matrix(1,4,1);};
 //    Positron->feynman_outgoing = [](){return Matrix(4,1,1);};
 
-    Muon_Minus->feynman_virtual = [](Edge const& e){return Propagator_12p(e.particle(), e.momentum(), e.get_lorentz_indices()); };
-    Muon_Minus->feynman_incoming = [](Edge const& e){return u12(e.momentum(), e.spin_z(), e.get_lorentz_indices());};
-    Muon_Minus->feynman_outgoing = [](Edge const& e){return ubar12(e.momentum(), e.spin_z(), e.get_lorentz_indices());};
+    Muon_Minus->feynman_virtual = [](Edge const* e){return Propagator(e->particle(), e->four_momentum(), e->get_lorentz_indices());};
+    Muon_Minus->feynman_incoming = [](Edge const* e){return u(e->four_momentum(), e->spin(), e->get_lorentz_indices());};
+    Muon_Minus->feynman_outgoing = [](Edge const* e){return ubar(e->four_momentum(), e->spin(), e->get_lorentz_indices());};
 
 //    Muon_Plus->feynman_virtual = [](){return Matrix(1,1,1);};
 //    Muon_Plus->feynman_incoming = [](){return Matrix(1,4,1);};

@@ -90,19 +90,29 @@ namespace Feynumeric
         return _assigned_indices;
     }
 
+    Four_Momentum Edge::four_momentum() const
+    {
+        return Four_Momentum();
+    }
+
+    Angular_Momentum Edge::spin() const
+    {
+        return Angular_Momentum();
+    }
+
     std::function<Matrix()> Edge::feynman_rule() const
     {
         if( is_incoming() )
         {
-            return _particle->feynman_incoming;
+            return std::bind(_particle->feynman_incoming, this);
         }
         else if( is_outgoing() )
         {
-            return _particle->feynman_outgoing;
+            return std::bind(_particle->feynman_outgoing, this);
         }
         else if( is_virtual() )
         {
-            return _particle->feynman_virtual;
+            return std::bind(_particle->feynman_virtual, this);
         }
         else
         {

@@ -6,7 +6,9 @@
 #include <optional>
 #include <vector>
 
+#include "angular_momentum.hpp"
 #include "matrix.hpp"
+#include "momentum.hpp"
 
 namespace Feynumeric
 {
@@ -105,6 +107,8 @@ namespace Feynumeric
 
         void momentum(Matrix const& momentum);
         Matrix momentum() const;
+        Four_Momentum four_momentum() const;
+        Angular_Momentum spin() const;
         std::string to_string() const;
 
         std::function<Matrix()> feynman_rule() const;

@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Feynumeric/matrix.hpp"
+#include "feynumeric/matrix.hpp"
 
 namespace Feynumeric
 {
@@ -99,12 +99,37 @@ namespace Feynumeric
         return *this;
     }
 
+    Matrix &Matrix::operator*=(const Complex &rhs)
+    {
+        for( auto& elem : _data )
+        {
+            elem *= rhs;
+        }
+        return *this;
+    }
+
+    Matrix &Matrix::operator/=(const Complex &rhs)
+    {
+        for( auto& elem : _data )
+        {
+            elem /= rhs;
+        }
+        return *this;
+    }
 
     bool same_dimension(const Matrix &lhs, const Matrix &rhs)
     {
         return lhs._cols == rhs._cols && lhs._rows == rhs._rows;
     }
 
+    Matrix &Matrix::apply(const std::function<Complex(Complex const&)> &f)
+    {
+        for( auto& elem : _data )
+        {
+            elem = f(elem);
+        }
+        return *this;
+    }
 
     Complex &Matrix::operator()(size_t i, size_t j)
     {
@@ -126,7 +151,18 @@ namespace Feynumeric
         throw dimension_exception();
     }
 
-
+    Matrix Matrix::T() const
+    {
+        Matrix copy(_cols, _rows);
+        for( std::size_t i = 0; i < _rows; ++i )
+        {
+            for( std::size_t j = 0; i < _cols; ++j )
+            {
+                copy(j, i) = at(index(i, j));
+            }
+        }
+        return copy;
+    }
 
     Complex &Matrix::operator[](size_t i)
     {
@@ -170,7 +206,6 @@ namespace Feynumeric
 
     Matrix operator*(const Matrix &lhs, const Matrix &rhs)
     {
-        std::cerr << "Matrix*: " << lhs << rhs << "\n";
         if( lhs._cols == 1 && lhs._rows == 1 )
         {
             return lhs.at(0,0) * rhs;

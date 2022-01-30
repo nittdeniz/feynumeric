@@ -1,4 +1,4 @@
-#include "Feynumeric/particle.hpp"
+#include "feynumeric/particle.hpp"
 
 namespace Feynumeric
 {

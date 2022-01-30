@@ -2,6 +2,7 @@
 #define Feynumeric_MATRIX_HPP
 
 #include "complex.hpp"
+#include <functional>
 #include <vector>
 
 namespace Feynumeric
@@ -40,6 +41,12 @@ namespace Feynumeric
         Matrix& operator+=(Matrix const& rhs);
         Matrix& operator-=(Matrix const& rhs);
         Matrix& operator*=(Matrix const& rhs);
+        Matrix& operator*=(Complex const& rhs);
+        Matrix& operator/=(Complex const& rhs);
+
+        Matrix& apply(std::function<Complex(Complex const&)> const& f);
+
+        Matrix T() const;
 
         Complex try_as_complex() const;
 

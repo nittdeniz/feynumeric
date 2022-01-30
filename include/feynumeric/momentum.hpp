@@ -43,6 +43,8 @@ namespace Feynumeric
         void y(double y);
         void z(double z);
 
+        double squared() const;
+
         double dot() const;
     };
 
