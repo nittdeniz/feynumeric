@@ -156,7 +156,7 @@ namespace Feynumeric
         Matrix copy(_cols, _rows);
         for( std::size_t i = 0; i < _rows; ++i )
         {
-            for( std::size_t j = 0; i < _cols; ++j )
+            for( std::size_t j = 0; j < _cols; ++j )
             {
                 copy(j, i) = at(index(i, j));
             }
