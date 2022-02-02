@@ -5,12 +5,14 @@
 
 namespace Feynumeric
 {
+    class Edge;
     class Vertex
     {
     private:
-        std::vector<std::size_t> _edge_ids;
+        std::size_t _id;
+        std::vector<Edge*> _edges;
     public:
-        Vertex(std::vector<std::size_t> const& edge_ids);
+        Vertex(std::size_t id, std::vector<Edge*> const& edges);
     };
 }
 #endif // Feynumeric_VERTEX_HPP

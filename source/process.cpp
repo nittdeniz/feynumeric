@@ -8,7 +8,7 @@ namespace Feynumeric
         for( auto& diagram : diagrams )
         {
             diagram.generate_amplitude();
-            _diagrams.push_back(diagram);
+            _diagrams.emplace_back(diagram);
         }
 
     }

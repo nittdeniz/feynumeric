@@ -75,25 +75,25 @@ namespace Feynumeric
         abort();
     }
 
-    Vertex_Function Vertex_Manager::get_vertex_function(Vertex_Id vertex_id, const vector<Edge> &edges) const
+    Vertex_Function Vertex_Manager::get_vertex_function(std::size_t vertex_id, std::vector<Edge*> const& edges) const
     {
         std::vector<String_Direction_Pair> pairs;
-        for( auto const& edge : edges )
+        for( auto& edge_ptr : edges )
         {
             Direction d;
-            if( edge.a() == vertex_id )
+            if( edge_ptr->a() == vertex_id )
             {
                 d = Direction::OUT;
             }
-            else if( edge.b() == vertex_id )
+            else if( edge_ptr->b() == vertex_id )
             {
                 d = Direction::IN;
             }
             else
             {
-                critical_error("Edge " + edge.to_string() + " is not associated with vertex: " + std::to_string(static_cast<std::size_t>(vertex_id)) + ".");
+                critical_error("Edge " + edge_ptr->to_string() + " is not associated with vertex: " + std::to_string(static_cast<std::size_t>(vertex_id)) + ".");
             }
-            pairs.emplace_back(edge.particle()->name(), d);
+            pairs.emplace_back(edge_ptr->particle()->name(), d);
         }
         return get_vertex(pairs);
     }

@@ -3,78 +3,100 @@
 
 namespace Feynumeric
 {
-    Graph::Graph(vector<Edge>&& edges)
+	Graph::Graph(const Graph& other)
+	: _edges(other._edges)
+	{
+		initialize_edges();
+	}
+
+	Graph::Graph(std::list<Edge>&& edges)
     : _edges(std::move(edges))
     {
-        for( auto edge_it = _edges.begin(); edge_it != _edges.end(); ++edge_it ){
-            if( edge_it->is_incoming()){
-                _incoming_edge_ids.push_back(Edge_Id(edge_it - _edges.begin()));
-            }
-            else if( edge_it->is_outgoing()){
-                _outgoing_edge_ids.push_back(Edge_Id(edge_it - _edges.begin()));
-            }
-            else if( edge_it->is_virtual()){
-                _virtual_edge_ids.push_back(Edge_Id(edge_it - _edges.begin()));
-            }
-            else{
-                std::cerr << "Undefined edge (needs to be incoming, outgoing or virtual): " << *edge_it << "\n";
-                std::abort();
-            }
-            for( auto edge_jt = edge_it+1; edge_jt != _edges.end(); edge_jt ++ )
-            {
-                if( shares_vertex(*edge_it, *edge_jt) )
-                {
-                    edge_it->add_neighbour(Edge_Id(edge_jt - _edges.begin()));
-                    edge_jt->add_neighbour(Edge_Id(edge_it - _edges.begin()));
-                }
-            }
-        }
+		initialize_edges();
     }
 
-    std::vector<Edge_Id> Graph::all_edge_ids() const
+	Graph& Graph::operator=(const Graph& other){
+		_edges = other._edges;
+		initialize_edges();
+		return *this;
+	}
+
+	void Graph::initialize_edges()
     {
-        std::vector<Edge_Id> edge_ids;
-        edge_ids.reserve(_edges.size());
-        for( std::size_t i = 0; i < _edges.size(); ++i )
-        {
-            edge_ids.emplace_back(i);
-        }
-        return edge_ids;
+		for( auto& edge : _edges )
+		{
+			edge.clear_neighbours();
+		}
+		for( auto edge_it = _edges.begin(); edge_it != _edges.end(); ++edge_it )
+	    {
+			auto* edge_ptr = &(*edge_it);
+		    if( edge_ptr->is_incoming() )
+		    {
+			    _incoming_edges.push_back(edge_ptr);
+		    }
+		    else if( edge_ptr->is_outgoing() )
+		    {
+			    _outgoing_edges.push_back(edge_ptr);
+		    }
+		    else if( edge_ptr->is_virtual() )
+		    {
+			    _virtual_edges.push_back(edge_ptr);
+		    }
+		    else
+		    {
+			    critical_error("Undefined edge (needs to be incoming, outgoing, or virtual): " + edge_ptr->to_string());
+		    }
+		    auto temp = edge_it;
+		    std::advance(temp, 1);
+		    for( auto edge_jt = temp; edge_jt != _edges.end(); ++edge_jt )
+		    {
+		    	auto* edge2_ptr = &(*edge_jt);
+			    if( shares_vertex(edge_ptr, edge2_ptr) )
+			    {
+				    edge_ptr->add_neighbour(edge2_ptr);
+				    edge2_ptr->add_neighbour(edge_ptr);
+			    }
+		    }
+	    }
     }
 
-    std::map<Vertex_Id, std::vector<Edge_Id>> Graph::all_vertex_ids() const
+    std::vector<Edge*> Graph::all_edges()
     {
-        std::map<Vertex_Id, std::vector<Edge_Id>> map;
-        for( std::size_t i = 0; i < _edges.size(); ++i )
+        std::vector<Edge*> edges;
+        edges.reserve(_edges.size());
+        for( auto& edge : _edges )
         {
-            auto const& edge = _edges[i];
-            map[Vertex_Id(edge._a)].emplace_back(i);
-            map[Vertex_Id(edge._b)].emplace_back(i);
+        	edges.emplace_back(&edge);
+        }
+        return edges;
+    }
+
+    std::map<std::size_t, std::vector<Edge*>> Graph::all_vertex_ids()
+    {
+        std::map<std::size_t, std::vector<Edge*>> map;
+        for( auto& edge : _edges )
+        {
+        	map[edge._a].emplace_back(&edge);
+        	map[edge._b].emplace_back(&edge);
         }
 
-        for(auto it = map.begin(); it != map.end(); ) {
-            if( it->second.size() <= 1 )
-            {
-                it = map.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
-        }
+        std::erase_if(map, [](auto const& item){
+        	auto const& [key, value] = item;
+        	return value.size() <= 1;
+        });
+
         return map;
     }
 
-    std::vector<Edge_Id> Graph::edge_ids_to(Vertex_Id vertex) const
+    std::vector<Edge*> Graph::edges_to(std::size_t vertex_id)
     {
-        std::vector<Edge_Id> edges;
-        for( std::size_t i = 0; i < _edges.size();  ++i )
+        std::vector<Edge*> edges;
+        for( auto& edge : _edges )
         {
-            auto const& edge = _edges[i];
-            if( edge._a == vertex || edge._b == vertex )
-            {
-                edges.emplace_back(i);
-            }
+        	if( edge._a == vertex_id || edge._b == vertex_id )
+	        {
+        		edges.push_back(&edge);
+	        }
         }
         return edges;
     }

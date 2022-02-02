@@ -1,6 +1,7 @@
 #ifndef Feynumeric_DIAGRAM
 #define Feynumeric_DIAGRAM
 
+#include <memory>
 #include <variant>
 #include <vector>
 
@@ -18,15 +19,16 @@ namespace Feynumeric
     class Diagram : public std::enable_shared_from_this<Diagram>
     {
     private:
-        std::shared_ptr<Vertex_Manager> _vertex_manager;
-        Graph _graph;
+        Vertex_Manager* _vertex_manager;
+        std::shared_ptr<Graph> _graph;
         std::vector<Particle_Ptr> _incoming_particles;
         std::vector<Particle_Ptr> _virtual_particles;
         std::vector<Particle_Ptr> _outgoing_particles;
+
         std::vector<std::function<Matrix()>> _amplitude;
 
-        std::vector<Lorentz_Index> _lorentz_indices;
-        std::vector<Angular_Momentum> _angular_momenta;
+        std::list<Lorentz_Index> _lorentz_indices;
+        std::list<Angular_Momentum> _angular_momenta;
 
         #ifdef CATCH2_TESTING_ENABLED
         bool assert_diagram_validity() const;
@@ -34,14 +36,14 @@ namespace Feynumeric
         void assert_diagram_validity() const;
         #endif
 
-        Edge_Id _starting_edge_id;
-        void trace_fermion_line(Edge_Id current_edge_id);
+        Edge* _starting_edge_ptr;
+        void trace_fermion_line(Edge* current_edge);
 
-        void add_vertex(Edge_Id a, Edge_Id b);
-        void add_vertex(Vertex_Id vertex_id);
+        void add_vertex(Edge* a, Edge* b);
+        void add_vertex(std::size_t vertex_id);
 
-        std::vector<Edge_Id> _remaining_edge_ids;
-        std::map<Vertex_Id, std::vector<Edge_Id>> _remaining_vertices;
+        std::vector<Edge*> _remaining_edges;
+        std::map<std::size_t, std::vector<Edge*>> _remaining_vertices;
 
         void register_lorentz_indices();
         void register_angular_momenta();
@@ -51,7 +53,7 @@ namespace Feynumeric
 
 
     public:
-        Diagram(std::shared_ptr<Vertex_Manager> const& vertex_manager, Graph const& graph, std::vector<Particle_Ptr>&& incoming_list, std::vector<Particle_Ptr>&& virtual_list, std::vector<Particle_Ptr>&& outgoing_list);
+        Diagram(Vertex_Manager* vertex_manager, Graph const& graph, std::vector<Particle_Ptr>&& incoming_list, std::vector<Particle_Ptr>&& virtual_list, std::vector<Particle_Ptr>&& outgoing_list);
         Diagram(Diagram const& diagram);
         Diagram& operator=(Diagram const& diagram);
 

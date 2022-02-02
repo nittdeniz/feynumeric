@@ -9,7 +9,7 @@ namespace Feynumeric
 {
     class Diagram;
     using Edge_Function         = std::function<Matrix()>;
-    using Vertex_Function       = std::function<Matrix(Diagram* diagram, std::vector<Edge> const& edges)>;
+    using Vertex_Function       = std::function<Matrix(Diagram* diagram, std::vector<Edge*> const& edges)>;
     using Amplitude_Function    = std::variant<Edge_Function, Vertex_Function>;
 }
 

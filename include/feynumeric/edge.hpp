@@ -12,44 +12,13 @@
 
 namespace Feynumeric
 {
+	class Lorentz_Index;
+
     class Edge;
     using Edge_Ptr = std::shared_ptr<Edge>;
 
     class Particle;
     using Particle_Ptr = std::shared_ptr<Particle>;
-
-    struct Edge_Id
-    {
-        std::size_t id;
-        Edge_Id() : id(666666){}
-        explicit Edge_Id(std::size_t i) : id(i){}
-        Edge_Id(Edge_Id const& other) : id(other.id){}
-        Edge_Id& operator=(Edge_Id const& other){ id = other.id; return *this;}
-        operator std::size_t() const
-        {
-            return id;
-        }
-        inline friend bool operator==(Edge_Id a, Edge_Id b)
-        {
-            return a.id == b.id;
-        }
-    };
-    struct Vertex_Id
-    {
-        std::size_t id;
-        Vertex_Id() : id(666666){}
-        explicit Vertex_Id(std::size_t i) : id(i){}
-        Vertex_Id(Vertex_Id const& other) : id(other.id){}
-        Vertex_Id& operator=(Vertex_Id const& other){ id = other.id; return *this;}
-        operator std::size_t() const
-        {
-            return id;
-        }
-        inline friend bool operator==(Vertex_Id a, Vertex_Id b)
-        {
-            return a.id == b.id;
-        }
-    };
 
     class Edge
     {
@@ -62,25 +31,24 @@ namespace Feynumeric
             VIRTUAL
         };
     private:
-        Vertex_Id _a, _b;
+        std::size_t _a, _b;
         Type _type;
         Particle_Ptr _particle;
         Matrix _momentum;
-        vector<Edge_Id> _neighbour_ids;
+        std::vector<Edge*> _neighbours;
 
-        vector<std::size_t> _assigned_indices;
-        std::size_t _angular_momentum_index;
+        std::vector<Lorentz_Index*> _assigned_indices;
+        Angular_Momentum* _angular_momentum;
 
 
 
     public:
-        Edge(Vertex_Id a, Vertex_Id b = Vertex_Id{0}, Type type=Type::UNDEFINED, Particle_Ptr particle = nullptr);
-        Edge(std::size_t a, std::size_t b, Type type=Type::UNDEFINED);
+        Edge(std::size_t a, std::size_t b, Type type=Type::UNDEFINED, Particle_Ptr particle = nullptr);
         Edge(Edge const& edge);
         Edge& operator=(Edge const& edge);
 
-        Vertex_Id a() const;
-        Vertex_Id b() const;
+        std::size_t a() const;
+        std::size_t b() const;
 
 //        void a(Vertex_Id new_a);
 //        void b(Vertex_Id new_b);
@@ -88,17 +56,18 @@ namespace Feynumeric
         void particle(Particle_Ptr new_particle);
         Particle_Ptr particle() const;
 
-        void add_neighbour(Edge_Id neighbour);
+        void add_neighbour(Edge* neighbour);
+        void clear_neighbours();
 
-        std::vector<std::size_t> get_lorentz_indices() const;
+        std::vector<Lorentz_Index*> get_lorentz_indices() const;
 
-        void assign_lorentz_index(std::size_t id);
+        void assign_lorentz_index(Lorentz_Index*);
         void clear_lorentz_indices();
 
-        void assign_angular_momentum(std::size_t id);
+        void assign_angular_momentum(Angular_Momentum* j);
 
 
-        vector<Edge_Id> neighbour_ids() const;
+        vector<Edge*> neighbours();
 
         bool is_incoming() const;
         bool is_outgoing() const;
@@ -111,10 +80,10 @@ namespace Feynumeric
         Angular_Momentum spin() const;
         std::string to_string() const;
 
-        std::function<Matrix()> feynman_rule() const;
+        std::function<Matrix()> feynman_rule();
 
-        friend bool shares_vertex(Edge const& lhs, Edge const& rhs);
-        friend std::optional<Vertex_Id> shared_vertex(Edge const& lhs, Edge const& rhs);
+        friend bool shares_vertex(Edge* lhs, Edge* rhs);
+        friend std::optional<std::size_t> shared_vertex(Edge* lhs, Edge* rhs);
 
         friend std::ostream& operator<<(std::ostream& out, Edge const& edge);
         friend bool operator==(Edge const& lhs, Edge const& rhs);
@@ -123,8 +92,8 @@ namespace Feynumeric
         friend class Graph;
     };
 
-    bool shares_vertex(Edge const& lhs, Edge const& rhs);
-    std::optional<Vertex_Id> shared_vertex(Edge const& lhs, Edge const& rhs);
+    bool shares_vertex(Edge* lhs, Edge* rhs);
+    std::optional<std::size_t> shared_vertex(Edge* lhs, Edge* rhs);
 
     std::ostream& operator<<(std::ostream& out, Edge const& edge);
     bool operator==(Edge const& lhs, Edge const& rhs);

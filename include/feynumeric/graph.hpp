@@ -3,6 +3,7 @@
 
 #include <array>
 #include <iostream>
+#include <list>
 #include <map>
 #include <memory>
 #include <vector>
@@ -18,17 +19,21 @@ namespace Feynumeric
     class Graph
     {
     private:
-        std::vector<Edge> _edges;
-        std::vector<Edge_Id> _incoming_edge_ids;
-        std::vector<Edge_Id> _outgoing_edge_ids;
-        std::vector<Edge_Id> _virtual_edge_ids;
+        std::list<Edge> _edges;
+        std::vector<Edge*> _incoming_edges;
+        std::vector<Edge*> _outgoing_edges;
+        std::vector<Edge*> _virtual_edges;
+
+        void initialize_edges();
 
     public:
-        Graph(std::vector<Edge>&& edges);
+    	Graph(Graph const& other);
+        Graph(std::list<Edge>&& edges);
+        Graph& operator=(Graph const& other);
 
-        std::vector<Edge_Id> all_edge_ids() const;
-        std::map<Vertex_Id, std::vector<Edge_Id>> all_vertex_ids() const;
-        std::vector<Edge_Id> edge_ids_to(Vertex_Id vertex) const;
+        std::vector<Edge*> all_edges();
+        std::map<std::size_t, std::vector<Edge*>> all_vertex_ids();
+        std::vector<Edge*> edges_to(std::size_t vertex_id);
         friend class Diagram;
     };
 

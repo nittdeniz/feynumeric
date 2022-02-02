@@ -3,13 +3,13 @@
 
 #include <Feynumeric/edge.hpp>
 
-Feynumeric::Vertex_Manager_Ptr VMP = std::make_shared<Feynumeric::Vertex_Manager>();
+Feynumeric::Vertex_Manager VM = Feynumeric::Vertex_Manager();
 
 void init_vertices()
 {
     using Direction = Feynumeric::Vertex_Manager::Direction;
-    VMP->add_vertex(
-            [](Feynumeric::Diagram* diagram, std::vector<Feynumeric::Edge> const& edges)
+    VM.add_vertex(
+            [](Feynumeric::Diagram* diagram, std::vector<Feynumeric::Edge*> const& edges)
             {
                 auto const& electron_in = edges[0];
                 auto const& electron_out = edges[1];
@@ -22,8 +22,8 @@ void init_vertices()
                 ,{Photon, Direction::BOTH}
             }
             );
-    VMP->add_vertex(
-            [](Feynumeric::Diagram* diagram, std::vector<Feynumeric::Edge> const& edges)
+    VM.add_vertex(
+            [](Feynumeric::Diagram* diagram, std::vector<Feynumeric::Edge*> const& edges)
             {
                 auto const& electron_in = edges[0];
                 auto const& electron_out = edges[1];

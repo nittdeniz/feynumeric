@@ -21,7 +21,7 @@ int main()
 
     Process electron_muon_scattering;
 
-    Diagram electron_muon_s(VMP,
+    Diagram electron_muon_s(&VM,
                             Topology::X_Man,
                             {Electron, Muon_Minus},
                             {Photon},

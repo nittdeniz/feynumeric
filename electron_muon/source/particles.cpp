@@ -29,7 +29,7 @@ Particle_Ptr N1440n       = std::make_shared<Particle>("N1440_0", Particle::Type
 void init_particles()
 {
     using namespace Feynumeric;
-    Photon->feynman_virtual = [](Edge const* e){
+    Photon->feynman_virtual = [](Edge* e){
         if( e == nullptr )
         {
             critical_error("Photon virtual edge is nullptr.");

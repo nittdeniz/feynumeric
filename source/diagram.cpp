@@ -9,30 +9,21 @@
 
 namespace Feynumeric
 {
-    Diagram::Diagram(Vertex_Manager_Ptr const& vertex_manager, Graph const& graph, vector<Particle_Ptr> &&incoming_list, vector<Particle_Ptr> &&virtual_list,
-                               vector<Particle_Ptr> &&outgoing_list)
-                               : _vertex_manager(vertex_manager)
-                               , _graph(graph)
-                               , _incoming_particles(std::move(incoming_list))
-                               , _virtual_particles(std::move(virtual_list))
-                               , _outgoing_particles(std::move(outgoing_list))
+    Diagram::Diagram(Vertex_Manager* vertex_manager,  Graph const& graph,  std::vector<Particle_Ptr> &&incoming_list,  std::vector<Particle_Ptr> &&virtual_list,  std::vector<Particle_Ptr> &&outgoing_list)
+        : _vertex_manager(vertex_manager)
+        , _graph(std::make_shared<Graph>(graph))
+        , _incoming_particles(std::move(incoming_list))
+        , _virtual_particles(std::move(virtual_list))
+        , _outgoing_particles(std::move(outgoing_list))
     {
-        using std::abort;
-        using std::cerr;
-        if( _incoming_particles.size() != _graph._incoming_edge_ids.size() )
-        {
-            cerr << "Number of incoming particles [" << _incoming_particles.size() << "] does not match number of incoming edges [" << _graph._incoming_edge_ids.size() << "] of graph.\n";
-            abort();
+        if( _incoming_particles.size() != _graph->_incoming_edges.size() ){
+            critical_error("Number of incoming particles [" + std::to_string(_incoming_particles.size()) + "] does not match number of incoming edges [" + std::to_string(_graph->_incoming_edges.size()) + "] of graph.");
         }
-        if( _outgoing_particles.size() != _graph._outgoing_edge_ids.size() )
-        {
-            cerr << "Number of outgoing particles [" << _outgoing_particles.size() << "] does not match number of outgoing edges [" << _graph._outgoing_edge_ids.size() << "] of graph.\n";
-            abort();
+        if( _outgoing_particles.size() != _graph->_outgoing_edges.size() ){
+	        critical_error("Number of outgoing particles [" + std::to_string(_outgoing_particles.size()) + "] does not match number of outgoing edges [" + std::to_string(_graph->_outgoing_edges.size()) + "] of graph.");
         }
-        if( _virtual_particles.size() != _graph._virtual_edge_ids.size() )
-        {
-            cerr << "Number of virtual particles [" << _virtual_particles.size() << "] does not match number of virtual edges [" << _graph._virtual_edge_ids.size() << "] of graph.\n";
-            abort();
+        if( _virtual_particles.size() != _graph->_virtual_edges.size() ){
+	        critical_error("Number of virtual particles [" + std::to_string(_virtual_particles.size()) + "] does not match number of virtual edges [" + std::to_string(_graph->_virtual_edges.size()) + "] of graph.");
         }
 
         std::size_t momentum_index = 0;
@@ -41,21 +32,21 @@ namespace Feynumeric
             Matrix momentum = zeroes;
             momentum(0, momentum_index) = 1;
             momentum_index++;
-            _graph._edges[_graph._incoming_edge_ids[i]].particle(_incoming_particles[i]);
-            _graph._edges[_graph._incoming_edge_ids[i]].momentum(momentum);
+            _graph->_incoming_edges[i]->particle(_incoming_particles[i]);
+            _graph->_incoming_edges[i]->momentum(momentum);
         }
         for( size_t i = 0; i < _outgoing_particles.size(); ++i )
         {
             Matrix momentum = zeroes;
             momentum(0, momentum_index) = -1;
             momentum_index++;
-            _graph._edges[_graph._outgoing_edge_ids[i]].particle(_outgoing_particles[i]);
-            _graph._edges[_graph._outgoing_edge_ids[i]].momentum(momentum);
+            _graph->_outgoing_edges[i]->particle(_outgoing_particles[i]);
+            _graph->_outgoing_edges[i]->momentum(momentum);
         }
         for( size_t i = 0; i < _virtual_particles.size(); ++i )
         {
-            _graph._edges[_graph._virtual_edge_ids[i]].particle(_virtual_particles[i]);
-            _graph._edges[_graph._virtual_edge_ids[i]].momentum(zeroes);
+            _graph->_virtual_edges[i]->particle(_virtual_particles[i]);
+            _graph->_virtual_edges[i]->momentum(zeroes);
         }
 
         fix_momenta();
@@ -63,8 +54,7 @@ namespace Feynumeric
 
     void Diagram::register_lorentz_indices()
     {
-        auto n_lorentz_index_pos = _lorentz_indices.size();
-        for( auto& edge : _graph._edges )
+        for( auto& edge : _graph->_edges )
         {
             edge.clear_lorentz_indices();
             int n_indices = edge.particle()->n_lorentz_indices();
@@ -75,8 +65,7 @@ namespace Feynumeric
             while( n_indices --> 0 )
             {
                _lorentz_indices.emplace_back();
-               edge.assign_lorentz_index(n_lorentz_index_pos);
-               ++n_lorentz_index_pos;
+               edge.assign_lorentz_index(&_lorentz_indices.back());
             }
         }
     }
@@ -89,28 +78,27 @@ namespace Feynumeric
     void Diagram::fix_momenta()
     {
         const Matrix zeroes(n_total_external(), 1);
-        const auto all_vertices = _graph.all_vertex_ids();
+        const auto all_vertices = _graph->all_vertex_ids();
 
-        auto is_incoming = [](Edge e, Vertex_Id vid)
+        auto is_incoming = [](Edge* e, std::size_t vertex_id)
         {
-            return e.b() == vid;
+            return e->b() == vertex_id;
         };
-        auto is_outgoing = [](Edge e, Vertex_Id vid)
+        auto is_outgoing = [](Edge* e, std::size_t vertex_id)
         {
-            return e.a() == vid;
+            return e->a() == vertex_id;
         };
-        auto n_unknown_momenta = [&](Vertex_Id vid)
+        auto n_unknown_momenta = [&](std::size_t vertex_id)
         {
             std::size_t known_momenta{0};
-            auto edge_ids = all_vertices.at(vid);
-            for( auto edge_id : edge_ids ){
-                auto const &edge = _graph._edges[edge_id];
-                if( edge.momentum() != zeroes )
+            auto edges = all_vertices.at(vertex_id);
+            for( auto edge : edges ){
+                if( edge->momentum() != zeroes )
                 {
                     known_momenta++;
                 }
             }
-            return edge_ids.size() - known_momenta;
+            return edges.size() - known_momenta;
         };
 
         auto remaining_vertices = all_vertices;
@@ -118,9 +106,8 @@ namespace Feynumeric
         while( !remaining_vertices.empty() )
         {
             bool changed = false;
-            for( auto pair : remaining_vertices )
+            for( auto const& [vertex_id, edge_ptr_list] : remaining_vertices )
             {
-                auto const& vertex_id = pair.first;
                 auto const n = n_unknown_momenta(vertex_id);
                 if( n == 0 )
                 {
@@ -133,33 +120,31 @@ namespace Feynumeric
                     changed = true;
                     Matrix sum_outgoing = zeroes;
                     Matrix sum_incoming = zeroes;
-                    Edge_Id unknown_id;
-                    auto const& edge_id_list = pair.second;
-                    for( auto edge_id : edge_id_list )
+                    Edge* unknown_edge_ptr;
+                    for( auto& edge_ptr : edge_ptr_list )
                     {
-                        auto const& edge = _graph._edges[edge_id];
-                        if( edge.momentum() == zeroes )
+                        if( edge_ptr->momentum() == zeroes )
                         {
-                            unknown_id = edge_id;
+	                        unknown_edge_ptr = edge_ptr;
                         }
-                        else if( is_incoming(edge, vertex_id) )
+                        else if( is_incoming(edge_ptr, vertex_id) )
                         {
-                            sum_incoming += edge.momentum();
+                            sum_incoming += edge_ptr->momentum();
                         }
-                        else if( is_outgoing(edge, vertex_id) )
+                        else if( is_outgoing(edge_ptr, vertex_id) )
                         {
-                            sum_outgoing += edge.momentum();
+                            sum_outgoing += edge_ptr->momentum();
                         }
                     }
                     // p_in1 + p_in2 + ... == p_out1 + p_out2 + ...
-                    auto& unknown_edge = _graph._edges[unknown_id];
-                    if( is_incoming(unknown_edge, vertex_id) )
+
+                    if( is_incoming(unknown_edge_ptr, vertex_id) )
                     {
-                        unknown_edge.momentum(-(sum_outgoing + sum_incoming));
+                        unknown_edge_ptr->momentum(-( sum_outgoing + sum_incoming));
                     }
                     else
                     {
-                        unknown_edge.momentum((sum_incoming + sum_outgoing));
+                        unknown_edge_ptr->momentum(( sum_incoming + sum_outgoing));
                     }
                     remaining_vertices.erase(vertex_id);
                     break;
@@ -171,7 +156,7 @@ namespace Feynumeric
             }
         }
         std::cerr << "---------------------------------------\n";
-        for( auto const& edge : _graph._edges )
+        for( auto const& edge : _graph->_edges )
         {
             std::cerr << edge << ": " << edge.momentum() << "\n";
         }
@@ -180,66 +165,62 @@ namespace Feynumeric
     void Diagram::register_angular_momenta()
     {
         _angular_momenta.clear();
-        std::size_t angular_momentum_index = 0;
-        for( auto const& edge_id : _graph._outgoing_edge_ids )
+        for( auto edge : _graph->_outgoing_edges )
         {
-            auto& edge = _graph._edges[edge_id];
-            auto const spin = edge.particle()->spin();
+            auto const spin = edge->particle()->spin();
             if( spin.j() > 0 )
             {
-                _angular_momenta.emplace_back(edge.particle()->spin());
-                edge.assign_angular_momentum(angular_momentum_index);
-                ++angular_momentum_index;
+                _angular_momenta.emplace_back(edge->particle()->spin());
+                edge->assign_angular_momentum(&_angular_momenta.back());
             }
         }
     }
 
     void Diagram::generate_amplitude()
     {
-        _remaining_edge_ids = _graph.all_edge_ids();
-        _remaining_vertices = _graph.all_vertex_ids();
+        _remaining_edges = _graph->all_edges();
+        _remaining_vertices = _graph->all_vertex_ids();
 
         register_lorentz_indices();
         register_angular_momenta();
 
-        for( auto const& edge_id : _graph._outgoing_edge_ids )
+        for( auto const& edge_ptr : _graph->_outgoing_edges )
         {
-            auto const& edge = _graph._edges[edge_id];
-            if( edge.particle()->is_fermion() )
+            if( edge_ptr->particle()->is_fermion() )
             {
-                _starting_edge_id = edge_id;
-                trace_fermion_line(edge_id);
+	            _starting_edge_ptr = edge_ptr;
+                trace_fermion_line(edge_ptr);
             }
         }
-        for( auto const& edge_id : _graph._incoming_edge_ids )
+        for( auto const& edge_ptr : _graph->_incoming_edges )
         {
-            auto const& edge = _graph._edges[edge_id];
-            if( edge.particle()->is_anti_fermion() )
+            if( edge_ptr->particle()->is_anti_fermion() )
             {
-                _starting_edge_id = edge_id;
-                trace_fermion_line(edge_id);
+	            _starting_edge_ptr = edge_ptr;
+                trace_fermion_line(edge_ptr);
             }
         }
         // TODO: Loops
-        for( auto const& edge_id : _remaining_edge_ids )
+        for( auto const& edge_ptr : _remaining_edges )
         {
-            auto const& edge = _graph._edges[edge_id];
-            if( edge.particle()->is_fermion() || edge.particle()->is_anti_fermion() )
+            if( edge_ptr->particle()->is_fermion() || edge_ptr->particle()->is_anti_fermion() )
             {
                 critical_error("There are still fermions in the remaining particles.\n");
             }
-            std::cerr << "adding edge: " << edge << " with particle " << edge.particle()->name() << "\n";
+            std::cerr << "adding edge: " << *edge_ptr << " with particle " << edge_ptr->particle()->name() << "\n";
             std::cerr << "Lorentz Indices: ";
-            for( auto lorentz : edge.get_lorentz_indices() )
+            for( auto lorentz : edge_ptr->get_lorentz_indices() )
             {
                 std::cerr << lorentz << " ";
             }
             std::cerr << "\n";
-            _amplitude.push_back(edge.feynman_rule());
+            std::cerr << "_amplitude.push_back: " << *edge_ptr << "\n";
+            _amplitude.push_back(edge_ptr->feynman_rule());
+
         }
-        for( auto const& vertex_id : _remaining_vertices )
+        for( auto const& [vertex_id, edge_list] : _remaining_vertices )
         {
-            add_vertex(vertex_id.first);
+            add_vertex(vertex_id);
         }
     }
 
@@ -265,37 +246,35 @@ namespace Feynumeric
         return *this;
     }
 
-    void Diagram::trace_fermion_line(Edge_Id current_edge_id)
+    void Diagram::trace_fermion_line(Edge* current_edge_ptr)
     {
         using std::abort;
         using std::cerr;
-        auto const& current_edge = _graph._edges[current_edge_id];
-        if( !current_edge.particle() )
+        if( !current_edge_ptr->particle() )
         {
-            critical_error("Particle is not initialized. Edge: " + current_edge.to_string());
+            critical_error("Particle is not initialized. Edge: " + current_edge_ptr->to_string());
         }
-        const auto edge_it = std::find(_remaining_edge_ids.begin(), _remaining_edge_ids.end(), current_edge_id);
-        if( edge_it == _remaining_edge_ids.end() )
+        const auto edge_it = std::find(_remaining_edges.begin(), _remaining_edges.end(), current_edge_ptr);
+        if( edge_it == _remaining_edges.end() )
         {
             return;
         }
-        _remaining_edge_ids.erase(edge_it);
+        _remaining_edges.erase(edge_it);
 
         std::function<bool(Particle const&)> is_same_type;
         std::function<bool(Particle const&)> is_opposite_type;
         std::function<bool(Edge const&)> is_same_direction;
         std::function<bool(Edge const&)> is_opposite_direction;
 
-        auto const& starting_edge = _graph._edges[_starting_edge_id];
 
-        if( starting_edge.is_outgoing() )
+        if( _starting_edge_ptr->is_outgoing() )
         {
             is_same_type = is_fermion;
             is_opposite_type = is_anti_fermion;
             is_same_direction = [&](Edge const& edge){return edge.is_outgoing();};
             is_opposite_direction = [&](Edge const& edge){return edge.is_incoming();};
         }
-        else if( starting_edge.is_incoming() )
+        else if( _starting_edge_ptr->is_incoming() )
         {
             is_same_type = is_anti_fermion;
             is_opposite_type = is_fermion;
@@ -303,92 +282,90 @@ namespace Feynumeric
             is_opposite_direction = [&](Edge const& edge){return edge.is_outgoing();};
         }
 
-        if( current_edge != starting_edge && is_same_direction(current_edge) && is_same_type(*current_edge.particle()) )
+        if( current_edge_ptr != _starting_edge_ptr && is_same_direction(*current_edge_ptr) && is_same_type(*current_edge_ptr->particle()) )
         {
-            critical_error("Starting Edge " + starting_edge.to_string() + " ends in same direction and same type as " + current_edge.to_string() + ".");
+            critical_error("Starting Edge " + _starting_edge_ptr->to_string() + " ends in same direction and same type as " + current_edge_ptr->to_string() + ".");
         }
 
-        std::cerr << "adding edge: " << current_edge << " with particle " << current_edge.particle()->name() << "\n";
+        std::cerr << "adding edge: " << *current_edge_ptr << " with particle " << current_edge_ptr->particle()->name() << "\n";
         std::cerr << "Lorentz Indices: ";
-        for( auto lorentz : current_edge.get_lorentz_indices() )
+        for( auto lorentz : current_edge_ptr->get_lorentz_indices() )
         {
             std::cerr << lorentz << " ";
         }
-        _amplitude.push_back(current_edge.feynman_rule());
+        std::cerr << "_amplitude.push_back: " << *current_edge_ptr << "\n";
+        _amplitude.push_back(current_edge_ptr->feynman_rule());
 
-        const auto neighbouring_edges = current_edge.neighbour_ids();
-        for( auto const& neighbour_id : neighbouring_edges )
+        auto neighbouring_edges = current_edge_ptr->neighbours();
+        for( auto& neighbour_ptr : neighbouring_edges )
         {
-            auto const& neighbour = _graph._edges[neighbour_id];
-
-            if( contains(_remaining_edge_ids, neighbour_id) )
+            if( contains(_remaining_edges, neighbour_ptr) )
             {
-                if( is_same_type(*neighbour.particle())  &&  neighbour.is_virtual() )
+                if( is_same_type(*neighbour_ptr->particle()) && neighbour_ptr->is_virtual() )
                 {
-                    add_vertex(current_edge_id, neighbour_id);
-                    trace_fermion_line(neighbour_id);
+                    add_vertex(current_edge_ptr, neighbour_ptr);
+                    trace_fermion_line(neighbour_ptr);
                     return;
                 }
-                else if(   ( is_same_type(*neighbour.particle()) &&  is_opposite_direction(neighbour) )
-                        || ( is_opposite_type(*neighbour.particle()) &&  is_same_direction(neighbour) )
+                else if(   ( is_same_type(*neighbour_ptr->particle()) && is_opposite_direction(*neighbour_ptr) )
+                        || ( is_opposite_type(*neighbour_ptr->particle()) && is_same_direction(*neighbour_ptr) )
                 )
                 {
-                    if( !neighbour.is_outgoing() && !neighbour.is_incoming() )
+                    if( !neighbour_ptr->is_outgoing() && !neighbour_ptr->is_incoming() )
                     {
-                        critical_error("Inconsistent Edge along the path " + starting_edge.to_string() + " to " + neighbour.to_string() + ".");
+                        critical_error("Inconsistent Edge along the path " + _starting_edge_ptr->to_string() + " to " + neighbour_ptr->to_string() + ".");
                     }
-                    add_vertex(current_edge_id, neighbour_id);
-                    _amplitude.push_back(neighbour.feynman_rule());
-                    std::cerr << "adding edge: " << neighbour << " with particle " << neighbour.particle()->name() << "\n";
+                    add_vertex(current_edge_ptr, neighbour_ptr);
+                    std::cerr << "_amplitude.push_back: " << *neighbour_ptr << "\n";
+                    _amplitude.push_back(neighbour_ptr->feynman_rule());
+                    std::cerr << "adding edge: " << *neighbour_ptr << " with particle " << neighbour_ptr->particle()->name() << "\n";
                     std::cerr << "Lorentz Indices: ";
-                    for( auto lorentz : neighbour.get_lorentz_indices() )
+                    for( auto lorentz : neighbour_ptr->get_lorentz_indices() )
                     {
                         std::cerr << lorentz << " ";
                     }
-                    std::erase(_remaining_edge_ids, neighbour_id);
+                    std::erase(_remaining_edges, neighbour_ptr);
                     return;
                 }
                 else
                 {
-                    critical_error("Inconsistent Edge along the path " + starting_edge.to_string() + " to " + neighbour.to_string() + ".");
+                    critical_error("Inconsistent Edge along the path " + _starting_edge_ptr->to_string() + " to " + neighbour_ptr->to_string() + ".");
                 }
             }
         }
     }
 
-    void Diagram::add_vertex(Edge_Id a_id, Edge_Id b_id)
+    void Diagram::add_vertex(Edge* a, Edge* b)
     {
-        auto const &a = _graph._edges[a_id];
-        auto const &b = _graph._edges[b_id];
-
         auto optional_vertex = shared_vertex(a, b);
         if( !optional_vertex.has_value() ){
-            critical_error("Edges " + a.to_string() + " and " + b.to_string() + " do not share a vertex.");
+            critical_error("Edges " + a->to_string() + " and " + b->to_string() + " do not share a vertex.");
         }
         add_vertex(optional_vertex.value());
     }
 
-    void Diagram::add_vertex(Vertex_Id vertex_id)
+    void Diagram::add_vertex(std::size_t vertex_id)
     {
         if( !_remaining_vertices.contains(vertex_id) )
         {
             return;
 
         }
-        std::cerr << "Adding Vertex\nID: " << static_cast<std::size_t>(vertex_id) << "\n";
+        std::cerr << "Adding Vertex\nID: " << vertex_id << "\n";
 
         auto const& vertex = _remaining_vertices[vertex_id];
 
-        std::vector<Edge> vertex_edges;
+        std::vector<Edge*> vertex_edges;
         vertex_edges.reserve(vertex.size());
-        for( auto const& edge_id : vertex )
+        for( auto const& edge_ptr : vertex )
         {
-            vertex_edges.push_back(_graph._edges[edge_id]);
+            vertex_edges.push_back(edge_ptr);
         }
 
         auto vertex_func = std::bind(_vertex_manager->get_vertex_function(vertex_id, vertex_edges),
                                      this, vertex_edges);
 
+        std::cerr << "_amplitude.push_back: " << vertex_id << "\n";
         _amplitude.push_back(vertex_func);
         _remaining_vertices.erase(vertex_id);
     }
@@ -400,11 +377,12 @@ namespace Feynumeric
         {
             critical_error("Amplitude is empty.");
         }
+        std::cerr << "Amplitude Size: " << _amplitude.size() << "\n";
         const double sin_theta = std::sqrt(1 - cos_theta * cos_theta)+1;
-        Matrix result = _amplitude.at(0)();
+        Matrix result = _amplitude[0]();
         for( size_t i = 1; i < _amplitude.size(); i++ )
         {
-            result *= _amplitude.at(i)();
+            result *= _amplitude[i]();
         }
         try
         {

@@ -40,7 +40,7 @@ namespace Feynumeric
         void add_vertex( Vertex_Function const& function, std::vector<std::pair<Particle_Ptr, Direction>> const& particles);
 
         Vertex_Function get_vertex(std::vector<String_Direction_Pair> const& pairs) const;
-        Vertex_Function get_vertex_function(Vertex_Id vertex_id, std::vector<Edge> const& edges) const;
+        Vertex_Function get_vertex_function(std::size_t vertex_id, std::vector<Edge*> const& edges) const;
     };
 
     inline std::string to_string(Vertex_Manager::Direction const& direction)

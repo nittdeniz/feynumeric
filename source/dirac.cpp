@@ -1,6 +1,7 @@
 #include "dirac.hpp"
 #include "complex.hpp"
 #include "constexpr_math.hpp"
+#include "lorentz_index.hpp"
 #include "product.hpp"
 #include "sum.hpp"
 namespace Feynumeric
@@ -42,7 +43,7 @@ namespace Feynumeric
         return Complex(0, 1)/2. * (a*b - b*a);
     }
 
-    Matrix u(const Four_Momentum &p, const Angular_Momentum &s, const vector<std::size_t> &lorentz_indices)
+    Matrix u(const Four_Momentum &p, const Angular_Momentum &s, const vector<Lorentz_Index*> &lorentz_indices)
     {
         if( s.j() == 1/2 )
         {
@@ -73,12 +74,12 @@ namespace Feynumeric
         return result;
     }
 
-    Matrix ubar(const Four_Momentum &p, const Angular_Momentum &s, const vector<std::size_t> &lorentz_indices)
+    Matrix ubar(const Four_Momentum &p, const Angular_Momentum &s, const vector<Lorentz_Index*> &lorentz_indices)
     {
         return u(p, s, lorentz_indices).T().apply([](Complex const& z){return std::conj(z);}) * GA[0];
     }
 
-    Matrix epsilon(const Four_Momentum &p, const Angular_Momentum &s, const vector<std::size_t> &lorentz_indices)
+    Matrix epsilon(const Four_Momentum &p, const Angular_Momentum &s, const vector<Lorentz_Index*> &lorentz_indices)
     {
         if( s.j() == 0 )
         {
@@ -107,8 +108,8 @@ namespace Feynumeric
             {
                 Angular_Momentum const s1 = Angular_Momentum(s.j()-1, s.m()-n);
                 Angular_Momentum const s2 = Angular_Momentum(1, n);
-                auto const indices1 = std::vector<std::size_t>(lorentz_indices.cbegin(), lorentz_indices.cend()-1);
-                auto const indices2 = std::vector<std::size_t>(lorentz_indices.cend()-1, lorentz_indices.cend());
+                auto indices1 = std::vector<Lorentz_Index*>(lorentz_indices.begin(), lorentz_indices.end()-1);
+                auto indices2 = std::vector<Lorentz_Index*>(lorentz_indices.end()-1, lorentz_indices.end());
                 result +=
                         clebsch_gordan(s1.j(), s1.m(), s2.j(), s2.m(), s.j(), s.m())
                         * epsilon(p, s1, indices1)
@@ -118,12 +119,12 @@ namespace Feynumeric
         return result;
     }
 
-    Matrix epsilon_star(const Four_Momentum &p, const Angular_Momentum &s, const vector<std::size_t> &lorentz_indices)
+    Matrix epsilon_star(const Four_Momentum &p, const Angular_Momentum &s, const vector<Lorentz_Index*> &lorentz_indices)
     {
         return epsilon(p, s, lorentz_indices).apply([](Complex const& z){return std::conj(z);});
     }
 
-    Matrix Projector(Particle_Ptr const& P, const Four_Momentum &p, const vector<std::size_t> &lorentz_indices, bool ignore_momentum)
+    Matrix Projector(Particle_Ptr const& P, const Four_Momentum &p, const vector<Lorentz_Index*> &lorentz_indices, bool ignore_momentum)
     {
         static Matrix const metric_tensor = Matrix(4, 4, {1,0,0,0, 0,-1,0,0, 0,0,-1,0, 0,0,0,-1});
 
@@ -141,16 +142,16 @@ namespace Feynumeric
         };
 
         std::size_t const half_size = lorentz_indices.size() / 2;
-        std::vector<std::size_t> indices_left(lorentz_indices.begin(), lorentz_indices.begin() + half_size);
-        std::vector<std::size_t> indices_right(lorentz_indices.begin() + half_size, lorentz_indices.end());
+        std::vector<Lorentz_Index*> indices_left(lorentz_indices.begin(), lorentz_indices.begin() + half_size);
+        std::vector<Lorentz_Index*> indices_right(lorentz_indices.begin() + half_size, lorentz_indices.end());
 
         // since the whole projector is symmetric, we sort the indices so we can use std::next_permutation
         std::sort(indices_left.begin(), indices_left.end());
         std::sort(indices_right.begin(), indices_right.end());
 
-        auto all_permutations = [&](std::vector<std::size_t>& v)
+        auto all_permutations = [&](std::vector<Lorentz_Index*>& v)
         {
-            std::vector<std::size_t> result;
+            std::vector<Lorentz_Index*> result;
             result.reserve(v.size() * f(v.size()));
             do
             {
@@ -159,13 +160,13 @@ namespace Feynumeric
             return result;
         };
 
-        std::vector<std::size_t> mu = all_permutations(indices_left);
-        std::vector<std::size_t> nu = all_permutations(indices_right);
+        std::vector<Lorentz_Index*> mu = all_permutations(indices_left);
+        std::vector<Lorentz_Index*> nu = all_permutations(indices_right);
 
         int const n = static_cast<int>(P->spin().j());
 
-        auto T = [&](std::size_t mu, std::size_t nu){
-            return -metric_tensor.at(mu, nu) + (ignore_momentum? 0. : 1./p.squared() * p.at(mu) * p.at(nu));
+        auto T = [&](Lorentz_Index* mu, Lorentz_Index* nu){
+            return -metric_tensor.at(*mu, *nu) + (ignore_momentum? 0. : 1./p.squared() * p.at(*mu) * p.at(*nu));
         };
 
         int const fac_n = f(n);
@@ -190,7 +191,7 @@ namespace Feynumeric
         );
     }
 
-    Matrix Propagator(const Particle_Ptr &P, const Four_Momentum &p, const vector<std::size_t> &lorentz_indices,
+    Matrix Propagator(const Particle_Ptr &P, const Four_Momentum &p, const vector<Lorentz_Index*> &lorentz_indices,
                       bool ignore_momentum)
     {
         return Projector(P, p, lorentz_indices, ignore_momentum);
