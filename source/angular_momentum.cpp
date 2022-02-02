@@ -20,7 +20,20 @@ namespace Feynumeric
         }
     }
 
-    bool Angular_Momentum::is_valid_spin(double value)
+	Angular_Momentum::Angular_Momentum(const Angular_Momentum& J)
+	: _j(J.j())
+	, _m(J.m())
+	{
+
+	}
+
+	Angular_Momentum& Angular_Momentum::operator=(const Angular_Momentum& J){
+		_j = J.j();
+		_m = J.m();
+		return *this;
+	}
+
+	bool Angular_Momentum::is_valid_spin(double value)
     {
         return value >= 0 && (static_cast<int>(2*value) - 2*value) == 0;
     }

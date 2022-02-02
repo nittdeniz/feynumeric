@@ -90,8 +90,13 @@ namespace Feynumeric
         return out << "(" << static_cast<std::size_t>(edge._a) << ", " << static_cast<std::size_t>(edge._b) << ")";
     }
 
-    std::vector<Lorentz_Index*> Edge::get_lorentz_indices() const
+    std::vector<std::size_t> Edge::get_lorentz_indices() const
     {
+    	std::vector<Lorentz_Index*> result;
+    	for( _assigned_indices )
+	    {
+    		result.push_back()
+	    }
         return _assigned_indices;
     }
 
@@ -100,9 +105,9 @@ namespace Feynumeric
         return Four_Momentum();
     }
 
-    Angular_Momentum Edge::spin() const
+    Angular_Momentum* Edge::spin() const
     {
-        return Angular_Momentum();
+    	return _angular_momentum;
     }
 
     std::function<Matrix()> Edge::feynman_rule()
@@ -184,7 +189,7 @@ namespace Feynumeric
 
     void Edge::assign_angular_momentum(Angular_Momentum* id)
     {
-        _angular_momentum = id;
+	    _angular_momentum = id;
     }
 
     std::optional<std::size_t> shared_vertex(Edge* lhs, Edge* rhs)

@@ -36,21 +36,21 @@ void init_particles()
         }
         return Projector(e->particle(), e->four_momentum(), e->get_lorentz_indices());
     };
-    Photon->feynman_incoming = [](Edge const* e){return Matrix(1,1, 13);};
-    Photon->feynman_outgoing = [](Edge const* e){return Matrix(any_cast<double>(Proton->user_data("coupling.ppgamma")));};
+    Photon->feynman_incoming = [](Edge* e){return Matrix(1,1, 13);};
+    Photon->feynman_outgoing = [](Edge* e){return Matrix(any_cast<double>(Proton->user_data("coupling.ppgamma")));};
     Photon->user_data("coupling.ppgammma", 0.3);
 
-    Electron->feynman_virtual = [](Edge const* e){return Propagator(e->particle(), e->four_momentum(), e->get_lorentz_indices());};
-    Electron->feynman_incoming = [](Edge const* e){return u(e->four_momentum(), e->spin(), e->get_lorentz_indices());};
-    Electron->feynman_outgoing = [](Edge const* e){return ubar(e->four_momentum(), e->spin(), e->get_lorentz_indices());};
+    Electron->feynman_virtual = [](Edge* e){return Propagator(e->particle(), e->four_momentum(), e->get_lorentz_indices());};
+    Electron->feynman_incoming = [](Edge* e){return u(e);};
+    Electron->feynman_outgoing = [](Edge* e){return ubar(e);};
 
 //    Positron->feynman_virtual = [](){return Matrix(1,1,1);};
 //    Positron->feynman_incoming = [](){return Matrix(1,4,1);};
 //    Positron->feynman_outgoing = [](){return Matrix(4,1,1);};
 
-    Muon_Minus->feynman_virtual = [](Edge const* e){return Propagator(e->particle(), e->four_momentum(), e->get_lorentz_indices());};
-    Muon_Minus->feynman_incoming = [](Edge const* e){return u(e->four_momentum(), e->spin(), e->get_lorentz_indices());};
-    Muon_Minus->feynman_outgoing = [](Edge const* e){return ubar(e->four_momentum(), e->spin(), e->get_lorentz_indices());};
+    Muon_Minus->feynman_virtual = [](Edge* e){return Propagator(e->particle(), e->four_momentum(), e->get_lorentz_indices());};
+    Muon_Minus->feynman_incoming = [](Edge* e){return u(e);};
+    Muon_Minus->feynman_outgoing = [](Edge* e){return ubar(e);};
 
 //    Muon_Plus->feynman_virtual = [](){return Matrix(1,1,1);};
 //    Muon_Plus->feynman_incoming = [](){return Matrix(1,4,1);};

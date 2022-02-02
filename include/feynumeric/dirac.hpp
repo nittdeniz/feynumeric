@@ -16,11 +16,13 @@ namespace Feynumeric
     extern std::array<Matrix, 4> GAC;
 
 
-    Matrix u(Four_Momentum const& p, Angular_Momentum const& s, std::vector<Lorentz_Index*> const& lorentz_indices);
-    Matrix ubar(Four_Momentum const& p, Angular_Momentum const& s, std::vector<Lorentz_Index*> const& lorentz_indices);
+    Matrix u(Edge* edge_ptr);
+    Matrix u(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum* s, std::vector<Lorentz_Index*> const& lorentz_indices);
+    Matrix ubar(Edge* edge_ptr);
+    Matrix ubar(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum* s, std::vector<Lorentz_Index*> const& lorentz_indices);
 
-    Matrix epsilon(Four_Momentum const& p, Angular_Momentum const& s, std::vector<Lorentz_Index*> const& lorentz_indices);
-    Matrix epsilon_star(Four_Momentum const& p, Angular_Momentum const& s, std::vector<Lorentz_Index*> const& lorentz_indices);
+    Matrix epsilon(Four_Momentum const& p, Angular_Momentum* s, std::vector<Lorentz_Index*> const& lorentz_indices);
+    Matrix epsilon_star(Four_Momentum const& p, Angular_Momentum* s, std::vector<Lorentz_Index*> const& lorentz_indices);
 
     Matrix Projector(Particle_Ptr const& P, const Four_Momentum &p, const vector<Lorentz_Index*> &lorentz_indices, bool ignore_momentum = false);
     Matrix Propagator(Particle_Ptr const& P, const Four_Momentum &p, const vector<Lorentz_Index*> &lorentz_indices, bool ignore_momentum = false);

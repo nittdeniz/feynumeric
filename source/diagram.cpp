@@ -64,8 +64,8 @@ namespace Feynumeric
             }
             while( n_indices --> 0 )
             {
-               _lorentz_indices.emplace_back();
-               edge.assign_lorentz_index(&_lorentz_indices.back());
+	            edge.assign_lorentz_index(_lorentz_indices.size());
+	            _lorentz_indices.emplace_back();
             }
         }
     }
@@ -165,15 +165,26 @@ namespace Feynumeric
     void Diagram::register_angular_momenta()
     {
         _angular_momenta.clear();
-        for( auto edge : _graph->_outgoing_edges )
+        for( auto& edge : _graph->_outgoing_edges )
         {
-            auto const spin = edge->particle()->spin();
+        	std::cerr << "register_angular_momenta: " << *edge << "\n";
+            auto const& spin = edge->particle()->spin();
             if( spin.j() > 0 )
             {
-                _angular_momenta.emplace_back(edge->particle()->spin());
-                edge->assign_angular_momentum(&_angular_momenta.back());
+	            edge->assign_angular_momentum(_angular_momenta.size());
+	            _angular_momenta.emplace_back(edge->particle()->spin());
             }
         }
+	    for( auto& edge : _graph->_incoming_edges )
+	    {
+		    auto const spin = edge->particle()->spin();
+		    if( spin.j() > 0 )
+		    {
+			    edge->assign_angular_momentum(_angular_momenta.size());
+			    _angular_momenta.emplace_back(edge->particle()->spin());
+		    }
+	    }
+	    std::cerr << "REGISTERED: " << _angular_momenta.size() << "\n";
     }
 
     void Diagram::generate_amplitude()
@@ -232,6 +243,8 @@ namespace Feynumeric
     , _virtual_particles(diagram._virtual_particles)
     , _outgoing_particles(diagram._outgoing_particles)
     , _amplitude(diagram._amplitude)
+    , _lorentz_indices(diagram._lorentz_indices)
+    , _angular_momenta(diagram._angular_momenta)
     {
 
     }
@@ -243,6 +256,8 @@ namespace Feynumeric
         _incoming_particles = diagram._incoming_particles;
         _virtual_particles = diagram._virtual_particles;
         _outgoing_particles = diagram._outgoing_particles;
+	    _angular_momenta = diagram._angular_momenta;
+	    _lorentz_indices = diagram._lorentz_indices;
         return *this;
     }
 

@@ -9,7 +9,7 @@ namespace Feynumeric
     , _charge(charge)
     , _spin(std::move(spin))
     {
-
+		_spin.m(spin.j());
     }
 
     any Particle::user_data(string key) const
@@ -34,12 +34,12 @@ namespace Feynumeric
 
     Angular_Momentum Particle::spin() const
     {
-        return Angular_Momentum();
+        return _spin;
     }
 
     Angular_Momentum Particle::isospin() const
     {
-        return Angular_Momentum();
+        return _isospin;
     }
 
     void Particle::user_data(string key, any data)

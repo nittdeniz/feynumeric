@@ -37,8 +37,8 @@ namespace Feynumeric
         Matrix _momentum;
         std::vector<Edge*> _neighbours;
 
-        std::vector<Lorentz_Index*> _assigned_indices;
-        Angular_Momentum* _angular_momentum;
+        std::vector<std::size_t> _assigned_indices;
+        std::size_t _angular_momentum;
 
 
 
@@ -61,10 +61,10 @@ namespace Feynumeric
 
         std::vector<Lorentz_Index*> get_lorentz_indices() const;
 
-        void assign_lorentz_index(Lorentz_Index*);
+        void assign_lorentz_index(std::size_t);
         void clear_lorentz_indices();
 
-        void assign_angular_momentum(Angular_Momentum* j);
+        void assign_angular_momentum(std::size_t);
 
 
         vector<Edge*> neighbours();
@@ -77,7 +77,7 @@ namespace Feynumeric
         void momentum(Matrix const& momentum);
         Matrix momentum() const;
         Four_Momentum four_momentum() const;
-        Angular_Momentum spin() const;
+        Angular_Momentum* spin() const;
         std::string to_string() const;
 
         std::function<Matrix()> feynman_rule();
