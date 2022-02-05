@@ -10,6 +10,7 @@
 #include "graph.hpp"
 #include "lorentz_index.hpp"
 #include "matrix.hpp"
+#include "momentum.hpp"
 #include "particle.hpp"
 #include "vertex.hpp"
 
@@ -19,16 +20,20 @@ namespace Feynumeric
     class Diagram : public std::enable_shared_from_this<Diagram>
     {
     private:
+
         Vertex_Manager* _vertex_manager;
         std::shared_ptr<Graph> _graph;
         std::vector<Particle_Ptr> _incoming_particles;
         std::vector<Particle_Ptr> _virtual_particles;
         std::vector<Particle_Ptr> _outgoing_particles;
 
-        std::vector<std::function<Matrix()>> _amplitude;
+        std::vector<Momentum_Func> _momenta;
 
-        std::list<Lorentz_Index> _lorentz_indices;
-        std::list<Angular_Momentum> _angular_momenta;
+        std::vector<std::function<Matrix(Kinematics const&)>> _amplitude;
+
+        std::list<Lorentz_Index_Ptr> _lorentz_indices;
+        std::list<Angular_Momentum_Ptr> _angular_momenta;
+
 
         #ifdef CATCH2_TESTING_ENABLED
         bool assert_diagram_validity() const;
@@ -48,8 +53,14 @@ namespace Feynumeric
         void register_lorentz_indices();
         void register_angular_momenta();
 
+        void iterate_spins();
+        void iterate_indices();
+
         void fix_momenta();
 
+        void generate_momentum_functions();
+
+        void link_edges_to_this();
 
 
     public:
@@ -58,10 +69,11 @@ namespace Feynumeric
         Diagram& operator=(Diagram const& diagram);
 
         void generate_amplitude();
+		Momentum_Func four_momentum(Matrix const& M);
 
         std::size_t n_total_external() const;
 
-        Complex calculate_amplitude(const double sqrt_s, const double cos_theta) const;
+        Complex calculate_amplitude(const double sqrt_s, const double cos_theta);
 
 
     };

@@ -1,13 +1,14 @@
 #ifndef Feynumeric_MOMENTUM_HPP
 #define Feynumeric_MOMENTUM_HPP
 
+#include "kinematics.hpp"
 #include "matrix.hpp"
 
 namespace Feynumeric
 {
     double kallen_lambda(double a, double b, double c);
     double momentum(double M, double m1, double m2);
-    Matrix four_momentum(double mass, double q, double cos_theta);
+    //Matrix four_momentum(double mass, double q, double cos_theta);
 
     class Three_Momentum : public Matrix
     {
@@ -30,6 +31,7 @@ namespace Feynumeric
     {
     public:
         Four_Momentum();
+        Four_Momentum(double q, double m, double cos_theta=1, double cos_phi=1);
         Four_Momentum(Four_Momentum const& other);
         Four_Momentum& operator=(Four_Momentum const& other);
 
@@ -48,6 +50,7 @@ namespace Feynumeric
         double dot() const;
     };
 
+	using Momentum_Func = std::function<Four_Momentum(Kinematics const&)>;
 }
 #endif // Feynumeric_MOMENTUM_HPP
 

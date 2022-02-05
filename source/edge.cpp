@@ -1,6 +1,7 @@
 #include <iostream>
-#include "messages.hpp"
+#include "diagram.hpp"
 #include "edge.hpp"
+#include "messages.hpp"
 #include "particle.hpp"
 
 namespace Feynumeric
@@ -20,6 +21,8 @@ namespace Feynumeric
     , _particle(edge._particle)
     , _momentum(edge._momentum)
     , _neighbours(edge._neighbours)
+    , _assigned_indices(edge._assigned_indices)
+    , _angular_momentum(edge._angular_momentum)
     {
 		std::cerr << "Edge(Edge const& edge)\n";
     }
@@ -33,7 +36,16 @@ namespace Feynumeric
         _particle = edge._particle;
         _momentum = edge._momentum;
         _neighbours = edge._neighbours;
+        _assigned_indices = edge._assigned_indices;
+        _angular_momentum = edge._angular_momentum;
         return *this;
+    }
+
+
+
+    void Edge::set_diagram(Diagram* diagram)
+    {
+    	_diagram = diagram;
     }
 
     std::size_t Edge::a() const
@@ -90,39 +102,39 @@ namespace Feynumeric
         return out << "(" << static_cast<std::size_t>(edge._a) << ", " << static_cast<std::size_t>(edge._b) << ")";
     }
 
-    std::vector<std::size_t> Edge::get_lorentz_indices() const
+    std::vector<Lorentz_Index_Ptr> Edge::get_lorentz_indices() const
     {
-    	std::vector<Lorentz_Index*> result;
-    	for( _assigned_indices )
+    	return _assigned_indices;
+    }
+
+    Momentum_Func Edge::four_momentum() const
+    {
+    	if( _diagram == nullptr )
 	    {
-    		result.push_back()
+    		critical_error("Edge::four_momentum() _diagram == nullptr.");
 	    }
-        return _assigned_indices;
+    	return _diagram->four_momentum(_momentum);
     }
 
-    Four_Momentum Edge::four_momentum() const
-    {
-        return Four_Momentum();
-    }
-
-    Angular_Momentum* Edge::spin() const
+    Angular_Momentum_Ptr Edge::spin() const
     {
     	return _angular_momentum;
     }
 
-    std::function<Matrix()> Edge::feynman_rule()
+    std::function<Matrix(Kinematics const&)> Edge::feynman_rule()
     {
+	    using namespace std::placeholders;
         if( is_incoming() )
         {
-            return std::bind(_particle->feynman_incoming, this);
+            return std::bind(_particle->feynman_incoming, this, _1);
         }
         else if( is_outgoing() )
         {
-            return std::bind(_particle->feynman_outgoing, this);
+            return std::bind(_particle->feynman_outgoing, this, _1);
         }
         else if( is_virtual() )
         {
-            return std::bind(_particle->feynman_virtual, this);
+            return std::bind(_particle->feynman_virtual, this, _1);
         }
         else
         {
@@ -176,7 +188,7 @@ namespace Feynumeric
         return in.str();
     }
 
-    void Edge::assign_lorentz_index(Lorentz_Index* id)
+    void Edge::assign_lorentz_index(Lorentz_Index_Ptr const& id)
     {
         _assigned_indices.emplace_back(id);
     }
@@ -187,7 +199,7 @@ namespace Feynumeric
     }
 
 
-    void Edge::assign_angular_momentum(Angular_Momentum* id)
+    void Edge::assign_angular_momentum(Angular_Momentum_Ptr const& id)
     {
 	    _angular_momentum = id;
     }

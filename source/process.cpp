@@ -19,14 +19,14 @@ namespace Feynumeric
      * @param cos_theta
      * @return an array with components {coherent_sum, diagram_1, diagram_2, ...}
      */
-    vector<double> Process::dsigma_dcos_theta(double sqrt_s, double cos_theta) const
+    vector<double> Process::dsigma_dcos_theta(double sqrt_s, double cos_theta)
     {
         const double PS = phase_space();
 
         vector<double> result(_diagrams.size()+1, 0);
         Complex coherent_sum;
         int i = 1;
-        for( const auto& diagram : _diagrams )
+        for( auto& diagram : _diagrams )
         {
             const auto M = diagram.calculate_amplitude(sqrt_s, cos_theta);
             result[i++] = PS * (M * std::conj(M)).real();
@@ -36,7 +36,7 @@ namespace Feynumeric
         return result;
     }
 
-    vector<double> Process::sigma(double sqrt_s) const
+    vector<double> Process::sigma(double sqrt_s)
     {
         return vector<double>({sqrt_s});
     }

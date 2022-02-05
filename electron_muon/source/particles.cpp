@@ -29,28 +29,28 @@ Particle_Ptr N1440n       = std::make_shared<Particle>("N1440_0", Particle::Type
 void init_particles()
 {
     using namespace Feynumeric;
-    Photon->feynman_virtual = [](Edge* e){
+    Photon->feynman_virtual = [](Edge* e, Kinematics const& kin){
         if( e == nullptr )
         {
             critical_error("Photon virtual edge is nullptr.");
         }
-        return Projector(e->particle(), e->four_momentum(), e->get_lorentz_indices());
+        return Projector(e, kin, true);
     };
-    Photon->feynman_incoming = [](Edge* e){return Matrix(1,1, 13);};
-    Photon->feynman_outgoing = [](Edge* e){return Matrix(any_cast<double>(Proton->user_data("coupling.ppgamma")));};
+    Photon->feynman_incoming = [](Edge* e, Kinematics const& kin){return epsilon(e, kin);};
+    Photon->feynman_outgoing = [](Edge* e, Kinematics const& kin){return epsilon_star(e, kin);};
     Photon->user_data("coupling.ppgammma", 0.3);
 
-    Electron->feynman_virtual = [](Edge* e){return Propagator(e->particle(), e->four_momentum(), e->get_lorentz_indices());};
-    Electron->feynman_incoming = [](Edge* e){return u(e);};
-    Electron->feynman_outgoing = [](Edge* e){return ubar(e);};
+    Electron->feynman_virtual = [](Edge* e, Kinematics const& kin){return Propagator(e, kin);};
+    Electron->feynman_incoming = [](Edge* e, Kinematics const& kin){return u(e, kin);};
+    Electron->feynman_outgoing = [](Edge* e, Kinematics const& kin){return ubar(e, kin);};
 
 //    Positron->feynman_virtual = [](){return Matrix(1,1,1);};
 //    Positron->feynman_incoming = [](){return Matrix(1,4,1);};
 //    Positron->feynman_outgoing = [](){return Matrix(4,1,1);};
 
-    Muon_Minus->feynman_virtual = [](Edge* e){return Propagator(e->particle(), e->four_momentum(), e->get_lorentz_indices());};
-    Muon_Minus->feynman_incoming = [](Edge* e){return u(e);};
-    Muon_Minus->feynman_outgoing = [](Edge* e){return ubar(e);};
+    Muon_Minus->feynman_virtual = [](Edge* e, Kinematics const& kin){return Propagator(e, kin);};
+    Muon_Minus->feynman_incoming = [](Edge* e, Kinematics const& kin){return u(e, kin);};
+    Muon_Minus->feynman_outgoing = [](Edge* e, Kinematics const& kin){return ubar(e, kin);};
 
 //    Muon_Plus->feynman_virtual = [](){return Matrix(1,1,1);};
 //    Muon_Plus->feynman_incoming = [](){return Matrix(1,4,1);};

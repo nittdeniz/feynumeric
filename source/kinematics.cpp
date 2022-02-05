@@ -1,9 +1,5 @@
-#include "Feynumeric/kinematics.hpp"
+#include "feynumeric/kinematics.hpp"
 
 namespace Feynumeric
 {
-    void Kinematics::f() const
-    {
-
-    }
 }

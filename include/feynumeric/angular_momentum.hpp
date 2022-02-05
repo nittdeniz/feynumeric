@@ -1,6 +1,8 @@
 #ifndef Feynumeric_ANGULAR_MOMENTUM_HPP
 #define Feynumeric_ANGULAR_MOMENTUM_HPP
 
+#include <memory>
+
 namespace Feynumeric
 {
     class Angular_Momentum
@@ -19,6 +21,8 @@ namespace Feynumeric
         double m() const;
         void m(double new_m);
     };
+
+    using Angular_Momentum_Ptr = std::shared_ptr<Angular_Momentum>;
 
 }
 

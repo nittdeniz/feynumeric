@@ -78,7 +78,18 @@ namespace Feynumeric
 
     }
 
-    Four_Momentum::Four_Momentum(const Four_Momentum &other)
+	Four_Momentum::Four_Momentum(double q, double m, double cos_theta, double cos_phi)
+	: Matrix(1, 4, {0,0,0,0})
+	{
+    	const double sin_theta = std::sqrt(1 - cos_theta * cos_theta);
+    	const double sin_phi   = std::sqrt(1 - cos_phi * cos_phi);
+		_data[0] = std::sqrt(q*q + m*m);
+		_data[1] = q * cos_phi * sin_theta;
+		_data[2] = q * sin_phi * sin_theta;
+		_data[3] = q * cos_theta;
+	}
+
+	Four_Momentum::Four_Momentum(const Four_Momentum &other)
     : Matrix(1, 4, {other.E(), other.x(), other.y(), other.z()})
     {
 

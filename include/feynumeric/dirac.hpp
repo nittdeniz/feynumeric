@@ -2,13 +2,16 @@
 #define Feynumeric_DIRAC_HPP
 
 #include <array>
+#include <functional>
+#include <vector>
 
 #include "feynumeric/angular_momentum.hpp"
 #include "feynumeric/boost.hpp"
+#include "feynumeric/kinematics.hpp"
 #include "feynumeric/matrix.hpp"
 #include "feynumeric/momentum.hpp"
 #include "feynumeric/particle.hpp"
-#include <functional>
+
 
 namespace Feynumeric
 {
@@ -16,16 +19,22 @@ namespace Feynumeric
     extern std::array<Matrix, 4> GAC;
 
 
-    Matrix u(Edge* edge_ptr);
-    Matrix u(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum* s, std::vector<Lorentz_Index*> const& lorentz_indices);
-    Matrix ubar(Edge* edge_ptr);
-    Matrix ubar(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum* s, std::vector<Lorentz_Index*> const& lorentz_indices);
+    Matrix u(Edge* edge_ptr, Kinematics const& kin);
+    Matrix u(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+    Matrix ubar(Edge* edge_ptr, Kinematics const& kin);
+    Matrix ubar(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
 
-    Matrix epsilon(Four_Momentum const& p, Angular_Momentum* s, std::vector<Lorentz_Index*> const& lorentz_indices);
-    Matrix epsilon_star(Four_Momentum const& p, Angular_Momentum* s, std::vector<Lorentz_Index*> const& lorentz_indices);
+    Matrix epsilon(Edge* edge_ptr, Kinematics const& kin);
+    Matrix epsilon_star(Edge* edge_ptr, Kinematics const& kin);
 
-    Matrix Projector(Particle_Ptr const& P, const Four_Momentum &p, const vector<Lorentz_Index*> &lorentz_indices, bool ignore_momentum = false);
-    Matrix Propagator(Particle_Ptr const& P, const Four_Momentum &p, const vector<Lorentz_Index*> &lorentz_indices, bool ignore_momentum = false);
+    Matrix epsilon(Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+    Matrix epsilon_star(Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+
+    Matrix Projector(Edge* edge_ptr, Kinematics const& kin, bool ignore_momentum = false);
+    Matrix Propagator(Edge* edge_ptr, Kinematics const& kin, bool ignore_momentum = false);
+
+    Matrix Projector(Particle_Ptr const& P, const Four_Momentum &p, const vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum = false);
+    Matrix Propagator(Particle_Ptr const& P, const Four_Momentum &p, const vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum = false);
 
 
 

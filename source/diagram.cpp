@@ -1,5 +1,6 @@
 #include "diagram.hpp"
 #include "messages.hpp"
+#include "momentum.hpp"
 #include "particle.hpp"
 #include "vertex_manager.hpp"
 
@@ -50,6 +51,8 @@ namespace Feynumeric
         }
 
         fix_momenta();
+        generate_momentum_functions();
+        link_edges_to_this();
     }
 
     void Diagram::register_lorentz_indices()
@@ -64,15 +67,64 @@ namespace Feynumeric
             }
             while( n_indices --> 0 )
             {
-	            edge.assign_lorentz_index(_lorentz_indices.size());
-	            _lorentz_indices.emplace_back();
+	            _lorentz_indices.push_back(std::make_shared<Lorentz_Index>());
+	            edge.assign_lorentz_index(_lorentz_indices.back());
             }
         }
+        std::cerr << "registered indices\n";
     }
 
     std::size_t Diagram::n_total_external() const
     {
         return _incoming_particles.size() + _outgoing_particles.size();
+    }
+
+    void Diagram::generate_momentum_functions(){
+    	if( _incoming_particles.size() == 1 )
+	    {
+    		if( _outgoing_particles.size() == 2 )
+		    {
+			    critical_error("Combination of incoming+outgoing particles is not supported [generate_momentum_functions]");
+		    }
+    		else
+		    {
+			    critical_error("Combination of incoming+outgoing particles is not supported [generate_momentum_functions]");
+		    }
+	    }
+    	else if( _incoming_particles.size() == 2 )
+	    {
+    		_momenta.push_back([&](Kinematics const& kin)
+		                       {
+									double q = momentum(kin.sqrt_s, _incoming_particles[0]->mass(), _incoming_particles[1]->mass());
+									return Four_Momentum(q, _incoming_particles[0]->mass(), 0, 0);
+		                       });
+		    _momenta.push_back([&](Kinematics const& kin)
+		                       {
+			                       double q = momentum(kin.sqrt_s, _incoming_particles[0]->mass(), _incoming_particles[1]->mass());
+			                       return Four_Momentum(-q, _incoming_particles[1]->mass(),0, 0);
+		                       });
+			if( _outgoing_particles.size() == 2 )
+			{
+				_momenta.push_back([&](Kinematics const& kin)
+				                   {
+					                   double q = momentum(kin.sqrt_s, _outgoing_particles[0]->mass(), _outgoing_particles[1]->mass());
+					                   return Four_Momentum(q, _outgoing_particles[0]->mass(), kin.cosines[0], 0);
+				                   });
+				_momenta.push_back([&](Kinematics const& kin)
+				                   {
+					                   double q = momentum(kin.sqrt_s, _outgoing_particles[0]->mass(), _outgoing_particles[1]->mass());
+					                   return Four_Momentum(q, _outgoing_particles[1]->mass(), kin.cosines[0], 0);
+				                   });
+			}
+			else
+			{
+				critical_error("Combination of incoming+outgoing particles is not supported [generate_momentum_functions]");
+			}
+	    }
+    	else
+	    {
+    		critical_error("Number of incoming particles is not supported [generate_momentum_functions]");
+	    }
     }
 
     void Diagram::fix_momenta()
@@ -162,8 +214,37 @@ namespace Feynumeric
         }
     }
 
+	void Diagram::link_edges_to_this(){
+		for( auto& edge : _graph->_edges )
+		{
+			edge.set_diagram(this);
+		}
+	}
+
+	Momentum_Func Diagram::four_momentum(Matrix const& M)
+    {
+		if( M.n_rows() != _incoming_particles.size() + _outgoing_particles.size() )
+		{
+			critical_error("Edge momentum matrix size differs from number of external particles.");
+		}
+		return [&](Kinematics const& kin)
+		{
+			Four_Momentum result;
+			for( std::size_t i = 0; i < _momenta.size(); ++i )
+			{
+				result += M.at(i) * _momenta[i](kin);
+			}
+			return result;
+		};
+    }
+
     void Diagram::register_angular_momenta()
     {
+    	for( auto& edge : _graph->_edges )
+	    {
+    		edge.set_diagram(this);
+	    }
+
         _angular_momenta.clear();
         for( auto& edge : _graph->_outgoing_edges )
         {
@@ -171,8 +252,8 @@ namespace Feynumeric
             auto const& spin = edge->particle()->spin();
             if( spin.j() > 0 )
             {
-	            edge->assign_angular_momentum(_angular_momenta.size());
-	            _angular_momenta.emplace_back(edge->particle()->spin());
+	            _angular_momenta.push_back(std::make_shared<Angular_Momentum>(edge->particle()->spin()));
+	            edge->assign_angular_momentum(_angular_momenta.back());
             }
         }
 	    for( auto& edge : _graph->_incoming_edges )
@@ -180,8 +261,8 @@ namespace Feynumeric
 		    auto const spin = edge->particle()->spin();
 		    if( spin.j() > 0 )
 		    {
-			    edge->assign_angular_momentum(_angular_momenta.size());
-			    _angular_momenta.emplace_back(edge->particle()->spin());
+			    _angular_momenta.push_back(std::make_shared<Angular_Momentum>(edge->particle()->spin()));
+			    edge->assign_angular_momentum(_angular_momenta.back());
 		    }
 	    }
 	    std::cerr << "REGISTERED: " << _angular_momenta.size() << "\n";
@@ -246,7 +327,7 @@ namespace Feynumeric
     , _lorentz_indices(diagram._lorentz_indices)
     , _angular_momenta(diagram._angular_momenta)
     {
-
+	    link_edges_to_this();
     }
 
     Diagram &Diagram::operator=(const Diagram &diagram)
@@ -258,6 +339,7 @@ namespace Feynumeric
         _outgoing_particles = diagram._outgoing_particles;
 	    _angular_momenta = diagram._angular_momenta;
 	    _lorentz_indices = diagram._lorentz_indices;
+	    link_edges_to_this();
         return *this;
     }
 
@@ -377,16 +459,46 @@ namespace Feynumeric
             vertex_edges.push_back(edge_ptr);
         }
 
-        auto vertex_func = std::bind(_vertex_manager->get_vertex_function(vertex_id, vertex_edges),
-                                     this, vertex_edges);
+        auto vf = _vertex_manager->get_vertex_function(vertex_id, vertex_edges);
+        auto vertex_func = std::bind(vf, this, vertex_edges);
 
         std::cerr << "_amplitude.push_back: " << vertex_id << "\n";
         _amplitude.push_back(vertex_func);
         _remaining_vertices.erase(vertex_id);
     }
 
+    void Diagram::iterate_spins()
+    {
 
-    Complex Diagram::calculate_amplitude(const double sqrt_s, const double cos_theta) const
+		for( auto& J : _angular_momenta )
+		{
+			auto j = J->j();
+			if( J->m() > -J->j() )
+			{
+				J->m(J->m()-1);
+				return;
+			}
+			else if( J->m() == -j )
+			{
+				J->m(j);
+			}
+		}
+    }
+
+    void Diagram::iterate_indices()
+    {
+    	for( auto& mu_ptr : _lorentz_indices )
+	    {
+    		Lorentz_Index& mu = *mu_ptr;
+		    ++mu;
+    		if( mu > 0 )
+		    {
+				break;
+		    }
+	    }
+    }
+
+    Complex Diagram::calculate_amplitude(const double sqrt_s, const double cos_theta)
     {
         if( _amplitude.size() == 0 )
         {
@@ -394,22 +506,51 @@ namespace Feynumeric
         }
         std::cerr << "Amplitude Size: " << _amplitude.size() << "\n";
         const double sin_theta = std::sqrt(1 - cos_theta * cos_theta)+1;
-        Matrix result = _amplitude[0]();
-        for( size_t i = 1; i < _amplitude.size(); i++ )
+
+        auto spin_configurations = [](std::list<Angular_Momentum_Ptr> const& lst)
         {
-            result *= _amplitude[i]();
-        }
-        try
+			std::size_t result = 1;
+			for( auto const& item : lst )
+			{
+				result *= (2*item->j()+1);
+			}
+			return result;
+        };
+
+        auto index_configurations = [](std::list<Lorentz_Index_Ptr> const& lst)
         {
-            std::cerr << "sqrt_s: " << sqrt_s << "\n";
-            std::cerr << "sin_theta: " << sin_theta << "\n";
-            std::cerr << "result: " << result.try_as_complex() << "\n";
-            return sqrt_s * sin_theta*result.try_as_complex();
-        }
-        catch( Matrix::dimension_exception const& ex )
+        	return std::pow(4, lst.size());
+        };
+
+        std::size_t N_spins = spin_configurations(_angular_momenta);
+        double temp_indices = index_configurations(_lorentz_indices);
+        std::size_t N_indices = static_cast<std::size_t>(temp_indices);
+        if( N_indices != temp_indices )
         {
-            critical_error("Matrix Amplitude does not evaluate to a scalar.");
+        	critical_error("Overflow: Too many lorentz indices.\n");
         }
+
+        Complex result{0};
+
+        Kinematics kin;
+
+        for( std::size_t index_it = 0; index_it < N_indices; ++index_it ){
+	        for( std::size_t spin_it = 0; spin_it < N_spins; ++spin_it ){
+		        Matrix interim_result = _amplitude[0](kin);
+		        for( size_t i = 1; i < _amplitude.size(); i++ ){
+			        interim_result *= _amplitude[i](kin);
+		        }
+		        try{
+			        result += interim_result.try_as_complex();
+		        }
+		        catch( Matrix::dimension_exception const& ex ){
+			        critical_error("Matrix Amplitude does not evaluate to a scalar.");
+		        }
+		        iterate_spins();
+	        }
+	        iterate_indices();
+        }
+        return sqrt_s * sin_theta * result;
     }
 
     #ifdef CATCH2_TESTING_ENABLED

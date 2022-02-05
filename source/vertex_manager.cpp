@@ -4,7 +4,7 @@
 
 namespace Feynumeric
 {
-    void Vertex_Manager::add_vertex( Vertex_Function const& function, std::vector<std::pair<Particle_Ptr, Vertex_Manager::Direction>> const& particles)
+    void Vertex_Manager::add_vertex(std::vector<std::pair<Particle_Ptr, Vertex_Manager::Direction>> const& particles, Vertex_Function const& function)
     {
         using std::abort;
         using std::cerr;
@@ -75,7 +75,7 @@ namespace Feynumeric
         abort();
     }
 
-    Vertex_Function Vertex_Manager::get_vertex_function(std::size_t vertex_id, std::vector<Edge*> const& edges) const
+    Vertex_Function Vertex_Manager::get_vertex_function(std::size_t vertex_id, std::vector<Edge*>& edges) const
     {
         std::vector<String_Direction_Pair> pairs;
         for( auto& edge_ptr : edges )

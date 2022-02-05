@@ -37,10 +37,10 @@ namespace Feynumeric
         Vertex_Manager(Vertex_Manager const& other);
         Vertex_Manager& operator=(Vertex_Manager const& other);
 
-        void add_vertex( Vertex_Function const& function, std::vector<std::pair<Particle_Ptr, Direction>> const& particles);
+        void add_vertex(std::vector<std::pair<Particle_Ptr, Direction>> const& particles, Vertex_Function const& function);
 
         Vertex_Function get_vertex(std::vector<String_Direction_Pair> const& pairs) const;
-        Vertex_Function get_vertex_function(std::size_t vertex_id, std::vector<Edge*> const& edges) const;
+        Vertex_Function get_vertex_function(std::size_t vertex_id, std::vector<Edge*>& edges) const;
     };
 
     inline std::string to_string(Vertex_Manager::Direction const& direction)

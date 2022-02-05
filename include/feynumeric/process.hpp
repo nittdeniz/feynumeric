@@ -16,8 +16,8 @@ namespace Feynumeric
     public:
         void add_diagrams(vector<Diagram> diagram_list);
 
-        vector<double> dsigma_dcos_theta(double sqrt_s, double cos_theta) const;
-        vector<double> sigma(double sqrt_s) const;
+        vector<double> dsigma_dcos_theta(double sqrt_s, double cos_theta);
+        vector<double> sigma(double sqrt_s);
 
         double phase_space() const;
     };
