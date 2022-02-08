@@ -1,3 +1,4 @@
+/*
 #ifndef FEYNUMERIC_EDGE_HPP
 #define FEYNUMERIC_EDGE_HPP
 
@@ -72,7 +73,7 @@ namespace Feynumeric
         void assign_angular_momentum(Angular_Momentum_Ptr const&);
 
 
-        vector<Edge*> neighbours();
+        std::vector<Edge*> neighbours();
 
         bool is_incoming() const;
         bool is_outgoing() const;
@@ -106,4 +107,4 @@ namespace Feynumeric
 
 }
 
-#endif // FEYNUMERIC_EDGE_HPP
+#endif // FEYNUMERIC_EDGE_HPP*/

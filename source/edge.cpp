@@ -1,3 +1,4 @@
+/*
 #include <iostream>
 #include "diagram.hpp"
 #include "edge.hpp"
@@ -87,7 +88,7 @@ namespace Feynumeric
 		_neighbours.clear();
 	}
 
-	vector<Edge*> Edge::neighbours()
+	std::vector<Edge*> Edge::neighbours()
     {
         return _neighbours;
     }
@@ -141,20 +142,6 @@ namespace Feynumeric
             critical_error("Can't assign feynman rule to edge: " + to_string() + ".");
         }
     }
-
-    /*
-    Edge::Edge(std::size_t a, std::size_t b, Edge::Type type)
-    : _a(a)
-    , _b(b)
-    , _type(type)
-    {
-        if( _type == Type::UNDEFINED )
-        {
-            warning("Edge Type specified as UNDEFINED at " + to_string() + ".");
-        }
-    }
-     */
-
     void Edge::momentum(const Matrix &momentum)
     {
         _momentum = momentum;
@@ -227,3 +214,4 @@ namespace Feynumeric
         return _particle;
     }
 }
+*/

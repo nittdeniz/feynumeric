@@ -1,3 +1,4 @@
+/*
 #ifndef FEYNUMERIC_EDGE_MANAGER_HPP
 #define FEYNUMERIC_EDGE_MANAGER_HPP
 
@@ -17,4 +18,4 @@ namespace Feynumeric
     };
 }
 
-#endif // FEYNUMERIC_EDGE_MANAGER_HPP
+#endif // FEYNUMERIC_EDGE_MANAGER_HPP*/

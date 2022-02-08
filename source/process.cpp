@@ -2,7 +2,7 @@
 
 namespace Feynumeric
 {
-    void Process::add_diagrams(vector<Diagram> diagrams)
+    void Process::add_diagrams(std::vector<Feynman_Diagram> diagrams)
     {
         _diagrams.reserve(_diagrams.size() + diagrams.size());
         for( auto& diagram : diagrams )
@@ -19,11 +19,12 @@ namespace Feynumeric
      * @param cos_theta
      * @return an array with components {coherent_sum, diagram_1, diagram_2, ...}
      */
-    vector<double> Process::dsigma_dcos_theta(double sqrt_s, double cos_theta)
+    std::vector<double> Process::dsigma_dcos_theta(double sqrt_s, double cos_theta)
     {
+    	/*
         const double PS = phase_space();
 
-        vector<double> result(_diagrams.size()+1, 0);
+	    std::vector<double> result(_diagrams.size()+1, 0);
         Complex coherent_sum;
         int i = 1;
         for( auto& diagram : _diagrams )
@@ -34,11 +35,13 @@ namespace Feynumeric
         }
         result[0] = PS * (coherent_sum * std::conj(coherent_sum)).real();
         return result;
+        */
+    	return {sqrt_s, cos_theta};
     }
 
-    vector<double> Process::sigma(double sqrt_s)
+    std::vector<double> Process::sigma(double sqrt_s)
     {
-        return vector<double>({sqrt_s});
+        return std::vector<double>({sqrt_s});
     }
 
     double Process::phase_space() const

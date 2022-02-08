@@ -7,14 +7,12 @@
 
 namespace Feynumeric
 {
-    using std::size_t;
-    using std::vector;
     class Matrix
     {
     protected:
-        size_t _rows, _cols;
-        vector<Complex> _data;
-        size_t index(size_t row, size_t col) const;
+        std::size_t _rows, _cols;
+        std::vector<Complex> _data;
+        std::size_t index(size_t row, std::size_t col) const;
     public:
         class dimension_exception : public std::exception
         {
@@ -22,8 +20,8 @@ namespace Feynumeric
             dimension_exception(){}
         };
 
-        Matrix(size_t rows = 0, size_t cols = 0, vector<Complex>&& data = {});
-        Matrix(size_t rows, size_t cols, Complex diagonal);
+        Matrix(size_t rows = 0, std::size_t cols = 0, std::vector<Complex>&& data = {});
+        Matrix(size_t rows, std::size_t cols, Complex diagonal);
         Matrix(Matrix const& other);
         Matrix(Matrix&& other);
         Matrix& operator=(Matrix const& other);
@@ -35,8 +33,8 @@ namespace Feynumeric
 
         Complex const& at(size_t i) const;
         Complex& operator[](size_t i);
-        Complex& operator()(size_t i, size_t j);
-        Complex at(size_t i, size_t j) const;
+        Complex& operator()(size_t i, std::size_t j);
+        Complex at(size_t i, std::size_t j) const;
 
         Matrix& operator+=(Matrix const& rhs);
         Matrix& operator-=(Matrix const& rhs);
@@ -50,36 +48,28 @@ namespace Feynumeric
 
         Complex try_as_complex() const;
 
+        template<typename T>
+        friend Matrix operator+(Matrix const& lhs, T const& rhs);
+        template<typename T>
+        friend Matrix operator+(T const& lhs, Matrix const& rhs);
         friend Matrix operator+(Matrix const& lhs, Matrix const& rhs);
-        friend Matrix operator+(Matrix const& lhs, int rhs);
-        friend Matrix operator+(int lhs, Matrix const& rhs);
-        friend Matrix operator+(Matrix const& lhs, double rhs);
-        friend Matrix operator+(double lhs, Matrix const& rhs);
-        friend Matrix operator+(Matrix const& lhs, Complex rhs);
-        friend Matrix operator+(Complex lhs, Matrix const& rhs);
 
         friend Matrix operator-(Matrix const& lhs);
 
-        friend Matrix operator-(Matrix const& lhs, Matrix const& rhs);
-        friend Matrix operator-(Matrix const& lhs, int rhs);
-        friend Matrix operator-(int lhs, Matrix const& rhs);
-        friend Matrix operator-(Matrix const& lhs, double rhs);
-        friend Matrix operator-(double lhs, Matrix const& rhs);
-        friend Matrix operator-(Matrix const& lhs, Complex rhs);
-        friend Matrix operator-(Complex lhs, Matrix const& rhs);
+	    template<typename T>
+	    friend Matrix operator-(Matrix const& lhs, T const& rhs);
+	    template<typename T>
+	    friend Matrix operator-(T const& lhs, Matrix const& rhs);
+	    friend Matrix operator-(Matrix const& lhs, Matrix const& rhs);
 
-        friend Matrix operator*(Matrix const& lhs, Matrix const& rhs);
+	    template<typename T>
+	    friend Matrix operator*(Matrix const& lhs, T const& rhs);
+	    template<typename T>
+	    friend Matrix operator*(T const& lhs, Matrix const& rhs);
+	    friend Matrix operator*(Matrix const& lhs, Matrix const& rhs);
 
-        friend Matrix operator*(Matrix const& lhs, int rhs);
-        friend Matrix operator*(int lhs, Matrix const& rhs);
-        friend Matrix operator*(Matrix const& lhs, double rhs);
-        friend Matrix operator*(double lhs, Matrix const& rhs);
-        friend Matrix operator*(Matrix const& lhs, Complex rhs);
-        friend Matrix operator*(Complex lhs, Matrix const& rhs);
-
-        friend Matrix operator/(Matrix const& lhs, int rhs);
-        friend Matrix operator/(Matrix const& lhs, double rhs);
-        friend Matrix operator/(Matrix const& lhs, Complex rhs);
+	    template<typename T>
+	    friend Matrix operator/(Matrix const& lhs, T const& rhs);
 
         friend bool operator==(Matrix const& lhs, Matrix const& rhs);
         friend bool operator!=(Matrix const& lhs, Matrix const& rhs);
@@ -88,36 +78,48 @@ namespace Feynumeric
         friend std::ostream& operator<<(std::ostream& out, Matrix const& matrix);
     };
 
-    Matrix operator+(Matrix const& lhs, Matrix const& rhs);
-    Matrix operator+(Matrix const& lhs, int rhs);
-    Matrix operator+(int lhs, Matrix const& rhs);
-    Matrix operator+(Matrix const& lhs, double rhs);
-    Matrix operator+(double lhs, Matrix const& rhs);
-    Matrix operator+(Matrix const& lhs, Complex rhs);
-    Matrix operator+(Complex lhs, Matrix const& rhs);
+	template<typename T>
+	Matrix operator+(Matrix const& lhs, T const& rhs){
+		return lhs + Matrix(lhs._cols, lhs._rows, static_cast<Complex>(rhs));
+	}
+	template<typename T>
+	Matrix operator+(T const& lhs, Matrix const& rhs){
+		return rhs + lhs;
+	}
+	Matrix operator+(Matrix const& lhs, Matrix const& rhs);
 
-    Matrix operator-(Matrix const& lhs);
+	Matrix operator-(Matrix const& lhs);
 
-    Matrix operator-(Matrix const& lhs, Matrix const& rhs);
-    Matrix operator-(Matrix const& lhs, int rhs);
-    Matrix operator-(int lhs, Matrix const& rhs);
-    Matrix operator-(Matrix const& lhs, double rhs);
-    Matrix operator-(double lhs, Matrix const& rhs);
-    Matrix operator-(Matrix const& lhs, Complex rhs);
-    Matrix operator-(Complex lhs, Matrix const& rhs);
+	template<typename T>
+	Matrix operator-(Matrix const& lhs, T const& rhs)
+	{
+		return lhs - Matrix(lhs._cols, lhs._rows, static_cast<Complex>(rhs));
+	}
+	template<typename T>
+	Matrix operator-(T const& lhs, Matrix const& rhs)
+	{
+		return Matrix(rhs._cols, rhs._rows, static_cast<Complex>(lhs)) - rhs;
+	}
+	Matrix operator-(Matrix const& lhs, Matrix const& rhs);
 
-    Matrix operator*(Matrix const& lhs, Matrix const& rhs);
+	template<typename T>
+	Matrix operator*(Matrix const& lhs, T const& rhs){
+		Matrix result(lhs);
+		for( auto& elem : result._data ){
+			elem *= rhs;
+		}
+		return result;
+	}
+	template<typename T>
+	Matrix operator*(T const& lhs, Matrix const& rhs){
+		return rhs * lhs;
+	}
+	Matrix operator*(Matrix const& lhs, Matrix const& rhs);
 
-    Matrix operator*(Matrix const& lhs, int rhs);
-    Matrix operator*(int lhs, Matrix const& rhs);
-    Matrix operator*(Matrix const& lhs, double rhs);
-    Matrix operator*(double lhs, Matrix const& rhs);
-    Matrix operator*(Matrix const& lhs, Complex rhs);
-    Matrix operator*(Complex lhs, Matrix const& rhs);
-
-    Matrix operator/(Matrix const& lhs, int rhs);
-    Matrix operator/(Matrix const& lhs, double rhs);
-    Matrix operator/(Matrix const& lhs, Complex rhs);
+	template<typename T>
+	Matrix operator/(Matrix const& lhs, T const& rhs){
+		return lhs * (1.L/rhs);
+	}
 
     bool same_dimension(Matrix const& lhs, Matrix const& rhs);
 

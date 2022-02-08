@@ -1,9 +1,12 @@
 #include <iostream>
 
-#include <Feynumeric/diagram.hpp>
-#include <Feynumeric/process.hpp>
-#include <Feynumeric/topologies.hpp>
-#include <Feynumeric/units.hpp>
+
+#include <feynumeric/feynman_diagram.hpp>
+#include <feynumeric/process.hpp>
+#include <feynumeric/topology.hpp>
+#include <feynumeric/units.hpp>
+#include <feynumeric/qed.hpp>
+
 
 #include "particles.hpp"
 #include "vertices.hpp"
@@ -13,37 +16,37 @@ int main()
 {
     using namespace Feynumeric;
     using namespace Feynumeric::Units;
-    using std::cout;
-
 
     init_particles();
-    init_vertices();
+	init_vertices();
 
-    Process electron_muon_scattering;
+    Topology Double_Wrench({
+           {0, 2, Direction::INCOMING},
+           {1,2, Direction::INCOMING},
+           {2,3, Direction::VIRTUAL},
+           {3, 4, Direction::OUTGOING},
+           {3, 5, Direction::OUTGOING}
+   });
 
-    Diagram electron_muon_s(&VM,
-                            Topology::X_Man,
-                            {Electron, Muon_Minus},
-                            {Photon},
-                            {Electron, Muon_Minus});
+    Topology X_Man({
+		                   {0, 2, Direction::INCOMING},
+		                   {1, 3, Direction::INCOMING},
+		                   {2, 3, Direction::VIRTUAL},
+		                   {2, 4, Direction::OUTGOING},
+		                   {3,5, Direction::OUTGOING}
+		    });
 
+    Feynman_Diagram e_muon(X_Man, VMP,{Electron, Muon_Minus}, {Photon}, {Electron, Muon_Minus});
 
+    Kinematics kin;
+    kin.sqrt_s = 1.49_GeV;
+    kin.cosines.resize(1);
+    kin.momenta.push_back(0.3_GeV);
+    kin.momenta.push_back(0.1_GeV);
 
-    electron_muon_scattering.add_diagrams({
-        electron_muon_s
-        });
+	e_muon.generate_amplitude();
 
-    auto result = electron_muon_scattering.dsigma_dcos_theta(1.49_GeV, 1);
-    for( auto const& data : result )
-    {
-        cout  << "data: " << data << "\t";
-    }
-    cout << "\n";
-//
-//    table({"cos_theta", "dsigma", "+/-"}, [&photo_production](double cos_theta){return photo_production.dsigma_dcos_theta(1.49_GeV, cos_theta);}, {-1,1,0.1});
-//
-//    table({"E_cm", "E_lab", "sigma", "+/-"}, [&photo_production](double sqrt_s){return photo_production.sigma(sqrt_s);}, {1.1_GeV, 2.0_GeV, 0.1_GeV});
-
+    std::cout << "result: " << e_muon.dsigma_dcos(kin);
     return EXIT_SUCCESS;
 }
 

@@ -50,6 +50,11 @@ namespace Feynumeric
         {
             return value * 1.e-9;
         }
+
+        constexpr long double operator"" _e(long double value) // electric charge
+        {
+        	return value * 0.3028221198596643;
+        }
     }
 }
 

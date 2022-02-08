@@ -1,3 +1,4 @@
+/*
 #ifndef Feynumeric_DIAGRAM
 #define Feynumeric_DIAGRAM
 
@@ -79,3 +80,4 @@ namespace Feynumeric
     };
 }
 #endif // Feynumeric_DIAGRAM
+ */

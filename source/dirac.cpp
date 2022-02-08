@@ -44,12 +44,12 @@ namespace Feynumeric
         return Complex(0, 1)/2. * (a*b - b*a);
     }
 
-    Matrix u(Edge* edge_ptr, Kinematics const& kin)
+    Matrix u(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
     {
-		return u(edge_ptr->particle(), edge_ptr->four_momentum()(kin), edge_ptr->spin(), edge_ptr->get_lorentz_indices());
+		return u(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
     }
 
-    Matrix u(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const vector<Lorentz_Index_Ptr> &lorentz_indices)
+    Matrix u(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
 //    	std::cerr << "u: " << s->j() << " / " << s->m() << "\n";
         if( s->j() == 1./2 )
@@ -82,27 +82,27 @@ namespace Feynumeric
         return result;
     }
 
-    Matrix ubar(Edge* edge_ptr, Kinematics const& kin)
+    Matrix ubar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
 	{
-        return ubar(edge_ptr->particle(), edge_ptr->four_momentum()(kin), edge_ptr->spin(), edge_ptr->get_lorentz_indices());
+        return ubar(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
 
-    Matrix ubar(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const vector<Lorentz_Index_Ptr> &lorentz_indices)
+    Matrix ubar(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
         return u(P, p, s, lorentz_indices).T().apply([](Complex const& z){return std::conj(z);}) * GA[0];
     }
 
-    Matrix epsilon(Edge* edge_ptr, Kinematics const& kin)
+    Matrix epsilon(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
     {
-    	return epsilon(edge_ptr->four_momentum()(kin), edge_ptr->spin(), edge_ptr->get_lorentz_indices());
+    	return epsilon(edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
     }
 
-    Matrix epsilon_star(Edge* edge_ptr, Kinematics const& kin)
+    Matrix epsilon_star(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
     {
-	    return epsilon_star(edge_ptr->four_momentum()(kin), edge_ptr->spin(), edge_ptr->get_lorentz_indices());
+	    return epsilon_star(edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
     }
 
-    Matrix epsilon(const Four_Momentum &p, Angular_Momentum_Ptr s, const vector<Lorentz_Index_Ptr> &lorentz_indices)
+    Matrix epsilon(const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
         if( s->j() == 0 )
         {
@@ -143,20 +143,20 @@ namespace Feynumeric
     }
 
 
-    Matrix epsilon_star(const Four_Momentum &p, Angular_Momentum_Ptr s, const vector<Lorentz_Index_Ptr> &lorentz_indices)
+    Matrix epsilon_star(const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
         return epsilon(p, s, lorentz_indices).apply([](Complex const& z){return std::conj(z);});
     }
 
-	Matrix Projector(Edge* edge_ptr, const Kinematics& kin, bool ignore_momentum){
-		return Projector(edge_ptr->particle(), edge_ptr->four_momentum()(kin), edge_ptr->get_lorentz_indices(), ignore_momentum);
+	Matrix Projector(Feynman_Graph::Edge_Ptr edge_ptr, const Kinematics& kin, bool ignore_momentum){
+		return Projector(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->lorentz_indices(), ignore_momentum);
 	}
 
-	Matrix Propagator(Edge* edge_ptr, const Kinematics& kin, bool ignore_momentum){
-		return Propagator(edge_ptr->particle(), edge_ptr->four_momentum()(kin), edge_ptr->get_lorentz_indices(), ignore_momentum);
+	Matrix Propagator(Feynman_Graph::Edge_Ptr edge_ptr, const Kinematics& kin, bool ignore_momentum){
+		return Propagator(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->lorentz_indices(), ignore_momentum);
 	}
 
-	Matrix Projector(Particle_Ptr const& P, const Four_Momentum &p, const vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum)
+	Matrix Projector(Particle_Ptr const& P, const Four_Momentum &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum)
     {
         static Matrix const metric_tensor = Matrix(4, 4, {1,0,0,0, 0,-1,0,0, 0,0,-1,0, 0,0,0,-1});
 
@@ -228,7 +228,7 @@ namespace Feynumeric
         );
     }
 
-    Matrix Propagator(const Particle_Ptr &P, const Four_Momentum &p, const vector<Lorentz_Index_Ptr> &lorentz_indices,
+    Matrix Propagator(const Particle_Ptr &P, const Four_Momentum &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices,
                       bool ignore_momentum)
     {
         return Projector(P, p, lorentz_indices, ignore_momentum);

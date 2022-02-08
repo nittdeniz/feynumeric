@@ -48,9 +48,31 @@ namespace Feynumeric
         double squared() const;
 
         double dot() const;
+
+        friend Four_Momentum operator+(Four_Momentum const& lhs, Four_Momentum const& rhs);
+	    friend Four_Momentum operator-(Four_Momentum const& lhs, Four_Momentum const& rhs);
+	    template<typename T>
+	    friend Four_Momentum operator*(T const& lhs, Four_Momentum const& rhs);
+	    template<typename T>
+	    friend Four_Momentum operator*(Four_Momentum const& lhs, T const& rhs);
     };
 
-	using Momentum_Func = std::function<Four_Momentum(Kinematics const&)>;
+	Four_Momentum operator+(Four_Momentum const& lhs, Four_Momentum const& rhs);
+	Four_Momentum operator-(Four_Momentum const& lhs, Four_Momentum const& rhs);
+	template<typename T>
+	Four_Momentum operator*(T const& lhs, Four_Momentum const& rhs){
+		Four_Momentum copy(rhs);
+		copy._data[0] *= lhs;
+		copy._data[1] *= lhs;
+		copy._data[2] *= lhs;
+		copy._data[3] *= lhs;
+		return copy;
+	}
+	template<typename T>
+	Four_Momentum operator*(Four_Momentum const& lhs, T const& rhs)
+	{
+		return rhs * lhs;
+	}
 }
 #endif // Feynumeric_MOMENTUM_HPP
 

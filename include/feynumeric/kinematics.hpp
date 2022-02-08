@@ -8,6 +8,7 @@ namespace Feynumeric
     struct Kinematics
     {
         double sqrt_s;
+        std::vector<double> momenta;
         std::vector<double> invariant_masses;
         std::vector<double> cosines;
     };

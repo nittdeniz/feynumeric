@@ -152,4 +152,24 @@ namespace Feynumeric
                 - _data[3] * std::conj(_data[3])
         ).real();
     }
+
+	Four_Momentum operator+(Four_Momentum const& lhs, Four_Momentum const& rhs)
+	{
+		Four_Momentum result(lhs);
+		result._data[0] += rhs._data[0];
+		result._data[1] += rhs._data[1];
+		result._data[2] += rhs._data[2];
+		result._data[3] += rhs._data[3];
+		return result;
+	}
+
+	Four_Momentum operator-(Four_Momentum const& lhs, Four_Momentum const& rhs)
+	{
+		Four_Momentum result(lhs);
+		result._data[0] -= rhs._data[0];
+		result._data[1] -= rhs._data[1];
+		result._data[2] -= rhs._data[2];
+		result._data[3] -= rhs._data[3];
+		return result;
+	}
 }

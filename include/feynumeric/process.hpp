@@ -3,21 +3,19 @@
 
 #include <vector>
 
-#include "diagram.hpp"
+#include "feynman_diagram.hpp"
 
 namespace Feynumeric
 {
-    using std::vector;
-
     class Process
     {
     private:
-        vector<Diagram> _diagrams;
+        std::vector<Feynman_Diagram> _diagrams;
     public:
-        void add_diagrams(vector<Diagram> diagram_list);
+        void add_diagrams(std::vector<Feynman_Diagram> diagram_list);
 
-        vector<double> dsigma_dcos_theta(double sqrt_s, double cos_theta);
-        vector<double> sigma(double sqrt_s);
+        std::vector<double> dsigma_dcos_theta(double sqrt_s, double cos_theta);
+        std::vector<double> sigma(double sqrt_s);
 
         double phase_space() const;
     };

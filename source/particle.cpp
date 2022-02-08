@@ -2,7 +2,7 @@
 
 namespace Feynumeric
 {
-    Particle::Particle(string&& name, Type type, double mass, int charge, Angular_Momentum spin)
+    Particle::Particle(std::string&& name, Type type, double mass, double charge, Angular_Momentum spin)
     : _name(std::move(name))
     , _type(type)
     , _mass(mass)
@@ -12,12 +12,12 @@ namespace Feynumeric
 		_spin.m(spin.j());
     }
 
-    any Particle::user_data(string key) const
+    std::any Particle::user_data(std::string key) const
     {
         return _user_data.at(key);
     }
 
-    string Particle::name() const
+    std::string Particle::name() const
     {
         return _name;
     }
@@ -42,7 +42,7 @@ namespace Feynumeric
         return _isospin;
     }
 
-    void Particle::user_data(string key, any data)
+    void Particle::user_data(std::string key, std::any data)
     {
         _user_data[key] = data;
     }

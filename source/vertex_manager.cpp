@@ -1,125 +1,39 @@
-#include "vertex_manager.hpp"
-#include "messages.hpp"
 #include <iostream>
+#include <optional>
+#include <sstream>
+
+#include "vertex_manager.hpp"
+
 
 namespace Feynumeric
 {
-    void Vertex_Manager::add_vertex(std::vector<std::pair<Particle_Ptr, Vertex_Manager::Direction>> const& particles, Vertex_Function const& function)
-    {
-        using std::abort;
-        using std::cerr;
-        using std::string;
-        using std::vector;
+	void Vertex_Manager::add(Vertex const& vertex)
+	{
+		for( std::size_t i = 0; i < vertex._particle_directions.size(); ++i )
+		{
+			if( vertex._particle_directions[i].direction == Direction::BOTH )
+			{
+				Vertex v1(vertex);
+				v1._particle_directions[i].direction = Direction::INCOMING;
+				Vertex v2(vertex);
+				v2._particle_directions[i].direction = Direction::OUTGOING;
+				add(v1);
+				add(v2);
+				return;
+			}
+		}
+		auto hash = canonical_hash(vertex._particle_directions);
+		_vertices[hash] = std::make_shared<Vertex>(vertex);
+	}
 
-        vector<String_Direction_Pair> pairs;
-        pairs.reserve(particles.size());
-        for( auto const& pair : particles )
-        {
-            pairs.emplace_back(pair.first->name(), pair.second);
-        }
-
-        const auto keys = generate_keys(pairs);
-        _vertex_rules[keys.first][keys.second] = function;
-    }
-
-    Vertex_Manager::Vertex_Manager()
-    {
-
-    }
-
-    Vertex_Manager::Vertex_Manager(const Vertex_Manager &other)
-    : _vertex_rules(other._vertex_rules)
-    {
-
-    }
-
-    Vertex_Manager &Vertex_Manager::operator=(const Vertex_Manager &other)
-    {
-        _vertex_rules = other._vertex_rules;
-        return *this;
-    }
-
-    Vertex_Function Vertex_Manager::get_vertex(std::vector<String_Direction_Pair> const& pairs) const
-    {
-        const auto keys = generate_keys(pairs);
-        try
-        {
-            auto particle_matches = _vertex_rules.at(keys.first);
-            for( auto const& match : particle_matches )
-            {
-                if( match.first.size() != keys.second.size() )
-                {
-                    continue;
-                }
-                bool found = true;
-                for( std::size_t i = 0; i < keys.second.size(); ++i )
-                {
-                    auto lhs = static_cast<unsigned int>(match.first[i]);
-                    auto rhs = static_cast<unsigned int>(keys.second[i]);
-                    auto result = lhs & rhs;
-                    found &=  result > 0;
-
-                }
-                if( found )
-                {
-                    return match.second;
-                }
-            }
-        }
-        catch( std::out_of_range const& exception )
-        {
-            std::cerr << "Did not find vertex: " << keys.first << "\n";
-            abort();
-        }
-        std::cerr << "Vertex does not support particle configuration.\n";
-        abort();
-    }
-
-    Vertex_Function Vertex_Manager::get_vertex_function(std::size_t vertex_id, std::vector<Edge*>& edges) const
-    {
-        std::vector<String_Direction_Pair> pairs;
-        for( auto& edge_ptr : edges )
-        {
-            Direction d;
-            if( edge_ptr->a() == vertex_id )
-            {
-                d = Direction::OUT;
-            }
-            else if( edge_ptr->b() == vertex_id )
-            {
-                d = Direction::IN;
-            }
-            else
-            {
-                critical_error("Edge " + edge_ptr->to_string() + " is not associated with vertex: " + std::to_string(static_cast<std::size_t>(vertex_id)) + ".");
-            }
-            pairs.emplace_back(edge_ptr->particle()->name(), d);
-        }
-        return get_vertex(pairs);
-    }
-
-    std::pair<std::string, std::vector<Vertex_Manager::Direction>> Vertex_Manager::generate_keys(std::vector<String_Direction_Pair> pairs) const
-    {
-        std::sort(pairs.begin(), pairs.end(), [](String_Direction_Pair const& lhs, String_Direction_Pair const& rhs){
-            auto const& l_name = lhs.first;
-            auto const& r_name = rhs.first;
-            auto const& l_direction = lhs.second;
-            auto const& r_direction = rhs.second;
-            return l_name < r_name
-                || (l_name == r_name && l_direction < r_direction);
-        });
-
-        string ID;
-        vector<Direction> directions;
-        directions.reserve(pairs.size());
-        for( auto const& pair : pairs )
-        {
-            ID += pair.first;
-            directions.push_back(pair.second);
-        }
-        return {ID, directions};
-    }
-
+	std::optional<Vertex_Ptr> Vertex_Manager::find_vertex(std::size_t hash)
+	{
+		if( _vertices.contains(hash) )
+		{
+			return _vertices.at(hash);
+		}
+		return std::nullopt;
+	}
 }
 
 

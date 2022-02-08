@@ -3,7 +3,7 @@
 
 #include "Feynumeric/vertex_manager.hpp"
 
-extern Feynumeric::Vertex_Manager VM;
+extern Feynumeric::Vertex_Manager_Ptr VMP;
 
 void init_vertices();
 

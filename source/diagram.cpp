@@ -1,3 +1,4 @@
+/*
 #include "diagram.hpp"
 #include "messages.hpp"
 #include "momentum.hpp"
@@ -565,3 +566,4 @@ namespace Feynumeric
     }
 
 }
+*/

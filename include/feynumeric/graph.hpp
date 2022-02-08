@@ -1,3 +1,4 @@
+/*
 #ifndef Feynumeric_GRAPH_HPP
 #define Feynumeric_GRAPH_HPP
 
@@ -41,3 +42,4 @@ namespace Feynumeric
 }
 
 #endif // Feynumeric_GRAPH_HPP
+ */

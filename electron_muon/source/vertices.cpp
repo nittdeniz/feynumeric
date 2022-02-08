@@ -1,43 +1,73 @@
 #include "particles.hpp"
 #include "vertices.hpp"
-
-#include <feynumeric/diagram.hpp>
+#include <feynumeric/feynman_diagram.hpp>
+#include <feynumeric/direction.hpp>
+#include <feynumeric/kinematics.hpp>
+#include <feynumeric/vertex_manager.hpp>
+#include <feynumeric/units.hpp>
 #include <feynumeric/dirac.hpp>
-#include <feynumeric/edge.hpp>
-#include <feynumeric/constants.hpp>
+#include <feynumeric/vertex.hpp>
 
-Feynumeric::Vertex_Manager VM = Feynumeric::Vertex_Manager();
+Feynumeric::Vertex_Manager_Ptr VMP = std::make_shared<Feynumeric::Vertex_Manager>();
 
 void init_vertices()
 {
-    using Direction = Feynumeric::Vertex_Manager::Direction;
-    VM.add_vertex(
-            {
-                 {Electron, Direction::IN}
-                ,{Electron, Direction::OUT}
-                ,{Photon, Direction::BOTH}
-            },
-            [](Feynumeric::Diagram* diagram, std::vector<Feynumeric::Edge*> const& edges)
-            {
-	            auto const& electron_in  = edges[0];
-	            auto const& electron_out = edges[1];
-	            auto const& photon       = edges[2];
-	            return Feynumeric::Constants::e * Feynumeric::GA[*(photon->get_lorentz_indices()[0])];
-            }
-            );
-    VM.add_vertex(
+    using Feynumeric::Direction;
+    using namespace Feynumeric::Units;
+    VMP->add(Feynumeric::Vertex(
+        {
+				           {Electron, Direction::BOTH},
+				           {Electron, Direction::BOTH},
+				           {Photon, Direction::BOTH}
+		           },
+		           [](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+			           auto const& electron_in = edges[0];
+			           auto const& electron_out = edges[1];
+			           auto const& photon = edges[2];
+			           return 1._e * Feynumeric::GA[*( photon->lorentz_indices()[0] )];
+		           }
+    ));
+	VMP->add(Feynumeric::Vertex(
+			{
+					{Electron, Direction::BOTH},
+					{Positron, Direction::BOTH},
+					{Photon, Direction::BOTH}
+			},
+			[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+				auto const& electron_in = edges[0];
+				auto const& electron_out = edges[1];
+				auto const& photon = edges[2];
+				return 1._e * Feynumeric::GA[*( photon->lorentz_indices()[0] )];
+			}
+	));
+
+
+    VMP->add(Feynumeric::Vertex(
 		    {
-				     {Muon_Minus, Direction::IN}
-				    ,{Muon_Minus, Direction::OUT}
+				     {Muon_Minus, Direction::BOTH}
+				    ,{Muon_Minus, Direction::BOTH}
 				    ,{Photon, Direction::BOTH}
 		    },
-            [](Feynumeric::Diagram* diagram, std::vector<Feynumeric::Edge*> const& edges)
+		    [](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges)
             {
                 auto const& muon_in  = edges[0];
                 auto const& muon_out = edges[1];
                 auto const& photon   = edges[2];
-	            return Feynumeric::Constants::e * Feynumeric::GA[*(photon->get_lorentz_indices()[0])];
-            }
+	            return 1._e * Feynumeric::GA[*(photon->lorentz_indices()[0])];
+            })
     );
+	VMP->add(Feynumeric::Vertex(
+			{
+					{Muon_Minus, Direction::BOTH}
+					,{Muon_Plus, Direction::BOTH}
+					,{Photon, Direction::BOTH}
+			},
+			[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges)
+			{
+				auto const& muon_in  = edges[0];
+				auto const& muon_out = edges[1];
+				auto const& photon   = edges[2];
+				return 1._e * Feynumeric::GA[*(photon->lorentz_indices()[0])];
+			})
+	);
 }
-
