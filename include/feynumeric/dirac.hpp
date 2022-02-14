@@ -19,11 +19,19 @@ namespace Feynumeric
     extern std::array<Matrix, 4> GA;
     extern std::array<Matrix, 4> GAC;
 
+    Matrix GS(Four_Momentum const& p);
+	Matrix GS(Matrix const& matrix);
+
 
     Matrix u(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
     Matrix u(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
     Matrix ubar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
     Matrix ubar(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+
+	Matrix v(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
+	Matrix v(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+	Matrix vbar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
+	Matrix vbar(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
 
     Matrix epsilon(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
     Matrix epsilon_star(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);

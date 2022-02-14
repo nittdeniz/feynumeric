@@ -13,7 +13,7 @@ namespace Feynumeric
 	                                },
 								 [](Kinematics const& kin, Particle_List const& particles)
 								 {
-									return Matrix(1,1,kin.sqrt_s * particles[0]->spin()->j());
+									return Matrix(1,1,kin.sqrt_s() * particles[0]->spin()->j());
 								 }
 								 );
 	Vertex electron_positron_photon({
@@ -23,6 +23,6 @@ namespace Feynumeric
 	                                },
 	                                [](Kinematics const& kin, Particle_List const& particles)
 	                                {
-		                                return Matrix(1,1,kin.sqrt_s * particles[0]->spin()->j());
+		                                return Matrix(1,1,kin.sqrt_s() * particles[0]->spin()->j());
 	                                });
 }

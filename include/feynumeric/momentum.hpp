@@ -1,7 +1,6 @@
 #ifndef Feynumeric_MOMENTUM_HPP
 #define Feynumeric_MOMENTUM_HPP
 
-#include "kinematics.hpp"
 #include "matrix.hpp"
 
 namespace Feynumeric
@@ -50,6 +49,7 @@ namespace Feynumeric
         double dot() const;
 
         friend Four_Momentum operator+(Four_Momentum const& lhs, Four_Momentum const& rhs);
+        friend Four_Momentum operator-(Four_Momentum const& lhs);
 	    friend Four_Momentum operator-(Four_Momentum const& lhs, Four_Momentum const& rhs);
 	    template<typename T>
 	    friend Four_Momentum operator*(T const& lhs, Four_Momentum const& rhs);
@@ -58,6 +58,7 @@ namespace Feynumeric
     };
 
 	Four_Momentum operator+(Four_Momentum const& lhs, Four_Momentum const& rhs);
+	Four_Momentum operator-(Four_Momentum const& lhs);
 	Four_Momentum operator-(Four_Momentum const& lhs, Four_Momentum const& rhs);
 	template<typename T>
 	Four_Momentum operator*(T const& lhs, Four_Momentum const& rhs){

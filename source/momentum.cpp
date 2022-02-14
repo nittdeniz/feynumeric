@@ -163,6 +163,16 @@ namespace Feynumeric
 		return result;
 	}
 
+	Four_Momentum operator-(Four_Momentum const& lhs)
+	{
+		Four_Momentum result(lhs);
+		for( auto& item : result._data )
+		{
+			item *= -1;
+		}
+		return result;
+	}
+
 	Four_Momentum operator-(Four_Momentum const& lhs, Four_Momentum const& rhs)
 	{
 		Four_Momentum result(lhs);

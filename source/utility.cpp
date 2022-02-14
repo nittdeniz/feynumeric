@@ -11,7 +11,7 @@ namespace Feynumeric
     {
         double a = (aa * std::conj(aa)).real();
         double b = (bb * std::conj(bb)).real();
-        return std::abs(a-b) < std::abs(epsilon * std::min(a, b));
+        return std::abs(a-b) <= std::abs(epsilon * std::min(a, b));
     }
 
     Complex dot3(Matrix const& a, Matrix const& b)

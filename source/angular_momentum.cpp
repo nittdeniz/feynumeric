@@ -8,7 +8,7 @@ namespace Feynumeric
     : _j(j)
     , _m(m)
     {
-        if( !is_valid_spin(j) || !is_valid_spin(m) )
+        if( !is_valid_spin(j) || !is_valid_spin(std::abs(m)) )
         {
             std::cerr << "Angular Momentum is not of the form n/2 (int n >= 0)\n";
             std::abort();

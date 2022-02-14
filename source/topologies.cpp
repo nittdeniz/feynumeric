@@ -1,30 +1,21 @@
-/*
-#include "edge.hpp"
+#include "direction.hpp"
 #include "topologies.hpp"
-#include <vector>
 
 namespace Feynumeric
 {
-    namespace Topology
-    {
-        [[maybe_unused]] const Graph Double_Wrench(
-                std::list<Edge>{
-                        {0, 2, Edge::Type::INCOMING},
-                        {1, 2, Edge::Type::INCOMING},
-                        {2, 3, Edge::Type::VIRTUAL},
-                        {3, 4, Edge::Type::OUTGOING},
-                        {3, 5, Edge::Type::OUTGOING}
-                });
+	const Topology X_Man({
+			                     {0, 2, Direction::INCOMING},
+			                     {1, 3, Direction::INCOMING},
+			                     {2, 3, Direction::VIRTUAL},
+			                     {2, 4, Direction::OUTGOING},
+			                     {3,5, Direction::OUTGOING}
+	                     });
 
-        [[maybe_unused]] const Graph X_Man(
-                std::list<Edge>{
-                        {0,2,Edge::Type::INCOMING},
-                        {1,3,Edge::Type::INCOMING},
-                        {2,3,Edge::Type::VIRTUAL},
-                        {2,4,Edge::Type::OUTGOING},
-                        {3,5,Edge::Type::OUTGOING}
-                }
-            );
-    }
+	const Topology Double_Wrench({
+			                             {0, 2, Direction::INCOMING},
+			                             {1,2, Direction::INCOMING},
+			                             {2,3, Direction::VIRTUAL},
+			                             {3, 4, Direction::OUTGOING},
+			                             {3, 5, Direction::OUTGOING}
+	                             });
 }
-*/

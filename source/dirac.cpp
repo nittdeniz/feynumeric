@@ -24,6 +24,21 @@ namespace Feynumeric
                     -Matrix(4, 4, {0,0,1,0, 0,0,0,-1, -1,0,0,0, 0,1,0,0})
             };
 
+	[[maybe_unused]] Matrix GS(Four_Momentum const& p)
+	{
+		Complex const& a = p.E();
+		Complex const& b = p.x();
+		Complex const& c = p.y();
+		Complex const& d = p.z();
+		return Matrix(4, 4,
+		              std::vector<Complex>(std::initializer_list<Complex>{
+				              a, 0., -d, -b + 1.i * c,
+				              0., a, -b - 1.i * c, d,
+				              d, b - 1.i * c, -a, 0.,
+				              b + 1.i * c, -d, 0., -a
+		              }));
+	}
+
     [[maybe_unused]] Matrix GS(const Matrix &matrix)
     {
         Complex const& a = matrix.at(0);
@@ -49,15 +64,30 @@ namespace Feynumeric
 		return u(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
     }
 
+	Matrix v(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
+	{
+		return u(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
+	}
+
+	Matrix v(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
+	{
+		return u(P, p, s, lorentz_indices);
+	}
+
     Matrix u(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
-//    	std::cerr << "u: " << s->j() << " / " << s->m() << "\n";
+		if( p.E() < 0 )
+		{
+			Four_Momentum p_new = -p;
+			return u(P, p_new, s, lorentz_indices);
+		}
         if( s->j() == 1./2 )
         {
         	auto N = p.E()+P->mass();
             if( s->m() == 1./2 )
             {
-                return std::sqrt(N) * Matrix(4,1, {1, 0, p.z()/N, (p.x()+1.i * p.y())/N});
+            	auto result = std::sqrt(N) * Matrix(4,1, {1, 0, p.z()/N, (p.x()+1.i * p.y())/N});
+                return result;
             }
             if( s->m() == -1./2 )
             {
@@ -82,13 +112,27 @@ namespace Feynumeric
         return result;
     }
 
+	Matrix vbar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
+	{
+		return ubar(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
+	}
+
+	Matrix vbar(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
+	{
+//		std::cerr << "ubar: " << P->name() << ": " << p << "\n";
+		return u(P, p, s, lorentz_indices).T().apply([](Complex const& z){return std::conj(z);}) * GA[0];
+	}
+
     Matrix ubar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
 	{
         return ubar(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
 
+
+
     Matrix ubar(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
+//		std::cerr << "ubar: " << P->name() << ": " << p << "\n";
         return u(P, p, s, lorentz_indices).T().apply([](Complex const& z){return std::conj(z);}) * GA[0];
     }
 
