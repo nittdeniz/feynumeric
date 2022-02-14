@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <utility.hpp>
 
 #include "feynman_diagram.hpp"
 #include "format.hpp"
@@ -47,21 +48,21 @@ namespace Feynumeric
 
 			if( edge_ptr->particle()->is_fermion() )
 			{
-				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
-				for( auto const& ind : edge_ptr->lorentz_indices() )
-				{
-					std::cerr << ind << "\n";
-				}
+//				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
+//				for( auto const& ind : edge_ptr->lorentz_indices() )
+//				{
+//					std::cerr << ind << "\n";
+//				}
 				_amplitude.push_back(edge_ptr->feynman_rule());
 				trace_fermion_line(edge_ptr, edge_ptr->back(),Direction::OUTGOING);
 			}
 			else if( !edge_ptr->particle()->is_anti_fermion() )
 			{
-				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
-				for( auto const& ind : edge_ptr->lorentz_indices() )
-				{
-					std::cerr << ind << "\n";
-				}
+//				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
+//				for( auto const& ind : edge_ptr->lorentz_indices() )
+//				{
+//					std::cerr << ind << "\n";
+//				}
 				_amplitude.push_back(edge_ptr->feynman_rule());
 			}
 		}
@@ -71,21 +72,21 @@ namespace Feynumeric
 			add_lorentz_indices(edge_ptr);
 			if( edge_ptr->particle()->is_anti_fermion() )
 			{
-				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
-				for( auto const& ind : edge_ptr->lorentz_indices() )
-				{
-					std::cerr << ind << "\n";
-				}
+//				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
+//				for( auto const& ind : edge_ptr->lorentz_indices() )
+//				{
+//					std::cerr << ind << "\n";
+//				}
 				_amplitude.push_back(edge_ptr->feynman_rule());
 				trace_fermion_line(edge_ptr, edge_ptr->front(), Direction::INCOMING);
 			}
 			else if( !edge_ptr->particle()->is_fermion() )
 			{
-				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
-				for( auto const& ind : edge_ptr->lorentz_indices() )
-				{
-					std::cerr << ind << "\n";
-				}
+//				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
+//				for( auto const& ind : edge_ptr->lorentz_indices() )
+//				{
+//					std::cerr << ind << "\n";
+//				}
 				_amplitude.push_back(edge_ptr->feynman_rule());
 			}
 		}
@@ -96,11 +97,11 @@ namespace Feynumeric
 			add_lorentz_indices(edge_ptr);
 			if( !(edge_ptr->particle()->is_fermion() || edge_ptr->particle()->is_anti_fermion()) )
 			{
-				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
-				for( auto const& ind : edge_ptr->lorentz_indices() )
-				{
-					std::cerr << ind << "\n";
-				}
+//				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
+//				for( auto const& ind : edge_ptr->lorentz_indices() )
+//				{
+//					std::cerr << ind << "\n";
+//				}
 				_amplitude.push_back(edge_ptr->feynman_rule());
 			}
 		}
@@ -117,7 +118,7 @@ namespace Feynumeric
 			Matrix p = zeroes;
 			p[position] = 1;
 			edge_ptr->relative_momentum(p);
-			_four_momenta.push_back(generate_four_momentum(Direction::INCOMING, position));
+//			_four_momenta.push_back(generate_four_momentum(Direction::INCOMING, position));
 			position++;
 		}
 		for( auto const& edge_ptr : _graph._outgoing )
@@ -125,7 +126,7 @@ namespace Feynumeric
 			Matrix p = zeroes;
 			p[position] = -1;
 			edge_ptr->relative_momentum(p);
-			_four_momenta.push_back(generate_four_momentum(Direction::OUTGOING, position));
+//			_four_momenta.push_back(generate_four_momentum(Direction::OUTGOING, position));
 			position++;
 		}
 
@@ -205,16 +206,16 @@ namespace Feynumeric
 			for( auto const& [vertex_b, edge_list] : map )
 			{
 				if( vertex_a > vertex_b ) continue;
-				for( auto const& edge_ptr : edge_list )
-				{
-					std::cerr << "Edge(" << vertex_a << ", " << vertex_b << "): " << edge_ptr->relative_momentum() << "\n";
-				}
+//				for( auto const& edge_ptr : edge_list )
+//				{
+//					std::cerr << "Edge(" << vertex_a << ", " << vertex_b << "): " << edge_ptr->relative_momentum() << "\n";
+//				}
 			}
 		}
 
 	}
 
-
+/*
 	Feynman_Diagram::Momentum_Func Feynman_Diagram::generate_four_momentum(Direction const& direction, std::size_t pos) const
 	{
 		if( direction == Direction::INCOMING )
@@ -224,18 +225,18 @@ namespace Feynumeric
 			{
 				case 1:
 					return [](Particle_Ptr const& P, Kinematics const& kin){
-						return Four_Momentum(kin.momenta[0], P->mass(), 0);
+						return Four_Momentum(kin.momenta[0], P->mass(), 1);
 					};
 				case 2:
 					switch( pos )
 					{
 						case 0:
 							return [](Particle_Ptr const& P, Kinematics const& kin){
-								return Four_Momentum(kin.momenta[0], P->mass(), kin.cosines[0]);
+								return Four_Momentum(kin.momenta[0], P->mass(), 1);
 							};
 						case 1:
 							return [](Particle_Ptr const& P, Kinematics const& kin){
-								return Four_Momentum(-kin.momenta[0], P->mass(), kin.cosines[0]);
+								return Four_Momentum(-kin.momenta[0], P->mass(), 1);
 							};
 						default:
 							critical_error(FORMAT("generate_four_momentum: position argument ({}) out of bounds ({}).", pos, n_particles));
@@ -252,18 +253,18 @@ namespace Feynumeric
 			{
 				case 1:
 					return [](Particle_Ptr const& P, Kinematics const& kin){
-						return Four_Momentum(kin.momenta[1], P->mass(), 0);
+						return Four_Momentum(kin.momenta[1], P->mass(), 1);
 					};
 				case 2:
 					switch( pos - offset )
 					{
 						case 0:
 							return [offset](Particle_Ptr const& P, Kinematics const& kin){
-								return Four_Momentum(kin.momenta[1], P->mass(), kin.cosines[offset+0]);
+								return Four_Momentum(kin.momenta[1], P->mass(), kin.cosines[0]);
 							};
 						case 1:
 							return [offset](Particle_Ptr const& P, Kinematics const& kin){
-								return Four_Momentum(-kin.momenta[1], P->mass(), kin.cosines[offset+0]);
+								return Four_Momentum(-kin.momenta[1], P->mass(), kin.cosines[0]);
 							};
 						default:
 							critical_error(FORMAT("generate_four_momentum: position argument ({}) out of bounds ({}).", pos, n_particles));
@@ -274,11 +275,11 @@ namespace Feynumeric
 		}
 		critical_error("Particle configuration not supported.");
 	}
-
-	Four_Momentum Feynman_Diagram::four_momentum(std::size_t index, Particle_Ptr const& P, Kinematics const& kin)
-	{
-		return _four_momenta.at(index)(P, kin);
-	}
+*/
+//	Four_Momentum Feynman_Diagram::four_momentum(std::size_t index, Particle_Ptr const& P, Kinematics const& kin)
+//	{
+//		return _four_momenta.at(index)(P, kin);
+//	}
 
 	void Feynman_Diagram::trace_fermion_line(Feynman_Graph::Edge_Ptr const& ptr, Direction const& start_direction)
 	{
@@ -289,11 +290,11 @@ namespace Feynumeric
 				{
 					if( ptr->particle()->is_fermion() )
 					{
-						std::cerr << "Amplitude-Feynman: " << ptr->particle()->name() << "\n";
-						for( auto const& ind : ptr->lorentz_indices() )
-						{
-							std::cerr << ind << "\n";
-						}
+//						std::cerr << "Amplitude-Feynman: " << ptr->particle()->name() << "\n";
+//						for( auto const& ind : ptr->lorentz_indices() )
+//						{
+//							std::cerr << ind << "\n";
+//						}
 						_amplitude.push_back(ptr->feynman_rule());
 						return;
 					}
@@ -303,11 +304,11 @@ namespace Feynumeric
 				{
 					if( ptr->particle()->is_anti_fermion() )
 					{
-						std::cerr << "Amplitude-Feynman: " << ptr->particle()->name() << "\n";
-						for( auto const& ind : ptr->lorentz_indices() )
-						{
-							std::cerr << ind << "\n";
-						}
+//						std::cerr << "Amplitude-Feynman: " << ptr->particle()->name() << "\n";
+//						for( auto const& ind : ptr->lorentz_indices() )
+//						{
+//							std::cerr << ind << "\n";
+//						}
 						_amplitude.push_back(ptr->feynman_rule());
 						return;
 					}
@@ -320,11 +321,11 @@ namespace Feynumeric
 				{
 					if( ptr->particle()->is_anti_fermion() )
 					{
-						std::cerr << "Amplitude-Feynman: " << ptr->particle()->name() << "\n";
-						for( auto const& ind : ptr->lorentz_indices() )
-						{
-							std::cerr << ind << "\n";
-						}
+//						std::cerr << "Amplitude-Feynman: " << ptr->particle()->name() << "\n";
+//						for( auto const& ind : ptr->lorentz_indices() )
+//						{
+//							std::cerr << ind << "\n";
+//						}
 						_amplitude.push_back(ptr->feynman_rule());
 						return;
 					}
@@ -334,11 +335,11 @@ namespace Feynumeric
 				{
 					if( ptr->particle()->is_fermion() )
 					{
-						std::cerr << "Amplitude-Feynman: " << ptr->particle()->name() << "\n";
-						for( auto const& ind : ptr->lorentz_indices() )
-						{
-							std::cerr << ind << "\n";
-						}
+//						std::cerr << "Amplitude-Feynman: " << ptr->particle()->name() << "\n";
+//						for( auto const& ind : ptr->lorentz_indices() )
+//						{
+//							std::cerr << ind << "\n";
+//						}
 						_amplitude.push_back(ptr->feynman_rule());
 						return;
 					}
@@ -370,16 +371,16 @@ namespace Feynumeric
 			}
 		}
 
-		std::cerr << "Amplitude-Feynman: ";
-		for( auto const& edge_ptr : vertex_ptr->all() )
-		{
-			std::cerr << edge_ptr->particle()->name() << " ";
-			for( auto const& ind : edge_ptr->lorentz_indices() )
-			{
-				std::cerr << ind << "\n";
-			}
-		}
-		std::cerr << "\n";
+//		std::cerr << "Amplitude-Feynman: ";
+//		for( auto const& edge_ptr : vertex_ptr->all() )
+//		{
+//			std::cerr << edge_ptr->particle()->name() << " ";
+//			for( auto const& ind : edge_ptr->lorentz_indices() )
+//			{
+//				std::cerr << ind << "\n";
+//			}
+//		}
+//		std::cerr << "\n";
 		_amplitude.push_back(vertex_ptr->feynman_rule());
 		trace_fermion_line(next, start_direction);
 	}
@@ -415,8 +416,38 @@ namespace Feynumeric
 		}
 	}
 
-	double Feynman_Diagram::dsigma_dcos(Kinematics const& kin)
+	Complex Feynman_Diagram::evaluate_amplitude(Kinematics const& kin)
 	{
+		Complex M{0., 0.};
+		std::size_t N_indices = std::pow(4, _lorentz_indices.size());
+		for( std::size_t i = 0; i < N_indices; ++i )
+		{
+			Matrix interim(_amplitude[0](kin));
+			for( std::size_t k = 1; k < _amplitude.size(); ++k )
+			{
+//					std::cerr << FORMAT("k: {}\n", k);
+//					std::cerr << interim << "\n";
+				interim *= _amplitude[k](kin);
+//					std::cerr << interim << "\n\n";
+			}
+			try{
+				M += interim.try_as_complex();
+			}
+			catch( Matrix::dimension_exception const& e ){
+				critical_error("Invariant amplitude does not evaluate to a scalar.");
+			}
+			iterate_indices();
+		}
+		return _phase * M;
+	}
+
+/*
+	double Feynman_Diagram::dsigma_dcos(Kinematics& kin)
+	{
+		kin.momenta.push_back(momentum(kin.sqrt_s, _graph._incoming[0]->particle()->mass(), _graph._incoming[1]->particle()->mass()));
+		kin.momenta.push_back(momentum(kin.sqrt_s, _graph._outgoing[0]->particle()->mass(), _graph._outgoing[1]->particle()->mass()));
+		std::cerr << "q_in: " << kin.momenta[0] << "\n";
+		std::cerr << "q_out: " << kin.momenta[1] << "\n";
 		Complex M{0., 0.};
 		std::size_t N_indices = std::pow(4, _lorentz_indices.size());
 		std::size_t N_spins = [&](){
@@ -449,9 +480,44 @@ namespace Feynumeric
 		}
 		return (M * std::conj(M)).real();
 	}
+*/
+	void Feynman_Diagram::phase(Complex phi)
+	{
+		if( !almost_identical(1., std::abs(phi)) )
+		{
+			warning("Phase angle phi has modulus != 1.");
+		}
+		_phase = phi;
+	}
 
 	Vertex_Manager_Ptr Feynman_Diagram::Vertex_Manager()
 	{
 		return _VMP;
+	}
+
+	Feynman_Diagram_Ptr operator*(Complex phi, Feynman_Diagram_Ptr& p)
+	{
+		p->phase(phi);
+		return p;
+	}
+
+	std::vector<Particle_Ptr> Feynman_Diagram::incoming_particles() const
+	{
+		std::vector<Particle_Ptr> result(_graph._incoming.size());
+		for( std::size_t i = 0; i < result.size(); ++i )
+		{
+			result[i] = _graph._incoming.at(i)->particle();
+		}
+		return result;
+	}
+
+	std::vector<Particle_Ptr> Feynman_Diagram::outgoing_particles() const
+	{
+		std::vector<Particle_Ptr> result(_graph._outgoing.size());
+		for( std::size_t i = 0; i < result.size(); ++i )
+		{
+			result[i] = _graph._outgoing.at(i)->particle();
+		}
+		return result;
 	}
 }

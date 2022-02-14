@@ -44,17 +44,17 @@ void init_particles()
     Electron->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return u(e, kin);};
     Electron->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return ubar(e, kin);};
 
-//    Positron->feynman_virtual = [](){return Matrix(1,1,1);};
-//    Positron->feynman_incoming = [](){return Matrix(1,4,1);};
-//    Positron->feynman_outgoing = [](){return Matrix(4,1,1);};
+	Positron->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Propagator(e, kin);};
+	Positron->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return vbar(e, kin);};
+	Positron->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return v(e, kin);};
 
     Muon_Minus->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Propagator(e, kin);};
     Muon_Minus->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return u(e, kin);};
     Muon_Minus->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return ubar(e, kin);};
 
-//    Muon_Plus->feynman_virtual = [](){return Matrix(1,1,1);};
-//    Muon_Plus->feynman_incoming = [](){return Matrix(1,4,1);};
-//    Muon_Plus->feynman_outgoing = [](){return Matrix(4,1,1);};
+	Muon_Plus->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Propagator(e, kin);};
+	Muon_Plus->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return vbar(e, kin);};
+	Muon_Plus->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return v(e, kin);};
 
 //    Proton->feynman_virtual = [](){return Matrix(4, 4, {1,2,3,4, 5,6,7,8, 9,10,11,12, 13,14,15,16});};
 //    Proton->feynman_incoming = [&](){return Matrix(u12(Matrix(4, 1, {1,2,3,4}), Angular_Momentum(0.5, 0.5)));};

@@ -2,6 +2,7 @@
 
 
 #include <feynumeric/feynman_diagram.hpp>
+#include <feynumeric/feynman_process.hpp>
 #include <feynumeric/process.hpp>
 #include <feynumeric/topology.hpp>
 #include <feynumeric/units.hpp>
@@ -10,6 +11,9 @@
 
 #include "particles.hpp"
 #include "vertices.hpp"
+
+#include <feynumeric/dirac.hpp>
+#include <feynumeric/topologies.hpp>
 
 
 int main()
@@ -20,33 +24,20 @@ int main()
     init_particles();
 	init_vertices();
 
-    Topology Double_Wrench({
-           {0, 2, Direction::INCOMING},
-           {1,2, Direction::INCOMING},
-           {2,3, Direction::VIRTUAL},
-           {3, 4, Direction::OUTGOING},
-           {3, 5, Direction::OUTGOING}
-   });
 
-    Topology X_Man({
-		                   {0, 2, Direction::INCOMING},
-		                   {1, 3, Direction::INCOMING},
-		                   {2, 3, Direction::VIRTUAL},
-		                   {2, 4, Direction::OUTGOING},
-		                   {3,5, Direction::OUTGOING}
-		    });
+    Feynman_Diagram e_muon_t_channel(X_Man, VMP,
+						   {Electron, Muon_Minus},
+						   {Photon},
+						   {Electron, Muon_Minus});
 
-    Feynman_Diagram e_muon(X_Man, VMP,{Electron, Muon_Minus}, {Photon}, {Electron, Muon_Minus});
+    Feynman_Diagram pair_production_s_channel(Double_Wrench, VMP,
+                                 {Photon, Positron},
+                                 {Photon},
+                                 {Muon_Plus, Muon_Minus});
 
-    Kinematics kin;
-    kin.sqrt_s = 1.49_GeV;
-    kin.cosines.resize(1);
-    kin.momenta.push_back(0.3_GeV);
-    kin.momenta.push_back(0.1_GeV);
 
-	e_muon.generate_amplitude();
-
-    std::cout << "result: " << e_muon.dsigma_dcos(kin);
+    Feynman_Process e_muon_scattering({&e_muon_t_channel});
+    e_muon_scattering.dsigma_dcos_table(std::cout, 1.49_GeV, 20ULL);
     return EXIT_SUCCESS;
 }
 

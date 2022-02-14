@@ -181,7 +181,7 @@ namespace Feynumeric
 		Four_Momentum result;
 		for( std::size_t i = 0; i < _relative_momentum.n_rows(); ++i )
 		{
-			result += std::abs(_relative_momentum.at(i)) * _diagram->four_momentum(i, this->particle(), kin);
+			result += _relative_momentum.at(i) * kin.momentum(i);
 		}
 		return result;
 	}

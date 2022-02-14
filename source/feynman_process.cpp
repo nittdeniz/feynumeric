@@ -78,31 +78,40 @@ namespace Feynumeric
 			diagram->generate_amplitude();
 		}
 
-		for( auto const& cos_theta : values )
+		std::size_t const N_spins = [&](){
+			std::size_t n = 1;
+			for( auto const& j : _diagrams[0]->_spins )
+			{
+				n *= 2*j->j() + 1;
+			}
+			return n;
+		}();
+
+		for( std::size_t k = 0; k < values.size(); ++k )
 		{
+			auto const& cos_theta = values[k];
+			out << cos_theta << "\t";
 			kin.outgoing(0, Four_Momentum(qout, outgoing[0]->mass(), cos_theta, 0));
 			kin.outgoing(1, Four_Momentum(-qout, outgoing[1]->mass(), cos_theta, 0));
 
-			std::size_t N_spins = [&](){
-				std::size_t n = 1;
-				for( auto const& j : _spins )
-				{
-					n *= 2*j->j() + 1;
-				}
-				return n;
-			}();
+			std::vector<double> Ms_squared(_diagrams.size() + 1);
 
-			Complex M{0, 0};
-			out << cos_theta << "\t";
-			for( std::size_t i )
-			for( auto& diagram : _diagrams )
-			{
-				auto const& temp = diagram->evaluate_amplitude(kin);
-				M += temp;
-				out.precision(12);
-				out << std::setw(12) << (temp * std::conj(temp)).real() << "\t";
+			for( std::size_t i = 0; i < N_spins; ++i ){
+				Complex M{0, 0};
+				for( std::size_t j = 0; j < _diagrams.size(); ++j ){
+					auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
+					M += temp;
+					Ms_squared[j] += (temp * std::conj(temp)).real();
+					_diagrams[j]->iterate_spins();
+				}
+				Ms_squared[_diagrams.size()] += (M * std::conj(M)).real();
 			}
-			out << std::setw(12) << (M * std::conj(M)).real() << "\n";
+
+			for( auto const& value : Ms_squared )
+			{
+				out << std::setw(10) << std::setprecision(10) << value << "\t";
+			}
+			out << "\n";
 		}
 	}
 }
