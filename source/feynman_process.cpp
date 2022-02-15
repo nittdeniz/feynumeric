@@ -5,13 +5,13 @@
 
 namespace Feynumeric
 {
-	Feynman_Process::Feynman_Process(std::initializer_list<Feynman_Diagram*> list)
+	Feynman_Process::Feynman_Process(std::initializer_list<Feynman_Diagram_Ptr> list)
 	: _diagrams(list)
 	{
 
 	}
 
-	void Feynman_Process::add_diagram(Feynman_Diagram* diagram)
+	void Feynman_Process::add_diagram(Feynman_Diagram_Ptr diagram)
 	{
 		_diagrams.push_back(diagram);
 	}
