@@ -63,6 +63,8 @@ namespace Feynumeric{
 	using Feynman_Diagram_Ptr = std::shared_ptr<Feynman_Diagram>;
 
 	Feynman_Diagram_Ptr operator*(Complex phi, Feynman_Diagram_Ptr& p);
+
+	Feynman_Diagram_Ptr create_diagram(Topology const& topology, Vertex_Manager_Ptr const& VMP, std::initializer_list<Particle_Ptr> const& incoming_particles, std::initializer_list<Particle_Ptr> const& virtual_particles, std::initializer_list<Particle_Ptr> const& outgoing_particles);
 }
 
 #endif // FEYNUMERIC_FEYNMAN_DIAGRAM_HPP

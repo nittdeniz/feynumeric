@@ -37,6 +37,14 @@ namespace Feynumeric
 		}
 	}
 
+	Feynman_Diagram_Ptr create_diagram(Topology const& topology, Vertex_Manager_Ptr const& VMP,
+	                                   std::initializer_list<Particle_Ptr> const& incoming_particles,
+	                                   std::initializer_list<Particle_Ptr> const& virtual_particles,
+	                                   std::initializer_list<Particle_Ptr> const& outgoing_particles)
+	{
+		return std::make_shared<Feynman_Diagram>(topology, VMP, incoming_particles, virtual_particles, outgoing_particles);
+	}
+
 	void Feynman_Diagram::generate_amplitude()
 	{
 		fix_momenta();
