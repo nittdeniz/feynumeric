@@ -2,12 +2,13 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <iostream>
-#include <Feynumeric/angular_momentum.hpp>
-#include <Feynumeric/matrix.hpp>
-#include <Feynumeric/constexpr_math.hpp>
-#include <Feynumeric/dirac.hpp>
-#include <Feynumeric/units.hpp>
-#include <Feynumeric/momentum.hpp>
+#include <feynumeric/angular_momentum.hpp>
+#include <feynumeric/matrix.hpp>
+#include <feynumeric/constexpr_math.hpp>
+#include <feynumeric/dirac.hpp>
+#include <feynumeric/units.hpp>
+#include <feynumeric/momentum.hpp>
+#include <feynumeric/particle.hpp>
 
 TEST_CASE( "is_valid_spin", "[angular momentum]" ) {
     REQUIRE( Feynumeric::Angular_Momentum::is_valid_spin(0.) == true );
@@ -26,6 +27,15 @@ TEST_CASE( "is_half_odd_integer", "[angular momentum]" ) {
     REQUIRE( one_half.is_half_odd_integer() );
     REQUIRE( !one.is_half_odd_integer() );
     REQUIRE( three_halves.is_half_odd_integer() );
+}
+
+TEST_CASE("n_states", "[angular momentum]"){
+	Feynumeric::Angular_Momentum spin_zero(0);
+	Feynumeric::Angular_Momentum spin_onehalf(0.5);
+	Feynumeric::Angular_Momentum spin_three_massless(3, 3, true);
+	REQUIRE( spin_zero.n_states() == 1 );
+	REQUIRE( spin_onehalf.n_states() == 2);
+	REQUIRE( spin_three_massless.n_states() == 2);
 }
 
 TEST_CASE( "matrix diagonal constructor", "[matrix]" ) {
@@ -140,15 +150,17 @@ TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 	Angular_Momentum_Ptr s0 = std::make_shared<Angular_Momentum>(1, 0);
 	Angular_Momentum_Ptr s1m = std::make_shared<Angular_Momentum>(1, -1);
 
+	Particle_Ptr test_particle = std::make_shared<Particle>("Test", Particle::Type::Majorana, 1., 0, 1);
+
 	Matrix result(4, 4);
 	Matrix compare(4, 4);
 	for( int i = 0; i < 4; ++i )
 	{
 		for( int j = 0; j < 4; ++j )
 		{
-			auto temp1 = epsilon(p, s1p, {mu}) * epsilon_star(p, s1p, {nu});
-			auto temp2 = epsilon(p, s0, {mu}) * epsilon_star(p, s0, {nu});
-			auto temp3 = epsilon(p, s1m, {mu}) * epsilon_star(p, s1m, {nu});
+			auto temp1 = epsilon(test_particle, p, s1p, {mu}) * epsilon_star(test_particle, p, s1p, {nu});
+			auto temp2 = epsilon(test_particle, p, s0, {mu}) * epsilon_star(test_particle, p, s0, {nu});
+			auto temp3 = epsilon(test_particle, p, s1m, {mu}) * epsilon_star(test_particle, p, s1m, {nu});
 			result(i, j) = (temp1 + temp2 + temp3).try_as_complex();
 			auto temp4 = -MT[*mu][*nu];
 			auto temp5 = FV(p, mu) * FV(p, nu);

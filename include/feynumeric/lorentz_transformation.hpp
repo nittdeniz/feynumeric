@@ -10,14 +10,9 @@ namespace Feynumeric
     Matrix boost(Four_Momentum const& p, Matrix const& four_vector);
     Matrix boost(Four_Momentum const& p, Four_Momentum const& q);
 
-    Matrix rotateX(Four_Momentum const& p, double cos_theta);
-	Matrix rotateX(Matrix const& p, double cos_theta);
-
-	Matrix rotateY(Four_Momentum const& p, double cos_theta);
-	Matrix rotateY(Matrix const& p, double cos_theta);
-
-	Matrix rotateZ(Four_Momentum const& p, double cos_theta);
-	Matrix rotateZ(Matrix const& p, double cos_theta);
+    Matrix rotateX(double cos_theta);
+	Matrix rotateY(double cos_theta);
+	Matrix rotateZ(double cos_theta);
 }
 
 #endif // FEYNUMERIC_LORENTZ_TRANSFORMATION_HPP

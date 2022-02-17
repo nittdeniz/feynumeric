@@ -107,7 +107,7 @@ namespace Feynumeric
                 Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(Angular_Momentum(0.5, n));
                 result +=
                         clebsch_gordan(s1->j(), s->m()-n, 1, n, s->j(), s->m())
-                        * epsilon(p, s1, lorentz_indices)
+                        * epsilon(P, p, s1, lorentz_indices)
                         * u(P, p, s2, {});
             }
         }
@@ -212,8 +212,8 @@ namespace Feynumeric
                 auto indices2 = std::vector<Lorentz_Index_Ptr>(lorentz_indices.end()-1, lorentz_indices.end());
                 result +=
                         clebsch_gordan(s1->j(), s1->m(), s2->j(), s2->m(), s->j(), s->m())
-                        * epsilon(p, s1, indices1)
-                        * epsilon(p, s2, indices2);
+                        * epsilon(P, p, s1, indices1)
+                        * epsilon(P, p, s2, indices2);
             }
         }
         return result;

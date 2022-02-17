@@ -30,39 +30,40 @@ namespace Feynumeric
 		return boost(p, Matrix(4, 1,{q.E(), q.x(), q.y(), q.z()}));
 	}
 
-	Matrix rotateX(Four_Momentum const& p, double cos_theta)
+	Matrix rotateX(double cos_theta)
 	{
-		return Matrix();
+		auto const& c = cos_theta;
+		auto const s = std::sqrt(1-c*c);
+		return Matrix(4, 4, {
+			1, 0, 0,  0,
+			0, 1, 0,  0,
+			0, 0, c, -s,
+			0, 0, s,  c
+		});
 	}
 
-	Matrix rotateX(Matrix const& p, double cos_theta)
+	Matrix rotateY(double cos_theta)
 	{
-		return Matrix();
+		auto const& c = cos_theta;
+		auto const s = std::sqrt(1-c*c);
+		return Matrix(4, 4, {
+				1,  0, 0, 0,
+				0,  c, 0, s,
+				0,  0, 1, 0,
+				0, -s, 0, c
+		});
 	}
 
-	Matrix rotateY(Four_Momentum const& p, double cos_theta)
+	Matrix rotateZ(double cos_theta)
 	{
-		return Matrix();
-	}
-
-	Matrix rotateY(Matrix const& p, double cos_theta)
-	{
-		return Matrix();
-	}
-
-	Matrix rotateZ(Four_Momentum const& p, double cos_theta)
-	{
-		return Matrix();
-	}
-
-	Matrix rotateZ(Matrix const& p, double cos_theta)
-	{
-		return Matrix();
-	}
-
-	Matrix project(Four_Momentum const& p, Four_Momentum const& q)
-	{
-
+		auto const& c = cos_theta;
+		auto const s = std::sqrt(1-c*c);
+		return Matrix(4, 4, {
+				1, 0,  0, 0,
+				0, c, -s, 0,
+				0, s,  c, 0,
+				0, 0,  0, 1
+		});
 	}
 }
 

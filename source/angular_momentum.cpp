@@ -25,9 +25,9 @@ namespace Feynumeric
     }
 
 	Angular_Momentum::Angular_Momentum(const Angular_Momentum& J)
-	: _j(J.j())
-	, _m(J.m())
-	, _massless(massless)
+	: _j(J._j)
+	, _m(J._m)
+	, _massless(J._massless)
 	{
 
 	}
@@ -91,6 +91,6 @@ namespace Feynumeric
 		{
 			J._m = -J._j;
 		}
-		return *this;
+		return J;
 	}
 }
