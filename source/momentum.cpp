@@ -29,7 +29,31 @@ namespace Feynumeric
     {
     }
 
-    Three_Momentum &Three_Momentum::operator=(const Three_Momentum &other)
+	Three_Momentum::Three_Momentum(double x, double y, double z)
+	: Matrix(1, 3, {x, y, z})
+	{
+
+	}
+
+	Three_Momentum operator+(Three_Momentum const& lhs, Three_Momentum const& rhs)
+	{
+		Three_Momentum copy(lhs);
+		copy._data[0] += rhs._data[0];
+		copy._data[1] += rhs._data[1];
+		copy._data[2] += rhs._data[2];
+		return copy;
+	}
+
+	Three_Momentum operator-(Three_Momentum const& lhs, Three_Momentum const& rhs)
+	{
+		Three_Momentum copy(lhs);
+		copy._data[0] -= rhs._data[0];
+		copy._data[1] -= rhs._data[1];
+		copy._data[2] -= rhs._data[2];
+		return copy;
+	}
+
+	Three_Momentum &Three_Momentum::operator=(const Three_Momentum &other)
     {
         _data = other._data;
         _rows = other._rows;
@@ -181,5 +205,10 @@ namespace Feynumeric
 		result._data[2] -= rhs._data[2];
 		result._data[3] -= rhs._data[3];
 		return result;
+	}
+
+	double Four_Momentum::dot() const
+	{
+		return (_data[0] * std::conj(_data[0]) - _data[1] * std::conj(_data[1]) - _data[2] * std::conj(_data[2]) - _data[3] * std::conj(_data[3])).real();
 	}
 }

@@ -38,7 +38,6 @@ void init_particles()
     };
     Photon->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return epsilon(e, kin);};
     Photon->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return epsilon_star(e, kin);};
-    Photon->user_data("coupling.ppgammma", 0.3);
 
     Electron->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Propagator(e, kin);};
     Electron->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return u(e, kin);};

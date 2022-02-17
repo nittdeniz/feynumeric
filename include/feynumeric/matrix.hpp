@@ -20,6 +20,7 @@ namespace Feynumeric
             dimension_exception(){}
         };
 
+        Matrix(Complex const& data);
         Matrix(size_t rows = 0, std::size_t cols = 0, std::vector<Complex>&& data = {});
         Matrix(size_t rows, std::size_t cols, Complex diagonal);
         Matrix(Matrix const& other);
@@ -118,7 +119,8 @@ namespace Feynumeric
 
 	template<typename T>
 	Matrix operator/(Matrix const& lhs, T const& rhs){
-		return lhs * (1.L/rhs);
+		T const inverse = T(1.)/rhs;
+		return lhs * inverse;
 	}
 
     bool same_dimension(Matrix const& lhs, Matrix const& rhs);

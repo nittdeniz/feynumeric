@@ -13,6 +13,7 @@ namespace Feynumeric
     {
     public:
         Three_Momentum();
+        Three_Momentum(double x, double y, double z);
         Three_Momentum(Three_Momentum const& other);
         Three_Momentum& operator=(Three_Momentum const& other);
 
@@ -24,7 +25,42 @@ namespace Feynumeric
         void z(double z);
 
         double dot() const;
+
+        friend Three_Momentum operator+(Three_Momentum const& lhs, Three_Momentum const& rhs);
+	    friend Three_Momentum operator-(Three_Momentum const& lhs, Three_Momentum const& rhs);
+        template<typename T>
+        friend Three_Momentum operator/(Three_Momentum const& lhs, T const& rhs);
+	    template<typename T>
+	    friend Three_Momentum operator*(Three_Momentum const& lhs, T const& rhs);
+	    template<typename T>
+	    friend Three_Momentum operator*(T const& lhs, Three_Momentum const& rhs);
     };
+
+	Three_Momentum operator+(Three_Momentum const& lhs, Three_Momentum const& rhs);
+	Three_Momentum operator-(Three_Momentum const& lhs, Three_Momentum const& rhs);
+
+	template<typename T>
+	Three_Momentum operator*(T const& lhs, Three_Momentum const& rhs)
+	{
+		return rhs * lhs;
+	}
+
+    template<typename T>
+    Three_Momentum operator*(Three_Momentum const& lhs, T const& rhs)
+    {
+    	Three_Momentum copy(lhs);
+    	copy._data[0] *= rhs;
+    	copy._data[1] *= rhs;
+    	copy._data[2] *= rhs;
+    	return copy;
+    }
+
+    template<typename T>
+    Three_Momentum operator/(Three_Momentum const& lhs, T const& rhs)
+    {
+		auto inv = 1./rhs;
+		return lhs * inv;
+    }
 
     class Four_Momentum : public Matrix
     {
@@ -55,6 +91,9 @@ namespace Feynumeric
 	    friend Four_Momentum operator*(T const& lhs, Four_Momentum const& rhs);
 	    template<typename T>
 	    friend Four_Momentum operator*(Four_Momentum const& lhs, T const& rhs);
+
+	    template<typename T>
+	    friend Four_Momentum operator/(Four_Momentum const& lhs, T const& rhs);
     };
 
 	Four_Momentum operator+(Four_Momentum const& lhs, Four_Momentum const& rhs);
@@ -73,6 +112,17 @@ namespace Feynumeric
 	Four_Momentum operator*(Four_Momentum const& lhs, T const& rhs)
 	{
 		return rhs * lhs;
+	}
+
+	template<typename T>
+	Four_Momentum operator/(Four_Momentum const& lhs, T const& rhs)
+	{
+		Four_Momentum copy(lhs);
+		copy._data[0] /= rhs;
+		copy._data[1] /= rhs;
+		copy._data[2] /= rhs;
+		copy._data[3] /= rhs;
+		return copy;
 	}
 }
 #endif // Feynumeric_MOMENTUM_HPP

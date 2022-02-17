@@ -73,7 +73,7 @@ TEST_CASE( "matrix_division", "[matrix]" ){
     Feynumeric::Matrix a(3, 3, {1,2,3, 4,5,6, 7,8,9});
     Feynumeric::Matrix b(3, 3, {2,4,6, 8,10,12, 14,16,18});
 
-    REQUIRE(b/2 == a);
+    REQUIRE(b/2. == a);
 }
 
 TEST_CASE( "matrix transposition", "[matrix]"){
@@ -126,4 +126,41 @@ TEST_CASE("Dirac Spinors Completeness", "[dirac]"){
 	{
 		REQUIRE( almost_identical(lhs.at(i), rhs.at(i), 0.1) );
 	}
+}
+
+TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
+	using namespace Feynumeric;
+
+	Four_Momentum p(3, 4, 0.1234, 0.5918273);
+
+	Lorentz_Index_Ptr mu = std::make_shared<Lorentz_Index>();
+	Lorentz_Index_Ptr nu = std::make_shared<Lorentz_Index>();
+
+	Angular_Momentum_Ptr s1p = std::make_shared<Angular_Momentum>(1, 1);
+	Angular_Momentum_Ptr s0 = std::make_shared<Angular_Momentum>(1, 0);
+	Angular_Momentum_Ptr s1m = std::make_shared<Angular_Momentum>(1, -1);
+
+	Matrix result(4, 4);
+	Matrix compare(4, 4);
+	for( int i = 0; i < 4; ++i )
+	{
+		for( int j = 0; j < 4; ++j )
+		{
+			auto temp1 = epsilon(p, s1p, {mu}) * epsilon_star(p, s1p, {nu});
+			auto temp2 = epsilon(p, s0, {mu}) * epsilon_star(p, s0, {nu});
+			auto temp3 = epsilon(p, s1m, {mu}) * epsilon_star(p, s1m, {nu});
+			result(i, j) = (temp1 + temp2 + temp3).try_as_complex();
+			auto temp4 = -MT[*mu][*nu];
+			auto temp5 = FV(p, mu) * FV(p, nu);
+			auto temp6 = temp5 / p.dot();
+			compare(i, j) =  temp4 + temp6;
+			++(*nu);
+		}
+		++(*mu);
+	}
+	for( std::size_t i = 0; i < 16; ++i )
+	{
+		REQUIRE( almost_identical(result.at(i), compare.at(i)) );
+	}
+
 }

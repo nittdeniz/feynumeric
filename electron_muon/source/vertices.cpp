@@ -24,7 +24,7 @@ void init_vertices()
 			           auto const& electron_in = edges[0];
 			           auto const& electron_out = edges[1];
 			           auto const& photon = edges[2];
-			           return 1._e * Feynumeric::GA[*( photon->lorentz_indices()[0] )];
+			           return 1._e * Feynumeric::GAC[*( photon->lorentz_indices()[0] )];
 		           }
     ));
 	VMP->add(Feynumeric::Vertex(
@@ -37,7 +37,7 @@ void init_vertices()
 				auto const& electron_in = edges[0];
 				auto const& electron_out = edges[1];
 				auto const& photon = edges[2];
-				return 1._e * Feynumeric::GA[*( photon->lorentz_indices()[0] )];
+				return 1._e * Feynumeric::GAC[*( photon->lorentz_indices()[0] )];
 			}
 	));
 
@@ -53,7 +53,7 @@ void init_vertices()
                 auto const& muon_in  = edges[0];
                 auto const& muon_out = edges[1];
                 auto const& photon   = edges[2];
-	            return 1._e * Feynumeric::GA[*(photon->lorentz_indices()[0])];
+	            return 1._e * Feynumeric::GAC[*(photon->lorentz_indices()[0])];
             })
     );
 	VMP->add(Feynumeric::Vertex(
@@ -67,7 +67,7 @@ void init_vertices()
 				auto const& muon_in  = edges[0];
 				auto const& muon_out = edges[1];
 				auto const& photon   = edges[2];
-				return 1._e * Feynumeric::GA[*(photon->lorentz_indices()[0])];
+				return 1._e * Feynumeric::GAC[*(photon->lorentz_indices()[0])];
 			})
 	);
 }

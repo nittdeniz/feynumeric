@@ -18,4 +18,12 @@ namespace Feynumeric
 			                             {3, 4, Direction::OUTGOING},
 			                             {3, 5, Direction::OUTGOING}
 	                             });
+
+	const Topology Scissors( {
+			                         {0, 2, Direction::INCOMING},
+			                         {1, 3, Direction::INCOMING},
+			                         {2, 3, Direction::VIRTUAL},
+			                         {3, 4, Direction::OUTGOING},
+			                         {2, 5, Direction::OUTGOING}
+	                         });
 }

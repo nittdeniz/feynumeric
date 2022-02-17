@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "angular_momentum.hpp"
-#include "boost.hpp"
+#include "lorentz_transformation.hpp"
 #include "feynman_graph.hpp"
 #include "kinematics.hpp"
 #include "matrix.hpp"
@@ -18,9 +18,20 @@ namespace Feynumeric
 {
     extern std::array<Matrix, 4> GA;
     extern std::array<Matrix, 4> GAC;
+    extern std::array<std::array<double, 4>, 4> MT;
 
     Matrix GS(Four_Momentum const& p);
 	Matrix GS(Matrix const& matrix);
+
+	Matrix dirac_sigma(Lorentz_Index_Ptr mu, Lorentz_Index_Ptr nu);
+	Matrix dirac_sigma(Lorentz_Index_Ptr mu, Four_Momentum const& p);
+	Matrix dirac_sigma(Four_Momentum const& p, Lorentz_Index_Ptr nu);
+
+
+	Complex FV(Matrix const& a, Lorentz_Index_Ptr mu);
+	Complex FV(Four_Momentum const& p, Lorentz_Index_Ptr mu);
+	Complex FVC(Matrix const& a, Lorentz_Index_Ptr mu);
+	Complex FVC(Four_Momentum const& p, Lorentz_Index_Ptr nu);
 
 
     Matrix u(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
@@ -36,8 +47,8 @@ namespace Feynumeric
     Matrix epsilon(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
     Matrix epsilon_star(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
 
-    Matrix epsilon(Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
-    Matrix epsilon_star(Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+    Matrix epsilon(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+    Matrix epsilon_star(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
 
     Matrix Projector(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin, bool ignore_momentum = false);
     Matrix Propagator(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin, bool ignore_momentum = false);

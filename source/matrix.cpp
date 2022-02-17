@@ -1,10 +1,19 @@
 #include <iostream>
+#include "feynumeric/format.hpp"
 #include "feynumeric/matrix.hpp"
+#include "feynumeric/messages.hpp"
 
 namespace Feynumeric
 {
-    using std::cerr;
-    std::size_t Matrix::index(size_t row, std::size_t col) const
+	Matrix::Matrix(Complex const& data)
+	: _rows(1)
+	, _cols(1)
+	, _data({data})
+	{
+
+	}
+
+	std::size_t Matrix::index(size_t row, std::size_t col) const
     {
         return row * _cols + col;
     }
@@ -41,8 +50,7 @@ namespace Feynumeric
     {
         if( rows != cols )
         {
-            cerr << "Diagonal Matrix constructors needs rows == cols (given: " << rows << " != " << cols << ")\n";
-            abort();
+        	critical_error(FORMAT("Diagonal Matrix constructors needs rows == cols (given: {} != {}})", rows, cols));
         }
         _data.resize(rows*cols);
         for( std::size_t i = 0; i < _rows; i++ )
@@ -147,7 +155,6 @@ namespace Feynumeric
         {
             return _data[0];
         }
-        cerr << "rows: " << _rows << "\tcols: " << _cols << "\n";
         throw dimension_exception();
     }
 
@@ -216,12 +223,7 @@ namespace Feynumeric
         }
         if( lhs._cols != rhs._rows )
         {
-            cerr << "lhs._cols != rhs._rows @operator*(Matrix, matrix)\n";
-            cerr << "LHS:\n";
-            cerr << lhs << "\n";
-            cerr << "RHS:\n";
-            cerr << rhs << "\n";
-            abort();
+        	throw Matrix::dimension_exception();
         }
         Matrix result(lhs._rows, rhs._cols);
         result._data.resize(lhs._rows * rhs._cols);
@@ -252,12 +254,7 @@ namespace Feynumeric
     {
         if( !same_dimension(lhs, rhs) )
         {
-            cerr << "Dimensions of Matrix operator- do not match.\n";
-            cerr << "lhs:\n";
-            cerr << lhs << "\n";
-            cerr << "rhs:\n";
-            cerr << rhs << "\n";
-            abort();
+        	throw Matrix::dimension_exception();
         }
         Matrix result(lhs);
         std::size_t i = 0;

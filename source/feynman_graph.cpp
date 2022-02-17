@@ -11,7 +11,7 @@
 
 namespace Feynumeric
 {
-	Feynman_Graph::Feynman_Graph(Feynman_Diagram* diagram, Topology const& topology, std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& outgoing_list, std::vector<Particle_Ptr> const& virtual_list)
+	Feynman_Graph::Feynman_Graph(Feynman_Diagram* diagram, Topology const& topology, std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& virtual_list, std::vector<Particle_Ptr> const& outgoing_list)
 	: _diagram(diagram)
 	, _topology(topology)
 	{
@@ -20,8 +20,8 @@ namespace Feynumeric
 	}
 
 	void Feynman_Graph::validate_input(std::vector<Particle_Ptr> const& incoming_list,
-	                                   std::vector<Particle_Ptr> const& outgoing_list,
-	                                   std::vector<Particle_Ptr> const& virtual_list)
+	                                   std::vector<Particle_Ptr> const& virtual_list,
+	                                   std::vector<Particle_Ptr> const& outgoing_list)
 	{
 		if( _topology._incoming_edges.size () != incoming_list.size() )
 		{
@@ -37,7 +37,7 @@ namespace Feynumeric
 		}
 	}
 
-	void Feynman_Graph::create_graph(std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& outgoing_list, std::vector<Particle_Ptr> const& virtual_list){
+	void Feynman_Graph::create_graph(std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& virtual_list, std::vector<Particle_Ptr> const& outgoing_list){
 		// local helper function
 		auto get_particle_ptr = [&](std::size_t edge_id)
 		{
@@ -71,6 +71,7 @@ namespace Feynumeric
 					Edge_Ptr ptr = std::make_shared<Feynman_Graph::Edge>(_diagram, get_particle_ptr(edge_id));
 					if( _topology._edge_list[edge_id].from == vertex_a )
 					{
+						// add pointer shortcut
 						if( contains(_topology._outgoing_edges, edge_id) )
 						{
 							_outgoing.push_back(ptr);
@@ -82,6 +83,7 @@ namespace Feynumeric
 						else{
 							_virtual.push_back(ptr);
 						}
+						// link graph
 						if( !contains(_topology._outgoing_edges, edge_id) )
 						{
 							ptr->front(_vertices[vertex_b]);

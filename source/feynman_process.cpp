@@ -27,7 +27,9 @@ namespace Feynumeric
 		auto const& outgoing_particles = _diagrams[0]->outgoing_particles();
 		for( auto const& diagram : _diagrams )
 		{
-			if( diagram->incoming_particles() != incoming_particles || diagram->outgoing_particles() != outgoing_particles )
+			auto temp_i = diagram->incoming_particles();
+			auto temp_o = diagram->outgoing_particles();
+			if( temp_i != incoming_particles || temp_o != outgoing_particles )
 			{
 				critical_error("Diagrams are not compatible.");
 			}

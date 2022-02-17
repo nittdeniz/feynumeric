@@ -94,6 +94,12 @@ namespace Feynumeric{
 			std::function<Matrix(Kinematics const& kin)> feynman_rule();
 		};
 	private:
+		enum class Vertex_Direction : unsigned char
+		{
+			IN = 0x01,
+			OUT = 0x02
+		};
+
 		using Edge_Map = std::map<Topology::Vertex_ID, std::map<Topology::Vertex_ID, std::vector<Edge_Ptr>>>;
 		using Vertex_Map = std::map<Topology::Vertex_ID, Vertex_Ptr>;
 
@@ -107,10 +113,10 @@ namespace Feynumeric{
 		Edge_Map _edges;
 		Vertex_Map _vertices;
 
-		void create_graph(std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& outgoing_list, std::vector<Particle_Ptr> const& virtual_list);
-		void validate_input(std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& outgoing_list, std::vector<Particle_Ptr> const& virtual_list);
+		void create_graph(std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& virtual_list, std::vector<Particle_Ptr> const& outgoing_list);
+		void validate_input(std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& virtual_list, std::vector<Particle_Ptr> const& outgoing_list);
 	public:
-		Feynman_Graph(Feynman_Diagram* diagram, Topology const& topology, std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& outgoing_list, std::vector<Particle_Ptr> const& virtual_list);
+		Feynman_Graph(Feynman_Diagram* diagram, Topology const& topology, std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& virtual_list, std::vector<Particle_Ptr> const& outgoing_list);
 
 		friend class Feynman_Diagram;
 	};

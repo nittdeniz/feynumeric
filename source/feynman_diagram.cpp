@@ -9,9 +9,9 @@
 
 namespace Feynumeric
 {
-	Feynman_Diagram::Feynman_Diagram(Topology const& topology, Vertex_Manager_Ptr const& VMP, std::vector<Particle_Ptr> const& incoming_particles,
-	                                 std::vector<Particle_Ptr> const& virtual_particles,
-	                                 std::vector<Particle_Ptr> const& outgoing_particles)
+	Feynman_Diagram::Feynman_Diagram(Topology const& topology, Vertex_Manager_Ptr const& VMP, std::initializer_list<Particle_Ptr> const& incoming_particles,
+	                                 std::initializer_list<Particle_Ptr> const& virtual_particles,
+	                                 std::initializer_list<Particle_Ptr> const& outgoing_particles)
 			: _graph(this, topology, incoming_particles, virtual_particles, outgoing_particles)
 			, _VMP(VMP)
 	{
@@ -48,21 +48,17 @@ namespace Feynumeric
 
 			if( edge_ptr->particle()->is_fermion() )
 			{
-//				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
-//				for( auto const& ind : edge_ptr->lorentz_indices() )
-//				{
-//					std::cerr << ind << "\n";
-//				}
+				#ifdef DEBUG_AMPLITUDE
+				std::cerr << "@@@Amplitude Outgoing: " << edge_ptr->particle()->name() << "\n";
+				#endif
 				_amplitude.push_back(edge_ptr->feynman_rule());
 				trace_fermion_line(edge_ptr, edge_ptr->back(),Direction::OUTGOING);
 			}
 			else if( !edge_ptr->particle()->is_anti_fermion() )
 			{
-//				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
-//				for( auto const& ind : edge_ptr->lorentz_indices() )
-//				{
-//					std::cerr << ind << "\n";
-//				}
+				#ifdef DEBUG_AMPLITUDE
+				std::cerr << "@@@Amplitude Outgoing: " << edge_ptr->particle()->name() << "\n";
+				#endif
 				_amplitude.push_back(edge_ptr->feynman_rule());
 			}
 		}
@@ -72,21 +68,17 @@ namespace Feynumeric
 			add_lorentz_indices(edge_ptr);
 			if( edge_ptr->particle()->is_anti_fermion() )
 			{
-//				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
-//				for( auto const& ind : edge_ptr->lorentz_indices() )
-//				{
-//					std::cerr << ind << "\n";
-//				}
+				#ifdef DEBUG_AMPLITUDE
+				std::cerr << "@@@Amplitude Incoming: " << edge_ptr->particle()->name() << "\n";
+				#endif
 				_amplitude.push_back(edge_ptr->feynman_rule());
 				trace_fermion_line(edge_ptr, edge_ptr->front(), Direction::INCOMING);
 			}
 			else if( !edge_ptr->particle()->is_fermion() )
 			{
-//				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
-//				for( auto const& ind : edge_ptr->lorentz_indices() )
-//				{
-//					std::cerr << ind << "\n";
-//				}
+				#ifdef DEBUG_AMPLITUDE
+				std::cerr << "@@@Amplitude Incoming: " << edge_ptr->particle()->name() << "\n";
+				#endif
 				_amplitude.push_back(edge_ptr->feynman_rule());
 			}
 		}
@@ -97,11 +89,9 @@ namespace Feynumeric
 			add_lorentz_indices(edge_ptr);
 			if( !(edge_ptr->particle()->is_fermion() || edge_ptr->particle()->is_anti_fermion()) )
 			{
-//				std::cerr << "Amplitude-Feynman: " << edge_ptr->particle()->name() << "\n";
-//				for( auto const& ind : edge_ptr->lorentz_indices() )
-//				{
-//					std::cerr << ind << "\n";
-//				}
+				#ifdef DEBUG_AMPLITUDE
+				std::cerr << "@@@Amplitude Virtual: " << edge_ptr->particle()->name() << "\n";
+				#endif
 				_amplitude.push_back(edge_ptr->feynman_rule());
 			}
 		}
@@ -215,73 +205,7 @@ namespace Feynumeric
 
 	}
 
-/*
-	Feynman_Diagram::Momentum_Func Feynman_Diagram::generate_four_momentum(Direction const& direction, std::size_t pos) const
-	{
-		if( direction == Direction::INCOMING )
-		{
-			std::size_t n_particles = _graph._incoming.size();
-			switch( n_particles )
-			{
-				case 1:
-					return [](Particle_Ptr const& P, Kinematics const& kin){
-						return Four_Momentum(kin.momenta[0], P->mass(), 1);
-					};
-				case 2:
-					switch( pos )
-					{
-						case 0:
-							return [](Particle_Ptr const& P, Kinematics const& kin){
-								return Four_Momentum(kin.momenta[0], P->mass(), 1);
-							};
-						case 1:
-							return [](Particle_Ptr const& P, Kinematics const& kin){
-								return Four_Momentum(-kin.momenta[0], P->mass(), 1);
-							};
-						default:
-							critical_error(FORMAT("generate_four_momentum: position argument ({}) out of bounds ({}).", pos, n_particles));
-					};
-				default:
-					break;
-			}
-		}
-		if( direction == Direction::OUTGOING )
-		{
-			std::size_t n_particles = _graph._outgoing.size();
-			std::size_t offset = _graph._incoming.size();
-			switch( n_particles )
-			{
-				case 1:
-					return [](Particle_Ptr const& P, Kinematics const& kin){
-						return Four_Momentum(kin.momenta[1], P->mass(), 1);
-					};
-				case 2:
-					switch( pos - offset )
-					{
-						case 0:
-							return [offset](Particle_Ptr const& P, Kinematics const& kin){
-								return Four_Momentum(kin.momenta[1], P->mass(), kin.cosines[0]);
-							};
-						case 1:
-							return [offset](Particle_Ptr const& P, Kinematics const& kin){
-								return Four_Momentum(-kin.momenta[1], P->mass(), kin.cosines[0]);
-							};
-						default:
-							critical_error(FORMAT("generate_four_momentum: position argument ({}) out of bounds ({}).", pos, n_particles));
-					};
-				default:
-					break;
-			}
-		}
-		critical_error("Particle configuration not supported.");
-	}
-*/
-//	Four_Momentum Feynman_Diagram::four_momentum(std::size_t index, Particle_Ptr const& P, Kinematics const& kin)
-//	{
-//		return _four_momenta.at(index)(P, kin);
-//	}
-
-	void Feynman_Diagram::trace_fermion_line(Feynman_Graph::Edge_Ptr const& ptr, Direction const& start_direction)
+	void Feynman_Diagram::trace_fermion_line(Feynman_Graph::Edge_Ptr const& ptr, Direction const& start_direction, Feynman_Graph::Vertex_Direction vertex_direction)
 	{
 		switch( start_direction )
 		{
@@ -290,62 +214,122 @@ namespace Feynumeric
 				{
 					if( ptr->particle()->is_fermion() )
 					{
-//						std::cerr << "Amplitude-Feynman: " << ptr->particle()->name() << "\n";
-//						for( auto const& ind : ptr->lorentz_indices() )
-//						{
-//							std::cerr << ind << "\n";
-//						}
+						#ifdef DEBUG_AMPLITUDE
+						std::cerr << "@@@Amplitude Incoming: " << ptr->particle()->name() << "\n";
+						#endif
 						_amplitude.push_back(ptr->feynman_rule());
 						return;
 					}
 					critical_error(FORMAT("Outgoing fermion line ends in incoming line, which is not a fermion ({}).", ptr->particle()->name()));
 				}
-				if( ptr->is_outgoing() )
+				else if( ptr->is_outgoing() )
 				{
 					if( ptr->particle()->is_anti_fermion() )
 					{
-//						std::cerr << "Amplitude-Feynman: " << ptr->particle()->name() << "\n";
-//						for( auto const& ind : ptr->lorentz_indices() )
-//						{
-//							std::cerr << ind << "\n";
-//						}
+						#ifdef DEBUG_AMPLITUDE
+						std::cerr << "@@@Amplitude Outgoing: " << ptr->particle()->name() << "\n";
+						#endif
 						_amplitude.push_back(ptr->feynman_rule());
 						return;
 					}
-					critical_error(FORMAT("Outgoing fermion line ends in outgoing line, which is not an antifermion ({}).", ptr->particle()->name()));
+					critical_error(FORMAT("Outgoing fermion line ends in outgoing line, which is not an anti fermion ({}).", ptr->particle()->name()));
 				}
-				trace_fermion_line(ptr, ptr->back(), start_direction);
+				else{
+					if( ptr->particle()->is_fermion() )
+					{
+						if( vertex_direction == Feynman_Graph::Vertex_Direction::IN )
+						{
+							#ifdef DEBUG_AMPLITUDE
+							std::cerr << "@@@Amplitude Virtual: " << ptr->particle()->name() << "\n";
+							#endif
+							_amplitude.push_back(ptr->feynman_rule());
+							trace_fermion_line(ptr, ptr->back(), start_direction);
+							return;
+						}
+						else
+						{
+							critical_error(FORMAT("Outgoing fermion line joins intermediate fermion in wrong direction. Change to an anti fermion or reverse edge in topography."));
+						}
+					}
+					else if( ptr->particle()->is_anti_fermion() )
+					{
+						if( vertex_direction == Feynman_Graph::Vertex_Direction::OUT )
+						{
+							#ifdef DEBUG_AMPLITUDE
+							std::cerr << "@@@Amplitude Virtual: " << ptr->particle()->name() << "\n";
+							#endif
+							_amplitude.push_back(ptr->feynman_rule());
+							trace_fermion_line(ptr, ptr->front(), start_direction);
+							return;
+						}
+						else
+						{
+							critical_error(FORMAT("Outgoing fermion line joins intermediate anti fermion in wrong direction. Change to a fermion or reverse edge in topography."));
+						}
+					}
+				}
+				critical_error("Reached end of control flow which should not be reachable.");
 				break;
 			case Direction::INCOMING:
 				if( ptr->is_outgoing() )
 				{
 					if( ptr->particle()->is_anti_fermion() )
 					{
-//						std::cerr << "Amplitude-Feynman: " << ptr->particle()->name() << "\n";
-//						for( auto const& ind : ptr->lorentz_indices() )
-//						{
-//							std::cerr << ind << "\n";
-//						}
+						#ifdef DEBUG_AMPLITUDE
+						std::cerr << "@@@Amplitude Outgoing: " << ptr->particle()->name() << "\n";
+						#endif
 						_amplitude.push_back(ptr->feynman_rule());
 						return;
 					}
-					critical_error(FORMAT("Incoming antifermion line ends in outgoing line, which is not an antifermion ({}).", ptr->particle()->name()));
+					critical_error(FORMAT("Incoming anti fermion line ends in outgoing line, which is not an anti fermion ({}).", ptr->particle()->name()));
 				}
-				if( ptr->is_incoming() )
+				else if( ptr->is_incoming() )
 				{
 					if( ptr->particle()->is_fermion() )
 					{
-//						std::cerr << "Amplitude-Feynman: " << ptr->particle()->name() << "\n";
-//						for( auto const& ind : ptr->lorentz_indices() )
-//						{
-//							std::cerr << ind << "\n";
-//						}
+						#ifdef DEBUG_AMPLITUDE
+						std::cerr << "@@@Amplitude Incoming: " << ptr->particle()->name() << "\n";
+						#endif
 						_amplitude.push_back(ptr->feynman_rule());
 						return;
 					}
 					critical_error(FORMAT("Incoming antifermion line ends in incoming line, which is not a fermion ({}).", ptr->particle()->name()));
 				}
-				trace_fermion_line(ptr, ptr->front(), start_direction);
+				else{
+					if( ptr->particle()->is_fermion() )
+					{
+						if( vertex_direction == Feynman_Graph::Vertex_Direction::OUT )
+						{
+							#ifdef DEBUG_AMPLITUDE
+							std::cerr << "@@@Amplitude Virtual: " << ptr->particle()->name() << "\n";
+							#endif
+							_amplitude.push_back(ptr->feynman_rule());
+							trace_fermion_line(ptr, ptr->front(), start_direction);
+							return;
+						}
+						else
+						{
+							critical_error(FORMAT("Incoming anti fermion line joins intermediate fermion in wrong direction. Change to an anti fermion or reverse edge in topography."));
+						}
+					}
+					else if( ptr->particle()->is_anti_fermion() )
+					{
+						if( vertex_direction == Feynman_Graph::Vertex_Direction::IN )
+						{
+							#ifdef DEBUG_AMPLITUDE
+							std::cerr << "@@@Amplitude Virtual: " << ptr->particle()->name() << "\n";
+							#endif
+							_amplitude.push_back(ptr->feynman_rule());
+							trace_fermion_line(ptr, ptr->back(), start_direction);
+							return;
+						}
+						else
+						{
+							critical_error(FORMAT("Incoming anti fermion line joins intermediate anti fermion in wrong direction. Change to a fermion or reverse edge in topography."));
+						}
+					}
+				}
+				critical_error("Reached end of control flow which should not be reachable.");
 				break;
 			default:
 				critical_error("trace_fermion_line starting_direction must be external.");
@@ -360,29 +344,40 @@ namespace Feynumeric
 			critical_error("trace_fermion_line: Vertex_Ptr is null.");
 		}
 		Feynman_Graph::Edge_Ptr next;
-		for( auto const& e : vertex_ptr->all() ){
+		Feynman_Graph::Vertex_Direction vertex_direction;
+		for( auto const& e : vertex_ptr->front() )
+		{
 			if( e == origin ) continue;
 			if( e->particle()->is_anti_fermion() || e->particle()->is_fermion()){
 				if( next == nullptr ){
 					next = e;
+					vertex_direction = Feynman_Graph::Vertex_Direction::OUT;
 				} else{
 					critical_error("Vertex has more than two fermions.");
 				}
 			}
 		}
-
-//		std::cerr << "Amplitude-Feynman: ";
-//		for( auto const& edge_ptr : vertex_ptr->all() )
-//		{
-//			std::cerr << edge_ptr->particle()->name() << " ";
-//			for( auto const& ind : edge_ptr->lorentz_indices() )
-//			{
-//				std::cerr << ind << "\n";
-//			}
-//		}
-//		std::cerr << "\n";
+		for( auto const& e : vertex_ptr->back() )
+		{
+			if( e == origin ) continue;
+			if( e->particle()->is_anti_fermion() || e->particle()->is_fermion()){
+				if( next == nullptr ){
+					next = e;
+					vertex_direction = Feynman_Graph::Vertex_Direction::IN;
+				} else{
+					critical_error("Vertex has more than two fermions.");
+				}
+			}
+		}
+		#ifdef DEBUG_AMPLITUDE
+		std::cerr << "@@@Amplitude Vertex: ";
+		for( auto const& edge_ptr : vertex_ptr->all() ){
+			 std::cerr << edge_ptr->particle()->name() << "\t";
+		}
+		std::cerr << "\n";
+		#endif
 		_amplitude.push_back(vertex_ptr->feynman_rule());
-		trace_fermion_line(next, start_direction);
+		trace_fermion_line(next, start_direction, vertex_direction);
 	}
 
 	void Feynman_Diagram::iterate_spins()
@@ -422,13 +417,21 @@ namespace Feynumeric
 		std::size_t N_indices = std::pow(4, _lorentz_indices.size());
 		for( std::size_t i = 0; i < N_indices; ++i )
 		{
+			#ifdef DEBUG_AMPLITUDE
 			Matrix interim(_amplitude[0](kin));
+			std::cerr << "@@@0:\n" << interim << "\n";
+			#else
+			Matrix interim(_amplitude[0](kin));
+			#endif
 			for( std::size_t k = 1; k < _amplitude.size(); ++k )
 			{
-//					std::cerr << FORMAT("k: {}\n", k);
-//					std::cerr << interim << "\n";
+				#ifdef DEBUG_AMPLITUDE
+				auto temp = _amplitude[k](kin);
+				std::cerr << "@@@"<<k<<"\n" << temp << "\n";
+				interim *= temp;
+				#else
 				interim *= _amplitude[k](kin);
-//					std::cerr << interim << "\n\n";
+				#endif
 			}
 			try{
 				M += interim.try_as_complex();
