@@ -86,11 +86,16 @@ namespace Feynumeric
 
 	Angular_Momentum& operator++(Angular_Momentum& J)
 	{
-		J._m++;
-		if( J._m > J._j )
-		{
-			J._m = -J._j;
-		}
+    	if( !J._massless ){
+		    J._m++;
+		    if( J._m > J._j ){
+			    J._m = -J._j;
+		    }
+	    }
+    	else
+	    {
+    		J._m = -J._m;
+	    }
 		return J;
 	}
 }

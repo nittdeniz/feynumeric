@@ -53,6 +53,8 @@ namespace Feynumeric{
 
 		Complex evaluate_amplitude(Kinematics const& kin);
 
+		void reset_spins();
+
 		void phase(Complex phi);
 
 		friend class Feynman_Process;

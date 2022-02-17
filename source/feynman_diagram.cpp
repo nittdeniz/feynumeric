@@ -22,7 +22,7 @@ namespace Feynumeric
 		auto const& spin = edge_ptr->particle()->spin();
 		if( spin.j() > 0 )
 		{
-			_spins.push_back(std::make_shared<Angular_Momentum>(spin.j(), spin.j()));
+			_spins.push_back(std::make_shared<Angular_Momentum>(spin));
 			edge_ptr->spin(_spins.back());
 		}
 	}
@@ -400,6 +400,14 @@ namespace Feynumeric
 			{
 				return;
 			}
+		}
+	}
+
+	void Feynman_Diagram::reset_spins()
+	{
+		for( auto& spin : _spins )
+		{
+			spin->reset();
 		}
 	}
 

@@ -40,7 +40,7 @@ int main()
 	);
 
     Feynman_Process e_muon_scattering({t_channel});
-    e_muon_scattering.dsigma_dcos_table(std::cout, 2._MeV, 20ULL);
-//    return EXIT_SUCCESS;
+    e_muon_scattering.dsigma_dcos_table(std::cout, 200._MeV, 20ULL);
+    return EXIT_SUCCESS;
 }
 

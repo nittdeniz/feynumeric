@@ -2,17 +2,42 @@
 
 namespace Feynumeric
 {
-    Particle::Particle(std::string&& name, Type type, double mass, double charge, Angular_Momentum spin)
+    Particle::Particle(std::string&& name, Type type, double mass, double charge, double spin)
     : _name(std::move(name))
     , _type(type)
     , _mass(mass)
     , _charge(charge)
-    , _spin(std::move(spin))
+    , _spin(spin, spin, mass==0)
     {
-		_spin.m(spin.j());
     }
 
-    std::any Particle::user_data(std::string key) const
+	Particle::Particle(Particle const& copy)
+	: _name(copy._name)
+	, _type(copy._type)
+	, _mass(copy._mass)
+	, _charge(copy._charge)
+	, _spin(copy._spin)
+	, _isospin(copy._isospin)
+	, _width(copy._width)
+	, _user_data(copy._user_data)
+	{
+
+	}
+
+	Particle& Particle::operator=(Particle const& copy)
+	{
+		_name = copy._name;
+		_type = copy._type;
+		_mass = copy._mass;
+		_charge = copy._charge;
+		_spin = copy._spin;
+		_isospin = copy._isospin;
+		_width = copy._width;
+		_user_data = copy._user_data;
+		return *this;
+	}
+
+	std::any Particle::user_data(std::string key) const
     {
         return _user_data.at(key);
     }

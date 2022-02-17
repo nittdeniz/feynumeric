@@ -70,24 +70,23 @@ namespace Feynumeric
 		auto const& incoming = _diagrams[0]->incoming_particles();
 		auto const& outgoing = _diagrams[0]->outgoing_particles();
 
-		auto momentum = [](double x, double y, double z){ return x*y*z;};
-		
 		auto qin  = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
 		auto qout = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
 
-		kin.incoming(0, Four_Vector(qin, incoming[0]->mass(), 1, 0));
-		kin.incoming(1, Four_Vector(-qin, incoming[1]->mass(), 1, 0));
+		kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1, 0));
+		kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1, 0));
 
 		for( auto& diagram : _diagrams )
 		{
 			diagram->generate_amplitude();
+			diagram->reset_spins();
 		}
 
 		std::size_t const N_spins = [&](){
 			std::size_t n = 1;
 			for( auto const& j : _diagrams[0]->_spins )
 			{
-				n *= 2*j->j() + 1;
+				n *= j->n_states();
 			}
 			return n;
 		}();
@@ -96,8 +95,8 @@ namespace Feynumeric
 		{
 			auto const& cos_theta = values[k];
 			out << cos_theta << "\t";
-			kin.outgoing(0, Four_Vector(qout, outgoing[0]->mass(), cos_theta, 0));
-			kin.outgoing(1, Four_Vector(-qout, outgoing[1]->mass(), cos_theta, 0));
+			kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta, 0));
+			kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta, 0));
 
 			std::vector<double> Ms_squared(_diagrams.size() + 1);
 

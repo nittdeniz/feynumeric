@@ -36,7 +36,9 @@ namespace Feynumeric
         std::map<std::string, std::any> _user_data;
 
     public:
-        Particle(std::string&& name, Type type, double mass = 0, double charge = 0, Angular_Momentum spin = 0);
+        Particle(std::string&& name, Type type, double mass = 0, double charge = 0, double spin = 0);
+        Particle(Particle const& copy);
+        Particle& operator=(Particle const& copy);
 
         std::string name() const;
         double mass() const;
