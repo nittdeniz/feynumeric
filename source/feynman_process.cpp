@@ -1,6 +1,7 @@
 #include "feynman_process.hpp"
 #include "feynman_diagram.hpp"
 #include "four_vector.hpp"
+#include "units.hpp"
 
 #include <iomanip>
 
@@ -63,6 +64,7 @@ namespace Feynumeric
 
 	void Feynman_Process::dsigma_dcos_table(std::ostream& out, double sqrt_s, std::vector<double>&& values)
 	{
+		using namespace Feynumeric::Units;
 		validate_diagram_compatibility();
 
 		Kinematics kin(sqrt_s, 2, 2);
@@ -91,6 +93,20 @@ namespace Feynumeric
 			return n;
 		}();
 
+		std::size_t const N_polarisations = [&](){
+			std::size_t n = 1;
+			for( auto const& p : _diagrams[0]->_graph._incoming )
+			{
+				n *= p->spin()->n_states();
+			}
+			return n;
+		}();
+
+		double const phase_space_factor =
+				1./N_polarisations * 1./(32 * M_PI * kin.sqrt_s() * kin.sqrt_s()) * 1._hbarc * 1._hbarc * fm_to_mub * qout/qin;
+
+//				n_pol_N * n_pol_Gamma * 1. / (64 * M_PI * M_PI * kin.s()) * hbarc * hbarc * fm_to_mub * kin.qOut / kin.qIn;
+
 		for( std::size_t k = 0; k < values.size(); ++k )
 		{
 			auto const& cos_theta = values[k];
@@ -113,7 +129,7 @@ namespace Feynumeric
 
 			for( auto const& value : Ms_squared )
 			{
-				out << std::setw(10) << std::setprecision(10) << value << "\t";
+				out << std::setw(10) << std::setprecision(10) << phase_space_factor * value << "\t";
 			}
 			out << "\n";
 		}

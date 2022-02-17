@@ -55,6 +55,13 @@ namespace Feynumeric
         {
         	return value * 0.3028221198596643;
         }
+
+        constexpr long double operator"" _hbarc(long double value)
+        {
+        	return value * 0.197327;
+        }
+
+        constexpr double fm_to_mub = 1.e4;
     }
 }
 

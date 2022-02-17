@@ -119,6 +119,7 @@ namespace Feynumeric{
 		Feynman_Graph(Feynman_Diagram* diagram, Topology const& topology, std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& virtual_list, std::vector<Particle_Ptr> const& outgoing_list);
 
 		friend class Feynman_Diagram;
+		friend class Feynman_Process;
 	};
 }
 #endif /// FEYNUMERIC_FEYNMAN_GRAPH_HPP
