@@ -25,22 +25,13 @@ int main()
     init_particles();
 	init_vertices();
 
-//	Feynman_Diagram_Ptr s_channel = std::make_shared<Feynman_Diagram>(
-//								Double_Wrench,
-//								VMP,
-//	                          std::initializer_list<Particle_Ptr>({Photon, Electron}),
-//	                          std::initializer_list<Particle_Ptr>({Electron}),
-//	                          std::initializer_list<Particle_Ptr>({Electron, Photon})
-//	                          );
+	Feynman_Diagram_Ptr s_channel = std::make_shared<Feynman_Diagram>(Double_Wrench, VMP,
+	                                                        std::initializer_list<Particle_Ptr>{Electron, Positron},
+	                                                        std::initializer_list<Particle_Ptr>{Photon},
+	                                                        std::initializer_list<Particle_Ptr>{Electron, Positron});
 
-	Feynman_Diagram_Ptr t_channel = std::make_shared<Feynman_Diagram>(X_Man, VMP,
-	                          std::initializer_list<Particle_Ptr>({Photon, Electron}),
-	                          std::initializer_list<Particle_Ptr>({Positron}),
-	                          std::initializer_list<Particle_Ptr>({Electron, Photon})
-	);
-
-    Feynman_Process e_muon_scattering({t_channel});
-    e_muon_scattering.dsigma_dcos_table(std::cout, 200._MeV, 20ULL);
+    Feynman_Process e_scattering({s_channel});
+    e_scattering.dsigma_dcos_table(std::cout, 500._MeV, 0.1);
     return EXIT_SUCCESS;
 }
 

@@ -58,7 +58,7 @@ namespace Feynumeric
 		{
 			values[i] = -1 + i * delta;
 		}
-		values[steps+1] = 1.;
+		values[steps] = 1.;
 		dsigma_dcos_table(out, sqrt_s, std::move(values));
 	}
 
