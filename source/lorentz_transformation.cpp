@@ -2,12 +2,9 @@
 
 namespace Feynumeric
 {
-    Matrix boost(Four_Momentum const& p, Matrix const& a)
+    Matrix boost(Four_Vector const& p, Matrix const& a)
     {
-        if(
-                ( (p.n_cols() == 1 && p.n_rows() == 4) || (p.n_cols() == 4 && p.n_rows() == 1) )
-                &&  ( (a.n_cols() == 1 && a.n_rows() == 4) || (a.n_cols() == 4 && a.n_rows() == 1) )
-                )
+        if( (a.n_cols() == 1 && a.n_rows() == 4) || (a.n_cols() == 4 && a.n_rows() == 1) )
         {
 	        // https://en.wikipedia.org/wiki/Lorentz_transformation#Transformation_of_other_quantities
 	        Matrix const Z(3, 1, {a.at(1), a.at(2), a.at(3)});
@@ -25,7 +22,7 @@ namespace Feynumeric
         critical_error("Invalid boost vector.\n");
     }
 
-	Matrix boost(Four_Momentum const& p, Four_Momentum const& q)
+	Matrix boost(Four_Vector const& p, Four_Vector const& q)
 	{
 		return boost(p, Matrix(4, 1,{q.E(), q.x(), q.y(), q.z()}));
 	}

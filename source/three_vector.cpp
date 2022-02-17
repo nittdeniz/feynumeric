@@ -3,13 +3,13 @@
 namespace Feynumeric
 {
 	Three_Vector::Three_Vector(Complex x, Complex y, Complex z)
-	: _data({x, y, z})
+	: Matrix(3, 1, {x, y, z})
 	{
 
 	}
 
 	Three_Vector::Three_Vector(Three_Vector const& copy)
-	: _data(copy._data)
+	: Matrix(copy)
 	{
 
 	}
@@ -36,22 +36,34 @@ namespace Feynumeric
 		return *this;
 	}
 
-	template<typename T>
-	Three_Vector& Three_Vector::operator*=(T const& other)
+	Three_Vector Three_Vector::Rx(double phi) const
 	{
-		_data[0] *= other;
-		_data[1] *= other;
-		_data[2] *= other;
-		return *this;
+		auto const c = std::cos(phi);
+		auto const s = std::sqrt(1 - c*c);
+		auto const& x = _data[0];
+		auto const& y = _data[1];
+		auto const& z = _data[2];
+		return Three_Vector(x, y * c - z * s, z * c + y * s);
 	}
 
-	template<typename T>
-	Three_Vector& Three_Vector::operator/=(T const& other)
+	Three_Vector Three_Vector::Ry(double phi) const
 	{
-		_data[0] /= other;
-		_data[1] /= other;
-		_data[2] /= other;
-		return *this;
+		auto const c = std::cos(phi);
+		auto const s = std::sqrt(1 - c*c);
+		auto const& x = _data[0];
+		auto const& y = _data[1];
+		auto const& z = _data[2];
+		return Three_Vector(x * c + z * s, y, z * c - x * s);
+	}
+
+	Three_Vector Three_Vector::Rz(double phi) const
+	{
+		auto const c = std::cos(phi);
+		auto const s = std::sqrt(1 - c*c);
+		auto const& x = _data[0];
+		auto const& y = _data[1];
+		auto const& z = _data[2];
+		return Three_Vector(x * c - y * s, y * c + x * s, z);
 	}
 
 	Three_Vector Three_Vector::from_spherical(double radius, double cos_theta, double cos_phi)
@@ -91,7 +103,12 @@ namespace Feynumeric
 		_data[2] = z;
 	}
 
-	double Three_Vector::square() const
+	Three_Vector Three_Vector::align(Three_Vector const& other) const
+	{
+		return Rz(-phi()).Ry(other.theta()-theta()).Rz(other.phi());
+	}
+
+	double Three_Vector::squared() const
 	{
 		return (_data[0] * std::conj(_data[0]) + _data[1] * std::conj(_data[1]) + _data[2] * std::conj(_data[2])).real();
 	}
@@ -106,7 +123,8 @@ namespace Feynumeric
 		{
 			return 0.;
 		}
-		return std::atan2(z, rho);
+		auto a = std::atan2(rho, z);
+		return a;
 	}
 
 	double Three_Vector::phi() const
@@ -117,12 +135,8 @@ namespace Feynumeric
 		{
 			return 0.;
 		}
-		return std::atan2(x, y);
-	}
-
-	Complex Three_Vector::at(std::size_t i) const
-	{
-		return _data[i];
+		auto a = std::atan2(y, x);
+		return a;
 	}
 
 	Complex dot(Three_Vector const& lhs, Three_Vector const& rhs)
@@ -141,28 +155,6 @@ namespace Feynumeric
 	{
 		Three_Vector copy(lhs);
 		copy -= rhs;
-		return copy;
-	}
-
-	template<typename T>
-	Three_Vector operator*(Three_Vector const& lhs, T const& rhs)
-	{
-		Three_Vector copy(lhs);
-		copy *= rhs;
-		return copy;
-	}
-
-	template<typename T>
-	Three_Vector operator*(T const& lhs, Three_Vector const& rhs)
-	{
-		return rhs * lhs;
-	}
-
-	template<typename T>
-	Three_Vector operator/(Three_Vector const& lhs, T const& rhs)
-	{
-		Three_Vector copy(lhs);
-		copy /= rhs;
 		return copy;
 	}
 }

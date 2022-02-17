@@ -4,6 +4,7 @@
 #include <array>
 
 #include "complex.hpp"
+#include "lorentz_index.hpp"
 #include "three_vector.hpp"
 
 namespace Feynumeric
@@ -13,9 +14,9 @@ namespace Feynumeric
 	private:
 		Complex _temporal;
 		Three_Vector _spatial;
-		bool _contra_variant;
 	public:
 		Four_Vector(Complex t = Complex{}, Complex x = Complex{}, Complex y = Complex{}, Complex z = Complex{});
+		Four_Vector(Complex t, Three_Vector const& r);
 		Four_Vector(Four_Vector const& copy);
 		Four_Vector& operator=(Four_Vector const& copy);
 
@@ -26,15 +27,34 @@ namespace Feynumeric
 		template<typename T>
 		Four_Vector& operator/=(T const& rhs);
 
-		double theta();
-		double phi();
-		double spatial_square();
-		double square();
+		double theta() const;
+		double phi() const;
+		double spatial_squared() const;
+		double squared() const;
 
-		Complex co(std::size_t i) const;
-		Complex contra(std::size_t i) const;
+		Three_Vector const& spatial() const;
+
+		Complex t() const;
+		Complex E() const;
+		Complex x() const;
+		Complex y() const;
+		Complex z() const;
+
+		Complex co(Lorentz_Index mu) const;
+		Complex co(Lorentz_Index_Ptr mu) const;
+		Complex contra(Lorentz_Index mu) const;
+		Complex contra(Lorentz_Index_Ptr mu) const;
+
+		Four_Vector boost(Four_Vector const& p) const;
+		Four_Vector align(Four_Vector const& p) const;
+		Four_Vector align(Three_Vector const& p) const;
+
+		Four_Vector Rx(double phi) const;
+		Four_Vector Ry(double phi) const;
+		Four_Vector Rz(double phi) const;
 
 		friend Four_Vector operator+(Four_Vector const& lhs, Four_Vector const& rhs);
+		friend Four_Vector operator-(Four_Vector const& lhs);
 		friend Four_Vector operator-(Four_Vector const& lhs, Four_Vector const& rhs);
 		template<typename T>
 		friend Four_Vector operator*(Four_Vector const& lhs, T const& rhs);
@@ -45,5 +65,17 @@ namespace Feynumeric
 
 		friend Complex dot(Four_Vector const& lhs, Four_Vector const& rhs);
 	};
+
+	Four_Vector operator+(Four_Vector const& lhs, Four_Vector const& rhs);
+	Four_Vector operator-(Four_Vector const& lhs);
+	Four_Vector operator-(Four_Vector const& lhs, Four_Vector const& rhs);
+	template<typename T>
+	Four_Vector operator*(Four_Vector const& lhs, T const& rhs);
+	template<typename T>
+	Four_Vector operator*(T const& lhs, Four_Vector const& rhs);
+	template<typename T>
+	Four_Vector operator/(Four_Vector const& lhs, T const& rhs);
+
+	Complex dot(Four_Vector const& lhs, Four_Vector const& rhs);
 }
 #endif // FEYNUMERIC_FOUR_VECTOR_HPP

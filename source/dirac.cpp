@@ -26,7 +26,7 @@ namespace Feynumeric
 
     std::array<std::array<double, 4>, 4> MT = {{{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,0,0,-1}}};
 
-	[[maybe_unused]] Matrix GS(Four_Momentum const& p)
+	[[maybe_unused]] Matrix GS(Four_Vector const& p)
 	{
 		Complex const& a = p.E();
 		Complex const& b = p.x();
@@ -71,16 +71,16 @@ namespace Feynumeric
 		return u(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
 
-	Matrix v(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
+	Matrix v(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
 	{
 		return u(P, p, s, lorentz_indices);
 	}
 
-    Matrix u(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
+    Matrix u(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
-		if( p.E() < 0 )
+		if( p.E().real() < 0 )
 		{
-			Four_Momentum p_new = -p;
+			Four_Vector p_new = -p;
 			return u(P, p_new, s, lorentz_indices);
 		}
         if( s->j() == 1./2 )
@@ -119,7 +119,7 @@ namespace Feynumeric
 		return ubar(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
 
-	Matrix vbar(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
+	Matrix vbar(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
 	{
 //		std::cerr << "ubar: " << P->name() << ": " << p << "\n";
 		return u(P, p, s, lorentz_indices).T().apply([](Complex const& z){return std::conj(z);}) * GA[0];
@@ -132,7 +132,7 @@ namespace Feynumeric
 
 
 
-    Matrix ubar(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
+    Matrix ubar(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
 //		std::cerr << "ubar: " << P->name() << ": " << p << "\n";
         return u(P, p, s, lorentz_indices).T().apply([](Complex const& z){return std::conj(z);}) * GA[0];
@@ -148,13 +148,23 @@ namespace Feynumeric
 	    return epsilon_star(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
     }
 
-    Matrix epsilon(Particle_Ptr const& P, const Four_Momentum &pp, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
+    Matrix epsilon(Particle_Ptr const& P, const Four_Vector &pp, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
-		Four_Momentum const p = pp.E() > 0 ? pp : -pp;
+		Four_Vector const p = pp.E().real() > 0 ? pp : -pp;
         if( s->j() == 0 )
         {
             return Matrix(1,1,1);
         }
+
+        auto align = [&p](Four_Vector const& epsilon)
+        {
+        	auto theta = p.theta();
+        	auto phi = p.phi();
+        	auto y = epsilon.Ry(theta);
+        	auto z = y.Rz(phi);
+        	return z;
+        };
+
         if( P->mass() == 0 )
         {
 	        if( s->j() == 1 )
@@ -162,15 +172,15 @@ namespace Feynumeric
 		        double constexpr isqrt2 = 1./constexpr_sqrt(2.);
 		        if( s->m() == 1 )
 		        {
-			        static auto const vector = Matrix(4,1, {0, -isqrt2, -1.i * isqrt2, 0});
-			        auto boosted = boost(p, vector);
-			        return boosted.at(*(lorentz_indices[0]));
+			        static auto const vector = Four_Vector(0, -isqrt2, -1.i * isqrt2, 0);
+			        auto aligned = align(vector);
+			        return aligned.contra(lorentz_indices[0]);
 		        }
 		        if( s->m() == -1 )
 		        {
-			        static auto const vector = Matrix(4, 1, {0, isqrt2, -1.i * isqrt2, 0});
-			        auto boosted = boost(p, vector);
-			        return boosted.at(*(lorentz_indices[0]));
+			        static auto const vector = Four_Vector(0, isqrt2, -1.i * isqrt2, 0);
+			        auto aligned = align(vector);
+			        return aligned.contra(lorentz_indices[0]);
 		        }
 		        critical_error("Invalid state in polarisation vector.\n");
 	        }
@@ -182,21 +192,21 @@ namespace Feynumeric
 		        double constexpr isqrt2 = 1./constexpr_sqrt(2.);
 		        if( s->m() == 1 )
 		        {
-			        static auto const vector = Matrix(4,1, {0, -isqrt2, -1.i * isqrt2, 0});
-			        auto boosted = boost(p, vector);
-			        return boosted.at(*(lorentz_indices[0]));
+			        static auto const vector = Four_Vector(0, -isqrt2, -1.i * isqrt2, 0);
+			        auto aligned = align(vector);
+			        return aligned.contra(lorentz_indices[0]);
 		        }
 		        if( s->m() == 0 )
 		        {
-			        static auto const vector = Matrix(4,1, {0,0,0,1});
-			        auto boosted = boost(p, vector);
-			        return boosted.at(*(lorentz_indices[0]));
+			        auto const vector = Four_Vector(std::sqrt(p.spatial_squared())/P->mass(),0,0,p.E()/P->mass());
+			        auto aligned = align(vector);
+			        return aligned.contra(lorentz_indices[0]);
 		        }
 		        if( s->m() == -1 )
 		        {
-			        static auto const vector = Matrix(4, 1, {0, isqrt2, -1.i * isqrt2, 0});
-			        auto boosted = boost(p, vector);
-			        return boosted.at(*(lorentz_indices[0]));
+			        static auto const vector = Four_Vector(0, isqrt2, -1.i * isqrt2, 0);
+			        auto aligned = align(vector);
+			        return aligned.contra(lorentz_indices[0]);
 		        }
 		        critical_error("Invalid state in polarisation vector.\n");
 	        }
@@ -220,7 +230,7 @@ namespace Feynumeric
     }
 
 
-    Matrix epsilon_star(Particle_Ptr const& P, const Four_Momentum &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
+    Matrix epsilon_star(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
         return epsilon(P, p, s, lorentz_indices).apply([](Complex const& z){return std::conj(z);});
     }
@@ -235,7 +245,7 @@ namespace Feynumeric
 		return Propagator(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->lorentz_indices(), ignore_momentum);
 	}
 
-	Matrix Projector(Particle_Ptr const& P, const Four_Momentum &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum)
+	Matrix Projector(Particle_Ptr const& P, const Four_Vector &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum)
     {
         static Matrix const metric_tensor = Matrix(4, 4, {1,0,0,0, 0,-1,0,0, 0,0,-1,0, 0,0,0,-1});
 
@@ -281,7 +291,7 @@ namespace Feynumeric
 	        {
         		critical_error("Lorentz_Index_Ptr is nullptr.\n");
 	        }
-        	auto result = -metric_tensor.at(*mu, *nu) + (ignore_momentum? 0. : 1./p.squared() * p.at(*mu) * p.at(*nu));
+        	auto result = -metric_tensor.at(*mu, *nu) + (ignore_momentum? 0. : 1./p.squared() * p.contra(mu) * p.contra(nu));
             return result;
         };
 
@@ -318,37 +328,37 @@ namespace Feynumeric
 		return GA[*mu]*GA[*nu] - GA[*nu]*GA[*mu];
 	}
 
-	Matrix dirac_sigma(Lorentz_Index_Ptr mu, Four_Momentum const& p)
+	Matrix dirac_sigma(Lorentz_Index_Ptr mu, Four_Vector const& p)
 	{
 		return GA[*mu] * GS(p) - GS(p) * GA[*mu];
 	}
 
-	Matrix dirac_sigma(Four_Momentum const& p, Lorentz_Index_Ptr nu)
+	Matrix dirac_sigma(Four_Vector const& p, Lorentz_Index_Ptr nu)
 	{
 		return GS(p) * GA[*nu] - GA[*nu] * GS(p);
 	}
 
-	Complex FV(Matrix const& a, Lorentz_Index_Ptr mu)
-	{
-		return a.at(*mu);
-	}
+//	Complex FV(Matrix const& a, Lorentz_Index_Ptr mu)
+//	{
+//		return a.at(*mu);
+//	}
+//
+//	Complex FVC(Matrix const& a, Lorentz_Index_Ptr mu)
+//	{
+//		return MT[*mu][*mu] * a.at(*mu);
+//	}
 
-	Complex FVC(Matrix const& a, Lorentz_Index_Ptr mu)
-	{
-		return MT[*mu][*mu] * a.at(*mu);
-	}
+//	Complex FV(Four_Vector const& p, Lorentz_Index_Ptr mu)
+//	{
+//		return p.at(*mu);
+//	}
+//
+//	Complex FVC(Four_Vector const& p, Lorentz_Index_Ptr mu)
+//	{
+//		return MT[*mu][*mu] * p.at(*mu);
+//	}
 
-	Complex FV(Four_Momentum const& p, Lorentz_Index_Ptr mu)
-	{
-		return p.at(*mu);
-	}
-
-	Complex FVC(Four_Momentum const& p, Lorentz_Index_Ptr mu)
-	{
-		return MT[*mu][*mu] * p.at(*mu);
-	}
-
-	Matrix Propagator(const Particle_Ptr &P, const Four_Momentum &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices,
+	Matrix Propagator(const Particle_Ptr &P, const Four_Vector &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices,
                       bool ignore_momentum)
     {
         return Projector(P, p, lorentz_indices, ignore_momentum);
@@ -562,7 +572,7 @@ namespace Feynumeric
 //        return Matrix(p);
 //    }
 //
-//    std::complex<double> epsilon(Angular_Momentum const& A, Four_Momentum const& p, std::vector<int> lorentz_indices)
+//    std::complex<double> epsilon(Angular_Momentum const& A, Four_Vector const& p, std::vector<int> lorentz_indices)
 //    {
 //        return A.j() * p.E() * lorentz_indices.size();
 //    }

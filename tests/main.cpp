@@ -7,7 +7,7 @@
 #include <feynumeric/constexpr_math.hpp>
 #include <feynumeric/dirac.hpp>
 #include <feynumeric/units.hpp>
-#include <feynumeric/momentum.hpp>
+#include <feynumeric/four_vector.hpp>
 #include <feynumeric/particle.hpp>
 
 TEST_CASE( "is_valid_spin", "[angular momentum]" ) {
@@ -127,7 +127,7 @@ TEST_CASE("Dirac Spinors Completeness", "[dirac]"){
 	using namespace Feynumeric;
 	using namespace Feynumeric::Units;
 	Particle_Ptr Muon_Minus   = std::make_shared<Particle>("Muon_-", Particle::Type::Particle, 105.6583745_MeV, -1, 0.5);
-	Four_Momentum p(0.3_GeV, Muon_Minus->mass(), std::cos(0.3), std::cos(0.2));
+	Four_Vector p = four_momentum(0.3_GeV, Muon_Minus->mass(), std::cos(0.3), std::cos(0.2));
 	Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(0.5, 0.5);
 	Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(0.5, -0.5);
 	auto lhs = u(Muon_Minus, p, s1, {}) * ubar(Muon_Minus, p, s1, {}) + u(Muon_Minus, p, s2, {}) * ubar(Muon_Minus, p, s2, {});
@@ -141,7 +141,9 @@ TEST_CASE("Dirac Spinors Completeness", "[dirac]"){
 TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 	using namespace Feynumeric;
 
-	Four_Momentum p(3, 4, 0.1234, 0.5918273);
+	Particle_Ptr test_particle = std::make_shared<Particle>("Test", Particle::Type::Majorana, 4., 0, 1);
+
+	Four_Vector p = four_momentum(3, test_particle->mass(), 0.2, 0.3);
 
 	Lorentz_Index_Ptr mu = std::make_shared<Lorentz_Index>();
 	Lorentz_Index_Ptr nu = std::make_shared<Lorentz_Index>();
@@ -150,7 +152,7 @@ TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 	Angular_Momentum_Ptr s0 = std::make_shared<Angular_Momentum>(1, 0);
 	Angular_Momentum_Ptr s1m = std::make_shared<Angular_Momentum>(1, -1);
 
-	Particle_Ptr test_particle = std::make_shared<Particle>("Test", Particle::Type::Majorana, 1., 0, 1);
+
 
 	Matrix result(4, 4);
 	Matrix compare(4, 4);
@@ -158,13 +160,13 @@ TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 	{
 		for( int j = 0; j < 4; ++j )
 		{
-			auto temp1 = epsilon(test_particle, p, s1p, {mu}) * epsilon_star(test_particle, p, s1p, {nu});
-			auto temp2 = epsilon(test_particle, p, s0, {mu}) * epsilon_star(test_particle, p, s0, {nu});
-			auto temp3 = epsilon(test_particle, p, s1m, {mu}) * epsilon_star(test_particle, p, s1m, {nu});
-			result(i, j) = (temp1 + temp2 + temp3).try_as_complex();
+			auto temp1 = (epsilon(test_particle, p, s1p, {mu}) * epsilon_star(test_particle, p, s1p, {nu})).try_as_complex();
+			auto temp2 = (epsilon(test_particle, p, s0, {mu}) * epsilon_star(test_particle, p, s0, {nu})).try_as_complex();
+			auto temp3 = (epsilon(test_particle, p, s1m, {mu}) * epsilon_star(test_particle, p, s1m, {nu})).try_as_complex();
+			result(i, j) = temp1 + temp2 + temp3;
 			auto temp4 = -MT[*mu][*nu];
-			auto temp5 = FV(p, mu) * FV(p, nu);
-			auto temp6 = temp5 / p.dot();
+			auto temp5 = p.contra(mu) * p.contra(nu);
+			auto temp6 = temp5 / p.squared();
 			compare(i, j) =  temp4 + temp6;
 			++(*nu);
 		}
@@ -172,7 +174,7 @@ TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 	}
 	for( std::size_t i = 0; i < 16; ++i )
 	{
-		REQUIRE( almost_identical(result.at(i), compare.at(i)) );
+		REQUIRE( std::abs(result.at(i) - result.at(i)) < 0.00000001 );
 	}
 
 }

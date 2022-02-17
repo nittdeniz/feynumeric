@@ -41,7 +41,11 @@ namespace Feynumeric
         Matrix& operator-=(Matrix const& rhs);
         Matrix& operator*=(Matrix const& rhs);
         Matrix& operator*=(Complex const& rhs);
+	    Matrix& operator*=(double const& rhs);
+	    Matrix& operator*=(int const& rhs);
         Matrix& operator/=(Complex const& rhs);
+	    Matrix& operator/=(double const& rhs);
+	    Matrix& operator/=(int const& rhs);
 
         Matrix& apply(std::function<Complex(Complex const&)> const& f);
 

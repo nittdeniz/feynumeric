@@ -16,27 +16,27 @@ namespace Feynumeric
 		return _sqrt_s;
 	}
 
-	Four_Momentum const& Kinematics::incoming(std::size_t i) const
+	Four_Vector const& Kinematics::incoming(std::size_t i) const
 	{
 		return _momenta[i];
 	}
 
-	Four_Momentum const& Kinematics::outgoing(std::size_t i) const
+	Four_Vector const& Kinematics::outgoing(std::size_t i) const
 	{
 		return _momenta[_n_in + i];
 	}
 
-	Four_Momentum const& Kinematics::momentum(std::size_t i) const
+	Four_Vector const& Kinematics::momentum(std::size_t i) const
 	{
 		return _momenta[i];
 	}
 
-	void Kinematics::incoming(std::size_t i, Four_Momentum const& p)
+	void Kinematics::incoming(std::size_t i, Four_Vector const& p)
 	{
 		_momenta[i] = p;
 	}
 
-	void Kinematics::outgoing(std::size_t i, Four_Momentum const& p)
+	void Kinematics::outgoing(std::size_t i, Four_Vector const& p)
 	{
 		_momenta[_n_in+i] = p;
 	}

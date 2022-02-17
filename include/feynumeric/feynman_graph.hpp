@@ -11,7 +11,7 @@
 #include "kinematics.hpp"
 #include "lorentz_index.hpp"
 #include "matrix.hpp"
-#include "momentum.hpp"
+#include "four_vector.hpp"
 #include "topology.hpp"
 #include "types.hpp"
 
@@ -58,7 +58,7 @@ namespace Feynumeric{
 			void add_lorentz_index(Lorentz_Index_Ptr const& index);
 			std::vector<Lorentz_Index_Ptr> lorentz_indices() const;
 
-			Four_Momentum four_momentum(Kinematics const&) const;
+			Four_Vector four_momentum(Kinematics const&) const;
 
 			void front(Feynman_Graph::Vertex_Ptr const& v);
 			void back(Feynman_Graph::Vertex_Ptr const& v);

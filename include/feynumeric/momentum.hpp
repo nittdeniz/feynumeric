@@ -1,14 +1,20 @@
+
 #ifndef Feynumeric_MOMENTUM_HPP
 #define Feynumeric_MOMENTUM_HPP
 
 #include "matrix.hpp"
+#include "four_vector.hpp"
 
 namespace Feynumeric
 {
-    double kallen_lambda(double a, double b, double c);
-    double momentum(double M, double m1, double m2);
-    //Matrix four_momentum(double mass, double q, double cos_theta);
+	double kallen_lambda(double a, double b, double c);
 
+	double momentum(double M, double m1, double m2);
+
+	Four_Vector four_momentum(double q, double m, double cos_theta, double cos_phi);
+}
+    //Matrix four_momentum(double mass, double q, double cos_theta);
+/*
     class Three_Momentum : public Matrix
     {
     public:
@@ -125,5 +131,5 @@ namespace Feynumeric
 		return copy;
 	}
 }
+*/
 #endif // Feynumeric_MOMENTUM_HPP
-

@@ -3,12 +3,12 @@
 
 #include "feynumeric/utility.hpp"
 #include "feynumeric/matrix.hpp"
-#include "feynumeric/momentum.hpp"
+#include "feynumeric/four_vector.hpp"
 
 namespace Feynumeric
 {
-    Matrix boost(Four_Momentum const& p, Matrix const& four_vector);
-    Matrix boost(Four_Momentum const& p, Four_Momentum const& q);
+    Matrix boost(Four_Vector const& p, Matrix const& four_vector);
+    Matrix boost(Four_Vector const& p, Four_Vector const& q);
 
     Matrix rotateX(double cos_theta);
 	Matrix rotateY(double cos_theta);

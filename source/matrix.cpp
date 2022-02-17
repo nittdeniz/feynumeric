@@ -107,16 +107,16 @@ namespace Feynumeric
         return *this;
     }
 
-    Matrix &Matrix::operator*=(const Complex &rhs)
-    {
-        for( auto& elem : _data )
+	Matrix& Matrix::operator*=(Complex const& rhs)
+	{
+		for( auto& elem : _data )
         {
             elem *= rhs;
         }
         return *this;
-    }
+	}
 
-    Matrix &Matrix::operator/=(const Complex &rhs)
+    Matrix& Matrix::operator/=(Complex const& rhs)
     {
         for( auto& elem : _data )
         {
@@ -125,7 +125,43 @@ namespace Feynumeric
         return *this;
     }
 
-    bool same_dimension(const Matrix &lhs, const Matrix &rhs)
+	Matrix& Matrix::operator*=(double const& rhs)
+	{
+		for( auto& elem : _data )
+		{
+			elem *= rhs;
+		}
+		return *this;
+	}
+
+	Matrix& Matrix::operator*=(int const& rhs)
+	{
+		for( auto& elem : _data )
+		{
+			elem *= rhs;
+		}
+		return *this;
+	}
+
+	Matrix& Matrix::operator/=(double const& rhs)
+	{
+		for( auto& elem : _data )
+		{
+			elem /= rhs;
+		}
+		return *this;
+	}
+
+	Matrix& Matrix::operator/=(int const& rhs)
+	{
+		for( auto& elem : _data )
+		{
+			elem /= rhs;
+		}
+		return *this;
+	}
+
+	bool same_dimension(const Matrix &lhs, const Matrix &rhs)
     {
         return lhs._cols == rhs._cols && lhs._rows == rhs._rows;
     }

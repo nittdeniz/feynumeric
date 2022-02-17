@@ -20,41 +20,41 @@ namespace Feynumeric
     extern std::array<Matrix, 4> GAC;
     extern std::array<std::array<double, 4>, 4> MT;
 
-    Matrix GS(Four_Momentum const& p);
+    Matrix GS(Four_Vector const& p);
 	Matrix GS(Matrix const& matrix);
 
 	Matrix dirac_sigma(Lorentz_Index_Ptr mu, Lorentz_Index_Ptr nu);
-	Matrix dirac_sigma(Lorentz_Index_Ptr mu, Four_Momentum const& p);
-	Matrix dirac_sigma(Four_Momentum const& p, Lorentz_Index_Ptr nu);
+	Matrix dirac_sigma(Lorentz_Index_Ptr mu, Four_Vector const& p);
+	Matrix dirac_sigma(Four_Vector const& p, Lorentz_Index_Ptr nu);
 
 
-	Complex FV(Matrix const& a, Lorentz_Index_Ptr mu);
-	Complex FV(Four_Momentum const& p, Lorentz_Index_Ptr mu);
-	Complex FVC(Matrix const& a, Lorentz_Index_Ptr mu);
-	Complex FVC(Four_Momentum const& p, Lorentz_Index_Ptr nu);
+//	Complex FV(Matrix const& a, Lorentz_Index_Ptr mu);
+//	Complex FV(Four_Vector const& p, Lorentz_Index_Ptr mu);
+//	Complex FVC(Matrix const& a, Lorentz_Index_Ptr mu);
+//	Complex FVC(Four_Vector const& p, Lorentz_Index_Ptr nu);
 
 
     Matrix u(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
-    Matrix u(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+    Matrix u(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
     Matrix ubar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
-    Matrix ubar(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+    Matrix ubar(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
 
 	Matrix v(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
-	Matrix v(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+	Matrix v(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
 	Matrix vbar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
-	Matrix vbar(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+	Matrix vbar(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
 
     Matrix epsilon(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
     Matrix epsilon_star(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
 
-    Matrix epsilon(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
-    Matrix epsilon_star(Particle_Ptr const& P, Four_Momentum const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+    Matrix epsilon(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+    Matrix epsilon_star(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
 
     Matrix Projector(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin, bool ignore_momentum = false);
     Matrix Propagator(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin, bool ignore_momentum = false);
 
-    Matrix Projector(Particle_Ptr const& P, const Four_Momentum &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum = false);
-    Matrix Propagator(Particle_Ptr const& P, const Four_Momentum &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum = false);
+    Matrix Projector(Particle_Ptr const& P, const Four_Vector &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum = false);
+    Matrix Propagator(Particle_Ptr const& P, const Four_Vector &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum = false);
 
 
 
@@ -76,7 +76,7 @@ namespace Feynumeric
 //        return result;
 //    }
 
-//    std::complex<double> epsilon(Angular_Momentum const& A, Four_Momentum const& p, std::vector<int> lorentz_indices);
+//    std::complex<double> epsilon(Angular_Momentum const& A, Four_Vector const& p, std::vector<int> lorentz_indices);
 //
 //    template<>
 //    inline std::complex<double> epsilon<1, 1>(double p, std::array<int, 1> const& lorentz)

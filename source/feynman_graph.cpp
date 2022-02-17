@@ -1,6 +1,7 @@
 #include "feynman_diagram.hpp"
 #include "feynman_graph.hpp"
 #include "format.hpp"
+#include "four_vector.hpp"
 #include "messages.hpp"
 #include "particle.hpp"
 #include "utility.hpp"
@@ -178,9 +179,9 @@ namespace Feynumeric
 		return _particle;
 	}
 
-	Four_Momentum Feynman_Graph::Edge::four_momentum(Kinematics const& kin) const
+	Four_Vector Feynman_Graph::Edge::four_momentum(Kinematics const& kin) const
 	{
-		Four_Momentum result;
+		Four_Vector result;
 		for( std::size_t i = 0; i < _relative_momentum.n_rows(); ++i )
 		{
 			result += _relative_momentum.at(i) * kin.momentum(i);

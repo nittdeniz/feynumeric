@@ -1,7 +1,7 @@
 #ifndef FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 #define FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 
-#define DEBUG_AMPLITUDE 1
+//#define DEBUG_AMPLITUDE 1
 
 #include <initializer_list>
 #include <memory>
@@ -16,7 +16,7 @@ namespace Feynumeric{
 	class Feynman_Diagram{
 	public:
 		using Feynman_Rule = std::function<Matrix(Kinematics const& kin)>;
-		using Momentum_Func = std::function<Four_Momentum(Particle_Ptr const&, Kinematics const&)>;
+		using Momentum_Func = std::function<Four_Vector(Particle_Ptr const&, Kinematics const&)>;
 	private:
 		Feynman_Graph _graph;
 		Vertex_Manager_Ptr _VMP;
@@ -36,7 +36,7 @@ namespace Feynumeric{
 
 //		Momentum_Func generate_four_momentum(Direction const& direction, std::size_t pos) const;
 
-		Four_Momentum four_momentum();
+		Four_Vector four_momentum();
 
 		void iterate_indices();
 		void iterate_spins();
@@ -44,7 +44,7 @@ namespace Feynumeric{
 	public:
 		Feynman_Diagram(Topology const& topology, Vertex_Manager_Ptr const& VMP, std::initializer_list<Particle_Ptr> const& incoming_particles, std::initializer_list<Particle_Ptr> const& virtual_particles, std::initializer_list<Particle_Ptr> const& outgoing_particles);
 		void generate_amplitude();
-		Four_Momentum four_momentum(std::size_t index, Particle_Ptr const& P, Kinematics const& kin);
+		Four_Vector four_momentum(std::size_t index, Particle_Ptr const& P, Kinematics const& kin);
 		double dsigma_dcos(Kinematics& kin);
 		Vertex_Manager_Ptr Vertex_Manager();
 
