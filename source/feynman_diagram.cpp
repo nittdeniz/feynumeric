@@ -269,7 +269,6 @@ namespace Feynumeric
 					}
 				}
 				critical_error("Reached end of control flow which should not be reachable.");
-				break;
 			case Direction::INCOMING:
 				if( ptr->is_outgoing() )
 				{
@@ -330,7 +329,6 @@ namespace Feynumeric
 					}
 				}
 				critical_error("Reached end of control flow which should not be reachable.");
-				break;
 			default:
 				critical_error("trace_fermion_line starting_direction must be external.");
 		}
@@ -382,18 +380,12 @@ namespace Feynumeric
 
 	void Feynman_Diagram::iterate_spins()
 	{
-
 		for( auto& J : _spins )
 		{
-			auto j = J->j();
-			if( J->m() > -J->j() )
+			++(*J);
+			if( J->m() < J->j() )
 			{
-				J->m(J->m()-1);
-				return;
-			}
-			else if( J->m() == -j )
-			{
-				J->m(j);
+				break;
 			}
 		}
 	}
@@ -444,46 +436,6 @@ namespace Feynumeric
 		return _phase * M;
 	}
 
-/*
-	double Feynman_Diagram::dsigma_dcos(Kinematics& kin)
-	{
-		kin.momenta.push_back(momentum(kin.sqrt_s, _graph._incoming[0]->particle()->mass(), _graph._incoming[1]->particle()->mass()));
-		kin.momenta.push_back(momentum(kin.sqrt_s, _graph._outgoing[0]->particle()->mass(), _graph._outgoing[1]->particle()->mass()));
-		std::cerr << "q_in: " << kin.momenta[0] << "\n";
-		std::cerr << "q_out: " << kin.momenta[1] << "\n";
-		Complex M{0., 0.};
-		std::size_t N_indices = std::pow(4, _lorentz_indices.size());
-		std::size_t N_spins = [&](){
-			std::size_t n = 1;
-			for( auto const& j : _spins )
-			{
-				n *= 2*j->j() + 1;
-			}
-			return n;
-		}();
-		for( std::size_t i = 0; i < N_indices; ++i )
-		{
-
-			for( std::size_t j = 0; j < N_spins; ++j )
-			{
-				Matrix interim(_amplitude[0](kin));
-				for( std::size_t k = 1; k < _amplitude.size(); ++k )
-				{
-					interim *= _amplitude[k](kin);
-				}
-				try{
-					M += interim.try_as_complex();
-				}
-				catch( Matrix::dimension_exception const& e ){
-					critical_error("Invariant amplitude does not evaluate to a scalar.");
-				}
-				iterate_spins();
-			}
-			iterate_indices();
-		}
-		return (M * std::conj(M)).real();
-	}
-*/
 	void Feynman_Diagram::phase(Complex phi)
 	{
 		if( !almost_identical(1., std::abs(phi)) )
