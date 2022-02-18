@@ -56,6 +56,7 @@ namespace Feynumeric{
 			Angular_Momentum_Ptr spin() const;
 
 			void add_lorentz_index(Lorentz_Index_Ptr const& index);
+			void lorentz_indices(std::vector<Lorentz_Index_Ptr> const& list);
 			std::vector<Lorentz_Index_Ptr> lorentz_indices() const;
 
 			Four_Vector four_momentum(Kinematics const&) const;

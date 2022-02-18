@@ -12,7 +12,7 @@
 
 namespace Feynumeric
 {
-	Feynman_Graph::Feynman_Graph(Feynman_Diagram* diagram, Topology const& topology, std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& virtual_list, std::vector<Particle_Ptr> const& outgoing_list)
+	Feynman_Graph::Feynman_Graph(std::string&& name, Feynman_Diagram* diagram, Topology const& topology, std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& virtual_list, std::vector<Particle_Ptr> const& outgoing_list)
 	: _diagram(diagram)
 	, _topology(topology)
 	{
@@ -283,6 +283,11 @@ namespace Feynumeric
 		result.insert(result.end(), _front.cbegin(), _front.cend());
 		result.insert(result.end(), _back.cbegin(), _back.cend());
 		return result;
+	}
+
+	void Feynman_Graph::Edge::lorentz_indices(std::vector<Lorentz_Index_Ptr> const& list)
+	{
+		_lorentz_indices = list;
 	}
 
 	void Feynman_Graph::Vertex::front(Edge_Ptr const& e)

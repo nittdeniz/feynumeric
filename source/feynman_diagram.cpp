@@ -9,12 +9,14 @@
 
 namespace Feynumeric
 {
-	Feynman_Diagram::Feynman_Diagram(Topology const& topology, Vertex_Manager_Ptr const& VMP, std::initializer_list<Particle_Ptr> const& incoming_particles,
+	Feynman_Diagram::Feynman_Diagram(std::string&& name, Topology const& topology, Vertex_Manager_Ptr const& VMP, std::initializer_list<Particle_Ptr> const& incoming_particles,
 	                                 std::initializer_list<Particle_Ptr> const& virtual_particles,
 	                                 std::initializer_list<Particle_Ptr> const& outgoing_particles)
 			: _graph(this, topology, incoming_particles, virtual_particles, outgoing_particles)
 			, _VMP(VMP)
+			, _name(name)
 	{
+		initialize();
 	}
 
 	void Feynman_Diagram::add_spin(Feynman_Graph::Edge_Ptr const& edge_ptr)
@@ -37,15 +39,31 @@ namespace Feynumeric
 		}
 	}
 
-	Feynman_Diagram_Ptr create_diagram(Topology const& topology, Vertex_Manager_Ptr const& VMP,
+	Feynman_Diagram_Ptr create_diagram(std::string&& name, Topology const& topology, Vertex_Manager_Ptr const& VMP,
 	                                   std::initializer_list<Particle_Ptr> const& incoming_particles,
 	                                   std::initializer_list<Particle_Ptr> const& virtual_particles,
 	                                   std::initializer_list<Particle_Ptr> const& outgoing_particles)
 	{
-		return std::make_shared<Feynman_Diagram>(topology, VMP, incoming_particles, virtual_particles, outgoing_particles);
+		return std::make_shared<Feynman_Diagram>(std::move(name), topology, VMP, incoming_particles, virtual_particles, outgoing_particles);
 	}
 
-	void Feynman_Diagram::generate_amplitude()
+	void Feynman_Diagram::cross_outgoing(std::size_t a, std::size_t b)
+	{
+		auto& A = _graph._outgoing[a];
+		auto& B = _graph._outgoing[b];
+		auto A_spin = A->spin();
+		auto A_LI   = A->lorentz_indices();
+		auto A_p    = A->relative_momentum();
+		A->spin(B->spin());
+		A->lorentz_indices(B->lorentz_indices());
+		A->relative_momentum(B->relative_momentum());
+		B->spin(A_spin);
+		B->lorentz_indices(A_LI);
+		B->relative_momentum(A_p);
+		fix_internal_momenta();
+	}
+
+	void Feynman_Diagram::initialize()
 	{
 		fix_momenta();
 		_spins.reserve(_graph._outgoing.size() + _graph._incoming.size());
@@ -53,7 +71,18 @@ namespace Feynumeric
 		{
 			add_spin(edge_ptr);
 			add_lorentz_indices(edge_ptr);
+		}
 
+		for( auto& edge_ptr : _graph._incoming ){
+			add_spin(edge_ptr);
+			add_lorentz_indices(edge_ptr);
+		}
+	}
+
+	void Feynman_Diagram::generate_amplitude()
+	{
+		for( auto& edge_ptr : _graph._outgoing )
+		{
 			if( edge_ptr->particle()->is_fermion() )
 			{
 				#ifdef DEBUG_AMPLITUDE
@@ -72,8 +101,6 @@ namespace Feynumeric
 		}
 		for( auto& edge_ptr : _graph._incoming )
 		{
-			add_spin(edge_ptr);
-			add_lorentz_indices(edge_ptr);
 			if( edge_ptr->particle()->is_anti_fermion() )
 			{
 				#ifdef DEBUG_AMPLITUDE
@@ -107,29 +134,35 @@ namespace Feynumeric
 
 	void Feynman_Diagram::fix_momenta()
 	{
-		std::size_t const n_external = _graph._topology._incoming_edges.size() + _graph._topology._outgoing_edges.size();
+		fix_external_momenta();
+		fix_internal_momenta();
+	}
+
+	void Feynman_Diagram::fix_external_momenta()
+	{
+		std::size_t const n_external =
+				_graph._topology._incoming_edges.size() + _graph._topology._outgoing_edges.size();
 		Matrix zeroes(n_external, 1);
 		std::size_t position{0};
 
-		for( auto const& edge_ptr : _graph._incoming )
-		{
+		for( auto const& edge_ptr : _graph._incoming ){
 			Matrix p = zeroes;
 			p[position] = 1;
 			edge_ptr->relative_momentum(p);
 //			_four_momenta.push_back(generate_four_momentum(Direction::INCOMING, position));
 			position++;
 		}
-		for( auto const& edge_ptr : _graph._outgoing )
-		{
+		for( auto const& edge_ptr : _graph._outgoing ){
 			Matrix p = zeroes;
 			p[position] = -1;
 			edge_ptr->relative_momentum(p);
 //			_four_momenta.push_back(generate_four_momentum(Direction::OUTGOING, position));
 			position++;
 		}
+	}
 
+	void Feynman_Diagram::fix_internal_momenta(){
 		auto virtuals_left = _graph._virtual;
-
 		auto n_undetermined_momenta = [&](Feynman_Graph::Vertex_Ptr const& vertex)
 		{
 			std::size_t n{0};
@@ -144,6 +177,10 @@ namespace Feynumeric
 			}
 			return n_edges - n;
 		};
+
+		std::size_t const n_external =
+				_graph._topology._incoming_edges.size() + _graph._topology._outgoing_edges.size();
+		Matrix zeroes(n_external, 1);
 
 		while( !virtuals_left.empty() )
 		{
@@ -204,10 +241,12 @@ namespace Feynumeric
 			for( auto const& [vertex_b, edge_list] : map )
 			{
 				if( vertex_a > vertex_b ) continue;
-//				for( auto const& edge_ptr : edge_list )
-//				{
-//					std::cerr << "Edge(" << vertex_a << ", " << vertex_b << "): " << edge_ptr->relative_momentum() << "\n";
-//				}
+				#ifdef DEBUG_AMPLITUDE
+				for( auto const& edge_ptr : edge_list )
+				{
+					std::cerr << "Edge(" << vertex_a << ", " << vertex_b << "): " << edge_ptr->relative_momentum() << "\n";
+				}
+				#endif
 			}
 		}
 
