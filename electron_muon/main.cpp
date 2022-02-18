@@ -26,11 +26,11 @@ int main()
 	init_vertices();
 
 	Feynman_Diagram_Ptr s_channel = create_diagram(
-			Double_Wrench,
+			X_Man,
 			VMP,
-			{Electron, Positron},
+			{Electron, Electron},
 			{Photon},
-			{Electron, Positron});
+			{Electron, Electron});
 
     Feynman_Process e_scattering({s_channel});
     std::cout << "e-e- -> e-e-\n";
