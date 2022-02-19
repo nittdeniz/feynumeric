@@ -140,4 +140,77 @@ namespace Feynumeric
 			out << "\n";
 		}
 	}
+
+	std::map<double, std::vector<double>> Feynman_Process::dsigma_dcos_table(double sqrt_s, std::vector<double>&& values)
+	{
+		using namespace Feynumeric::Units;
+		validate_diagram_compatibility();
+
+		Kinematics kin(sqrt_s, 2, 2);
+
+		auto const& incoming = _diagrams[0]->incoming_particles();
+		auto const& outgoing = _diagrams[0]->outgoing_particles();
+
+		auto qin  = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
+		auto qout = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
+
+		kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1, 0));
+		kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1, 0));
+
+		for( auto& diagram : _diagrams )
+		{
+			diagram->generate_amplitude();
+			diagram->reset_spins();
+		}
+
+		std::size_t const N_spins = [&](){
+			std::size_t n = 1;
+			for( auto const& j : _diagrams[0]->_spins )
+			{
+				n *= j->n_states();
+			}
+			return n;
+		}();
+
+		std::size_t const N_polarisations = [&](){
+			std::size_t n = 1;
+			for( auto const& p : _diagrams[0]->_graph._incoming )
+			{
+				n *= p->spin()->n_states();
+			}
+			return n;
+		}();
+
+		double const phase_space_factor =
+				1./N_polarisations * 1./(32 * M_PI * kin.sqrt_s() * kin.sqrt_s()) * 1._hbarc * 1._hbarc * fm_to_mub * qout/qin;
+
+		std::map<double, std::vector<double>> result;
+
+		for( std::size_t k = 0; k < values.size(); ++k )
+		{
+			auto const& cos_theta = values[k];
+			kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta, 0));
+			kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta, 0));
+
+			std::vector<double> Ms_squared(_diagrams.size() + 1);
+
+			for( std::size_t i = 0; i < N_spins; ++i ){
+				Complex M{0, 0};
+				for( std::size_t j = 0; j < _diagrams.size(); ++j ){
+					auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
+					M += temp;
+					Ms_squared[j] += (temp * std::conj(temp)).real();
+					_diagrams[j]->iterate_spins();
+				}
+				Ms_squared[_diagrams.size()] += (M * std::conj(M)).real();
+			}
+
+			for( auto& value : Ms_squared )
+			{
+				value *= phase_space_factor;
+			}
+			result[cos_theta] = Ms_squared;
+		}
+		return result;
+	}
 }

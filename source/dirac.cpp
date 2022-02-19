@@ -68,12 +68,45 @@ namespace Feynumeric
 
 	Matrix v(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
 	{
-		return u(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
+		return v(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
 
 	Matrix v(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
 	{
-		return u(P, p, s, lorentz_indices);
+		if( p.E().real() < 0 )
+		{
+			Four_Vector p_new = -p;
+			return u(P, p_new, s, lorentz_indices);
+		}
+		if( s->j() == 1./2 )
+		{
+			auto N = p.E()+P->mass();
+			if( s->m() == 1./2 )
+			{
+				auto result = std::sqrt(N) * Matrix(4,1, {(p.x() - 1.i * p.y())/N, -p.z()/N, 0, 1});
+				return result;
+			}
+			if( s->m() == -1./2 )
+			{
+				return std::sqrt(N) * Matrix(4,1, {p.z()/N, (p.x()+1.i * p.y())/N, 1, 0});
+			}
+			critical_error("Invalid state in polarisation vector.\n");
+		}
+		Matrix result(4, 1);
+		for( double k = -1; k <= 1; k+= 2 )
+		{
+			double const n = k/2.;
+			if( abs(s->m()) <= s->j() && abs(s->m() - n) <= s->j()-0.5 )
+			{
+				Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(Angular_Momentum(s->j()-0.5, s->m()-n));
+				Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(Angular_Momentum(0.5, n));
+				result +=
+						clebsch_gordan(s1->j(), s->m()-n, 1, n, s->j(), s->m())
+						* epsilon(P, p, s1, lorentz_indices)
+						* v(P, p, s2, {});
+			}
+		}
+		return result;
 	}
 
     Matrix u(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
@@ -116,13 +149,12 @@ namespace Feynumeric
 
 	Matrix vbar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
 	{
-		return ubar(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
+		return vbar(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
 
 	Matrix vbar(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
 	{
-//		std::cerr << "ubar: " << P->name() << ": " << p << "\n";
-		return u(P, p, s, lorentz_indices).T().apply([](Complex const& z){return std::conj(z);}) * GA[0];
+		return v(P, p, s, lorentz_indices).T().apply([](Complex const& z){return std::conj(z);}) * GA[0];
 	}
 
     Matrix ubar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
@@ -134,7 +166,6 @@ namespace Feynumeric
 
     Matrix ubar(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
-//		std::cerr << "ubar: " << P->name() << ": " << p << "\n";
         return u(P, p, s, lorentz_indices).T().apply([](Complex const& z){return std::conj(z);}) * GA[0];
     }
 
@@ -291,7 +322,13 @@ namespace Feynumeric
 	        {
         		critical_error("Lorentz_Index_Ptr is nullptr.\n");
 	        }
-        	auto result = -metric_tensor.at(*mu, *nu) + (ignore_momentum? 0. : 1./p.squared() * p.contra(mu) * p.contra(nu));
+        	auto pmu = p.co(mu);
+        	auto pnu = p.co(nu);
+        	auto denominator = p.squared();
+        	auto mt = metric_tensor.at(*mu, *nu);
+        	auto numerator = pmu * pnu;
+			auto momentum_contribution = (numerator.real() == 0 && numerator.imag() == 0 && denominator == 0) ? 1 : numerator/denominator;
+        	auto result = -mt + (ignore_momentum? 0. : momentum_contribution);
             return result;
         };
 
@@ -338,287 +375,9 @@ namespace Feynumeric
 		return GS(p) * GA[*nu] - GA[*nu] * GS(p);
 	}
 
-//	Complex FV(Matrix const& a, Lorentz_Index_Ptr mu)
-//	{
-//		return a.at(*mu);
-//	}
-//
-//	Complex FVC(Matrix const& a, Lorentz_Index_Ptr mu)
-//	{
-//		return MT[*mu][*mu] * a.at(*mu);
-//	}
-
-//	Complex FV(Four_Vector const& p, Lorentz_Index_Ptr mu)
-//	{
-//		return p.at(*mu);
-//	}
-//
-//	Complex FVC(Four_Vector const& p, Lorentz_Index_Ptr mu)
-//	{
-//		return MT[*mu][*mu] * p.at(*mu);
-//	}
-
 	Matrix Propagator(const Particle_Ptr &P, const Four_Vector &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices,
                       bool ignore_momentum)
     {
         return Projector(P, p, lorentz_indices, ignore_momentum);
     }
-//
-//    [[maybe_unused]] Matrix epsilon(const Matrix& p, const Angular_Momentum &lambda)
-//    {
-//        if( almost_identical(dot4(p, p), 0) )
-//        {
-//            if( lambda.j() == 1 )
-//            {
-//
-//            }
-//        }
-//        return p;
-//    }
-//
-//    [[maybe_unused]] Matrix epsilon1(const Matrix &p, const Angular_Momentum &lambda)
-//    {
-//        switch( static_cast<int>(lambda.m()) )
-//        {
-//            case 1:
-//            case 0:
-//            case -1:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix epsilon2(const Matrix &p, const Angular_Momentum &lambda)
-//    {
-//        switch( static_cast<int>(lambda.m()) )
-//        {
-//            case 2:
-//            case 1:
-//            case 0:
-//            case -1:
-//            case -2:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix u12(const Matrix &p, const Angular_Momentum &s)
-//    {
-//        switch( static_cast<int>(2*s.m()) )
-//        {
-//            case 1:
-//            case -1:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix ubar12(const Matrix &p, const Angular_Momentum &s)
-//    {
-//        switch( static_cast<int>(2*s.m()) )
-//        {
-//            case 1:
-//            case -1:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix u32(const Matrix &p, const Angular_Momentum &s)
-//    {
-//        switch( static_cast<int>(2*s.m()) )
-//        {
-//            case 3:
-//            case 1:
-//            case -1:
-//            case -3:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix ubar32(const Matrix &p, const Angular_Momentum &s)
-//    {
-//        switch( static_cast<int>(2*s.m()) )
-//        {
-//            case 3:
-//            case 1:
-//            case -1:
-//            case -3:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix u52(const Matrix &p, const Angular_Momentum &s)
-//    {
-//        switch( static_cast<int>(2*s.m()) )
-//        {
-//            case 5:
-//            case 3:
-//            case 1:
-//            case -1:
-//            case -3:
-//            case -5:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix ubar52(const Matrix &p, const Angular_Momentum &s)
-//    {
-//        switch( static_cast<int>(2*s.m()) )
-//        {
-//            case 5:
-//            case 3:
-//            case 1:
-//            case -1:
-//            case -3:
-//            case -5:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix v12(const Matrix &p, const Angular_Momentum &s)
-//    {
-//        switch( static_cast<int>(2*s.m()) )
-//        {
-//            case 1:
-//            case -1:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix vbar12(const Matrix &p, const Angular_Momentum &s)
-//    {
-//        switch( static_cast<int>(2*s.m()) )
-//        {
-//            case 1:
-//            case -1:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix v32(const Matrix &p, const Angular_Momentum &s)
-//    {
-//        switch( static_cast<int>(2*s.m()) )
-//        {
-//            case 3:
-//            case 1:
-//            case -1:
-//            case -3:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix vbar32(const Matrix &p, const Angular_Momentum &s)
-//    {
-//        switch( static_cast<int>(2*s.m()) )
-//        {
-//            case 3:
-//            case 1:
-//            case -1:
-//            case -3:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix v52(const Matrix &p, const Angular_Momentum &s)
-//    {
-//        switch( static_cast<int>(2*s.m()) )
-//        {
-//            case 5:
-//            case 3:
-//            case 1:
-//            case -1:
-//            case -3:
-//            case -5:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    [[maybe_unused]] Matrix vbar52(const Matrix &p, const Angular_Momentum &s)
-//    {
-//        switch( static_cast<int>(2*s.m()) )
-//        {
-//            case 5:
-//            case 3:
-//            case 1:
-//            case -1:
-//            case -3:
-//            case -5:
-//            default:
-//                break;
-//        }
-//        return Matrix(p);
-//    }
-//
-//    std::complex<double> epsilon(Angular_Momentum const& A, Four_Vector const& p, std::vector<int> lorentz_indices)
-//    {
-//        return A.j() * p.E() * lorentz_indices.size();
-//    }
-//
-//    Matrix Projector_12p(const Matrix &p, const vector<std::size_t> &lorentz_indices)
-//    {
-//        return Matrix();
-//    }
-//
-//    Matrix Projector_1(const Matrix &p, const vector<std::size_t> &lorentz_indices)
-//    {
-//        return Matrix();
-//    }
-//
-//    Complex Breit_Wigner(const Matrix &p, double mass, std::function<double(const Matrix &)> width)
-//    {
-//        return Feynumeric::Complex();
-//    }
-//
-//    Matrix Propagator_0(const Particle_Ptr &particle, const Matrix &p, const vector<std::size_t> &lorentz_indices)
-//    {
-//        return Matrix();
-//    }
-//
-//    Matrix Propagator_12(const Particle_Ptr &particle, const Matrix &p, const vector<std::size_t> &lorentz_indices)
-//    {
-//        return Matrix();
-//    }
-//
-//    Matrix Propagator_1(const Particle_Ptr &particle, const Matrix &p, const vector<std::size_t> &lorentz_indices)
-//    {
-//        return Matrix();
-//    }
-//
-//    Matrix Propagator_32(const Particle_Ptr &particle, const Matrix &p, const vector<std::size_t> &lorentz_indices)
-//    {
-//        return Matrix();
-//    }
-//
-//    Matrix Propagator_2(const Particle_Ptr &particle, const Matrix &p, const vector<std::size_t> &lorentz_indices)
-//    {
-//        return Matrix();
-//    }
-//
-//    Matrix Propagator_52(const Particle_Ptr &particle, const Matrix &p, const vector<std::size_t> &lorentz_indices)
-//    {
-//        return Matrix();
-//    }
 }

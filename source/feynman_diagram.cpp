@@ -170,7 +170,14 @@ namespace Feynumeric
 	}
 
 	void Feynman_Diagram::fix_internal_momenta(){
+		// reset momenta
+		for( auto& e : _graph._virtual )
+		{
+			e->relative_momentum(Matrix());
+		}
+
 		auto virtuals_left = _graph._virtual;
+
 		auto n_undetermined_momenta = [&](Feynman_Graph::Vertex_Ptr const& vertex)
 		{
 			std::size_t n{0};
@@ -473,6 +480,7 @@ namespace Feynumeric
 		for( std::size_t i = 0; i < N_indices; ++i )
 		{
 			#ifdef DEBUG_AMPLITUDE
+			std::cerr << "indices: " << i << "\n";
 			Matrix interim(_amplitude[0](kin));
 			std::cerr << "@@@0:\n" << interim << "\n";
 			#else

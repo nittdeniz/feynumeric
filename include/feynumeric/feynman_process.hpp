@@ -2,6 +2,7 @@
 #define FEYNUMERIC_FEYNMAN_PROCESS_HPP
 
 #include <initializer_list>
+#include <map>
 #include <memory>
 #include <ostream>
 #include <vector>
@@ -25,6 +26,8 @@ namespace Feynumeric
 		void dsigma_dcos_table(std::ostream& out, double sqrt_s, std::size_t steps);
 		void dsigma_dcos_table(std::ostream& out, double sqrt_s, double delta);
 		void dsigma_dcos_table(std::ostream& out, double sqrt_s, std::vector<double>&& values);
+
+		std::map<double, std::vector<double>> dsigma_dcos_table(double sqrt_s, std::vector<double>&& values);
 	};
 }
 #endif // FEYNUMERIC_FEYNMAN_PROCESS_HPP

@@ -1,14 +1,18 @@
 #define CONFIG_CATCH_MAIN
 #include <catch2/catch_test_macros.hpp>
 
-#include <iostream>
 #include <feynumeric/angular_momentum.hpp>
 #include <feynumeric/matrix.hpp>
 #include <feynumeric/constexpr_math.hpp>
 #include <feynumeric/dirac.hpp>
 #include <feynumeric/units.hpp>
-#include <feynumeric/four_vector.hpp>
-#include <feynumeric/particle.hpp>
+#include <feynumeric/qed.hpp>
+#include <feynumeric/feynman_diagram.hpp>
+#include <feynumeric/topologies.hpp>
+#include <feynumeric/feynman_process.hpp>
+
+#include <map>
+
 
 TEST_CASE( "is_valid_spin", "[angular momentum]" ) {
     REQUIRE( Feynumeric::Angular_Momentum::is_valid_spin(0.) == true );
@@ -123,15 +127,32 @@ TEST_CASE("gamma^2 == 4", "[dirac]"){
 	REQUIRE( GA[0] * GAC[0] + GA[1] * GAC[1] + GA[2] * GAC[2] + GA[3] * GAC[3] == Matrix(4,4,4));
 }
 
-TEST_CASE("Dirac Spinors Completeness", "[dirac]"){
+TEST_CASE("Dirac Particle Spinors Completeness", "[dirac]"){
 	using namespace Feynumeric;
 	using namespace Feynumeric::Units;
-	Particle_Ptr Muon_Minus   = std::make_shared<Particle>("Muon_-", Particle::Type::Particle, 105.6583745_MeV, -1, 0.5);
+	using namespace Feynumeric::QED;
+//	Particle_Ptr Muon_Minus   = std::make_shared<Particle>("Muon_-", Particle::Type::Particle, 105.6583745_MeV, -1, 0.5);
 	Four_Vector p = four_momentum(0.3_GeV, Muon_Minus->mass(), std::cos(0.3), std::cos(0.2));
 	Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(0.5, 0.5);
 	Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(0.5, -0.5);
 	auto lhs = u(Muon_Minus, p, s1, {}) * ubar(Muon_Minus, p, s1, {}) + u(Muon_Minus, p, s2, {}) * ubar(Muon_Minus, p, s2, {});
 	auto rhs = GS(p) + Muon_Minus->mass();
+	for( std::size_t i = 0; i < 16; ++i )
+	{
+		REQUIRE( almost_identical(lhs.at(i), rhs.at(i), 0.1) );
+	}
+}
+
+TEST_CASE("Dirac Anti Particle Spinors Completeness", "[dirac]"){
+	using namespace Feynumeric;
+	using namespace Feynumeric::Units;
+	using namespace Feynumeric::QED;
+	//Particle_Ptr Muon_Plus   = std::make_shared<Particle>("Muon_+", Particle::Type::Particle, 105.6583745_MeV, 1, 0.5);
+	Four_Vector p = four_momentum(0.3_GeV, Muon_Plus->mass(), std::cos(0.3), std::cos(0.2));
+	Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(0.5, 0.5);
+	Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(0.5, -0.5);
+	auto lhs = v(Muon_Plus, p, s1, {}) * vbar(Muon_Plus, p, s1, {}) + v(Muon_Plus, p, s2, {}) * vbar(Muon_Plus, p, s2, {});
+	auto rhs = GS(p) - Muon_Plus->mass();
 	for( std::size_t i = 0; i < 16; ++i )
 	{
 		REQUIRE( almost_identical(lhs.at(i), rhs.at(i), 0.1) );
@@ -177,4 +198,72 @@ TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 		REQUIRE( std::abs(result.at(i) - result.at(i)) < 0.00000001 );
 	}
 
+}
+
+TEST_CASE("Moller Scattering", "[QED]")
+{
+	using namespace Feynumeric;
+	using namespace Feynumeric::Units;
+	using namespace Feynumeric::QED;
+
+	init_particles();
+	init_vertices();
+
+	Feynman_Diagram_Ptr t_channel = create_diagram("t_channel", X_Man, VMP,
+	                                               {Electron, Electron},
+	                                               {Photon},
+	                                               {Electron, Electron});
+
+	Feynman_Diagram_Ptr u_channel = create_diagram("u_channel", X_Man, VMP,
+	                                               {Electron, Electron},
+	                                               {Photon},
+	                                               {Electron, Electron});
+	u_channel->cross_outgoing(0, 1);
+
+	Feynman_Process e_scattering({t_channel, u_channel});
+
+	std::stringstream out;
+
+	double const cos_theta = 0.2134;
+
+	auto result = e_scattering.dsigma_dcos_table( 500._MeV, {cos_theta});
+
+	// Compare to analytical values from Mathematica's Feyncalc
+	REQUIRE( almost_identical(result[cos_theta][0], 0.02227945628277883) );
+	REQUIRE( almost_identical(result[cos_theta][1], 0.01880419088437939) );
+	REQUIRE( almost_identical(result[cos_theta][2], 0.0085134844703209) );
+}
+
+TEST_CASE("Bhaba Scattering", "[QED]")
+{
+	using namespace Feynumeric;
+	using namespace Feynumeric::Units;
+	using namespace Feynumeric::QED;
+
+	init_particles();
+	init_vertices();
+
+	Feynman_Diagram_Ptr s_channel = create_diagram("s_channel", Double_Wrench, VMP,
+	                                               {Electron, Positron},
+	                                               {Photon},
+	                                               {Electron, Positron});
+
+	Feynman_Diagram_Ptr t_channel = create_diagram("t_channel", X_Man, VMP,
+	                                               {Electron, Positron},
+	                                               {Photon},
+	                                               {Electron, Positron});
+
+
+	Feynman_Process e_scattering({s_channel, t_channel});
+
+	std::stringstream out;
+
+	double const cos_theta = 0.2134;
+
+	auto result = e_scattering.dsigma_dcos_table( 500._MeV, {cos_theta});
+
+	// Compare to analytical values from Mathematica's Feyncalc
+	REQUIRE( almost_identical(result[cos_theta][0], 0.02227945628277883) );
+	REQUIRE( almost_identical(result[cos_theta][1], 0.01880419088437939) );
+	REQUIRE( almost_identical(result[cos_theta][2], 0.0085134844703209) );
 }

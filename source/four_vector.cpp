@@ -163,22 +163,22 @@ namespace Feynumeric
 
 	Complex Four_Vector::co(Lorentz_Index mu) const
 	{
-		return mu == 0 ? _temporal : -_spatial.at(mu);
+		return mu == 0 ? _temporal : -_spatial.at(static_cast<int>(mu) - 1);
 	}
 
 	Complex Four_Vector::co(Lorentz_Index_Ptr mu) const
 	{
-		return *mu == 0 ? _temporal : -_spatial.at(*mu);
+		return *mu == 0 ? _temporal : -_spatial.at(static_cast<int>(*mu) - 1);
 	}
 
 	Complex Four_Vector::contra(Lorentz_Index mu) const
 	{
-		return mu == 0 ? _temporal : _spatial.at(mu);
+		return mu == 0 ? _temporal : _spatial.at(static_cast<int>(mu) - 1);
 	}
 
 	Complex Four_Vector::contra(Lorentz_Index_Ptr mu) const
 	{
-		return *mu == 0 ? _temporal : _spatial.at(*mu);
+		return *mu == 0 ? _temporal : _spatial.at(static_cast<int>(*mu) - 1);
 	}
 
 	Four_Vector operator+(Four_Vector const& lhs, Four_Vector const& rhs)

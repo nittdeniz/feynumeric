@@ -1,17 +1,29 @@
-#ifndef FEYNCALC_PARTICLES_HPP
-#define FEYNCALC_PARTICLES_HPP
+#ifndef PARTICLES_HPP
+#define PARTICLES_HPP
 
-#include "particle.hpp"
+#include <Feynumeric/particle.hpp>
+
 
 namespace Feynumeric
 {
-	extern Particle_Ptr Electron;
-	extern Particle_Ptr Positron;
+	namespace QED
+	{
+		// Gauge Bosons
+		extern Feynumeric::Particle_Ptr Photon;
+		// Leptons
+		extern Feynumeric::Particle_Ptr Electron;
+		extern Feynumeric::Particle_Ptr Positron;
+		extern Feynumeric::Particle_Ptr Muon_Plus;
+		extern Feynumeric::Particle_Ptr Muon_Minus;
 
-	extern Particle_Ptr Muon_Plus;
-	extern Particle_Ptr Muon_Minus;
+		extern Feynumeric::Particle_Ptr Electron_Neutrino;
+		extern Feynumeric::Particle_Ptr Electron_Anti_Neutrino;
+		extern Feynumeric::Particle_Ptr Muon_Neutrino;
+		extern Feynumeric::Particle_Ptr Muon_Anti_Neutrino;
 
-	extern Particle_Ptr Photon;
+		void init_particles();
+	}
 }
 
-#endif // FEYNCALC_PARTICLES_HPP
+
+#endif // PARTICLES_HPP
