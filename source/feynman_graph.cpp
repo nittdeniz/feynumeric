@@ -12,7 +12,7 @@
 
 namespace Feynumeric
 {
-	Feynman_Graph::Feynman_Graph(std::string&& name, Feynman_Diagram* diagram, Topology const& topology, std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& virtual_list, std::vector<Particle_Ptr> const& outgoing_list)
+	Feynman_Graph::Feynman_Graph(Feynman_Diagram* diagram, Topology const& topology, std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& virtual_list, std::vector<Particle_Ptr> const& outgoing_list)
 	: _diagram(diagram)
 	, _topology(topology)
 	{
@@ -333,6 +333,27 @@ namespace Feynumeric
 			critical_error(FORMAT("No suitable vertex found for configuration: {}", stream.str()));
 		}
 		auto vertex = optional_vertex.value();
-		return std::bind(vertex->vertex_function(), _1, vertex->sort(all(), shared_from_this()));
+
+		auto edge_ptrs = all();
+
+		for( std::size_t k = 0; k < edge_ptrs.size(); ++k )
+		{
+			if( edge_ptrs[k]->is_virtual() )
+			{
+				auto indices = edge_ptrs[k]->lorentz_indices();
+				auto dummy_ptr = std::make_shared<Feynman_Graph::Edge>(*edge_ptrs[k]);
+				if( contains(_front, edge_ptrs[k]) )
+				{
+					dummy_ptr->lorentz_indices({indices.begin(), indices.begin() + indices.size()/2});
+				}
+				else
+				{
+					dummy_ptr->lorentz_indices({indices.begin() + indices.size()/2, indices.end()});
+				}
+				_diagram->_graph._dummies.push_back(dummy_ptr);
+				edge_ptrs[k] = dummy_ptr;
+			}
+		}
+		return std::bind(vertex->vertex_function(), _1, vertex->sort(edge_ptrs, shared_from_this()));
 	}
 }

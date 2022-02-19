@@ -29,6 +29,11 @@ namespace Feynumeric
 		}
 	}
 
+	std::string const& Feynman_Diagram::name() const
+	{
+		return _name;
+	}
+
 	void Feynman_Diagram::add_lorentz_indices(Feynman_Graph::Edge_Ptr const& edge_ptr)
 	{
 		double j = edge_ptr->particle()->spin().j();
@@ -77,6 +82,11 @@ namespace Feynumeric
 			add_spin(edge_ptr);
 			add_lorentz_indices(edge_ptr);
 		}
+		for( auto& edge_ptr : _graph._virtual )
+		{
+			add_lorentz_indices(edge_ptr);
+			add_lorentz_indices(edge_ptr);
+		}
 	}
 
 	void Feynman_Diagram::generate_amplitude()
@@ -120,8 +130,6 @@ namespace Feynumeric
 		for( auto& edge_ptr : _graph._virtual )
 		{
 			// do this twice since it's a virtual particle
-			add_lorentz_indices(edge_ptr);
-			add_lorentz_indices(edge_ptr);
 			if( !(edge_ptr->particle()->is_fermion() || edge_ptr->particle()->is_anti_fermion()) )
 			{
 				#ifdef DEBUG_AMPLITUDE

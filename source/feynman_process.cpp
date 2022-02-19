@@ -4,6 +4,7 @@
 #include "units.hpp"
 
 #include <iomanip>
+#include <format.hpp>
 
 namespace Feynumeric
 {
@@ -106,7 +107,12 @@ namespace Feynumeric
 				1./N_polarisations * 1./(32 * M_PI * kin.sqrt_s() * kin.sqrt_s()) * 1._hbarc * 1._hbarc * fm_to_mub * qout/qin;
 
 //				n_pol_N * n_pol_Gamma * 1. / (64 * M_PI * M_PI * kin.s()) * hbarc * hbarc * fm_to_mub * kin.qOut / kin.qIn;
-
+		out << "cos";
+		for( auto const& diagram : _diagrams )
+		{
+			out << FORMAT("\t{} ({},{})", diagram->_name, diagram->_phase.real(), diagram->_phase.imag());
+		}
+		out  << "\tsum\n";
 		for( std::size_t k = 0; k < values.size(); ++k )
 		{
 			auto const& cos_theta = values[k];

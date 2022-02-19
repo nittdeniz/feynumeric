@@ -110,6 +110,7 @@ namespace Feynumeric{
 		std::vector<Edge_Ptr> _incoming;
 		std::vector<Edge_Ptr> _outgoing;
 		std::vector<Edge_Ptr> _virtual;
+		std::vector<Edge_Ptr> _dummies;
 
 		Edge_Map _edges;
 		Vertex_Map _vertices;

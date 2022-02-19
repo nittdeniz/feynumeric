@@ -25,16 +25,12 @@ int main()
     init_particles();
 	init_vertices();
 
-	Feynman_Diagram_Ptr t_channel = create_diagram("t_channel",
-			X_Man,
-			VMP,
+	Feynman_Diagram_Ptr t_channel = create_diagram("t_channel", X_Man, VMP,
 			{Electron, Electron},
 			{Photon},
 			{Electron, Electron});
 
-	Feynman_Diagram_Ptr u_channel = create_diagram("u_channel",
-			X_Man,
-			VMP,
+	Feynman_Diagram_Ptr u_channel = create_diagram("u_channel", X_Man, VMP,
 			{Electron, Electron},
 			{Photon},
 			{Electron, Electron});

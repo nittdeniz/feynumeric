@@ -64,7 +64,10 @@ namespace Feynumeric{
 
 		void phase(Complex phi);
 
+		std::string const& name() const;
+
 		friend class Feynman_Process;
+		friend class Feynman_Graph::Vertex;
 	};
 
 	using Feynman_Diagram_Ptr = std::shared_ptr<Feynman_Diagram>;

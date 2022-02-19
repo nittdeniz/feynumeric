@@ -25,7 +25,6 @@ Particle_Ptr Pi_Minus     = std::make_shared<Particle>("Pi_-", Particle::Type::P
 Particle_Ptr N1440p       = std::make_shared<Particle>("N1440_+", Particle::Type::Particle, 1.44_GeV, +1, 0.5);
 Particle_Ptr N1440n       = std::make_shared<Particle>("N1440_0", Particle::Type::Particle, 1.44_GeV, 0, 0.5);
 
-
 void init_particles()
 {
     using namespace Feynumeric;
