@@ -162,7 +162,7 @@ namespace Feynumeric
 		}
 		for( auto const& edge_ptr : _graph._outgoing ){
 			Matrix p = zeroes;
-			p[position] = -1;
+			p[position] = 1; // maybe switch back to -1
 			edge_ptr->relative_momentum(p);
 //			_four_momenta.push_back(generate_four_momentum(Direction::OUTGOING, position));
 			position++;

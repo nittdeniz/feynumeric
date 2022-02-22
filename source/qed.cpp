@@ -86,6 +86,18 @@ namespace Feynumeric
 					}
 			));
 
+			VMP->add(Feynumeric::Vertex(
+					{
+							{Positron, Direction::BOTH},
+							{Positron, Direction::BOTH},
+							{Photon,   Direction::BOTH}
+					},
+					[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+						auto const& photon = edges[2];
+						return 1._e * Feynumeric::GAC[*( photon->lorentz_indices()[0] )];
+					}
+			));
+
 
 			VMP->add(Feynumeric::Vertex(
 					{

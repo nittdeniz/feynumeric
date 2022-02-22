@@ -117,8 +117,8 @@ namespace Feynumeric
 		{
 			auto const& cos_theta = values[k];
 			out << cos_theta << "\t";
-			kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta, 0));
-			kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta, 0));
+			kin.outgoing(0, -four_momentum(qout, outgoing[0]->mass(), cos_theta, 1));
+			kin.outgoing(1, -four_momentum(-qout, outgoing[1]->mass(), cos_theta, 1));
 
 			std::vector<double> Ms_squared(_diagrams.size() + 1);
 
@@ -154,8 +154,8 @@ namespace Feynumeric
 		auto qin  = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
 		auto qout = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
 
-		kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1, 0));
-		kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1, 0));
+		kin.incoming(0, four_momentum(qin, incoming[0]->mass()));
+		kin.incoming(1, four_momentum(-qin, incoming[1]->mass()));
 
 		for( auto& diagram : _diagrams )
 		{
@@ -189,8 +189,8 @@ namespace Feynumeric
 		for( std::size_t k = 0; k < values.size(); ++k )
 		{
 			auto const& cos_theta = values[k];
-			kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta, 0));
-			kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta, 0));
+			kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
+			kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta));
 
 			std::vector<double> Ms_squared(_diagrams.size() + 1);
 

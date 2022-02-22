@@ -1,6 +1,8 @@
 #define CONFIG_CATCH_MAIN
 #include <catch2/catch_test_macros.hpp>
 
+#include <iostream>
+
 #include <feynumeric/angular_momentum.hpp>
 #include <feynumeric/matrix.hpp>
 #include <feynumeric/constexpr_math.hpp>
@@ -11,94 +13,102 @@
 #include <feynumeric/topologies.hpp>
 #include <feynumeric/feynman_process.hpp>
 
-#include <map>
+using namespace Feynumeric;
+using namespace Units;
+using namespace QED;
 
 
 TEST_CASE( "is_valid_spin", "[angular momentum]" ) {
-    REQUIRE( Feynumeric::Angular_Momentum::is_valid_spin(0.) == true );
-    REQUIRE( Feynumeric::Angular_Momentum::is_valid_spin(0.5) == true );
-    REQUIRE( Feynumeric::Angular_Momentum::is_valid_spin(1) == true );
-    REQUIRE( Feynumeric::Angular_Momentum::is_valid_spin(1.5) == true );
-    REQUIRE( Feynumeric::Angular_Momentum::is_valid_spin(-1.5) == false );
-    REQUIRE( Feynumeric::Angular_Momentum::is_valid_spin(2.3) == false);
-    REQUIRE( Feynumeric::Angular_Momentum::is_valid_spin(-2.3) == false);
+    REQUIRE( Angular_Momentum::is_valid_spin(0.) == true );
+    REQUIRE( Angular_Momentum::is_valid_spin(0.5) == true );
+    REQUIRE( Angular_Momentum::is_valid_spin(1) == true );
+    REQUIRE( Angular_Momentum::is_valid_spin(1.5) == true );
+    REQUIRE( Angular_Momentum::is_valid_spin(-1.5) == false );
+    REQUIRE( Angular_Momentum::is_valid_spin(2.3) == false);
+    REQUIRE( Angular_Momentum::is_valid_spin(-2.3) == false);
 }
 
 TEST_CASE( "is_half_odd_integer", "[angular momentum]" ) {
-    Feynumeric::Angular_Momentum one_half(0.5);
-    Feynumeric::Angular_Momentum one(1);
-    Feynumeric::Angular_Momentum three_halves(1.5);
+    Angular_Momentum one_half(0.5);
+    Angular_Momentum one(1);
+    Angular_Momentum three_halves(1.5);
     REQUIRE( one_half.is_half_odd_integer() );
     REQUIRE( !one.is_half_odd_integer() );
     REQUIRE( three_halves.is_half_odd_integer() );
 }
 
 TEST_CASE("n_states", "[angular momentum]"){
-	Feynumeric::Angular_Momentum spin_zero(0);
-	Feynumeric::Angular_Momentum spin_onehalf(0.5);
-	Feynumeric::Angular_Momentum spin_three_massless(3, 3, true);
+	Angular_Momentum spin_zero(0);
+	Angular_Momentum spin_onehalf(0.5);
+	Angular_Momentum spin_three_massless(3, 3, true);
 	REQUIRE( spin_zero.n_states() == 1 );
 	REQUIRE( spin_onehalf.n_states() == 2);
 	REQUIRE( spin_three_massless.n_states() == 2);
 }
 
 TEST_CASE( "matrix diagonal constructor", "[matrix]" ) {
-    Feynumeric::Matrix a(4, 4, 3.5);
+    Matrix a(4, 4, 3.5);
     REQUIRE( a == a);
     REQUIRE( !(a == 2*a) );
     REQUIRE( a != 2*a );
-    REQUIRE( a == Feynumeric::Matrix(4, 4, {{3.5,0,0,0, 0,3.5,0,0, 0,0,3.5,0, 0,0,0,3.5}}));
+    REQUIRE( a == Matrix(4, 4, {{3.5,0,0,0, 0,3.5,0,0, 0,0,3.5,0, 0,0,0,3.5}}));
 }
 
 TEST_CASE( "matrix_addition", "[matrix]" ){
-    Feynumeric::Matrix a(3, 3, {1,2,3, 4,5,6, 7,8,9});
-    Feynumeric::Matrix b(3, 3, {2,4,6, 8,10,12, 14,16,18});
-    Feynumeric::Matrix c(3, 3, {11,2,3, 4,15,6, 7,8,19});
+    Matrix a(3, 3, {1,2,3, 4,5,6, 7,8,9});
+    Matrix b(3, 3, {2,4,6, 8,10,12, 14,16,18});
+    Matrix c(3, 3, {11,2,3, 4,15,6, 7,8,19});
     REQUIRE( a + a == b );
     REQUIRE( a + 10 == c);
 }
 
 TEST_CASE( "matrix_subtraction", "[matrix]" ){
-    Feynumeric::Matrix a(3, 3, {1,2,3, 4,5,6, 7,8,9});
-    Feynumeric::Matrix b(3, 3, {2,4,6, 8,10,12, 14,16,18});
-    Feynumeric::Matrix c(3, 3, {11,2,3, 4,15,6, 7,8,19});
-    REQUIRE( a - a == Feynumeric::Matrix(3, 3, 0) );
+    Matrix a(3, 3, {1,2,3, 4,5,6, 7,8,9});
+    Matrix b(3, 3, {2,4,6, 8,10,12, 14,16,18});
+    Matrix c(3, 3, {11,2,3, 4,15,6, 7,8,19});
+    REQUIRE( a - a == Matrix(3, 3, 0) );
     REQUIRE( b - a == a);
     REQUIRE( -(10-c) == a);
 }
 
+TEST_CASE("matrix apply()", "[matrix]"){
+	using namespace std::complex_literals;
+	Matrix a(2, 2, {1.+1.i, 2.-2.i, 3.+3.i, 4.-4.i});
+	Matrix b(2, 2, {1.-1.i, 2.+2.i, 3.-3.i, 4.+4.i});
+	REQUIRE( a.apply([](Complex const& c){return std::conj(c);}) == b );
+}
+
 TEST_CASE( "matrix_operator()", "[matrix]"){
-    Feynumeric::Matrix a(3, 3, {1,2,3, 4,5,6, 7,8,9});
-    Feynumeric::Matrix b(3, 3, {1,2,13, 4,5,6, 7,8,9});
+    Matrix a(3, 3, {1,2,3, 4,5,6, 7,8,9});
+    Matrix b(3, 3, {1,2,13, 4,5,6, 7,8,9});
     REQUIRE( a != b );
     a(0, 2) += 10;
     REQUIRE( a == b );
 }
 
 TEST_CASE( "matrix_multiplication", "[matrix]"){
-    Feynumeric::Matrix a(1, 4, {1,2,3,4});
-    Feynumeric::Matrix b(4, 1, {5,6,7,8});
+    Matrix a(1, 4, {1,2,3,4});
+    Matrix b(4, 1, {5,6,7,8});
 
-    REQUIRE( a*b == Feynumeric::Matrix(1, 1, std::vector<Feynumeric::Complex>{70}));
-    REQUIRE( b*a == Feynumeric::Matrix(4, 4, {5,10,15,20, 6,12,18,24, 7,14,21,28, 8,16,24,32}));
+    REQUIRE( a*b == Matrix(1, 1, std::vector<Complex>{70}));
+    REQUIRE( b*a == Matrix(4, 4, {5,10,15,20, 6,12,18,24, 7,14,21,28, 8,16,24,32}));
 }
 
 TEST_CASE( "matrix_division", "[matrix]" ){
-    Feynumeric::Matrix a(3, 3, {1,2,3, 4,5,6, 7,8,9});
-    Feynumeric::Matrix b(3, 3, {2,4,6, 8,10,12, 14,16,18});
+    Matrix a(3, 3, {1,2,3, 4,5,6, 7,8,9});
+    Matrix b(3, 3, {2,4,6, 8,10,12, 14,16,18});
 
     REQUIRE(b/2. == a);
 }
 
 TEST_CASE( "matrix transposition", "[matrix]"){
-    Feynumeric::Matrix a(3, 3, {1,2,3, 4,5,6, 7,8,9});
-    Feynumeric::Matrix b(3, 3, {1,4,7, 2,5,8, 3,6,9});
+    Matrix a(3, 3, {1,2,3, 4,5,6, 7,8,9});
+    Matrix b(3, 3, {1,4,7, 2,5,8, 3,6,9});
 
 //    REQUIRE(a.T() == b);
 }
 
 TEST_CASE("clebsch_gordan", "[math]"){
-    using namespace Feynumeric;
     REQUIRE(is_almost_equal(clebsch_gordan(0,0,0,0,0,0), 1.));
     REQUIRE(is_almost_equal(clebsch_gordan(2,0,3,0,5,0), constexpr_sqrt(10./21.)));
     REQUIRE(is_almost_equal(clebsch_gordan(2,1,3,0,5,1), 2*constexpr_sqrt(2./21.)));
@@ -123,15 +133,10 @@ TEST_CASE("clebsch_gordan", "[math]"){
 }
 
 TEST_CASE("gamma^2 == 4", "[dirac]"){
-	using namespace Feynumeric;
 	REQUIRE( GA[0] * GAC[0] + GA[1] * GAC[1] + GA[2] * GAC[2] + GA[3] * GAC[3] == Matrix(4,4,4));
 }
 
 TEST_CASE("Dirac Particle Spinors Completeness", "[dirac]"){
-	using namespace Feynumeric;
-	using namespace Feynumeric::Units;
-	using namespace Feynumeric::QED;
-//	Particle_Ptr Muon_Minus   = std::make_shared<Particle>("Muon_-", Particle::Type::Particle, 105.6583745_MeV, -1, 0.5);
 	Four_Vector p = four_momentum(0.3_GeV, Muon_Minus->mass(), std::cos(0.3), std::cos(0.2));
 	Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(0.5, 0.5);
 	Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(0.5, -0.5);
@@ -144,10 +149,6 @@ TEST_CASE("Dirac Particle Spinors Completeness", "[dirac]"){
 }
 
 TEST_CASE("Dirac Anti Particle Spinors Completeness", "[dirac]"){
-	using namespace Feynumeric;
-	using namespace Feynumeric::Units;
-	using namespace Feynumeric::QED;
-	//Particle_Ptr Muon_Plus   = std::make_shared<Particle>("Muon_+", Particle::Type::Particle, 105.6583745_MeV, 1, 0.5);
 	Four_Vector p = four_momentum(0.3_GeV, Muon_Plus->mass(), std::cos(0.3), std::cos(0.2));
 	Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(0.5, 0.5);
 	Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(0.5, -0.5);
@@ -159,12 +160,40 @@ TEST_CASE("Dirac Anti Particle Spinors Completeness", "[dirac]"){
 	}
 }
 
+TEST_CASE("Spin 1 Normalisation", "[dirac]"){
+	using namespace Feynumeric;
+	Particle_Ptr test_particle = std::make_shared<Particle>("Test", Particle::Type::Majorana, 4., 0, 1);
+	Four_Vector p = four_momentum(3, test_particle->mass(), 0.2, 0.3);
+	Lorentz_Index_Ptr mu = std::make_shared<Lorentz_Index>();
+	Lorentz_Index_Ptr nu = std::make_shared<Lorentz_Index>();
+	Angular_Momentum_Ptr s1p = std::make_shared<Angular_Momentum>(1, 1);
+	Angular_Momentum_Ptr s0 = std::make_shared<Angular_Momentum>(1, 0);
+	Angular_Momentum_Ptr s1m = std::make_shared<Angular_Momentum>(1, -1);
+
+	for( auto spin1 : {s1p, s0, s1m} ){
+		for( auto spin2 : {s1p, s0, s1m} ){
+			Complex result = 0;
+			for( std::size_t i = 0; i < 4; i++ ){
+				if( i == 0 ){
+					result += ( epsilon(test_particle, p, spin1, {mu}) *
+					            epsilon_star(test_particle, p, spin2, {mu})).try_as_complex();
+				} else{
+					result -= ( epsilon(test_particle, p, spin1, {mu}) *
+					            epsilon_star(test_particle, p, spin2, {mu})).try_as_complex();
+				}
+				++( *mu );
+			}
+			std::cerr << result << "\n";
+		}
+	}
+}
+
 TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 	using namespace Feynumeric;
 
 	Particle_Ptr test_particle = std::make_shared<Particle>("Test", Particle::Type::Majorana, 4., 0, 1);
 
-	Four_Vector p = four_momentum(3, test_particle->mass(), 0.2, 0.3);
+	Four_Vector p = four_momentum(3, test_particle->mass(), -0.2, 0.3);
 
 	Lorentz_Index_Ptr mu = std::make_shared<Lorentz_Index>();
 	Lorentz_Index_Ptr nu = std::make_shared<Lorentz_Index>();
@@ -172,7 +201,6 @@ TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 	Angular_Momentum_Ptr s1p = std::make_shared<Angular_Momentum>(1, 1);
 	Angular_Momentum_Ptr s0 = std::make_shared<Angular_Momentum>(1, 0);
 	Angular_Momentum_Ptr s1m = std::make_shared<Angular_Momentum>(1, -1);
-
 
 
 	Matrix result(4, 4);
@@ -203,8 +231,8 @@ TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 TEST_CASE("Moller Scattering", "[QED]")
 {
 	using namespace Feynumeric;
-	using namespace Feynumeric::Units;
-	using namespace Feynumeric::QED;
+	using namespace Units;
+	using namespace QED;
 
 	init_particles();
 	init_vertices();
@@ -237,8 +265,8 @@ TEST_CASE("Moller Scattering", "[QED]")
 TEST_CASE("Bhaba Scattering", "[QED]")
 {
 	using namespace Feynumeric;
-	using namespace Feynumeric::Units;
-	using namespace Feynumeric::QED;
+	using namespace Units;
+	using namespace QED;
 
 	init_particles();
 	init_vertices();
@@ -258,12 +286,12 @@ TEST_CASE("Bhaba Scattering", "[QED]")
 
 	std::stringstream out;
 
-	double const cos_theta = 0.2134;
+	double const cos_theta = 0.5713;
 
 	auto result = e_scattering.dsigma_dcos_table( 500._MeV, {cos_theta});
 
 	// Compare to analytical values from Mathematica's Feyncalc
-	REQUIRE( almost_identical(result[cos_theta][0], 0.02227945628277883) );
-	REQUIRE( almost_identical(result[cos_theta][1], 0.01880419088437939) );
-	REQUIRE( almost_identical(result[cos_theta][2], 0.0085134844703209) );
+	REQUIRE( almost_identical(result[cos_theta][0], 0.01080026922196884, 1.e-5) );
+	REQUIRE( almost_identical(result[cos_theta][1], 0.02633708831672639, 1.e-5) );
+	REQUIRE( almost_identical(result[cos_theta][2], 0.017033343602079730, 1.e-5) );
 }

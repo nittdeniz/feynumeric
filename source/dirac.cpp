@@ -116,6 +116,12 @@ namespace Feynumeric
 			Four_Vector p_new = -p;
 			return u(P, p_new, s, lorentz_indices);
 		}
+#if 0
+	    std::cerr << "Particle: " << P->name() << "\n";
+	    std::cerr << "Momentum: " << p.E() << " " << p.x() << " " << p.y() << " " << p.z() << "\n";
+	    std::cerr << "spin: " << s->m() << "\n";
+//	    std::cerr << "lorentz_index: " << *(lorentz_indices[0]) << "\n";
+#endif
         if( s->j() == 1./2 )
         {
         	auto N = p.E()+P->mass();
@@ -186,6 +192,13 @@ namespace Feynumeric
         {
             return Matrix(1,1,1);
         }
+
+		#if 0
+		std::cerr << "Particle: " << P->name() << "\n";
+        std::cerr << "Momentum: " << pp.E() << " " << pp.x() << " " << pp.y() << " " << pp.z() << "\n";
+        std::cerr << "spin: " << s->m() << "\n";
+        std::cerr << "lorentz_index: " << *(lorentz_indices[0]) << "\n";
+		#endif
 
         auto align = [&p](Four_Vector const& epsilon)
         {
@@ -263,7 +276,9 @@ namespace Feynumeric
 
     Matrix epsilon_star(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
-        return epsilon(P, p, s, lorentz_indices).apply([](Complex const& z){return std::conj(z);});
+		auto result = epsilon(P, p, s, lorentz_indices);
+		auto conj = result.apply([](Complex const& z){return std::conj(z);});
+        return conj;
     }
 
 
@@ -281,6 +296,13 @@ namespace Feynumeric
         static Matrix const metric_tensor = Matrix(4, 4, {1,0,0,0, 0,-1,0,0, 0,0,-1,0, 0,0,0,-1});
 
         auto const& f = constexpr_factorial;
+
+#if 0
+        std::cerr << "Projector: " << "\n";
+		std::cerr << "Particle: " << P->name() << "\n";
+		std::cerr << "Momentum: " << p.E() << " " << p.x() << " " << p.y() << " " << p.z() << "\n";
+//		std::cerr << "lorentz_index: " << *(lorentz_indices[0]) << "\n";
+#endif
 
         // algorithm from 10.1140/epjc/s2005-02299-4
         auto A = [&](int r, int n)
