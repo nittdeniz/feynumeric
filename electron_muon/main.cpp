@@ -37,7 +37,7 @@ int main()
 
 //	double const cos_theta = 0.2134;
 
-	e_scattering.dsigma_dcos_table(std::cout, 500._MeV, 0.1);
+	auto x =e_scattering.dsigma_dcos_table(500._MeV, {{0.1}});
     return EXIT_SUCCESS;
 }
 

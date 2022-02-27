@@ -11,6 +11,7 @@
 #include <feynumeric/topologies.hpp>
 #include <feynumeric/feynman_process.hpp>
 
+#include <iostream>
 #include <map>
 
 
@@ -256,14 +257,14 @@ TEST_CASE("Bhaba Scattering", "[QED]")
 
 	Feynman_Process e_scattering({s_channel, t_channel});
 
-	std::stringstream out;
+	//std::stringstream out;
 
-	double const cos_theta = 0.2134;
+	double const cos_theta = 0.41936;
 
 	auto result = e_scattering.dsigma_dcos_table( 500._MeV, {cos_theta});
 
 	// Compare to analytical values from Mathematica's Feyncalc
-	REQUIRE( almost_identical(result[cos_theta][0], 0.02227945628277883) );
-	REQUIRE( almost_identical(result[cos_theta][1], 0.01880419088437939) );
-	REQUIRE( almost_identical(result[cos_theta][2], 0.0085134844703209) );
+	REQUIRE( almost_identical(result[cos_theta][0], 0.0095746468309887, 1.e-3) );
+	REQUIRE( almost_identical(result[cos_theta][1], 0.024487089153493090,1.e-3) );
+	REQUIRE( almost_identical(result[cos_theta][2], 0.017657720374332880,1.e-3) );
 }

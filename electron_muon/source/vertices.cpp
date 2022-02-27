@@ -1,3 +1,4 @@
+/**
 #include "particles.hpp"
 #include "vertices.hpp"
 #include <feynumeric/feynman_diagram.hpp>
@@ -71,3 +72,4 @@ void init_vertices()
 			})
 	);
 }
+ **/
