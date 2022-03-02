@@ -11,7 +11,7 @@ namespace Feynumeric
 
 	double momentum(double M, double m1, double m2);
 
-	Four_Vector four_momentum(double q, double m, double cos_theta, double cos_phi);
+	Four_Vector four_momentum(double q, double m, double cos_theta = 1., double cos_phi = 1.);
 }
     //Matrix four_momentum(double mass, double q, double cos_theta);
 /*

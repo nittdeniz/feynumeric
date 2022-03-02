@@ -4,6 +4,10 @@ namespace Feynumeric
 {
     bool almost_identical(double a, double b, double epsilon)
     {
+    	double constexpr cutoff = 1.e-8;
+    	if( std::abs(a) < cutoff && std::abs(b) < cutoff ){
+    		return true;
+    	}
         return std::abs(a-b) < std::abs(epsilon * std::min(a, b));
     }
 
@@ -11,7 +15,7 @@ namespace Feynumeric
     {
         double a = (aa * std::conj(aa)).real();
         double b = (bb * std::conj(bb)).real();
-        return std::abs(a-b) <= std::abs(epsilon * std::min(a, b));
+        return almost_identical(a, b, epsilon);
     }
 
     Complex dot3(Matrix const& a, Matrix const& b)
@@ -21,7 +25,7 @@ namespace Feynumeric
 
     Complex dot4(Matrix const& a, Matrix const& b)
     {
-    return a.at(0) * b.at(0) - a.at(1) * b.at(1) - a.at(2) * b.at(2) - a.at(3) * b.at(3);
+        return a.at(0) * b.at(0) - a.at(1) * b.at(1) - a.at(2) * b.at(2) - a.at(3) * b.at(3);
     }
 }
 

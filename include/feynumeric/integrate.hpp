@@ -5,9 +5,8 @@
 
 namespace Feynumeric
 {
-    double integrate(std::function<double(double)> f, double a, double b);
-
-    double integrate(std::function<double(double)> f, double f_a, double f_b, double f_c, double a, double b, double c);
+    double integrate(std::function<double(double)> const& f, double const left, double const right, double const epsilon=1.e-6);
+	double integrate(std::function<double(double)> const& f, double const left, double const f_left, double const right, double const f_right, double const epsilon =1.e-6);
 }
 
 #endif // Feynumeric_INTEGRATE_HPP

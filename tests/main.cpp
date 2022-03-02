@@ -5,12 +5,15 @@
 #include <feynumeric/matrix.hpp>
 #include <feynumeric/constexpr_math.hpp>
 #include <feynumeric/dirac.hpp>
+#include <feynumeric/integrate.hpp>
 #include <feynumeric/units.hpp>
 #include <feynumeric/qed.hpp>
 #include <feynumeric/feynman_diagram.hpp>
 #include <feynumeric/topologies.hpp>
 #include <feynumeric/feynman_process.hpp>
 
+
+#include <cmath>
 #include <iostream>
 #include <map>
 
@@ -199,6 +202,29 @@ TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 		REQUIRE( std::abs(result.at(i) - result.at(i)) < 0.00000001 );
 	}
 
+}
+
+TEST_CASE("Integration Routine", "[math]")
+{
+	using namespace Feynumeric;
+	using f_type = std::function<double(double)>;
+
+	auto sin = [](double x){return std::sin(x);};
+	auto x2 = [](double x){return x*x;};
+
+
+	auto result0 = integrate([](double x){return x;}, -1, 2);
+	auto result1 = integrate(sin, 0, M_PI);
+	auto result2 = integrate(x2, 0, 4);
+	auto result3 = integrate([](double x){return std::exp(x);}, -5, 5, 1.e-12);
+	auto result4 = integrate([](double x){return std::sin(x)/x;}, 0.00001, 1);
+	auto result5 = integrate([](double x){return std::sin(x)/x;}, 1, 100);
+	REQUIRE( almost_identical(result0, 1.5, 1.e-6));
+	REQUIRE( almost_identical(result1, 2., 1.e-6) );
+	REQUIRE( almost_identical(result2, 64/3., 1.e-6) );
+	REQUIRE( almost_identical(result3, 148.406421, 1.e-6));
+	REQUIRE( almost_identical(result4, 0.946073, 1.e-6));
+	REQUIRE( almost_identical(result5, 0.616142, 1.e-6));
 }
 
 TEST_CASE("Moller Scattering", "[QED]")

@@ -20,24 +20,32 @@ int main()
     init_particles();
 	init_vertices();
 
-	Feynman_Diagram_Ptr s_channel = create_diagram("s_channel", Double_Wrench, VMP,
-	                                               {Electron, Positron},
-	                                               {Photon},
-	                                               {Electron, Positron});
+	auto s_channel = create_diagram("s_channel", Double_Wrench, VMP,
+	                                {Electron, Positron},
+	                                {Photon},
+	                                {Muon_Minus, Muon_Plus});
 
-	Feynman_Diagram_Ptr t_channel = create_diagram("t_channel", X_Man, VMP,
-	                                               {Electron, Positron},
-	                                               {Photon},
-	                                               {Electron, Positron});
+	Feynman_Process pair_production({s_channel});
+	pair_production.dsigma_dcos_table(std::cout, 500._MeV, 0.1);
+
+//	Feynman_Diagram_Ptr s_channel = create_diagram("s_channel", Double_Wrench, VMP,
+//	                                               {Electron, Photon},
+//	                                               {Electron},
+//	                                               {Photon, Electron});
+//
+//	Feynman_Diagram_Ptr t_channel = create_diagram("t_channel", X_Man, VMP,
+//	                                               {Electron, Photon},
+//	                                               {Electron},
+//	                                               {Photon, Electron});
 
 
-	Feynman_Process e_scattering({s_channel, t_channel});
+//	Feynman_Process compton({s_channel, t_channel});
 
-	std::stringstream out;
+//	std::stringstream out;
 
 //	double const cos_theta = 0.2134;
 
-	auto x =e_scattering.dsigma_dcos_table(500._MeV, {{0.1}});
+//	compton.dsigma_dcos_table(std::cout, 500._MeV, 0.1);
     return EXIT_SUCCESS;
 }
 
