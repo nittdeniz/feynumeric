@@ -1,5 +1,6 @@
 #include "feynman_diagram.hpp"
 #include "feynman_process.hpp"
 #include "feynman_graph.hpp"
+#include "topologies.hpp"
 #include "units.hpp"
 #include "vertex_manager.hpp"

@@ -24,6 +24,8 @@ namespace Feynumeric
                     -Matrix(4, 4, {0,0,1,0, 0,0,0,-1, -1,0,0,0, 0,1,0,0})
             };
 
+    Matrix GA5 = Matrix(4, 4, {0,0,1,0, 0,0,0,1,  1,0,0,0, 0,1,0,0});
+
     std::array<std::array<double, 4>, 4> MT = {{{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,0,0,-1}}};
 
 	[[maybe_unused]] Matrix GS(Four_Vector const& p)

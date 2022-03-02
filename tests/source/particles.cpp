@@ -1,4 +1,4 @@
-#include "particles.hpp"
+#include "effective_lagrangian_model.hpp"
 #include "Feynumeric/units.hpp"
 
 #include <catch2/catch_test_macros.hpp>

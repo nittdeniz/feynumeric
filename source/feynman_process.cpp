@@ -272,6 +272,6 @@ namespace Feynumeric
 			}
 			Ms_squared += (M * std::conj(M)).real();
 		}
-		return Ms_squared *= 1./N_polarisations * q / (8 * M_PI * incoming[0]->mass());
+		return Ms_squared *= 1./N_polarisations * q / (8 * M_PI * incoming[0]->mass()* incoming[0]->mass());
 	}
 }

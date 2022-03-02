@@ -17,6 +17,8 @@ namespace Feynumeric
     private:
     	std::map<std::size_t, Vertex_Ptr> _vertices;
     public:
+    	Vertex_Manager() = default;
+    	Vertex_Manager(std::shared_ptr<Vertex_Manager> const& copy);
     	void add(Vertex const& vertex);
     	std::optional<Vertex_Ptr> find_vertex(std::size_t hash);
     };

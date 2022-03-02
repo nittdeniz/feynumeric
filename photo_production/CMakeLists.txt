@@ -1,8 +1,8 @@
 add_executable(photo_production
         main.cpp
-        source/particles.cpp include/particles.hpp
+        source/effective_lagrangian_model.cpp include/particles.hpp
 
-        ../electron_muon/include/vertices.hpp ../electron_muon/source/vertices.cpp)
+        ../electron_muon/include/vertices.hpp ../electron_muon/source/vertices.cpp include/effective_lagrangian_model.hpp)
 
 target_include_directories(photo_production PRIVATE include)
 

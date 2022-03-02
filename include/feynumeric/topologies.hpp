@@ -5,6 +5,7 @@
 
 namespace Feynumeric
 {
+	[[maybe_unused]] extern const Topology Wrench;
     [[maybe_unused]] extern const Topology Double_Wrench;
     [[maybe_unused]] extern const Topology X_Man;
     [[maybe_unused]] extern const Topology Scissors;

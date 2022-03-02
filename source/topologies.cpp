@@ -3,6 +3,12 @@
 
 namespace Feynumeric
 {
+	const Topology Wrench({
+			                     {0, 1, Direction::INCOMING},
+			                     {1, 2, Direction::OUTGOING},
+			                     {1, 3, Direction::OUTGOING}
+	});
+
 	const Topology X_Man({
 			                     {0, 2, Direction::INCOMING},
 			                     {1, 3, Direction::INCOMING},

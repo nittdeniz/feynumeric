@@ -1,3 +1,4 @@
+#include <format.hpp>
 #include "feynumeric/particle.hpp"
 
 namespace Feynumeric
@@ -39,7 +40,13 @@ namespace Feynumeric
 
 	std::any Particle::user_data(std::string key) const
     {
-        return _user_data.at(key);
+    	try{
+		    return _user_data.at(key);
+	    }
+    	catch( std::out_of_range const& e)
+	    {
+    		critical_error(FORMAT("Key <{}> is not set for particle {}\n", key, _name));
+	    }
     }
 
     std::string Particle::name() const

@@ -7,6 +7,12 @@
 
 namespace Feynumeric
 {
+	Vertex_Manager::Vertex_Manager(std::shared_ptr<Vertex_Manager> const& copy)
+	: _vertices(copy->_vertices)
+	{
+
+	}
+
 	void Vertex_Manager::add(Vertex const& vertex)
 	{
 		for( std::size_t i = 0; i < vertex._particle_directions.size(); ++i )
