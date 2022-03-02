@@ -1,3 +1,4 @@
+/*
 #include <feynumeric/dirac.hpp>
 #include <feynumeric/units.hpp>
 #include "particles.hpp"
@@ -66,3 +67,4 @@ void init_particles()
 //    N1440p->feynman_incoming = [&](){return Matrix(u12(Matrix(4, 1, {1,2,3,4}), Angular_Momentum(0.5, 0.5)));};
 //    N1440p->feynman_outgoing = [](){return Matrix(ubar12(Matrix(1, 4, {1,2,3,4}), Angular_Momentum(0.5, 0.5)));};
 }
+*/

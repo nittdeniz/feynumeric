@@ -1,3 +1,4 @@
+/**
 #ifndef PARTICLES_HPP
 #define PARTICLES_HPP
 
@@ -36,3 +37,4 @@ extern Feynumeric::Particle_Ptr D1232m;
 void init_particles();
 
 #endif // PARTICLES_HPP
+ **/

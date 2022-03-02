@@ -5,6 +5,7 @@
 
 #include <iomanip>
 #include <format.hpp>
+#include <iostream>
 
 namespace Feynumeric
 {
@@ -76,8 +77,8 @@ namespace Feynumeric
 		auto qin  = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
 		auto qout = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
 
-		kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
-		kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
+		kin.incoming(0, four_momentum(qin, incoming[0]->mass()));
+		kin.incoming(1, four_momentum(-qin, incoming[1]->mass()));
 
 		for( auto& diagram : _diagrams )
 		{
@@ -128,6 +129,7 @@ namespace Feynumeric
 					auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
 					M += temp;
 					Ms_squared[j] += (temp * std::conj(temp)).real();
+					std::cerr << FORMAT("TEMP: {}\n", (temp * std::conj(temp)).real());
 					_diagrams[j]->iterate_spins();
 				}
 				Ms_squared[_diagrams.size()] += (M * std::conj(M)).real();

@@ -76,7 +76,7 @@ namespace Feynumeric
 		if( p.E().real() < 0 )
 		{
 			Four_Vector p_new = -p;
-			return u(P, p_new, s, lorentz_indices);
+			return v(P, p_new, s, lorentz_indices);
 		}
 		if( s->j() == 1./2 )
 		{
