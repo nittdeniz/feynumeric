@@ -290,7 +290,7 @@ TEST_CASE("Bhaba Scattering", "[QED]")
 	auto result = e_scattering.dsigma_dcos_table( 500._MeV, {cos_theta});
 
 	// Compare to analytical values from Mathematica's Feyncalc
-	REQUIRE( almost_identical(result[cos_theta][0], 0.0095746468309887, 1.e-3) );
-	REQUIRE( almost_identical(result[cos_theta][1], 0.024487089153493090,1.e-3) );
-	REQUIRE( almost_identical(result[cos_theta][2], 0.017657720374332880,1.e-3) );
+	REQUIRE( almost_identical(result[cos_theta][0], 0.0095746468309887) );
+	REQUIRE( almost_identical(result[cos_theta][1], 0.024487089153493090) );
+	REQUIRE( almost_identical(result[cos_theta][2], 0.017657720374332880) );
 }

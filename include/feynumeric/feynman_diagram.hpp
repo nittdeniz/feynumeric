@@ -1,7 +1,7 @@
 #ifndef FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 #define FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 
-#define DEBUG_AMPLITUDE 1
+//#define DEBUG_AMPLITUDE 1
 
 #include <initializer_list>
 #include <memory>

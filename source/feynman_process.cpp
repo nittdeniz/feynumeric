@@ -129,7 +129,7 @@ namespace Feynumeric
 					auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
 					M += temp;
 					Ms_squared[j] += (temp * std::conj(temp)).real();
-					std::cerr << FORMAT("TEMP: {}\n", (temp * std::conj(temp)).real());
+//					std::cerr << FORMAT("TEMP: {}\n", (temp * std::conj(temp)).real());
 					_diagrams[j]->iterate_spins();
 				}
 				Ms_squared[_diagrams.size()] += (M * std::conj(M)).real();

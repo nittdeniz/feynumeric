@@ -24,19 +24,19 @@ int main()
 	auto s_channel = create_diagram("s_channel", Double_Wrench, VMP,
 	                                {Electron, Positron},
 	                                {Photon},
-	                                {Electron, Positron});
+	                                {Muon_Minus, Muon_Plus});
 
-	double const q = momentum(0.5, Electron->mass(), Electron->mass());
+//	double const q = momentum(0.5, Electron->mass(), Electron->mass());
 
-	double const cos = 0.9125004096970463;
+	//double const cos = 0.9125004096970463;
 
-	auto s1 = std::make_shared<Angular_Momentum>(0.5, 0.5);
+//	auto s1 = std::make_shared<Angular_Momentum>(0.5, 0.5);
 
-	std::cerr << ubar(Electron, four_momentum(q, Electron->mass(), cos), s1, {}) << "\n";
-	std::cerr << v(Positron, four_momentum(-q, Positron->mass(), cos), s1, {}) << "\n";
+//	std::cerr << ubar(Electron, four_momentum(q, Electron->mass(), cos), s1, {}) << "\n";
+//	std::cerr << v(Positron, four_momentum(-q, Positron->mass(), cos), s1, {}) << "\n";
 
 	Feynman_Process pair_production({s_channel});
-	pair_production.dsigma_dcos_table(std::cout, 500._MeV, {{cos}});
+	pair_production.dsigma_dcos_table(std::cout, 500._MeV, 0.1);
 
 //	Feynman_Diagram_Ptr s_channel = create_diagram("s_channel", Double_Wrench, VMP,
 //	                                               {Electron, Photon},
