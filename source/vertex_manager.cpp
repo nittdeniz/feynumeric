@@ -13,6 +13,14 @@ namespace Feynumeric
 
 	}
 
+	void Vertex_Manager::import(std::shared_ptr<Vertex_Manager> const& other)
+	{
+		for( auto const& [id, vertex] : other->_vertices )
+		{
+			_vertices[id] = vertex;
+		}
+	}
+
 	void Vertex_Manager::add(Vertex const& vertex)
 	{
 		for( std::size_t i = 0; i < vertex._particle_directions.size(); ++i )

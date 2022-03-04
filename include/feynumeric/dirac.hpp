@@ -29,6 +29,10 @@ namespace Feynumeric
 	Matrix dirac_sigma(Lorentz_Index_Ptr mu, Four_Vector const& p);
 	Matrix dirac_sigma(Four_Vector const& p, Lorentz_Index_Ptr nu);
 
+	Matrix dirac_sigmac(Lorentz_Index_Ptr mu, Lorentz_Index_Ptr nu);
+	Matrix dirac_sigmac(Lorentz_Index_Ptr mu, Four_Vector const& p);
+	Matrix dirac_sigmac(Four_Vector const& p, Lorentz_Index_Ptr nu);
+
 
 //	Complex FV(Matrix const& a, Lorentz_Index_Ptr mu);
 //	Complex FV(Four_Vector const& p, Lorentz_Index_Ptr mu);

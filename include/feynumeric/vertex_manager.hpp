@@ -20,6 +20,7 @@ namespace Feynumeric
     	Vertex_Manager() = default;
     	Vertex_Manager(std::shared_ptr<Vertex_Manager> const& copy);
     	void add(Vertex const& vertex);
+    	void import(std::shared_ptr<Vertex_Manager> const& other);
     	std::optional<Vertex_Ptr> find_vertex(std::size_t hash);
     };
     using Vertex_Manager_Ptr = std::shared_ptr<Vertex_Manager>;

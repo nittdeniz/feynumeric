@@ -3,12 +3,13 @@
 
 namespace Feynumeric
 {
-    Particle::Particle(std::string&& name, Type type, double mass, double charge, double spin)
+    Particle::Particle(std::string&& name, Type type, double mass, double width, double charge, double spin)
     : _name(std::move(name))
     , _type(type)
     , _mass(mass)
     , _charge(charge)
     , _spin(spin, spin, mass==0)
+    , _width(width)
     {
     }
 
@@ -19,6 +20,8 @@ namespace Feynumeric
 	, _charge(copy._charge)
 	, _spin(copy._spin)
 	, _isospin(copy._isospin)
+	, _parity(copy._parity)
+	, _width_function(copy._width_function)
 	, _width(copy._width)
 	, _user_data(copy._user_data)
 	{
@@ -33,9 +36,30 @@ namespace Feynumeric
 		_charge = copy._charge;
 		_spin = copy._spin;
 		_isospin = copy._isospin;
+		_parity = copy._parity;
+		_width_function = copy._width_function;
 		_width = copy._width;
 		_user_data = copy._user_data;
 		return *this;
+	}
+
+	double Particle::width(double p2) const
+	{
+    	if( !_width_function )
+	    {
+    		return _width;
+	    }
+		return _width_function(p2);
+	}
+
+	double Particle::width() const
+	{
+		return _width;
+	}
+
+	void Particle::width(std::function<double(double)> f)
+	{
+		_width_function = f;
 	}
 
 	std::any Particle::user_data(std::string key) const
@@ -49,7 +73,17 @@ namespace Feynumeric
 	    }
     }
 
-    std::string Particle::name() const
+	void Particle::parity(int p)
+	{
+		_parity = p;
+	}
+
+	int Particle::parity() const
+	{
+		return _parity;
+	}
+
+	std::string Particle::name() const
     {
         return _name;
     }

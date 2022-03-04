@@ -9,6 +9,9 @@ extern Feynumeric::Particle_Ptr Pi_Zero;
 extern Feynumeric::Particle_Ptr Pi_Minus;
 extern Feynumeric::Particle_Ptr Pi_Plus;
 
+extern Feynumeric::Particle_Ptr Rho_Zero;
+extern Feynumeric::Particle_Ptr Rho_Minus;
+extern Feynumeric::Particle_Ptr Rho_Plus;
 
 // Baryons
 extern Feynumeric::Particle_Ptr Proton;

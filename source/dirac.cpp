@@ -63,7 +63,22 @@ namespace Feynumeric
         return Complex(0, 1)/2. * (a*b - b*a);
     }
 
-    Matrix u(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
+	Matrix dirac_sigmac(Lorentz_Index_Ptr mu, Lorentz_Index_Ptr nu)
+	{
+		return dirac_sigma(GAC[*mu], GAC[*nu]);
+	}
+
+	Matrix dirac_sigmac(Lorentz_Index_Ptr mu, Four_Vector const& p)
+	{
+		return dirac_sigma(GAC[*mu], GS(p));
+	}
+
+	Matrix dirac_sigmac(Four_Vector const& p, Lorentz_Index_Ptr nu)
+	{
+		return dirac_sigma(GS(p), GAC[*nu]);
+	}
+
+	Matrix u(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
     {
 		return u(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
     }
@@ -380,6 +395,16 @@ namespace Feynumeric
 	Matrix Propagator(const Particle_Ptr &P, const Four_Vector &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices,
                       bool ignore_momentum)
     {
-        return Projector(P, p, lorentz_indices, ignore_momentum);
+		Complex breit_wigner;
+		double p2 = p.squared();
+		if( p2 > 0 )
+		{
+			breit_wigner = -1.i/(p.squared() - P->mass() * P->mass() + 1.i * std::sqrt(p2) * P->width(p2));
+		}
+		else
+		{
+			breit_wigner = -1.i/(p.squared() - P->mass() * P->mass());
+		}
+        return  breit_wigner *  Projector(P, p, lorentz_indices, ignore_momentum);
     }
 }

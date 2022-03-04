@@ -32,11 +32,13 @@ namespace Feynumeric
         double _charge;
         Angular_Momentum _spin;
         Angular_Momentum _isospin;
-        std::function<double(double)> _width;
+        int _parity;
+        std::function<double(double)> _width_function;
+        double _width;
         std::map<std::string, std::any> _user_data;
 
     public:
-        Particle(std::string&& name, Type type, double mass = 0, double charge = 0, double spin = 0);
+        Particle(std::string&& name, Type type, double mass = 0., double width = 0., double charge = 0., double spin = 0.);
         Particle(Particle const& copy);
         Particle& operator=(Particle const& copy);
 
@@ -45,6 +47,13 @@ namespace Feynumeric
         int charge() const;
         Angular_Momentum spin() const;
         Angular_Momentum isospin()const;
+
+        double width() const;
+        double width(double p2) const;
+        void width(std::function<double(double)> f);
+
+        void parity(int p);
+        int parity() const;
 
         bool is_fermion() const;
         bool is_anti_fermion() const;

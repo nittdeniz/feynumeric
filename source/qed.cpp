@@ -11,16 +11,16 @@ namespace Feynumeric
 	namespace QED
 	{
 		using namespace Units;
-		Particle_Ptr Photon = std::make_shared<Particle>("Photon", Particle::Type::Majorana, 0, 0, 1);
+		Particle_Ptr Photon = std::make_shared<Particle>("Photon", Particle::Type::Majorana, 0, 0, 0, 1);
 
-		Particle_Ptr Electron = std::make_shared<Particle>("Electron", Particle::Type::Particle, 0.5109989461_MeV, -1,
+		Particle_Ptr Electron = std::make_shared<Particle>("Electron", Particle::Type::Particle, 0.5109989461_MeV, 0, -1,
 		                                                   0.5);
-		Particle_Ptr Positron = std::make_shared<Particle>("Positron", Particle::Type::AntiParticle, 0.5109989461_MeV,
+		Particle_Ptr Positron = std::make_shared<Particle>("Positron", Particle::Type::AntiParticle, 0.5109989461_MeV, 0,
 		                                                   1, 0.5);
 
-		Particle_Ptr Muon_Plus = std::make_shared<Particle>("Muon_+", Particle::Type::AntiParticle, 105.6583745_MeV, 1,
+		Particle_Ptr Muon_Plus = std::make_shared<Particle>("Muon_+", Particle::Type::AntiParticle, 105.6583745_MeV, 0, 1,
 		                                                    0.5);
-		Particle_Ptr Muon_Minus = std::make_shared<Particle>("Muon_-", Particle::Type::Particle, 105.6583745_MeV, -1,
+		Particle_Ptr Muon_Minus = std::make_shared<Particle>("Muon_-", Particle::Type::Particle, 105.6583745_MeV, 0, -1,
 		                                                     0.5);
 
 
