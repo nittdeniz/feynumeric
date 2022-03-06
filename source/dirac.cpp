@@ -156,7 +156,7 @@ namespace Feynumeric
                 Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(Angular_Momentum(s->j()-0.5, s->m()-n));
                 Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(Angular_Momentum(0.5, n));
                 result +=
-                        clebsch_gordan(s1->j(), s->m()-n, 1, n, s->j(), s->m())
+                        clebsch_gordan(s1->j(), s1->m(), s2->j(), s2->m(), s->j(), s->m())
                         * epsilon(P, p, s1, lorentz_indices)
                         * u(P, p, s2, {});
             }
@@ -259,7 +259,7 @@ namespace Feynumeric
 		        critical_error("Invalid state in polarisation vector.\n");
 	        }
         }
-        Matrix result;
+        Matrix result(1,1,0);
         for( int n = -1; n <= 1; n++ )
         {
             if( abs(s->m()) <= s->j() && abs(s->m() - n) <= s->j()-1 )
@@ -294,7 +294,35 @@ namespace Feynumeric
 	}
 
 	Matrix Projector(Particle_Ptr const& P, const Four_Vector &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum)
+	{
+		return Projector(P, P->spin(), p, lorentz_indices, ignore_momentum);
+	}
+
+	Matrix Projector(Particle_Ptr const& P, Angular_Momentum const& spin, const Four_Vector &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum)
     {
+	    int const n = static_cast<int>(spin.j());
+	    if( spin.is_half_odd_integer() )
+	    {
+	    	Angular_Momentum new_spin(spin.j() + 0.5, spin.j() + 0.5);
+	    	auto copy = lorentz_indices;
+	    	auto mu = std::make_shared<Lorentz_Index>();
+	    	auto nu = std::make_shared<Lorentz_Index>();
+	    	copy.insert(copy.begin() + copy.size()/2, nu);
+	    	copy.insert(copy.begin(), mu);
+	    	Matrix contraction(4, 4, 0);
+	    	for( std::size_t i = 0; i < 4; ++i )
+		    {
+	    	    for( std::size_t j = 0; j < 4; ++j )
+		        {
+					contraction += -(GAC[*mu] * GAC[*nu] * Projector(P, new_spin, p, copy, ignore_momentum));
+					++(*nu);
+		        }
+	    	    ++(*mu);
+		    }
+		    return ( P->is_fermion()? ( GS(p) + P->mass()) : ( GS(p) - P->mass()) )
+		                      * ( n + 1. ) / ( 2. * n + 3. ) * contraction;
+	    }
+
         static Matrix const metric_tensor = Matrix(4, 4, {1,0,0,0, 0,-1,0,0, 0,0,-1,0, 0,0,0,-1});
 
         auto const& f = constexpr_factorial;
@@ -332,31 +360,28 @@ namespace Feynumeric
         std::vector<Lorentz_Index_Ptr> mu = all_permutations(indices_left);
         std::vector<Lorentz_Index_Ptr> nu = all_permutations(indices_right);
 
-        int const n = static_cast<int>(P->spin().j());
 
         auto T = [&](Lorentz_Index_Ptr const& mu, Lorentz_Index_Ptr const& nu){
         	if( mu == nullptr || nu == nullptr )
 	        {
         		critical_error("Lorentz_Index_Ptr is nullptr.\n");
 	        }
-        	auto pmu = p.co(mu);
-        	auto pnu = p.co(nu);
+	        auto const mt = metric_tensor.at(*mu, *nu);
+        	if( ignore_momentum )
+	        {
+				return -mt;
+	        }
+        	auto pmu = p.contra(mu);
+        	auto pnu = p.contra(nu);
         	auto denominator = p.squared();
-        	auto mt = metric_tensor.at(*mu, *nu);
         	auto numerator = pmu * pnu;
 			auto momentum_contribution = (numerator.real() == 0 && numerator.imag() == 0 && denominator == 0) ? 1 : numerator/denominator;
-        	auto result = -mt + (ignore_momentum? 0. : momentum_contribution);
+        	auto result = -mt + momentum_contribution;
             return result;
         };
 
-        Matrix dirac_structure = Matrix(1,1,1);
-        if( P->spin().is_half_odd_integer() )
-        {
-			dirac_structure = GS(p) + P->mass();
-        }
-
         int const fac_n = f(n);
-        return dirac_structure * Matrix(1, 1, 1) * std::pow((1./fac_n), 2) *
+        return Matrix(1, 1, 1) * std::pow((1./fac_n), 2) *
           sum<Complex>(
             [&](int j)
             {

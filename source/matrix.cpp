@@ -207,6 +207,11 @@ namespace Feynumeric
         return copy;
     }
 
+    std::size_t Matrix::elements() const
+    {
+		return _cols * _rows;
+    }
+
     Complex &Matrix::operator[](size_t i)
     {
         return _data[i];

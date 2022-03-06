@@ -27,6 +27,8 @@ namespace Feynumeric
 		void dsigma_dcos_table(std::ostream& out, double sqrt_s, double delta);
 		void dsigma_dcos_table(std::ostream& out, double sqrt_s, std::vector<double>&& values);
 
+		void sigma(std::ostream& out, std::vector<double>&& values);
+
 		std::map<double, std::vector<double>> dsigma_dcos_table(double sqrt_s, std::vector<double>&& values);
 
 		double decay_width();

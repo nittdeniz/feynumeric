@@ -85,7 +85,7 @@ void init_vertices()
 				using namespace Feynumeric;
 				auto const& n1440 = edges[0];
 				auto const& photon = edges[2];
-				auto const g = std::any_cast<double>(n1440->particle()->user_data("gRNrho"));
+				auto const g = std::any_cast<double>(n1440->particle()->user_data("gRNgamma"));
 				auto const m_rho = Rho_Zero->mass();
 				return -g/m_rho * dirac_sigmac(photon->four_momentum(kin), photon->lorentz_indices()[0]);
 			}

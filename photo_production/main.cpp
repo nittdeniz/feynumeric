@@ -21,19 +21,22 @@ int main()
 									);
 	Feynman_Process decay_n1440p({channel_decay_n1440p});
 
-	N1440p->user_data("gRNPi", 0.35*0.65 / decay_n1440p.decay_width());
-	N1440p->user_data("gRNrho", 1.59);
+	std::cout << "g: " << std::sqrt(0.35*0.65 / decay_n1440p.decay_width()) << "\n";
+
+	N1440p->user_data("gRNpi", 0.38);
+	N1440p->user_data("gRNgamma", 0.0528755);
 
 	// Photo Production
 	{
 		auto channel_s = create_diagram("N1440 s_channel", Double_Wrench, VMP,
 		                                {Proton, QED::Photon},
 		                                {N1440p},
-		                                {Proton, Pi_Zero}
+		                                {Pi_Zero, Proton}
 		);
 
 		Feynman_Process scattering_n1440p({channel_s});
 		scattering_n1440p.dsigma_dcos_table(std::cout, 1.49_GeV, 0.1);
+		scattering_n1440p.sigma_table(std::cout, {{1.4_GeV}});
 	}
 
 	return EXIT_SUCCESS;

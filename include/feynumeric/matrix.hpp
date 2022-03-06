@@ -51,6 +51,8 @@ namespace Feynumeric
 
         Matrix T() const;
 
+        std::size_t elements() const;
+
         Complex try_as_complex() const;
 
         template<typename T>

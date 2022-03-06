@@ -26,7 +26,7 @@ namespace Feynumeric
 
 		void init_particles()
 		{
-			Photon->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Projector(e, kin); };
+			Photon->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
 			Photon->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon(e, kin); };
 			Photon->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon_star(e, kin); };
 

@@ -1,10 +1,7 @@
 MESSAGE(STATUS "Included Tests")
 
 include_directories(include)
-add_executable(test
-        main.cpp
-        source/particles.cpp
-        source/test_angular_momentum.cpp)
+add_executable(test main.cpp)
 
 target_link_libraries(test PRIVATE Feynumeric)
 target_include_directories(test PRIVATE include ../include)

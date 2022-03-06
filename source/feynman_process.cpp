@@ -1,6 +1,7 @@
 #include "feynman_process.hpp"
 #include "feynman_diagram.hpp"
 #include "four_vector.hpp"
+#include "integrate.hpp"
 #include "units.hpp"
 
 #include <iomanip>
@@ -273,5 +274,17 @@ namespace Feynumeric
 			Ms_squared += (M * std::conj(M)).real();
 		}
 		return Ms_squared *= 1./N_polarisations * q / (8 * M_PI * incoming[0]->mass()* incoming[0]->mass());
+	}
+
+	void Feynman_Process::sigma(std::ostream& out, std::vector<double>&& values)
+	{
+		using namespace Feynumeric::Units;
+		validate_diagram_compatibility();
+
+		for( auto const& sqrt_s : values )
+		{
+			Kinematics kin(sqrt_s, 2, 2);
+			out << kin.sqrt_s();
+		}
 	}
 }

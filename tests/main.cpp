@@ -166,7 +166,7 @@ TEST_CASE("Dirac Anti Particle Spinors Completeness", "[dirac]"){
 TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 	using namespace Feynumeric;
 
-	Particle_Ptr test_particle = std::make_shared<Particle>("Test", Particle::Type::Majorana, 4., 0, 1);
+	Particle_Ptr test_particle = std::make_shared<Particle>("Test", Particle::Type::Majorana, 4., 0, 1, 1);
 
 	Four_Vector p = four_momentum(3, test_particle->mass(), 0.2, 0.3);
 
@@ -201,7 +201,6 @@ TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 	{
 		REQUIRE( std::abs(result.at(i) - result.at(i)) < 0.00000001 );
 	}
-
 }
 
 TEST_CASE("Integration Routine", "[math]")
@@ -293,4 +292,82 @@ TEST_CASE("Bhaba Scattering", "[QED]")
 	REQUIRE( almost_identical(result[cos_theta][0], 0.0095746468309887) );
 	REQUIRE( almost_identical(result[cos_theta][1], 0.024487089153493090) );
 	REQUIRE( almost_identical(result[cos_theta][2], 0.017657720374332880) );
+}
+
+TEST_CASE("Polarisation Sums", "[dirac]")
+{
+	using namespace Feynumeric;
+
+//	Particle_Ptr test_particle = std::make_shared<Particle>("Test", Particle::Type::Majorana, 4.);
+
+	auto check_pol_sum = [&](Angular_Momentum_Ptr spin)
+	{
+		Particle_Ptr test_particle = std::make_shared<Particle>("Test", Particle::Type::Particle, 4., 0, 0, spin->j());
+		Four_Vector p = four_momentum(2, test_particle->mass(), 1, 1);
+		auto n_indices = std::ceil(spin->j() - 0.5) * 2;
+		std::vector<Lorentz_Index_Ptr> mu(n_indices);
+		for( auto& index : mu )
+		{
+			index = std::make_shared<Lorentz_Index>();
+		}
+		std::vector<Lorentz_Index_Ptr> indices_left(mu.begin(), mu.begin() + mu.size()/2);
+		std::vector<Lorentz_Index_Ptr> indices_right(mu.begin() + mu.size()/2, mu.end());
+		std::vector<Angular_Momentum_Ptr> S(spin->n_states());
+		for( std::size_t i = 0; i < spin->n_states(); ++i )
+		{
+			S[i] = std::make_shared<Angular_Momentum>(spin->j(), spin->j() - i * 1.);
+		}
+
+		auto const N = std::pow(4, n_indices);
+		for( std::size_t i = 0; i < N; ++i )
+		{
+			auto projector = Projector(test_particle, p, mu);
+			if( spin->is_half_odd_integer() )
+			{
+				Matrix temp(4, 4, 0);
+				for( auto const& s : S )
+				{
+					temp += u(test_particle, p, s, indices_left) * ubar(test_particle, p, s, indices_right);
+				}
+				for( std::size_t j = 0; j < temp.elements(); ++j )
+				{
+					if( !almost_identical(projector.at(j), temp.at(j)) )
+					{
+						return false;
+					}
+				}
+			}
+			else
+			{
+				Complex temp{0., 0.};
+				for( auto const& s : S )
+				{
+					temp += ( epsilon(test_particle, p, s, indices_left) *
+					             epsilon_star(test_particle, p, s, indices_right)).try_as_complex();
+				}
+				if( !almost_identical(projector.try_as_complex(), temp) )
+				{
+					return false;
+				}
+			}
+			// advance mu
+			for( std::size_t l = 0; l < mu.size(); ++l )
+			{
+				++(*(mu[l]));
+				if( *(mu[l]) != 0 )
+				{
+					break;
+				}
+			}
+		}
+		return true;
+	};
+
+	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(0.5, 0.5)) );
+	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(1., 1.)) );
+	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(1.5, 1.5)) );
+	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(2., 2.)) );
+	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(2.5, 2.5)) );
+	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(3., 3.)) );
+	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(3.5, 3.5)) );
 }
