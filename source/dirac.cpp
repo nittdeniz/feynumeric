@@ -8,25 +8,25 @@
 namespace Feynumeric
 {
 
-    std::array<Matrix, 4> GA =
-            {
-                Matrix(4, 4, {1,0,0,0, 0,1,0,0, 0,0,-1,0, 0,0,0,-1}),
-                Matrix(4, 4, {0,0,0,1, 0,0,1,0, 0,-1,0,0, -1,0,0,0}),
-                Matrix(4, 4, {0,0,0,-1.i, 0,0,1.i,0, 0,1.i,0,0, -1.i,0,0,0}),
-                Matrix(4, 4, {0,0,1,0, 0,0,0,-1, -1,0,0,0, 0,1,0,0})
-            };
+	std::array<Matrix, 4> GA =
+			{
+					Matrix(4, 4, {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1}),
+					Matrix(4, 4, {0, 0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, 0, 0}),
+					Matrix(4, 4, {0, 0, 0, -1.i, 0, 0, 1.i, 0, 0, 1.i, 0, 0, -1.i, 0, 0, 0}),
+					Matrix(4, 4, {0, 0, 1, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0})
+			};
 
-    std::array<Matrix, 4> GAC =
-            {
-                    Matrix(4, 4, {1,0,0,0, 0,1,0,0, 0,0,-1,0, 0,0,0,-1}),
-                    -Matrix(4, 4, {0,0,0,1, 0,0,1,0, 0,-1,0,0, -1,0,0,0}),
-                    -Matrix(4, 4, {0,0,0,-1.i, 0,0,1.i,0, 0,1.i,0,0, -1.i,0,0,0}),
-                    -Matrix(4, 4, {0,0,1,0, 0,0,0,-1, -1,0,0,0, 0,1,0,0})
-            };
+	std::array<Matrix, 4> GAC =
+			{
+					Matrix(4, 4, {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1}),
+					-Matrix(4, 4, {0, 0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, 0, 0}),
+					-Matrix(4, 4, {0, 0, 0, -1.i, 0, 0, 1.i, 0, 0, 1.i, 0, 0, -1.i, 0, 0, 0}),
+					-Matrix(4, 4, {0, 0, 1, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0})
+			};
 
-    Matrix GA5 = Matrix(4, 4, {0,0,1,0, 0,0,0,1,  1,0,0,0, 0,1,0,0});
+	Matrix GA5 = Matrix(4, 4, {0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0});
 
-    std::array<std::array<double, 4>, 4> MT = {{{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,0,0,-1}}};
+	std::array<std::array<double, 4>, 4> MT = {{{1, 0, 0, 0}, {0, -1, 0, 0}, {0, 0, -1, 0}, {0, 0, 0, -1}}};
 
 	[[maybe_unused]] Matrix GS(Four_Vector const& p)
 	{
@@ -43,25 +43,25 @@ namespace Feynumeric
 		              }));
 	}
 
-    [[maybe_unused]] Matrix GS(const Matrix &matrix)
-    {
-        Complex const& a = matrix.at(0);
-        Complex const& b = matrix.at(1);
-        Complex const& c = matrix.at(2);
-        Complex const& d = matrix.at(3);
-        return Matrix(4, 4,
-                      std::vector<Complex>(std::initializer_list<Complex>{
-                        a, 0., -d, -b + 1.i * c,
-                        0., a, -b - 1.i * c, d,
-                        d, b - 1.i * c, -a, 0.,
-                        b + 1.i * c, -d, 0., -a
-                      }));
-    }
+	[[maybe_unused]] Matrix GS(const Matrix& matrix)
+	{
+		Complex const& a = matrix.at(0);
+		Complex const& b = matrix.at(1);
+		Complex const& c = matrix.at(2);
+		Complex const& d = matrix.at(3);
+		return Matrix(4, 4,
+		              std::vector<Complex>(std::initializer_list<Complex>{
+				              a, 0., -d, -b + 1.i * c,
+				              0., a, -b - 1.i * c, d,
+				              d, b - 1.i * c, -a, 0.,
+				              b + 1.i * c, -d, 0., -a
+		              }));
+	}
 
-    [[maybe_unused]] Matrix dirac_sigma(const Matrix &a, const Matrix &b)
-    {
-        return Complex(0, 1)/2. * (a*b - b*a);
-    }
+	[[maybe_unused]] Matrix dirac_sigma(const Matrix& a, const Matrix& b)
+	{
+		return Complex(0, 1) / 2. * ( a * b - b * a );
+	}
 
 	Matrix dirac_sigmac(Lorentz_Index_Ptr mu, Lorentz_Index_Ptr nu)
 	{
@@ -79,46 +79,42 @@ namespace Feynumeric
 	}
 
 	Matrix u(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
-    {
+	{
 		return u(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
-    }
+	}
 
 	Matrix v(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
 	{
 		return v(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
 
-	Matrix v(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
+	Matrix v(Particle_Ptr const& P, const Four_Vector& p, Angular_Momentum_Ptr s,
+	         const std::vector<Lorentz_Index_Ptr>& lorentz_indices)
 	{
-		if( p.E().real() < 0 )
-		{
+		if( p.E().real() < 0 ){
 			Four_Vector p_new = -p;
 			return v(P, p_new, s, lorentz_indices);
 		}
-		if( s->j() == 1./2 )
-		{
-			auto N = p.E()+P->mass();
-			if( s->m() == 1./2 )
-			{
-				auto result = std::sqrt(N) * Matrix(4,1, {(p.x() - 1.i * p.y())/N, -p.z()/N, 0, 1});
+		if( s->j() == 1. / 2 ){
+			auto N = p.E() + P->mass();
+			if( s->m() == 1. / 2 ){
+				auto result = std::sqrt(N) * Matrix(4, 1, {( p.x() - 1.i * p.y()) / N, -p.z() / N, 0, 1});
 				return result;
 			}
-			if( s->m() == -1./2 )
-			{
-				return std::sqrt(N) * Matrix(4,1, {p.z()/N, (p.x()+1.i * p.y())/N, 1, 0});
+			if( s->m() == -1. / 2 ){
+				return std::sqrt(N) * Matrix(4, 1, {p.z() / N, ( p.x() + 1.i * p.y()) / N, 1, 0});
 			}
 			critical_error("Invalid state in polarisation vector.\n");
 		}
 		Matrix result(4, 1);
-		for( double k = -1; k <= 1; k+= 2 )
-		{
-			double const n = k/2.;
-			if( abs(s->m()) <= s->j() && abs(s->m() - n) <= s->j()-0.5 )
-			{
-				Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(Angular_Momentum(s->j()-0.5, s->m()-n));
+		for( double k = -1; k <= 1; k += 2 ){
+			double const n = k / 2.;
+			if( abs(s->m()) <= s->j() && abs(s->m() - n) <= s->j() - 0.5 ){
+				Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(
+						Angular_Momentum(s->j() - 0.5, s->m() - n));
 				Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(Angular_Momentum(0.5, n));
 				result +=
-						clebsch_gordan(s1->j(), s->m()-n, 1, n, s->j(), s->m())
+						clebsch_gordan(s1->j(), s->m() - n, 1, n, s->j(), s->m())
 						* epsilon(P, p, s1, lorentz_indices)
 						* v(P, p, s2, {});
 			}
@@ -126,74 +122,101 @@ namespace Feynumeric
 		return result;
 	}
 
-    Matrix u(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
-    {
-		if( p.E().real() < 0 )
-		{
+	Matrix u(Particle_Ptr const& P, const Four_Vector& p, Angular_Momentum_Ptr s,
+	         const std::vector<Lorentz_Index_Ptr>& lorentz_indices)
+	{
+		if( p.E().real() < 0 ){
 			Four_Vector p_new = -p;
 			return u(P, p_new, s, lorentz_indices);
 		}
-        if( s->j() == 1./2 )
-        {
-        	auto N = p.E()+P->mass();
-            if( s->m() == 1./2 )
-            {
-            	auto result = std::sqrt(N) * Matrix(4,1, {1, 0, p.z()/N, (p.x()+1.i * p.y())/N});
-                return result;
-            }
-            if( s->m() == -1./2 )
-            {
-                return std::sqrt(N) * Matrix(4,1, {0, 1, (p.x()-1.i * p.y())/N, -p.z()/N});
-            }
-            critical_error("Invalid state in polarisation vector.\n");
-        }
-        Matrix result(4, 1);
-        for( double k = -1; k <= 1; k+= 2 )
-        {
-            double const n = k/2.;
-            if( abs(s->m()) <= s->j() && abs(s->m() - n) <= s->j()-0.5 )
-            {
-                Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(Angular_Momentum(s->j()-0.5, s->m()-n));
-                Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(Angular_Momentum(0.5, n));
-                result +=
-                        clebsch_gordan(s1->j(), s1->m(), s2->j(), s2->m(), s->j(), s->m())
-                        * epsilon(P, p, s1, lorentz_indices)
-                        * u(P, p, s2, {});
-            }
-        }
-        return result;
-    }
+		if( s->j() == 1. / 2 ){
+			auto N = p.E() + P->mass();
+			if( s->m() == 1. / 2 ){
+				auto result = std::sqrt(N) * Matrix(4, 1, {1, 0, p.z() / N, ( p.x() + 1.i * p.y()) / N});
+				return result;
+			}
+			if( s->m() == -1. / 2 ){
+				return std::sqrt(N) * Matrix(4, 1, {0, 1, ( p.x() - 1.i * p.y()) / N, -p.z() / N});
+			}
+			critical_error("Invalid state in polarisation vector.\n");
+		}
+		Matrix result(4, 1);
+		for( double k = -1; k <= 1; k += 2 ){
+			double const n = k / 2.;
+			if( abs(s->m()) <= s->j() && abs(s->m() - n) <= s->j() - 0.5 ){
+				Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(
+						Angular_Momentum(s->j() - 0.5, s->m() - n));
+				Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(Angular_Momentum(0.5, n));
+				result +=
+						clebsch_gordan(s1->j(), s1->m(), s2->j(), s2->m(), s->j(), s->m())
+						* epsilon(P, p, s1, lorentz_indices)
+						* u(P, p, s2, {});
+			}
+		}
+		return result;
+	}
 
 	Matrix vbar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
 	{
 		return vbar(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
 
-	Matrix vbar(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
+	Matrix vbar(Particle_Ptr const& P, const Four_Vector& p, Angular_Momentum_Ptr s,
+	            const std::vector<Lorentz_Index_Ptr>& lorentz_indices)
 	{
-		return v(P, p, s, lorentz_indices).T().apply([](Complex const& z){return std::conj(z);}) * GA[0];
+		return v(P, p, s, lorentz_indices).T().apply([](Complex const& z){ return std::conj(z); }) * GA[0];
 	}
 
-    Matrix ubar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
+	Matrix ubar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
 	{
-        return ubar(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
+		return ubar(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
 
+	Matrix ubar(Particle_Ptr const& P, const Four_Vector& p, Angular_Momentum_Ptr s,
+	            const std::vector<Lorentz_Index_Ptr>& lorentz_indices)
+	{
+		return u(P, p, s, lorentz_indices).T().apply([](Complex const& z){ return std::conj(z); }) * GA[0];
+	}
 
+	Matrix epsilon(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
+	{
+		return epsilon(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(),
+		               edge_ptr->lorentz_indices());
+	}
 
-    Matrix ubar(Particle_Ptr const& P, const Four_Vector &p, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
+	Matrix epsilon_star(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
+	{
+		return epsilon_star(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(),
+		                    edge_ptr->lorentz_indices());
+	}
+
+    Complex epsilon(Angular_Momentum_Ptr const& s, double q, double m, double cos_theta, double cos_phi, std::vector<Lorentz_Index_Ptr> const& mus)
     {
-        return u(P, p, s, lorentz_indices).T().apply([](Complex const& z){return std::conj(z);}) * GA[0];
-    }
-
-    Matrix epsilon(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
-    {
-    	return epsilon(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
-    }
-
-    Matrix epsilon_star(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
-    {
-	    return epsilon_star(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
+		if( s->j() == 1 )
+		{
+			static std::array<std::function<std::vector<Complex>(double q, double m, double ct, double cp)>,3> f_i =
+					{
+							[](double q, double m, double ct, double cp){
+								double st = std::sqrt(1-ct*ct);
+								double sp = std::sqrt(1-cp*cp);
+								return std::vector<Complex>{0, 1./constexpr_sqrt(2.) * (ct * cp + 1.i * sp), 1./constexpr_sqrt(2.) * (ct * sp - 1.i * cp), -1./constexpr_sqrt(2.) * (st)};
+							},
+							[](double q, double m, double ct, double cp){
+								double st = std::sqrt(1-ct*ct);
+								double sp = std::sqrt(1-cp*cp);
+								double im = 1./m;
+								double Em = std::sqrt(q*q + m*m) * im;
+//								return std::vector<Complex>{0, 1./constexpr_sqrt(2.) * (ct * cp + 1.i * sp), 1./constexpr_sqrt(2.) * (ct * sp - 1.i * cp), -1./constexpr_sqrt(2.) * (st)};
+q								return std::vector<Complex>{q*im, Em * st * cp, Em * st * sp, Em * cp};
+							},
+							[](double q, double m, double ct, double cp){
+								double st = std::sqrt(1-ct*ct);
+								double sp = std::sqrt(1-cp*cp);
+								return std::vector<Complex>{0, 1./constexpr_sqrt(2.) * (-ct * cp + 1.i * sp), 1./constexpr_sqrt(2.)*(-ct * sp - 1.i * cp), 1./constexpr_sqrt(2.) * st};
+							}
+					};
+			return (f_i[s->m()+1](q, m, cos_theta, cos_phi))[*mus[0]];
+		}
     }
 
     Matrix epsilon(Particle_Ptr const& P, const Four_Vector &pp, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
