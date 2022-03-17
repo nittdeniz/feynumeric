@@ -113,6 +113,11 @@ namespace Feynumeric
 		return (_data[0] * std::conj(_data[0]) + _data[1] * std::conj(_data[1]) + _data[2] * std::conj(_data[2])).real();
 	}
 
+	double Three_Vector::magnitude() const
+	{
+		return std::sqrt(squared());
+	}
+
 	double Three_Vector::theta() const
 	{
 		auto const& x = _data[0].real();
@@ -156,5 +161,20 @@ namespace Feynumeric
 		Three_Vector copy(lhs);
 		copy -= rhs;
 		return copy;
+	}
+
+	double Three_Vector::cos_theta() const
+	{
+		return _data[2].real() / magnitude();
+	}
+
+	double Three_Vector::cos_phi() const
+	{
+		if( _data[0].real() == 0 && _data[1].real() == 0 )
+		{
+			return 1;
+		}
+		Three_Vector projection(_data[0], _data[1], 0);
+		return projection.x().real() / projection.magnitude();
 	}
 }

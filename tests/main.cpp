@@ -166,7 +166,7 @@ TEST_CASE("Dirac Anti Particle Spinors Completeness", "[dirac]"){
 TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 	using namespace Feynumeric;
 
-	Particle_Ptr test_particle = std::make_shared<Particle>("Test", Particle::Type::Majorana, 4., 0, 1, 1);
+	Particle_Ptr test_particle = std::make_shared<Particle>("Test", Particle::Type::TrueBoson, 4., 0, 1, 1);
 
 	Four_Vector p = four_momentum(3, test_particle->mass(), 0.2, 0.3);
 
@@ -302,8 +302,17 @@ TEST_CASE("Polarisation Sums", "[dirac]")
 
 	auto check_pol_sum = [&](Angular_Momentum_Ptr spin)
 	{
-		Particle_Ptr test_particle = std::make_shared<Particle>("Test", Particle::Type::Particle, 4., 0, 0, spin->j());
-		Four_Vector p = four_momentum(2, test_particle->mass(), 0.3, 0.1);
+		Particle_Ptr test_particle;
+		if( spin->is_half_odd_integer() )
+		{
+			test_particle = std::make_shared<Particle>("Test", Particle::Type::TrueFermion, 4., 0, 0, spin->j());
+		}
+		else
+		{
+			test_particle = std::make_shared<Particle>("Test", Particle::Type::TrueBoson, 4., 0, 0, spin->j());
+		}
+
+		Four_Vector p = four_momentum(2, test_particle->mass(), 0.3, 1);
 		auto n_indices = std::ceil(spin->j() - 0.5) * 2;
 		std::vector<Lorentz_Index_Ptr> mu(n_indices);
 		for( auto& index : mu )
@@ -327,7 +336,9 @@ TEST_CASE("Polarisation Sums", "[dirac]")
 				Matrix temp(4, 4, 0);
 				for( auto const& s : S )
 				{
-					temp += u(test_particle, p, s, indices_left) * ubar(test_particle, p, s, indices_right);
+					auto u1 = u(test_particle, p, s, indices_left);
+					auto u2 = ubar(test_particle, p, s, indices_right);
+					temp += u1 * u2;
 				}
 				for( std::size_t j = 0; j < temp.elements(); ++j )
 				{
@@ -366,8 +377,8 @@ TEST_CASE("Polarisation Sums", "[dirac]")
 //	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(0.5, 0.5)) );
 //	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(1., 1.)) );
 	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(1.5, 1.5)) );
-//	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(2., 2.)) );
-//	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(2.5, 2.5)) );
-//	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(3., 3.)) );
-//	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(3.5, 3.5)) );
+	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(2., 2.)) );
+	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(2.5, 2.5)) );
+	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(3., 3.)) );
+	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(3.5, 3.5)) );
 }

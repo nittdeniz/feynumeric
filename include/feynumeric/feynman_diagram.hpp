@@ -1,7 +1,8 @@
 #ifndef FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 #define FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 
-//#define DEBUG_AMPLITUDE 1
+#define PRINT_AMPLITUDE 0
+#define DEBUG_AMPLITUDE 0
 
 #include <initializer_list>
 #include <memory>
@@ -45,6 +46,7 @@ namespace Feynumeric{
 		void iterate_spins();
 
 		void initialize();
+		void validate();
 
 	public:
 		Feynman_Diagram(std::string&& name, Topology const& topology, Vertex_Manager_Ptr const& VMP, std::initializer_list<Particle_Ptr> const& incoming_particles, std::initializer_list<Particle_Ptr> const& virtual_particles, std::initializer_list<Particle_Ptr> const& outgoing_particles);
@@ -52,6 +54,8 @@ namespace Feynumeric{
 		Four_Vector four_momentum(std::size_t index, Particle_Ptr const& P, Kinematics const& kin);
 		double dsigma_dcos(Kinematics& kin);
 		Vertex_Manager_Ptr Vertex_Manager();
+
+		void print_amplitude();
 
 		std::vector<Particle_Ptr> incoming_particles() const;
 		std::vector<Particle_Ptr> outgoing_particles() const;

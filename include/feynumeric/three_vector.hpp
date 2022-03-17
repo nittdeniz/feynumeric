@@ -33,8 +33,12 @@ namespace Feynumeric
 		Three_Vector Rz(double phi) const;
 
 		double squared() const;
+		double magnitude() const;
 		double theta() const;
 		double phi() const;
+
+		double cos_theta() const;
+		double cos_phi() const;
 
 		Three_Vector align(Three_Vector const& other) const;
 

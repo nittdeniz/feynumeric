@@ -19,6 +19,9 @@ int main()
 	                                   {},
 	                                   {Proton, Pi_Zero}
 									);
+
+	channel_decay_n1440p->print_amplitude();
+
 	Feynman_Process decay_n1440p({channel_decay_n1440p});
 
 	std::cout << "g: " << std::sqrt(0.35*0.65 / decay_n1440p.decay_width()) << "\n";
@@ -36,7 +39,7 @@ int main()
 
 		Feynman_Process scattering_n1440p({channel_s});
 		scattering_n1440p.dsigma_dcos_table(std::cout, 1.49_GeV, 0.1);
-		scattering_n1440p.sigma_table(std::cout, {{1.4_GeV}});
+//		scattering_n1440p.sigma_table(std::cout, {{1.4_GeV}});
 	}
 
 	return EXIT_SUCCESS;

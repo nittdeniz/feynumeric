@@ -156,6 +156,16 @@ namespace Feynumeric
 		return _spatial.squared();
 	}
 
+	double Four_Vector::cos_theta() const
+	{
+		return _spatial.cos_theta();
+	}
+
+	double Four_Vector::cos_phi() const
+	{
+		return _spatial.cos_phi();
+	}
+
 	double Four_Vector::squared() const
 	{
 		return (_temporal * std::conj(_temporal) - spatial_squared()).real();

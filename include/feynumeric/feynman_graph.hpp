@@ -91,6 +91,8 @@ namespace Feynumeric{
 			void back(Edge_Ptr const& e);
 			std::size_t hash() const;
 
+			std::string particles_to_string() const;
+
 
 			std::function<Matrix(Kinematics const& kin)> feynman_rule();
 		};

@@ -10,6 +10,7 @@
 #include "angular_momentum.hpp"
 #include "complex.hpp"
 #include "feynman_graph.hpp"
+#include "format.hpp"
 #include "matrix.hpp"
 #include "momentum.hpp"
 #include "types.hpp"
@@ -19,11 +20,34 @@ namespace Feynumeric
     class Particle
     {
     public:
-        enum class Type
+        enum class Type : uint64_t
         {
-            Majorana,
-            Particle,
-            AntiParticle
+            TrueParticle = 0x01,
+            AntiParticle = 0x02,
+            NeutralParticle = 0x04,
+
+            Boson           = 0x08,
+	        TrueBoson       = Boson | TrueParticle,
+	        AntiBoson       = Boson | AntiParticle,
+	        NeutralBoson    = Boson | NeutralParticle,
+
+	        Fermion         = 0x10,
+            TrueFermion     = Fermion | TrueParticle,
+            AntiFermion     = Fermion | AntiParticle,
+            NeutralFermion  = Fermion | NeutralParticle,
+
+            Lepton          = 0x20   | Fermion,
+            TrueLepton      = Lepton | TrueParticle,
+            AntiLepton      = Lepton | AntiParticle,
+
+            Meson           = 0x40  | Boson,
+            TrueMeson       = Meson | TrueParticle,
+            AntiMeson       = Meson | AntiParticle,
+            NeutralMeson    = Meson | NeutralParticle,
+
+            Baryon          = 0x80   | Fermion,
+            TrueBaryon      = Baryon | TrueParticle,
+            AntiBaryon      = Baryon | AntiParticle,
         };
     private:
         std::string _name;
@@ -35,6 +59,10 @@ namespace Feynumeric
         int _parity;
         std::function<double(double)> _width_function;
         double _width;
+
+        double _baryon_number;
+        double _lepton_number;
+
         std::map<std::string, std::any> _user_data;
 
     public:
@@ -44,18 +72,27 @@ namespace Feynumeric
 
         std::string name() const;
         double mass() const;
-        int charge() const;
+        double charge() const;
         Angular_Momentum spin() const;
         Angular_Momentum isospin()const;
+
+        void isospin(Angular_Momentum const& i);
 
         double width() const;
         double width(double p2) const;
         void width(std::function<double(double)> f);
 
+        double baryon_number() const;
+        double lepton_number() const;
+
+        void baryon_number(double n);
+        void lepton_number(double n);
+
         void parity(int p);
         int parity() const;
 
         bool is_fermion() const;
+        bool is_true_fermion() const;
         bool is_anti_fermion() const;
 
         std::function<Matrix(Feynman_Graph::Edge_Ptr e, Kinematics const&)> feynman_outgoing;
@@ -66,10 +103,32 @@ namespace Feynumeric
 
         std::any user_data(std::string key) const;
 
+        template<typename T>
+        T user_data(std::string key) const
+        {
+	        try{
+		        return std::any_cast<T>(_user_data.at(key));
+	        }
+	        catch( std::out_of_range const& e)
+	        {
+		        critical_error(FORMAT("Key <{}> is not set for particle {}\n", key, _name));
+	        }
+        }
+
         void user_data(std::string key, std::any data);
 
         friend std::ostream& operator<<(std::ostream&, Particle const& p);
     };
+
+    inline uint64_t operator&(Particle::Type const& a, Particle::Type const& b)
+	{
+		return static_cast<uint64_t>(a) & static_cast<uint64_t>(b);
+	}
+
+	inline bool is_set(Particle::Type const& mask, Particle::Type const& flag)
+	{
+    	return ( mask & flag) == static_cast<uint64_t>(flag);
+	}
 
     bool is_fermion(Particle const& particle);
     bool is_anti_fermion(Particle const& particle);

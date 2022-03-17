@@ -52,6 +52,7 @@ namespace Feynumeric
 
 	Matrix spinor(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
 
+	Complex epsilon(Angular_Momentum_Ptr const& spin, double q, double mass, double cos_theta, double cos_phi, std::vector<Lorentz_Index_Ptr> const& mus);
     Matrix epsilon(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
     Matrix epsilon_star(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
 

@@ -53,6 +53,9 @@ namespace Feynumeric
 		Four_Vector Ry(double phi) const;
 		Four_Vector Rz(double phi) const;
 
+		double cos_theta() const;
+		double cos_phi() const;
+
 		friend Four_Vector operator+(Four_Vector const& lhs, Four_Vector const& rhs);
 		friend Four_Vector operator-(Four_Vector const& lhs);
 		friend Four_Vector operator-(Four_Vector const& lhs, Four_Vector const& rhs);

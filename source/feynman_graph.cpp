@@ -164,6 +164,16 @@ namespace Feynumeric
 		return _back != nullptr && _front != nullptr;
 	}
 
+	std::string Feynman_Graph::Vertex::particles_to_string() const
+	{
+		std::string str;
+		for( auto const& e : all() )
+		{
+			str += e->particle()->name();
+		}
+		return str;
+	}
+
 	Feynman_Graph::Vertex_Ptr Feynman_Graph::Edge::front() const
 	{
 		return _front;

@@ -61,6 +61,11 @@ namespace Feynumeric
         	return value * 0.197327;
         }
 
+        constexpr long double operator"" _percent(long double value)
+        {
+        	return value * 0.01;
+        }
+
         constexpr double fm_to_mub = 1.e4;
     }
 }

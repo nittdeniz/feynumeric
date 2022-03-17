@@ -147,10 +147,10 @@ namespace Feynumeric
 				Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(
 						Angular_Momentum(s->j() - 0.5, s->m() - n));
 				Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(Angular_Momentum(0.5, n));
-				result +=
-						clebsch_gordan(s1->j(), s1->m(), s2->j(), s2->m(), s->j(), s->m())
-						* epsilon(P, p, s1, lorentz_indices)
-						* u(P, p, s2, {});
+				auto clebsch = clebsch_gordan(s1->j(), s1->m(), s2->j(), s2->m(), s->j(), s->m());
+				auto eps = epsilon(P, p, s1, lorentz_indices);
+				auto uu = u(P, p, s2, {});;
+				result += clebsch * eps * uu;
 			}
 		}
 		return result;
@@ -190,13 +190,13 @@ namespace Feynumeric
 		                    edge_ptr->lorentz_indices());
 	}
 
-    Complex epsilon(Angular_Momentum_Ptr const& s, double q, double m, double cos_theta, double cos_phi, std::vector<Lorentz_Index_Ptr> const& mus)
+    Complex epsilon(Angular_Momentum_Ptr const& spin, double q, double mass, double cos_theta, double cos_phi, std::vector<Lorentz_Index_Ptr> const& mus)
     {
-		if( s->j() == 1 )
+		if( spin->j() == 1 )
 		{
-			static std::array<std::function<std::vector<Complex>(double q, double m, double ct, double cp)>,3> f_i =
+			static std::array<std::function<std::vector<Complex>(double, double, double, double)>,3> f_i =
 					{
-							[](double q, double m, double ct, double cp){
+							[](double, double, double ct, double cp){
 								double st = std::sqrt(1-ct*ct);
 								double sp = std::sqrt(1-cp*cp);
 								return std::vector<Complex>{0, 1./constexpr_sqrt(2.) * (ct * cp + 1.i * sp), 1./constexpr_sqrt(2.) * (ct * sp - 1.i * cp), -1./constexpr_sqrt(2.) * (st)};
@@ -206,17 +206,33 @@ namespace Feynumeric
 								double sp = std::sqrt(1-cp*cp);
 								double im = 1./m;
 								double Em = std::sqrt(q*q + m*m) * im;
-//								return std::vector<Complex>{0, 1./constexpr_sqrt(2.) * (ct * cp + 1.i * sp), 1./constexpr_sqrt(2.) * (ct * sp - 1.i * cp), -1./constexpr_sqrt(2.) * (st)};
-q								return std::vector<Complex>{q*im, Em * st * cp, Em * st * sp, Em * cp};
+								return std::vector<Complex>{q*im, Em * st * cp, Em * st * sp, Em * ct};
 							},
-							[](double q, double m, double ct, double cp){
+							[](double, double, double ct, double cp){
 								double st = std::sqrt(1-ct*ct);
 								double sp = std::sqrt(1-cp*cp);
 								return std::vector<Complex>{0, 1./constexpr_sqrt(2.) * (-ct * cp + 1.i * sp), 1./constexpr_sqrt(2.)*(-ct * sp - 1.i * cp), 1./constexpr_sqrt(2.) * st};
 							}
 					};
-			return (f_i[s->m()+1](q, m, cos_theta, cos_phi))[*mus[0]];
+			auto vector = (f_i[spin->m() + 1](q, mass, cos_theta, cos_phi));
+			return vector[*(mus[0])];
 		}
+		Complex result{0., 0.};
+	    for( int n = -1; n <= 1; n++ )
+	    {
+		    if( abs(spin->m()) <= spin->j() && abs(spin->m() - n) <= spin->j() - 1 )
+		    {
+			    Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(Angular_Momentum(spin->j() - 1, spin->m() - n));
+			    Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(Angular_Momentum(1, n));
+			    auto indices1 = std::vector<Lorentz_Index_Ptr>(mus.begin(), mus.end()-1);
+			    auto indices2 = std::vector<Lorentz_Index_Ptr>(mus.end()-1, mus.end());
+			    result +=
+					    clebsch_gordan(s1->j(), s1->m(), s2->j(), s2->m(), spin->j(), spin->m())
+					    * epsilon(s1, q, mass, cos_theta, cos_phi, indices1)
+					    * epsilon(s2, q, mass, cos_theta, cos_phi, indices2);
+		    }
+	    }
+	    return result;
     }
 
     Matrix epsilon(Particle_Ptr const& P, const Four_Vector &pp, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
@@ -226,78 +242,13 @@ q								return std::vector<Complex>{q*im, Em * st * cp, Em * st * sp, Em * cp};
         {
             return Matrix(1,1,1);
         }
-
-        auto align = [&p](Four_Vector const& epsilon)
+        if( P->mass() == 0 && std::abs(s->m()) != s->j())
         {
-        	auto theta = p.theta();
-        	auto phi = p.phi();
-        	auto y = epsilon.Ry(theta);
-        	auto z = y.Rz(phi);
-        	return z;
-        };
-
-        if( P->mass() == 0 )
-        {
-	        if( s->j() == 1 )
-	        {
-		        double constexpr isqrt2 = 1./constexpr_sqrt(2.);
-		        if( s->m() == 1 )
-		        {
-			        static auto const vector = Four_Vector(0, -isqrt2, -1.i * isqrt2, 0);
-			        auto aligned = align(vector);
-			        return aligned.contra(lorentz_indices[0]);
-		        }
-		        if( s->m() == -1 )
-		        {
-			        static auto const vector = Four_Vector(0, isqrt2, -1.i * isqrt2, 0);
-			        auto aligned = align(vector);
-			        return aligned.contra(lorentz_indices[0]);
-		        }
-		        critical_error("Invalid state in polarisation vector.\n");
-	        }
+        	critical_error("Massless particle must have |m| = j.\n");
         }
-        else
-        {
-	        if( s->j() == 1 )
-	        {
-		        double constexpr isqrt2 = 1./constexpr_sqrt(2.);
-		        if( s->m() == 1 )
-		        {
-			        static auto const vector = Four_Vector(0, -isqrt2, -1.i * isqrt2, 0);
-			        auto aligned = align(vector);
-			        return aligned.contra(lorentz_indices[0]);
-		        }
-		        if( s->m() == 0 )
-		        {
-			        auto const vector = Four_Vector(std::sqrt(p.spatial_squared())/P->mass(),0,0,p.E()/P->mass());
-			        auto aligned = align(vector);
-			        return aligned.contra(lorentz_indices[0]);
-		        }
-		        if( s->m() == -1 )
-		        {
-			        static auto const vector = Four_Vector(0, isqrt2, -1.i * isqrt2, 0);
-			        auto aligned = align(vector);
-			        return aligned.contra(lorentz_indices[0]);
-		        }
-		        critical_error("Invalid state in polarisation vector.\n");
-	        }
-        }
-        Matrix result(1,1,0);
-        for( int n = -1; n <= 1; n++ )
-        {
-            if( abs(s->m()) <= s->j() && abs(s->m() - n) <= s->j()-1 )
-            {
-                Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(Angular_Momentum(s->j()-1, s->m()-n));
-                Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(Angular_Momentum(1, n));
-                auto indices1 = std::vector<Lorentz_Index_Ptr>(lorentz_indices.begin(), lorentz_indices.end()-1);
-                auto indices2 = std::vector<Lorentz_Index_Ptr>(lorentz_indices.end()-1, lorentz_indices.end());
-                result +=
-                        clebsch_gordan(s1->j(), s1->m(), s2->j(), s2->m(), s->j(), s->m())
-                        * epsilon(P, p, s1, indices1)
-                        * epsilon(P, p, s2, indices2);
-            }
-        }
-        return result;
+        auto const qq = p.spatial().squared();
+	    auto const q = std::sqrt(qq);
+        return epsilon(s, q, P->mass(), p.cos_theta(), p.cos_phi(), lorentz_indices);
     }
 
 
@@ -342,7 +293,7 @@ q								return std::vector<Complex>{q*im, Em * st * cp, Em * st * sp, Em * cp};
 		        }
 	    	    ++(*mu);
 		    }
-		    return ( P->is_fermion()? ( GS(p) + P->mass()) : ( GS(p) - P->mass()) )
+		    return ( P->is_true_fermion() ? ( GS(p) + P->mass()) : ( GS(p) - P->mass()) )
 		                      * ( n + 1. ) / ( 2. * n + 3. ) * contraction;
 	    }
 

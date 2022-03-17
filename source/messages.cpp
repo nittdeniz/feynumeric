@@ -24,5 +24,11 @@ namespace Feynumeric
     {
         std::cerr << "[Status] " << message << "\n";
     }
+
+	critical_exception::critical_exception(std::string&& message)
+	: _message(std::move(message))
+	{
+
+	}
 }
 

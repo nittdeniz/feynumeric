@@ -1,5 +1,4 @@
-#include <format.hpp>
-#include "feynumeric/particle.hpp"
+#include "particle.hpp"
 
 namespace Feynumeric
 {
@@ -10,7 +9,32 @@ namespace Feynumeric
     , _charge(charge)
     , _spin(spin, spin, mass==0)
     , _width(width)
+    , _baryon_number(0)
+    , _lepton_number(0)
     {
+    	int sign;
+    	if( is_set(type, Type::TrueParticle) ) sign = 1;
+    	else if( is_set(type, Type::AntiParticle) ) sign = -1;
+    	else if( is_set(type, Type::NeutralParticle) ) sign = 0;
+    	else{ warning("Particle type does not contain valid type (Neither True, Anti nor Neutral)"); sign = -666;}
+
+    	if( is_set(type, Type::Baryon) )
+	    {
+			_baryon_number = sign * 1.;
+	    }
+    	if( is_set(type, Type::Lepton) )
+	    {
+    		_lepton_number = sign * 1.;
+	    }
+
+    	if( is_set(type, Type::Fermion) && !_spin.is_half_odd_integer() )
+	    {
+    		critical_error(FORMAT("Particle {} is classified as a fermion but has spin {}.", _name, _spin.j()));
+	    }
+    	if( type & Type::Boson && _spin.is_half_odd_integer() )
+	    {
+    		critical_error(FORMAT("Particle {} is classified as a boson but has spin {}.", _name, _spin.j()));
+	    }
     }
 
 	Particle::Particle(Particle const& copy)
@@ -23,6 +47,8 @@ namespace Feynumeric
 	, _parity(copy._parity)
 	, _width_function(copy._width_function)
 	, _width(copy._width)
+	, _baryon_number(copy._baryon_number)
+	, _lepton_number(copy._lepton_number)
 	, _user_data(copy._user_data)
 	{
 
@@ -30,16 +56,18 @@ namespace Feynumeric
 
 	Particle& Particle::operator=(Particle const& copy)
 	{
-		_name = copy._name;
-		_type = copy._type;
-		_mass = copy._mass;
-		_charge = copy._charge;
-		_spin = copy._spin;
-		_isospin = copy._isospin;
-		_parity = copy._parity;
+		_name           = copy._name;
+		_type           = copy._type;
+		_mass           = copy._mass;
+		_charge         = copy._charge;
+		_spin           = copy._spin;
+		_isospin        = copy._isospin;
+		_parity         = copy._parity;
 		_width_function = copy._width_function;
-		_width = copy._width;
-		_user_data = copy._user_data;
+		_width          = copy._width;
+		_baryon_number  = copy._baryon_number;
+		_lepton_number  = copy._lepton_number;
+		_user_data      = copy._user_data;
 		return *this;
 	}
 
@@ -50,6 +78,11 @@ namespace Feynumeric
     		return _width;
 	    }
 		return _width_function(p2);
+	}
+
+	void Particle::isospin(Angular_Momentum const& i)
+	{
+		_isospin = i;
 	}
 
 	double Particle::width() const
@@ -93,7 +126,27 @@ namespace Feynumeric
         return _mass;
     }
 
-    int Particle::charge() const
+	double Particle::baryon_number() const
+	{
+		return _baryon_number;
+	}
+
+	double Particle::lepton_number() const
+	{
+		return _lepton_number;
+	}
+
+	void Particle::baryon_number(double n)
+	{
+		_baryon_number = n;
+	}
+
+	void Particle::lepton_number(double n)
+	{
+		_lepton_number = n;
+	}
+
+	double Particle::charge() const
     {
         return _charge;
     }
@@ -115,14 +168,17 @@ namespace Feynumeric
 
     bool Particle::is_fermion() const
     {
-        return _type == Type::Particle
-            && _spin.is_half_odd_integer();
+    	return (_type & Type::Fermion) == static_cast<uint64_t>(Type::Fermion);
+    }
+
+    bool Particle::is_true_fermion() const
+    {
+        return (_type & Type::TrueFermion) == static_cast<uint64_t>(Type::TrueFermion);
     }
 
     bool Particle::is_anti_fermion() const
     {
-        return _type == Particle::Type::AntiParticle
-            && _spin.is_half_odd_integer();
+        return (_type & Type::AntiFermion) == static_cast<uint64_t>(Type::AntiFermion);
     }
 
     unsigned int Particle::n_lorentz_indices() const
@@ -138,7 +194,7 @@ namespace Feynumeric
 
     bool is_fermion(const Particle &particle)
     {
-        return particle.is_fermion();
+        return particle.is_true_fermion();
     }
 
     bool is_anti_fermion(const Particle &particle)
