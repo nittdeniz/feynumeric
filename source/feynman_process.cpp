@@ -265,11 +265,11 @@ namespace Feynumeric
 
 		for( std::size_t i = 0; i < N_spins; ++i ){
 			Complex M{0, 0};
-			for( std::size_t j = 0; j < _diagrams.size(); ++j ){
-				auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
+			for( auto& diagram : _diagrams )
+			{
+				auto const& temp = diagram->evaluate_amplitude(kin);
 				M += temp;
-//				Ms_squared[j] += (temp * std::conj(temp)).real();
-				_diagrams[j]->iterate_spins();
+				diagram->iterate_spins();
 			}
 			Ms_squared += (M * std::conj(M)).real();
 		}

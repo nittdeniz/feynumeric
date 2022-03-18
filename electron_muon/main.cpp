@@ -21,15 +21,15 @@ int main()
     init_particles();
 	init_vertices();
 
-	auto s_channel = create_diagram("t_channel", X_Man, VMP,
-	                                {Photon, Electron},
-	                                {Positron},
-	                                {Electron, Photon});
+	auto s_channel = create_diagram("s_channel", Double_Wrench, VMP,
+	                                {Positron, Electron},
+	                                {Photon},
+	                                {Positron, Electron});
 
 
 	Feynman_Process pair_production({s_channel});
 	pair_production.dsigma_dcos_table(std::cout, 500._MeV, 0.1);
-	compton.dsigma_dcos_table(std::cout, 500._MeV, 0.1);
+//	compton.dsigma_dcos_table(std::cout, 500._MeV, 0.1);
     return EXIT_SUCCESS;
 }
 

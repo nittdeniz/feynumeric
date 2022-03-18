@@ -58,6 +58,7 @@ namespace Feynumeric{
 			void add_lorentz_index(Lorentz_Index_Ptr const& index);
 			void lorentz_indices(std::vector<Lorentz_Index_Ptr> const& list);
 			std::vector<Lorentz_Index_Ptr> lorentz_indices() const;
+			std::vector<Lorentz_Index_Ptr> lorentz_indices(Feynman_Graph::Vertex_Ptr const& ptr) const;
 
 			Four_Vector four_momentum(Kinematics const&) const;
 

@@ -239,6 +239,15 @@ namespace Feynumeric
 		return _lorentz_indices;
 	}
 
+	std::vector<Lorentz_Index_Ptr> Feynman_Graph::Edge::lorentz_indices(Feynman_Graph::Vertex_Ptr const& ptr) const
+	{
+		if( contains(ptr->front(), shared_from_this()) )
+		{
+			return std::vector<Lorentz_Index_Ptr>({_lorentz_indices.begin(), _lorentz_indices.begin() + _lorentz_indices.size()/2});
+		}
+		return std::vector<Lorentz_Index_Ptr>({_lorentz_indices.begin() + _lorentz_indices.size()/2, _lorentz_indices.end()});
+	}
+
 	std::function<Matrix(Kinematics const&)> Feynman_Graph::Edge::feynman_rule()
 	{
 		using namespace std::placeholders;

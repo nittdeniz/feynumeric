@@ -1,7 +1,7 @@
 #ifndef FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 #define FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 
-#define PRINT_AMPLITUDE 0
+#define PRINT_AMPLITUDE 1
 #define DEBUG_AMPLITUDE 0
 
 #include <initializer_list>
@@ -25,11 +25,17 @@ namespace Feynumeric{
 		std::vector<Angular_Momentum_Ptr> _spins;
 		std::vector<Feynman_Rule> _amplitude;
 		std::vector<Momentum_Func> _four_momenta;
+		std::map<Lorentz_Index_Ptr, std::string> _indices_to_string;
 		Complex _phase{1,0};
 		std::string _name;
 
 		void trace_fermion_line(Feynman_Graph::Edge_Ptr const& ptr, Direction const& start_direction, Feynman_Graph::Vertex_Direction vertex_direction);
 		void trace_fermion_line(Feynman_Graph::Edge_Ptr const& origin, Feynman_Graph::Vertex_Ptr const& ptr, Direction const& start_direction);
+
+		std::string index_to_string(Lorentz_Index_Ptr const& ptr);
+		void print_feynman_edge_rule(std::string const& id, Feynman_Graph::Edge_Ptr const& ptr);
+		void print_feynman_vertex_rule(Feynman_Graph::Vertex_Ptr const& ptr);
+		std::string pretty_momentum(Matrix const& relative) const;
 
 		void fix_momenta();
 		void fix_internal_momenta();
@@ -54,8 +60,6 @@ namespace Feynumeric{
 		Four_Vector four_momentum(std::size_t index, Particle_Ptr const& P, Kinematics const& kin);
 		double dsigma_dcos(Kinematics& kin);
 		Vertex_Manager_Ptr Vertex_Manager();
-
-		void print_amplitude();
 
 		std::vector<Particle_Ptr> incoming_particles() const;
 		std::vector<Particle_Ptr> outgoing_particles() const;

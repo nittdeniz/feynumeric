@@ -90,6 +90,33 @@ namespace Feynumeric
 		}
 	}
 
+	std::string Feynman_Diagram::index_to_string(Lorentz_Index_Ptr const& ptr)
+	{
+		if( _indices_to_string.contains(ptr) )
+		{
+			return _indices_to_string[ptr];
+		}
+		_indices_to_string[ptr] = FORMAT("mu{}", _indices_to_string.size());
+		return _indices_to_string[ptr];
+	}
+
+	std::string Feynman_Diagram::pretty_momentum(Matrix const& relative) const
+	{
+		std::string result;
+		for( std::size_t i = 0; i < relative.elements(); ++i )
+		{
+			if( relative.at(i).real() > 0 )
+			{
+				result += FORMAT("+p{}", i+1);
+			}
+			else if( relative.at(i).real() < 0 )
+			{
+				result += FORMAT("-p{}", i+1);
+			}
+		}
+		return result;
+	}
+
 	void Feynman_Diagram::generate_amplitude()
 	{
 		for( auto& edge_ptr : _graph._outgoing )
@@ -97,8 +124,7 @@ namespace Feynumeric
 			if( edge_ptr->particle()->is_true_fermion() )
 			{
 				#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-				std::cerr << "@@@Amplitude Outgoing: " << edge_ptr->particle()->name() << "\t";
-				std::cerr << edge_ptr->relative_momentum().T() << "\n";
+				print_feynman_edge_rule("_u", edge_ptr);
 				#endif
 				_amplitude.push_back(edge_ptr->feynman_rule());
 				trace_fermion_line(edge_ptr, edge_ptr->back(),Direction::OUTGOING);
@@ -106,8 +132,7 @@ namespace Feynumeric
 			else if( !edge_ptr->particle()->is_anti_fermion() )
 			{
 				#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-				std::cerr << "@@@Amplitude Outgoing: " << edge_ptr->particle()->name() << "\t";
-				std::cerr << edge_ptr->relative_momentum().T() << "\n";
+				print_feynman_edge_rule("e*", edge_ptr);
 				#endif
 				_amplitude.push_back(edge_ptr->feynman_rule());
 			}
@@ -117,8 +142,7 @@ namespace Feynumeric
 			if( edge_ptr->particle()->is_anti_fermion() )
 			{
 				#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-				std::cerr << "@@@Amplitude Incoming: " << edge_ptr->particle()->name() << "\t";
-				std::cerr << edge_ptr->relative_momentum().T() << "\n";
+				print_feynman_edge_rule("_v", edge_ptr);
 				#endif
 				_amplitude.push_back(edge_ptr->feynman_rule());
 				trace_fermion_line(edge_ptr, edge_ptr->front(), Direction::INCOMING);
@@ -126,8 +150,7 @@ namespace Feynumeric
 			else if( !edge_ptr->particle()->is_true_fermion() )
 			{
 				#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-				std::cerr << "@@@Amplitude Incoming: " << edge_ptr->particle()->name() << "\t";
-				std::cerr << edge_ptr->relative_momentum().T() << "\n";
+				print_feynman_edge_rule("e", edge_ptr);
 				#endif
 				_amplitude.push_back(edge_ptr->feynman_rule());
 			}
@@ -138,12 +161,14 @@ namespace Feynumeric
 			if( !( edge_ptr->particle()->is_true_fermion() || edge_ptr->particle()->is_anti_fermion()) )
 			{
 				#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-				std::cerr << "@@@Amplitude Virtual: " << edge_ptr->particle()->name() << "\t";
-				std::cerr << edge_ptr->relative_momentum().T() << "\n";
+				print_feynman_edge_rule("D", edge_ptr);
 				#endif
 				_amplitude.push_back(edge_ptr->feynman_rule());
 			}
 		}
+		#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
+		std::cout << "\n";
+		#endif
 	}
 
 	void Feynman_Diagram::fix_momenta()
@@ -274,6 +299,41 @@ namespace Feynumeric
 		*/
 	}
 
+	void Feynman_Diagram::print_feynman_edge_rule(std::string const& id, Feynman_Graph::Edge_Ptr const& ptr)
+	{
+		std::string momentum = pretty_momentum(ptr->relative_momentum());
+		if( !ptr->is_virtual() )
+		{
+			momentum.erase(0, 1);
+		}
+		std::cout << id << "(" << ptr->particle()->name() << ", " << momentum;
+		for( auto const& i : ptr->lorentz_indices() )
+		{
+			std::cout << ", " << index_to_string(i);
+		}
+		std::cout << ") ";
+	}
+
+	void Feynman_Diagram::print_feynman_vertex_rule(Feynman_Graph::Vertex_Ptr const& ptr)
+	{
+		bool first = true;
+		std::cout << "VV(";
+		for( auto const& edge_ptr : ptr->all() ){
+			if( !first )
+			{
+				std::cout << " // ";
+			}
+			std::cout << edge_ptr->particle()->name() << ", " << pretty_momentum(edge_ptr->relative_momentum());
+			auto lorentz_indices = edge_ptr->lorentz_indices(ptr);
+			for( auto const& i : lorentz_indices )
+			{
+				std::cout << ", " << index_to_string(i);
+			}
+			first = false;
+		}
+		std::cout << ") ";
+	}
+
 	void Feynman_Diagram::trace_fermion_line(Feynman_Graph::Edge_Ptr const& ptr, Direction const& start_direction, Feynman_Graph::Vertex_Direction vertex_direction)
 	{
 		if( ptr == nullptr )
@@ -288,8 +348,7 @@ namespace Feynumeric
 					if( ptr->particle()->is_true_fermion() )
 					{
 						#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-						std::cerr << "@@@Amplitude Incoming: " << ptr->particle()->name() << "\t";
-						std::cerr << ptr->relative_momentum().T() << "\n";
+						print_feynman_edge_rule("u", ptr);
 						#endif
 						_amplitude.push_back(ptr->feynman_rule());
 						return;
@@ -301,8 +360,7 @@ namespace Feynumeric
 					if( ptr->particle()->is_anti_fermion() )
 					{
 						#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-						std::cerr << "@@@Amplitude Outgoing: " << ptr->particle()->name() << "\t";
-						std::cerr << ptr->relative_momentum().T() << "\n";
+						print_feynman_edge_rule("v", ptr);
 						#endif
 						_amplitude.push_back(ptr->feynman_rule());
 						return;
@@ -315,8 +373,7 @@ namespace Feynumeric
 						if( vertex_direction == Feynman_Graph::Vertex_Direction::IN )
 						{
 							#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-							std::cerr << "@@@Amplitude Virtual: " << ptr->particle()->name() << "\t";
-							std::cerr << ptr->relative_momentum().T() << "\n";
+							print_feynman_edge_rule("D", ptr);
 							#endif
 							_amplitude.push_back(ptr->feynman_rule());
 							trace_fermion_line(ptr, ptr->back(), start_direction);
@@ -332,8 +389,7 @@ namespace Feynumeric
 						if( vertex_direction == Feynman_Graph::Vertex_Direction::OUT )
 						{
 							#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-							std::cerr << "@@@Amplitude Virtual: " << ptr->particle()->name() << "\t";
-							std::cerr << ptr->relative_momentum().T() << "\n";
+							print_feynman_edge_rule("D", ptr);
 							#endif
 							_amplitude.push_back(ptr->feynman_rule());
 							trace_fermion_line(ptr, ptr->front(), start_direction);
@@ -352,8 +408,7 @@ namespace Feynumeric
 					if( ptr->particle()->is_anti_fermion() )
 					{
 						#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-						std::cerr << "@@@Amplitude Outgoing: " << ptr->particle()->name() << "\t";
-						std::cerr << ptr->relative_momentum().T() << "\n";
+						print_feynman_edge_rule("v", ptr);
 						#endif
 						_amplitude.push_back(ptr->feynman_rule());
 						return;
@@ -365,8 +420,7 @@ namespace Feynumeric
 					if( ptr->particle()->is_true_fermion() )
 					{
 						#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-						std::cerr << "@@@Amplitude Incoming: " << ptr->particle()->name() << "\t";
-						std::cerr << ptr->relative_momentum().T() << "\n";
+						print_feynman_edge_rule("u", ptr);
 						#endif
 						_amplitude.push_back(ptr->feynman_rule());
 						return;
@@ -379,8 +433,7 @@ namespace Feynumeric
 						if( vertex_direction == Feynman_Graph::Vertex_Direction::OUT )
 						{
 							#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-							std::cerr << "@@@Amplitude Virtual: " << ptr->particle()->name() << "\t";
-							std::cerr << ptr->relative_momentum().T() << "\n";
+							print_feynman_edge_rule("D", ptr);
 							#endif
 							_amplitude.push_back(ptr->feynman_rule());
 							trace_fermion_line(ptr, ptr->front(), start_direction);
@@ -396,8 +449,7 @@ namespace Feynumeric
 						if( vertex_direction == Feynman_Graph::Vertex_Direction::IN )
 						{
 							#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-							std::cerr << "@@@Amplitude Virtual: " << ptr->particle()->name() << "\t";
-							std::cerr << ptr->relative_momentum() << "\n";
+							print_feynman_edge_rule("D", ptr);
 							#endif
 							_amplitude.push_back(ptr->feynman_rule());
 							trace_fermion_line(ptr, ptr->back(), start_direction);
@@ -445,12 +497,7 @@ namespace Feynumeric
 			}
 		}
 		#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-		std::cerr << "@@@Amplitude Vertex: ";
-		for( auto const& edge_ptr : vertex_ptr->all() ){
-			std::cerr << edge_ptr->particle()->name() << "\t";
-			std::cerr << edge_ptr->relative_momentum().T() << "\n";
-		}
-		std::cerr << "\n";
+		print_feynman_vertex_rule(vertex_ptr);
 		#endif
 		if( next == nullptr )
 		{
@@ -565,12 +612,6 @@ namespace Feynumeric
 			result[i] = _graph._outgoing.at(i)->particle();
 		}
 		return result;
-	}
-
-	void Feynman_Diagram::print_amplitude()
-	{
-		generate_amplitude();
-		std::cout << "print_amplitude: " << _amplitude.size() << "\n";
 	}
 
 	void Feynman_Diagram::validate()

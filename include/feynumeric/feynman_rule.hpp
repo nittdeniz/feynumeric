@@ -1,6 +1,7 @@
 #ifndef FEYNUMERIC_FEYNMAN_RULE_HPP
 #define FEYNUMERIC_FEYNMAN_RULE_HPP
 
+#include <iostream>
 #include <string>
 
 #include "feynman_graph.hpp"
@@ -19,7 +20,7 @@ namespace Feynumeric
 		Feynman_Rule& operator=(Feynman_Rule&& other);
 
 		virtual Matrix operator()() = 0;
-		virtual void print(std::shared_ptr<Feynman_Diagram> diagram);
+		virtual void print(Feynman_Diagram* diagram);
 	};
 
 	class Feynman_Edge_Rule : public Feynman_Rule
@@ -32,12 +33,26 @@ namespace Feynumeric
 		{
 			return _rule(_edge, kin);
 		}
-
+		virtual void print(Feynman_Diagram*)
+		{
+			std::cout << "feynman_edge\n";
+		}
 	};
 
 	class Feynman_Vertex_Rule : public Feynman_Rule
 	{
-
+	private:
+		Feynman_Graph::Edge_Ptr _edge;
+		std::function<Matrix(Feynman_Graph::Edge_Ptr const&, Kinematics const&)> _rule;
+	public:
+		virtual Matrix operator()(Kinematics const& kin)
+		{
+			return _rule(_edge, kin);
+		}
+		virtual void print(Feynman_Diagram*)
+		{
+			std::cout << "feynman_vertex\n";
+		}
 	};
 }
 #endif
