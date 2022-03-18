@@ -4,6 +4,7 @@
 #include <feynumeric/angular_momentum.hpp>
 #include <feynumeric/matrix.hpp>
 #include <feynumeric/constexpr_math.hpp>
+#include <feynumeric/contract.hpp>
 #include <feynumeric/dirac.hpp>
 #include <feynumeric/integrate.hpp>
 #include <feynumeric/units.hpp>
@@ -292,6 +293,14 @@ TEST_CASE("Bhaba Scattering", "[QED]")
 	REQUIRE( almost_identical(result[cos_theta][0], 0.0095746468309887) );
 	REQUIRE( almost_identical(result[cos_theta][1], 0.024487089153493090) );
 	REQUIRE( almost_identical(result[cos_theta][2], 0.017657720374332880) );
+}
+
+TEST_CASE("Contract", "[dirac]")
+{
+	using namespace Feynumeric;
+	Four_Vector p(5., 3., 8., 4.);
+	auto result = CONTRACT_SCALAR(p.contra(mu) * p.co(mu), mu);
+	REQUIRE( result == -64. );
 }
 
 TEST_CASE("Polarisation Sums", "[dirac]")

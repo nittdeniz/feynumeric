@@ -1,3 +1,4 @@
+#include <feynumeric/contract.hpp>
 #include <feynumeric/dirac.hpp>
 #include <feynumeric/particle.hpp>
 #include <feynumeric/qed.hpp>
@@ -51,33 +52,12 @@ double dyson_factor(double p2, double m, int l)
 void init_particles()
 {
     using namespace Feynumeric;
-    //QED::init_vertices();
     QED::init_particles();
     Proton->isospin(Angular_Momentum(0.5, 0.5));
-    Proton->feynman_virtual  = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-    Proton->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-    Proton->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
-
 	Neutron->isospin(Angular_Momentum(0.5, -0.5));
-	Neutron->feynman_virtual  = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-	Neutron->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-	Neutron->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
-
-
     Pi_Zero->isospin(Angular_Momentum(1, 0));
-    Pi_Zero->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Matrix(1,1,1);};
-    Pi_Zero->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Matrix(1,1,1);};
-    Pi_Zero->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Matrix(1,1,1);};
-
 	Pi_Plus->isospin(Angular_Momentum(1, 1));
-	Pi_Plus->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Matrix(1,1,1);};
-	Pi_Plus->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Matrix(1,1,1);};
-	Pi_Plus->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Matrix(1,1,1);};
-
 	Pi_Minus->isospin(Angular_Momentum(1, -1));
-	Pi_Minus->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Matrix(1,1,1);};
-	Pi_Minus->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Matrix(1,1,1);};
-	Pi_Minus->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){return Matrix(1,1,1);};
 
     /********************************************\
 	|*	███    ██  ██ ██   ██ ██   ██  ██████   *|
@@ -88,10 +68,6 @@ void init_particles()
     \********************************************/
 
 	N1440p->parity(1);
-    N1440p->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-    N1440p->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-    N1440p->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
-
     N1440p->user_data("gRNpi", 0.380006);
 	N1440p->user_data("gRNrho", 0.0528755);
 	N1440p->user_data("gRNgamma", 0.0620974);
@@ -114,10 +90,6 @@ void init_particles()
     });
 
 	N1440n->parity(1);
-	N1440n->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-	N1440n->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-	N1440n->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
-
 	N1440n->user_data("gRNpi", 0.379618);
 	N1440n->user_data("gRNrho", 1.);
 	N1440n->user_data("gRneutron_photon", 0.0529588);
@@ -142,10 +114,6 @@ void init_particles()
 	\********************************************/
 
 	N1520p->parity(-1);
-	N1520p->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-	N1520p->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-	N1520p->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
-
 	N1520p->user_data("gRNpi", 1.);
 	N1520p->user_data("gRNrho", 1.);
 	N1520p->isospin(Angular_Momentum(0.5, 0.5));
@@ -156,10 +124,6 @@ void init_particles()
 	N1520p->width([&](double p2){ return N1520p->width();});
 
 	N1520n->parity(-1);
-	N1520n->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-	N1520n->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-	N1520n->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
-
 	N1520n->user_data("gRNpi", 1.);
 	N1520n->user_data("gRNrho", 1.);
 	N1520n->isospin(Angular_Momentum(0.5, -0.5));
@@ -178,10 +142,6 @@ void init_particles()
 	\********************************************/
 
 	N1535p->parity(-1);
-	N1535p->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-	N1535p->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-	N1535p->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
-
 	N1535p->user_data("gRNpi", 1.);
 	N1535p->user_data("gRNrho", 1.);
 	N1535p->isospin(Angular_Momentum(0.5, 0.5));
@@ -192,10 +152,6 @@ void init_particles()
 	N1535p->width([&](double p2){ return N1535p->width();});
 
 	N1535n->parity(-1);
-	N1535n->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-	N1535n->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-	N1535n->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
-
 	N1535n->user_data("gRNpi", 1.);
 	N1535n->user_data("gRNrho", 1.);
 	N1535n->isospin(Angular_Momentum(0.5, -0.5));
@@ -354,6 +310,98 @@ void init_vertices()
 				auto const g = std::any_cast<double>(n1440->particle()->user_data("gRneutron_photon"));
 				auto const m_rho = Rho_Zero->mass();
 				return -g/m_rho * dirac_sigmac(photon->four_momentum(kin), photon->lorentz_indices()[0]);
+			}
+	));
+
+	VMP->add(Feynumeric::Vertex(
+			{
+					{N1520p, Direction::BOTH},
+					{Proton, Direction::BOTH},
+					{Pi_Zero, Direction::BOTH}
+			},
+			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+				using namespace Feynumeric;
+				auto const& R = edges[0];
+				auto const& N = edges[1];
+				auto const& pi = edges[2];
+				auto mu = R->lorentz_indices()[0];
+				auto const& pR = R->four_momentum(kin);
+				auto const& pPi = pi->four_momentum(kin);
+				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
+				auto const m_pi = pi->particle()->mass();
+				auto const isospin = isospin2_2(R, N);
+				return 1.i * isospin * g/(m_pi*m_pi) *
+					CONTRACT_MATRIX(O32c(pR, mu, lambda) * pPi.contra(lambda), lambda) * GA5;
+
+			}
+	));
+
+	VMP->add(Feynumeric::Vertex(
+			{
+					{N1520p, Direction::BOTH},
+					{Neutron, Direction::BOTH},
+					{Pi_Plus, Direction::BOTH}
+			},
+			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+				using namespace Feynumeric;
+				auto const& R = edges[0];
+				auto const& N = edges[1];
+				auto const& pi = edges[2];
+				auto mu = R->lorentz_indices()[0];
+				auto const& pR = R->four_momentum(kin);
+				auto const& pPi = pi->four_momentum(kin);
+				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
+				auto const m_pi = pi->particle()->mass();
+				auto const isospin = isospin2_2(R, N);
+				return 1.i * isospin * g/(m_pi*m_pi) *
+				       CONTRACT_MATRIX(O32c(pR, mu, lambda) * pPi.contra(lambda), lambda) * GA5;
+
+			}
+	));
+
+	VMP->add(Feynumeric::Vertex(
+			{
+					{N1520n, Direction::BOTH},
+					{Proton, Direction::BOTH},
+					{Pi_Minus, Direction::BOTH}
+			},
+			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+				using namespace Feynumeric;
+				auto const& R = edges[0];
+				auto const& N = edges[1];
+				auto const& pi = edges[2];
+				auto mu = R->lorentz_indices()[0];
+				auto const& pR = R->four_momentum(kin);
+				auto const& pPi = pi->four_momentum(kin);
+				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
+				auto const m_pi = pi->particle()->mass();
+				auto const isospin = isospin2_2(R, N);
+				return 1.i * isospin * g/(m_pi*m_pi) *
+				       CONTRACT_MATRIX(O32c(pR, mu, lambda) * pPi.contra(lambda), lambda) * GA5;
+
+			}
+	));
+
+	VMP->add(Feynumeric::Vertex(
+			{
+					{N1520n, Direction::BOTH},
+					{Neutron, Direction::BOTH},
+					{Pi_Zero, Direction::BOTH}
+			},
+			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+				using namespace Feynumeric;
+				auto const& R = edges[0];
+				auto const& N = edges[1];
+				auto const& pi = edges[2];
+				auto mu = R->lorentz_indices()[0];
+				auto const& pR = R->four_momentum(kin);
+				auto const& pPi = pi->four_momentum(kin);
+				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
+				auto const m_pi = pi->particle()->mass();
+				auto const isospin = isospin2_2(R, N);
+				return 1.i * isospin * g/(m_pi*m_pi) *
+				       CONTRACT_MATRIX(O32c(pR, mu, lambda) * pPi.contra(lambda), lambda) * GA5;
+
 			}
 	));
 }

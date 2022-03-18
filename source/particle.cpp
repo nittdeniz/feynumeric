@@ -1,3 +1,5 @@
+#include "feynman_graph.hpp"
+#include "dirac.hpp"
 #include "particle.hpp"
 
 namespace Feynumeric
@@ -27,14 +29,28 @@ namespace Feynumeric
     		_lepton_number = sign * 1.;
 	    }
 
-    	if( is_set(type, Type::Fermion) && !_spin.is_half_odd_integer() )
+	    feynman_virtual  = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
+
+    	if( is_set(type, Type::Fermion) )
 	    {
-    		critical_error(FORMAT("Particle {} is classified as a fermion but has spin {}.", _name, _spin.j()));
+    		if( !_spin.is_half_odd_integer() )
+    		{
+			    critical_error(FORMAT("Particle {} is classified as a fermion but has spin {}.", _name, _spin.j()));
+		    }
+
+		    feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
+		    feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
 	    }
-    	if( type & Type::Boson && _spin.is_half_odd_integer() )
+    	if( type & Type::Boson )
 	    {
-    		critical_error(FORMAT("Particle {} is classified as a boson but has spin {}.", _name, _spin.j()));
+    		if( _spin.is_half_odd_integer() )
+		    {
+			    critical_error(FORMAT("Particle {} is classified as a boson but has spin {}.", _name, _spin.j()));
+		    }
+		    feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon(e, kin); };
+		    feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon_star(e, kin); };
 	    }
+
     }
 
 	Particle::Particle(Particle const& copy)
@@ -50,24 +66,30 @@ namespace Feynumeric
 	, _baryon_number(copy._baryon_number)
 	, _lepton_number(copy._lepton_number)
 	, _user_data(copy._user_data)
+	, feynman_outgoing(copy.feynman_outgoing)
+	, feynman_incoming(copy.feynman_incoming)
+	, feynman_virtual(copy.feynman_virtual)
 	{
 
 	}
 
 	Particle& Particle::operator=(Particle const& copy)
 	{
-		_name           = copy._name;
-		_type           = copy._type;
-		_mass           = copy._mass;
-		_charge         = copy._charge;
-		_spin           = copy._spin;
-		_isospin        = copy._isospin;
-		_parity         = copy._parity;
-		_width_function = copy._width_function;
-		_width          = copy._width;
-		_baryon_number  = copy._baryon_number;
-		_lepton_number  = copy._lepton_number;
-		_user_data      = copy._user_data;
+		_name            = copy._name;
+		_type            = copy._type;
+		_mass            = copy._mass;
+		_charge          = copy._charge;
+		_spin            = copy._spin;
+		_isospin         = copy._isospin;
+		_parity          = copy._parity;
+		_width_function  = copy._width_function;
+		_width           = copy._width;
+		_baryon_number   = copy._baryon_number;
+		_lepton_number   = copy._lepton_number;
+		_user_data       = copy._user_data;
+		feynman_outgoing = copy.feynman_outgoing;
+		feynman_incoming = copy.feynman_incoming;
+		feynman_virtual  = copy.feynman_virtual;
 		return *this;
 	}
 

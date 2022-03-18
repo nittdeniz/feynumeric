@@ -34,11 +34,11 @@ namespace Feynumeric
 	Matrix dirac_sigmac(Four_Vector const& p, Lorentz_Index_Ptr nu);
 
 
-//	Complex FV(Matrix const& a, Lorentz_Index_Ptr mu);
-//	Complex FV(Four_Vector const& p, Lorentz_Index_Ptr mu);
-//	Complex FVC(Matrix const& a, Lorentz_Index_Ptr mu);
-//	Complex FVC(Four_Vector const& p, Lorentz_Index_Ptr nu);
 
+
+	Matrix O32(Four_Vector const& p, Lorentz_Index_Ptr const& mu, Lorentz_Index_Ptr const& lambda);
+	Matrix O32c(Four_Vector const& p, Lorentz_Index_Ptr const& mu, Lorentz_Index_Ptr const& lambda);
+	Matrix O(Angular_Momentum_Ptr const& s, Four_Vector const& p, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
 
     Matrix u(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
     Matrix u(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);

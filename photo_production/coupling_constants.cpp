@@ -108,6 +108,7 @@ int main()
 		std::cout << "g(N1440p -> proton + photon): " << std::sqrt(literature_value1 / w1) << "\n";
 		std::cout << "g(N1440n -> neutron + photon): " << std::sqrt(literature_value2 / w2) << "\n";
 	}
+
 	/********************************************\
 	|*	███    ██  ██ ███████ ██████   ██████   *|
 	|*	████   ██ ███ ██           ██ ██  ████  *|
@@ -163,9 +164,11 @@ int main()
 		double const literature_value2 = N1520n->width() * ( N1520n->user_data<long double>("branching_N_pi_upper") +
 		                                                     N1520n->user_data<long double>("branching_N_pi_lower")) / 2.;
 
+
 		std::cout << "g(N1520p -> N + pi): " << std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
 		std::cout << "g(N1520n -> N + pi): " << std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
 	}
+	/*
 	// coupling constant N1520 to N gamma
 	{
 		N1440p->user_data("gRNpi", 1.);
@@ -200,8 +203,9 @@ int main()
 		                                                     N1440p->user_data<long double>("branching_proton_photon_lower")) / 2.;
 		double const literature_value2 = N1440n->width() * ( N1440n->user_data<long double>("branching_neutron_photon_upper") +
 		                                                     N1440n->user_data<long double>("branching_neutron_photon_lower")) / 2.;
-		std::cout << "g(N1440p -> proton + photon): " << std::sqrt(literature_value1 / w1) << "\n";
-		std::cout << "g(N1440n -> neutron + photon): " << std::sqrt(literature_value2 / w2) << "\n";
+		std::cout << "g(N1520p -> proton + photon): " << std::sqrt(literature_value1 / w1) << "\n";
+		std::cout << "g(N1520n -> neutron + photon): " << std::sqrt(literature_value2 / w2) << "\n";
 	}
+	 */
 	return EXIT_SUCCESS;
 }

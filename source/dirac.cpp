@@ -235,7 +235,82 @@ namespace Feynumeric
 	    return result;
     }
 
-    Matrix epsilon(Particle_Ptr const& P, const Four_Vector &pp, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
+    Matrix O32(Four_Vector const& p, Lorentz_Index_Ptr const& mu, Lorentz_Index_Ptr const& lambda)
+	{
+		return p.contra(mu) * GA[*(lambda)] - GS(p) * MT[*mu][*lambda];
+	}
+
+	Matrix O32c(Four_Vector const& p, Lorentz_Index_Ptr const& mu, Lorentz_Index_Ptr const& lambda)
+	{
+		return p.co(mu) * GAC[*(lambda)] - GS(p) * MT[*mu][*lambda];
+	}
+
+	Matrix O(Angular_Momentum_Ptr const& s, Four_Vector const& p, std::vector<Lorentz_Index_Ptr> const& mu, std::vector<Lorentz_Index_Ptr> lambda)
+	{
+		if( mu.size() != lambda.size() )
+		{
+			critical_error("Projector 0 requires indices mu and lambda to have same length.");
+		}
+		if( s->j()-0.5 != mu.size() )
+		{
+			critical_error(FORMAT("Projector O with spin {} requires {} indices but {} were given.", s->j(), s->j()-0.5, mu.size()));
+		}
+
+		Matrix result(4, 4);
+		// since the whole projector is symmetric, we sort the indices so we can use std::next_permutation
+		std::vector<std::vector<Lorentz_Index_Ptr>> permutations;
+		std::size_t const n = constexpr_factorial(lambda.size());
+		permutations.reserve(n);
+		do{
+			permutations.push_back(lambda);
+		} while( std::next_permutation(lambda.begin(), lambda.end()) );
+
+		for( auto const& permutation : permutations )
+		{
+			Matrix temp(4, 4, 1);
+			for( std::size_t i = 0; i < lambda.size(); ++i )
+			{
+				temp *= O32(p, mu[i], permutation[i]);
+			}
+			result += temp;
+		}
+		return result;
+	}
+
+	Matrix Oc(Angular_Momentum_Ptr const& s, Four_Vector const& p, std::vector<Lorentz_Index_Ptr> const& mu, std::vector<Lorentz_Index_Ptr> lambda)
+	{
+		if( mu.size() != lambda.size() )
+		{
+			critical_error("Projector 0 requires indices mu and lambda to have same length.");
+		}
+		if( s->j()-0.5 != mu.size() )
+		{
+			critical_error(FORMAT("Projector O with spin {} requires {} indices but {} were given.", s->j(), s->j()-0.5, mu.size()));
+		}
+
+		Matrix result(4, 4);
+		// since the whole projector is symmetric, we sort the indices so we can use std::next_permutation
+		std::vector<std::vector<Lorentz_Index_Ptr>> permutations;
+		std::size_t const n = constexpr_factorial(lambda.size());
+		permutations.reserve(n);
+		do{
+			permutations.push_back(lambda);
+		} while( std::next_permutation(lambda.begin(), lambda.end()) );
+
+		for( auto const& permutation : permutations )
+		{
+			Matrix temp(4, 4, 1);
+			for( std::size_t i = 0; i < lambda.size(); ++i )
+			{
+				temp *= O32c(p, mu[i], permutation[i]);
+			}
+			result += temp;
+		}
+		return result;
+	}
+
+
+	Matrix epsilon(Particle_Ptr const& P, const Four_Vector &pp, Angular_Momentum_Ptr s, const std::vector<Lorentz_Index_Ptr> &lorentz_indices)
     {
 		Four_Vector const p = pp.E().real() > 0 ? pp : -pp;
         if( s->j() == 0 )

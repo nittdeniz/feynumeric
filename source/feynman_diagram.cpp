@@ -23,11 +23,8 @@ namespace Feynumeric
 	void Feynman_Diagram::add_spin(Feynman_Graph::Edge_Ptr const& edge_ptr)
 	{
 		auto const& spin = edge_ptr->particle()->spin();
-		if( spin.j() > 0 )
-		{
-			_spins.push_back(std::make_shared<Angular_Momentum>(spin));
-			edge_ptr->spin(_spins.back());
-		}
+		_spins.push_back(std::make_shared<Angular_Momentum>(spin));
+		edge_ptr->spin(_spins.back());
 	}
 
 	std::string const& Feynman_Diagram::name() const

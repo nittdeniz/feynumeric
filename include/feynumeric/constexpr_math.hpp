@@ -44,6 +44,8 @@ namespace Feynumeric
                : constexpr_sqrt(x, 0.5 * (curr + x / curr), curr);
     }
 
+
+
     constexpr double constexpr_sqrt(double x)
     {
         return x >= 0 && x < std::numeric_limits<double>::infinity()
