@@ -201,9 +201,9 @@ void init_vertices()
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1440p, Direction::BOTH},
-					{Proton, Direction::BOTH},
-					{Pi_Zero,   Direction::BOTH}
+					{N1440p, Direction::ANY},
+					{Proton, Direction::ANY},
+					{Pi_Zero,   Direction::ANY}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 
@@ -221,9 +221,9 @@ void init_vertices()
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1440p, Direction::BOTH},
-					{Neutron, Direction::BOTH},
-					{Pi_Plus,   Direction::BOTH}
+					{N1440p, Direction::ANY},
+					{Neutron, Direction::ANY},
+					{Pi_Plus,   Direction::ANY}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 
@@ -241,9 +241,9 @@ void init_vertices()
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1440n, Direction::BOTH},
-					{Neutron, Direction::BOTH},
-					{Pi_Zero,   Direction::BOTH}
+					{N1440n, Direction::ANY},
+					{Neutron, Direction::ANY},
+					{Pi_Zero,   Direction::ANY}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 
@@ -261,9 +261,9 @@ void init_vertices()
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1440n, Direction::BOTH},
-					{Proton, Direction::BOTH},
-					{Pi_Minus,   Direction::BOTH}
+					{N1440n, Direction::ANY},
+					{Proton, Direction::ANY},
+					{Pi_Minus,   Direction::ANY}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 
@@ -283,9 +283,9 @@ void init_vertices()
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1440p, Direction::BOTH},
-					{Proton, Direction::BOTH},
-					{Feynumeric::QED::Photon, Direction::BOTH}
+					{N1440p, Direction::ANY},
+					{Proton, Direction::ANY},
+					{Feynumeric::QED::Photon, Direction::ANY}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 				using namespace Feynumeric;
@@ -299,9 +299,9 @@ void init_vertices()
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1440n, Direction::BOTH},
-					{Neutron, Direction::BOTH},
-					{Feynumeric::QED::Photon, Direction::BOTH}
+					{N1440n, Direction::ANY},
+					{Neutron, Direction::ANY},
+					{Feynumeric::QED::Photon, Direction::ANY}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 				using namespace Feynumeric;
@@ -315,9 +315,9 @@ void init_vertices()
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1520p, Direction::BOTH},
-					{Proton, Direction::BOTH},
-					{Pi_Zero, Direction::BOTH}
+					{N1520p, Direction::ANY},
+					{Proton, Direction::ANY},
+					{Pi_Zero, Direction::ANY}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 				using namespace Feynumeric;
@@ -338,9 +338,9 @@ void init_vertices()
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1520p, Direction::BOTH},
-					{Neutron, Direction::BOTH},
-					{Pi_Plus, Direction::BOTH}
+					{N1520p, Direction::ANY},
+					{Neutron, Direction::ANY},
+					{Pi_Plus, Direction::ANY}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 				using namespace Feynumeric;
@@ -361,9 +361,9 @@ void init_vertices()
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1520n, Direction::BOTH},
-					{Proton, Direction::BOTH},
-					{Pi_Minus, Direction::BOTH}
+					{N1520n, Direction::ANY},
+					{Proton, Direction::ANY},
+					{Pi_Minus, Direction::ANY}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 				using namespace Feynumeric;
@@ -384,9 +384,9 @@ void init_vertices()
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1520n, Direction::BOTH},
-					{Neutron, Direction::BOTH},
-					{Pi_Zero, Direction::BOTH}
+					{N1520n, Direction::ANY},
+					{Neutron, Direction::ANY},
+					{Pi_Zero, Direction::ANY}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 				using namespace Feynumeric;

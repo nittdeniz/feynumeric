@@ -55,9 +55,9 @@ namespace Feynumeric
 			using namespace Feynumeric::Units;
 			VMP->add(Feynumeric::Vertex(
 					{
-							{Electron, Direction::BOTH},
-							{Electron, Direction::BOTH},
-							{Photon,   Direction::BOTH}
+							{Electron, Direction::ANY},
+							{Electron, Direction::ANY},
+							{Photon,   Direction::ANY}
 					},
 					[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 						auto const& photon = edges[2];
@@ -66,9 +66,9 @@ namespace Feynumeric
 			));
 			VMP->add(Feynumeric::Vertex(
 					{
-							{Electron, Direction::BOTH},
-							{Positron, Direction::BOTH},
-							{Photon,   Direction::BOTH}
+							{Electron, Direction::ANY},
+							{Positron, Direction::ANY},
+							{Photon,   Direction::ANY}
 					},
 					[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 						auto const& photon = edges[2];
@@ -77,9 +77,9 @@ namespace Feynumeric
 			));
 			VMP->add(Feynumeric::Vertex(
 					{
-							{Positron, Direction::BOTH},
-							{Positron, Direction::BOTH},
-							{Photon,   Direction::BOTH}
+							{Positron, Direction::ANY},
+							{Positron, Direction::ANY},
+							{Photon,   Direction::ANY}
 					},
 					[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 						auto const& photon = edges[2];
@@ -90,9 +90,9 @@ namespace Feynumeric
 
 			VMP->add(Feynumeric::Vertex(
 					{
-							{Muon_Minus, Direction::BOTH},
-							{Muon_Minus, Direction::BOTH},
-							{Photon,     Direction::BOTH}
+							{Muon_Minus, Direction::ANY},
+							{Muon_Minus, Direction::ANY},
+							{Photon,     Direction::ANY}
 					},
 					[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 						auto const& photon = edges[2];
@@ -101,9 +101,9 @@ namespace Feynumeric
 			);
 			VMP->add(Feynumeric::Vertex(
 					{
-							{Muon_Minus, Direction::BOTH},
-							{Muon_Plus,  Direction::BOTH},
-							{Photon,     Direction::BOTH}
+							{Muon_Minus, Direction::ANY},
+							{Muon_Plus,  Direction::ANY},
+							{Photon,     Direction::ANY}
 					},
 					[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
 						auto const& photon = edges[2];

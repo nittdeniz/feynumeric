@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "feynumeric/angular_momentum.hpp"
+#include "feynumeric/format.hpp"
 #include "feynumeric/messages.hpp"
 
 namespace Feynumeric
@@ -10,10 +11,14 @@ namespace Feynumeric
     , _m(m)
     , _massless(massless)
     {
-        if( !is_valid_spin(j) || !is_valid_spin(std::abs(m)) )
+        if( !is_valid_spin(j) )
         {
         	critical_error("Angular Momentum is not of the form n/2 (int n >= 0)");
         }
+		if( static_cast<int>(j-m) != j-m )
+		{
+			critical_error(FORMAT("m must be within the integer interval -j <= m <= j. Given: {}", m));
+		}
         if( std::abs(m) > j )
         {
             critical_error("|m| > j in Angular Momentum.");
@@ -27,9 +32,7 @@ namespace Feynumeric
 	Angular_Momentum::Angular_Momentum(const Angular_Momentum& J)
 	: _j(J._j)
 	, _m(J._m)
-	, _massless(J._massless)
-	{
-
+	, _massless(J._massless){
 	}
 
 	Angular_Momentum& Angular_Momentum::operator=(const Angular_Momentum& J){

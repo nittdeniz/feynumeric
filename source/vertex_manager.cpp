@@ -25,7 +25,7 @@ namespace Feynumeric
 	{
 		for( std::size_t i = 0; i < vertex._particle_directions.size(); ++i )
 		{
-			if( vertex._particle_directions[i].direction == Direction::BOTH )
+			if( vertex._particle_directions[i].direction == Direction::ANY )
 			{
 				Vertex v1(vertex);
 				v1._particle_directions[i].direction = Direction::INCOMING;

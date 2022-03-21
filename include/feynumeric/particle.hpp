@@ -59,13 +59,17 @@ namespace Feynumeric
         int _parity;
         std::function<double(double)> _width_function;
         double _width;
+        bool _is_group;
 
         double _baryon_number;
         double _lepton_number;
 
+        Particle_Ptr _parent;
+
         std::map<std::string, std::any> _user_data;
 
     public:
+    	Particle() = default;
         Particle(std::string&& name, Type type, double mass = 0., double width = 0., double charge = 0., double spin = 0.);
         Particle(Particle const& copy);
         Particle& operator=(Particle const& copy);
@@ -78,6 +82,8 @@ namespace Feynumeric
 
         void isospin(Angular_Momentum const& i);
 
+        void copy_parameters(Particle const& other);
+
         double width() const;
         double width(double p2) const;
         void width(std::function<double(double)> f);
@@ -85,8 +91,13 @@ namespace Feynumeric
         double baryon_number() const;
         double lepton_number() const;
 
+        void is_group(bool b);
+        bool is_group() const;
+
         void baryon_number(double n);
         void lepton_number(double n);
+
+        Particle_Ptr parent() const;
 
         void parity(int p);
         int parity() const;
@@ -118,6 +129,7 @@ namespace Feynumeric
         void user_data(std::string key, std::any data);
 
         friend std::ostream& operator<<(std::ostream&, Particle const& p);
+        friend class Particle_Manager;
     };
 
     inline uint64_t operator&(Particle::Type const& a, Particle::Type const& b)

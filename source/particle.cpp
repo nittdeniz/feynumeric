@@ -63,8 +63,10 @@ namespace Feynumeric
 	, _parity(copy._parity)
 	, _width_function(copy._width_function)
 	, _width(copy._width)
+	, _is_group(copy._is_group)
 	, _baryon_number(copy._baryon_number)
 	, _lepton_number(copy._lepton_number)
+	, _parent(copy._parent)
 	, _user_data(copy._user_data)
 	, feynman_outgoing(copy.feynman_outgoing)
 	, feynman_incoming(copy.feynman_incoming)
@@ -75,21 +77,9 @@ namespace Feynumeric
 
 	Particle& Particle::operator=(Particle const& copy)
 	{
-		_name            = copy._name;
-		_type            = copy._type;
-		_mass            = copy._mass;
-		_charge          = copy._charge;
-		_spin            = copy._spin;
-		_isospin         = copy._isospin;
-		_parity          = copy._parity;
-		_width_function  = copy._width_function;
-		_width           = copy._width;
-		_baryon_number   = copy._baryon_number;
-		_lepton_number   = copy._lepton_number;
-		_user_data       = copy._user_data;
-		feynman_outgoing = copy.feynman_outgoing;
-		feynman_incoming = copy.feynman_incoming;
-		feynman_virtual  = copy.feynman_virtual;
+		_name   = copy._name;
+		_parent = copy._parent;
+		copy_parameters(copy);
 		return *this;
 	}
 
@@ -115,6 +105,35 @@ namespace Feynumeric
 	void Particle::width(std::function<double(double)> f)
 	{
 		_width_function = f;
+	}
+
+	void Particle::is_group(bool b)
+	{
+		_is_group = b;
+	}
+
+	bool Particle::is_group() const
+	{
+		return _is_group;
+	}
+
+	void Particle::copy_parameters(Particle const& copy)
+	{
+		_type            = copy._type;
+		_mass            = copy._mass;
+		_charge          = copy._charge;
+		_spin            = copy._spin;
+		_isospin         = copy._isospin;
+		_parity          = copy._parity;
+		_width_function  = copy._width_function;
+		_width           = copy._width;
+		_is_group        = copy._is_group;
+		_baryon_number   = copy._baryon_number;
+		_lepton_number   = copy._lepton_number;
+		_user_data       = copy._user_data;
+		feynman_outgoing = copy.feynman_outgoing;
+		feynman_incoming = copy.feynman_incoming;
+		feynman_virtual  = copy.feynman_virtual;
 	}
 
 	std::any Particle::user_data(std::string key) const

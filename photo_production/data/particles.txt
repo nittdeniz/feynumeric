@@ -1,0 +1,24 @@
+@group N12p
+type Baryon
+spin 1/2
+parity 1
+
+@group N12m
+type Baryon
+spin 1/2
+parity -1
+
+@group N1440
+group N12p
+mass 1.44GeV
+width 350MeV
+
+@particle N1440p
+group N1440
+charge 1
+isospin 1/2 1/2
+
+@particle N1440n
+group N1440
+charge 0
+isospin 1/2 -1/2

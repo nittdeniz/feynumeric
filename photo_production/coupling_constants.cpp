@@ -1,14 +1,22 @@
 #include <feynumeric/core.hpp>
 #include <feynumeric/qed.hpp>
+#include <feynumeric/particle_manager.hpp>
 
 #include "effective_lagrangian_model.hpp"
 
 #include <iostream>
 
-int main()
+
+int main(int argc, char** argv)
 {
 	using namespace Feynumeric;
 	using namespace Feynumeric::Units;
+
+	if( argc != 2 )
+	{
+		critical_error("Program expects filename as a single and only argument.");
+	}
+	Particle_Manager PM(std::string(argv[1]));
 
 	init_particles();
 	init_vertices();

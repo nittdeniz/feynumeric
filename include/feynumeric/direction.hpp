@@ -9,7 +9,7 @@ namespace Feynumeric
 	{
 		INCOMING = 0x1,
 		OUTGOING = 0x2,
-		BOTH     = 0x3,
+		ANY      = 0x3,
 		VIRTUAL  = 0x4
 	};
 
@@ -36,7 +36,7 @@ namespace Feynumeric
 				return "incoming";
 			case Direction::OUTGOING:
 				return "outgoing";
-			case Direction::BOTH:
+			case Direction::ANY:
 				return "external";
 			case Direction::VIRTUAL:
 				return "virtual";
