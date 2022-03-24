@@ -84,6 +84,8 @@ namespace Feynumeric
 
         void copy_parameters(Particle const& other);
 
+        void validate() const;
+
         double width() const;
         double width(double p2) const;
         void width(std::function<double(double)> f);
@@ -96,6 +98,8 @@ namespace Feynumeric
 
         void baryon_number(double n);
         void lepton_number(double n);
+
+        void set_type(Type const& type);
 
         Particle_Ptr parent() const;
 

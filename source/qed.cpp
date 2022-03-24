@@ -51,6 +51,7 @@ namespace Feynumeric
 
 		void init_vertices()
 		{
+			/*
 			using Feynumeric::Direction;
 			using namespace Feynumeric::Units;
 			VMP->add(Feynumeric::Vertex(
@@ -110,6 +111,7 @@ namespace Feynumeric
 						return 1._e * Feynumeric::GAC[*( photon->lorentz_indices()[0] )];
 					})
 			);
+			 */
 		}
 	}
 }

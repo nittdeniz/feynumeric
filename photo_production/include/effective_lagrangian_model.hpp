@@ -2,8 +2,9 @@
 #define PARTICLES_HPP
 
 #include <feynumeric/particle.hpp>
+#include <feynumeric/particle_manager.hpp>
 #include <feynumeric/vertex_manager.hpp>
-
+/*
 // Mesons
 extern Feynumeric::Particle_Ptr Pi_Zero;
 extern Feynumeric::Particle_Ptr Pi_Minus;
@@ -67,11 +68,13 @@ extern Feynumeric::Particle_Ptr D1232n;
 extern Feynumeric::Particle_Ptr D1232m;
 
 //
+ */
 extern Feynumeric::Vertex_Manager_Ptr VMP;
 
 
 //
 void init_particles();
-void init_vertices();
+void init_vertices(Feynumeric::Particle_Manager const& P);
 //
+
 #endif // PARTICLES_HPP

@@ -51,49 +51,12 @@ namespace Feynumeric
 		return *this;
 	}
 
-	bool canonical_sort(Vertex::Particle_Direction const& a, Vertex::Particle_Direction const& b)
+	bool operator<(Vertex::Particle_Direction const& a, Vertex::Particle_Direction const& b)
 	{
 		if( a.particle->name() == b.particle->name() )
 		{
 			return a.direction < b.direction;
 		}
 		return a.particle->name() < b.particle->name();
-	}
-
-	std::size_t canonical_hash(std::vector<Vertex::Particle_Direction> copy)
-	{
-		std::sort(copy.begin(), copy.end(), canonical_sort);
-		std::stringstream stream;
-		for( auto const& item : copy )
-		{
-			stream << item.particle->name() << item.direction;
-		}
-		auto str = stream.str();
-		return std::hash<std::string>{}(str);
-	}
-
-	Particle_List Vertex::sort(Particle_List list, Feynman_Graph::Vertex_Ptr vertex)
-	{
-		Particle_List result;
-		result.reserve(list.size());
-		for( auto const& item : _particle_directions )
-		{
-			bool found = false;
-			for( auto it = list.begin(); it != list.end(); it++ ){
-				auto direction = (*it)->front() == vertex ? Direction::INCOMING : Direction::OUTGOING;
-				if( item.particle == (*it)->particle() && item.direction == direction )
-				{
-					found = true;
-					result.push_back(*it);
-					list.erase(it);
-					break;
-				}
-			}
-			if( !found )
-			{
-				critical_error("Could not find corresponding edge at vertex.");
-			}
-		}
-		return result;
 	}
 }

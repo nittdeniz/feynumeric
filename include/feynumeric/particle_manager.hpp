@@ -17,7 +17,9 @@ namespace Feynumeric
 		Particle_Manager(Particle_Manager const& copy);
 		Particle_Manager& operator=(Particle_Manager const& copy);
 
-		Particle_Ptr  operator[](std::string const& key) const;
+		Particle_Ptr get(std::string&& key) const;
+
+		Particle_Ptr const& operator[](std::string const& key) const;
 		Particle_Ptr& operator[](std::string const& key);
 	};
 }

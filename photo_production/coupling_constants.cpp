@@ -16,10 +16,16 @@ int main(int argc, char** argv)
 	{
 		critical_error("Program expects filename as a single and only argument.");
 	}
-	Particle_Manager PM(std::string(argv[1]));
-
-	init_particles();
-	init_vertices();
+	Particle_Manager P((std::string(argv[1])));
+	Particle_Ptr const& N1440p   = P.get("N1440p");
+	Particle_Ptr const& N1440n   = P.get("N1440n");
+	Particle_Ptr const& N1520p   = P.get("N1520p");
+	Particle_Ptr const& N1520n   = P.get("N1520n");
+	Particle_Ptr const& Proton   = P.get("proton");
+	Particle_Ptr const& Neutron  = P.get("neutron");
+	Particle_Ptr const& Pi_Plus  = P.get("pi+");
+	Particle_Ptr const& Pi_Minus = P.get("pi-");
+	Particle_Ptr const& Pi_Zero  = P.get("pi0");
 
 	/********************************************\
 	|*	███    ██  ██ ██   ██ ██   ██  ██████   *|
@@ -46,6 +52,7 @@ int main(int argc, char** argv)
 		                                            {},
 		                                            {Neutron, Pi_Plus}
 		);
+
 
 		auto channel_decay_n1440n1 = create_diagram("decay_n1440n to neutron pi0", Wrench, VMP,
 		                                            {N1440n},
@@ -79,6 +86,7 @@ int main(int argc, char** argv)
 		std::cout << "g(N1440p -> N + pi): " << std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
 		std::cout << "g(N1440n -> N + pi): " << std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
 	}
+
 	// coupling constant N1440 to N gamma
 	{
 		N1440p->user_data("gRNpi", 1.);
@@ -116,7 +124,7 @@ int main(int argc, char** argv)
 		std::cout << "g(N1440p -> proton + photon): " << std::sqrt(literature_value1 / w1) << "\n";
 		std::cout << "g(N1440n -> neutron + photon): " << std::sqrt(literature_value2 / w2) << "\n";
 	}
-
+	*/
 	/********************************************\
 	|*	███    ██  ██ ███████ ██████   ██████   *|
 	|*	████   ██ ███ ██           ██ ██  ████  *|
@@ -124,6 +132,7 @@ int main(int argc, char** argv)
 	|*	██  ██ ██  ██      ██ ██      ████  ██  *|
 	|*	██   ████  ██ ███████ ███████  ██████   *|
 	\********************************************/
+
 	// coupling constant N1520 to N pi
 	{
 		N1520p->user_data("gRNpi", 1.);
@@ -176,6 +185,7 @@ int main(int argc, char** argv)
 		std::cout << "g(N1520p -> N + pi): " << std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
 		std::cout << "g(N1520n -> N + pi): " << std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
 	}
+	*/
 	/*
 	// coupling constant N1520 to N gamma
 	{

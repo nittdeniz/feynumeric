@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <map>
 
 namespace Feynumeric
 {
@@ -35,7 +36,7 @@ namespace Feynumeric
 					break;
 				}
 			}
-			double      value = std::stod(std::string(str.begin(), str.begin()+pos));
+			double value = std::stod(std::string(str.begin(), str.begin()+pos));
 			std::string unit  = std::string(str.begin()+pos, str.end());
 			std::transform(unit.begin(), unit.end(), unit.begin(), [](unsigned char c){ return std::tolower(c);});
 			if( unit == "ev"  ) return value * 1._eV;
@@ -112,7 +113,34 @@ namespace Feynumeric
 					if( input == "mass" ){
 						particle._mass = parse_unit(std::move(temp));
 					} else if( input == "type" ){
-
+						static const std::map<std::string, Particle::Type> types{{
+								{"TrueParticle", Particle::Type::TrueParticle},
+								{"AntiParticle", Particle::Type::AntiParticle},
+								{"NeutralParticle", Particle::Type::NeutralParticle},
+								{"Boson", Particle::Type::Boson},
+								{"TrueBoson", Particle::Type::TrueBoson},
+								{"AntiBoson", Particle::Type::AntiBoson},
+								{"NeutralBoson", Particle::Type::NeutralBoson},
+								{"Fermion", Particle::Type::Fermion},
+								{"TrueFermion", Particle::Type::TrueFermion},
+								{"AntiFermion", Particle::Type::AntiFermion},
+								{"NeutralFermion", Particle::Type::NeutralFermion},
+								{"Lepton", Particle::Type::Lepton},
+								{"TrueLepton", Particle::Type::TrueLepton},
+								{"AntiLepton", Particle::Type::AntiLepton},
+								{"Meson", Particle::Type::Meson},
+								{"TrueMeson", Particle::Type::TrueMeson},
+								{"AntiMeson", Particle::Type::AntiMeson},
+								{"NeutralMeson", Particle::Type::NeutralMeson},
+								{"Baryon", Particle::Type::Baryon},
+								{"TrueBaryon", Particle::Type::TrueBaryon},
+								{"AntiBaryon", Particle::Type::AntiBaryon},
+						}};
+						if( types.contains(temp) ){
+							particle.set_type(types.at(temp));
+						}else{
+							critical_error(FORMAT("Unknown type: {}.", temp));
+						}
 					} else if( input == "spin" ){
 						double j = parse_fraction(std::move(temp));
 						particle._spin = Angular_Momentum(j, j);
@@ -128,8 +156,7 @@ namespace Feynumeric
 					}else if( input == "charge" ){
 						particle._charge = std::stod(temp);
 					} else if( input == "group" ){
-						if( !_particles.contains(temp) )
-						{
+						if( !_particles.contains(temp) ){
 							critical_error(FORMAT("Group {} must be defined before using it.", temp));
 						}
 						particle.copy_parameters(*_particles[temp]);
@@ -172,7 +199,12 @@ namespace Feynumeric
 		return *this;
 	}
 
-	Particle_Ptr Particle_Manager::operator[](std::string const& key) const
+	Particle_Ptr Particle_Manager::get(std::string&& key) const
+	{
+		return _particles.at(std::move(key));
+	}
+
+	Particle_Ptr const& Particle_Manager::operator[](std::string const& key) const
 	{
 		return _particles.at(key);
 	}

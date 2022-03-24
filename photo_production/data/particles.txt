@@ -1,11 +1,38 @@
+@group N
+type TrueBaryon
+spin 1/2
+parity 1
+
+@particle proton
+group N
+charge 1
+mass 940MeV
+isospin 1/2 1/2
+
+@particle neutron
+group N
+charge 0
+mass 940MeV
+isospin 1/2 -1/2
+
 @group N12p
-type Baryon
+type TrueBaryon
 spin 1/2
 parity 1
 
 @group N12m
-type Baryon
+type TrueBaryon
 spin 1/2
+parity -1
+
+@group N32p
+type TrueBaryon
+spin 3/2
+parity 1
+
+@group N32m
+type TrueBaryon
+spin 3/2
 parity -1
 
 @group N1440
@@ -22,3 +49,40 @@ isospin 1/2 1/2
 group N1440
 charge 0
 isospin 1/2 -1/2
+
+@group N1520
+group N32m
+mass 1.515GeV
+width 150MeV
+
+@particle N1520p
+group N1520
+charge 1
+isospin 1/2 1/2
+
+@particle N1520n
+group N1520
+charge 0
+isospin 1/2 -1/2
+
+@group Pion
+type Meson
+spin 0
+
+@particle pi+
+type AntiMeson
+charge 1
+isospin 1 1
+mass 140MeV
+
+@particle pi-
+type TrueMeson
+charge -1
+isospin 1 -1
+mass 140MeV
+
+@particle pi0
+type NeutralMeson
+charge 0
+isospin 1 0
+mass 140MeV

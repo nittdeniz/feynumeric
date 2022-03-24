@@ -6,7 +6,6 @@ namespace Feynumeric
 {
     Particle::Particle(std::string&& name, Type type, double mass, double width, double charge, double spin)
     : _name(std::move(name))
-    , _type(type)
     , _mass(mass)
     , _charge(charge)
     , _spin(spin, spin, mass==0)
@@ -14,43 +13,7 @@ namespace Feynumeric
     , _baryon_number(0)
     , _lepton_number(0)
     {
-    	int sign;
-    	if( is_set(type, Type::TrueParticle) ) sign = 1;
-    	else if( is_set(type, Type::AntiParticle) ) sign = -1;
-    	else if( is_set(type, Type::NeutralParticle) ) sign = 0;
-    	else{ warning("Particle type does not contain valid type (Neither True, Anti nor Neutral)"); sign = -666;}
-
-    	if( is_set(type, Type::Baryon) )
-	    {
-			_baryon_number = sign * 1.;
-	    }
-    	if( is_set(type, Type::Lepton) )
-	    {
-    		_lepton_number = sign * 1.;
-	    }
-
-	    feynman_virtual  = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-
-    	if( is_set(type, Type::Fermion) )
-	    {
-    		if( !_spin.is_half_odd_integer() )
-    		{
-			    critical_error(FORMAT("Particle {} is classified as a fermion but has spin {}.", _name, _spin.j()));
-		    }
-
-		    feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-		    feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
-	    }
-    	if( type & Type::Boson )
-	    {
-    		if( _spin.is_half_odd_integer() )
-		    {
-			    critical_error(FORMAT("Particle {} is classified as a boson but has spin {}.", _name, _spin.j()));
-		    }
-		    feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon(e, kin); };
-		    feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon_star(e, kin); };
-	    }
-
+    	set_type(type);
     }
 
 	Particle::Particle(Particle const& copy)
@@ -136,6 +99,43 @@ namespace Feynumeric
 		feynman_virtual  = copy.feynman_virtual;
 	}
 
+	void Particle::set_type(Particle::Type const& type)
+	{
+    	_type = type;
+		int sign{};
+		if( is_set(type, Type::TrueParticle) ) sign = 1;
+		else if( is_set(type, Type::AntiParticle) ) sign = -1;
+		else if( is_set(type, Type::NeutralParticle) ) sign = 0;
+		else if( !_is_group ){ warning("Particle type does not contain valid type (Neither True, Anti nor Neutral)"); sign = -666;}
+		if( is_set(type, Type::Baryon) )
+		{
+			_baryon_number = sign * 1.;
+		}
+		if( is_set(type, Type::Lepton) )
+		{
+			_lepton_number = sign * 1.;
+		}
+
+		feynman_virtual  = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
+
+		if( is_set(type, Type::Fermion) )
+		{
+			feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
+			feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
+		}
+		if( type & Type::Boson )
+		{
+			feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon(e, kin); };
+			feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon_star(e, kin); };
+		}
+
+	}
+
+	Particle_Ptr Particle::parent() const
+	{
+		return _parent;
+	}
+
 	std::any Particle::user_data(std::string key) const
     {
     	try{
@@ -155,6 +155,18 @@ namespace Feynumeric
 	int Particle::parity() const
 	{
 		return _parity;
+	}
+
+	void Particle::validate() const
+	{
+		if( is_set(_type, Type::Boson) &&  _spin.is_half_odd_integer() )
+		{
+			critical_error(FORMAT("Particle {} is classified as a boson but has spin {}.", _name, _spin.j()));
+		}
+		if( is_set(_type, Type::Fermion) &&  !_spin.is_half_odd_integer() )
+		{
+			critical_error(FORMAT("Particle {} is classified as a fermion but has spin {}.", _name, _spin.j()));
+		}
 	}
 
 	std::string Particle::name() const

@@ -321,6 +321,7 @@ namespace Feynumeric
 
 	std::size_t Feynman_Graph::Vertex::hash() const
 	{
+		/*
 		using PD = Feynumeric::Vertex::Particle_Direction;
 		std::vector<PD> lst;
 		for( auto edge_ptr : _back )
@@ -332,12 +333,15 @@ namespace Feynumeric
 			lst.push_back({edge_ptr->particle(), Direction::OUTGOING});
 		}
 		return canonical_hash(lst);
+		 */
+		return 0;
 	}
 
 	std::function<Matrix(Kinematics const&)> Feynman_Graph::Vertex::feynman_rule()
 	{
 		using namespace std::placeholders;
-		auto optional_vertex = _diagram->Vertex_Manager()->find_vertex(hash());
+		/*
+		auto optional_vertex = _diagram->Vertex_Manager()->find_vertex(this);
 		if( !optional_vertex.has_value() )
 		{
 			std::stringstream stream;
@@ -374,5 +378,7 @@ namespace Feynumeric
 			}
 		}
 		return std::bind(vertex->vertex_function(), _1, vertex->sort(edge_ptrs, shared_from_this()));
+		 */
+		critical_error("not implemented");
 	}
 }
