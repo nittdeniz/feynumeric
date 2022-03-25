@@ -57,7 +57,7 @@ namespace Feynumeric
 
 		// actual code
 		for( auto const& [vertex_a, edge_list] : _topology._adjacency_map ){
-			_vertices[vertex_a] = std::make_shared<Feynman_Graph::Vertex>(_diagram);
+			_vertices[vertex_a] = std::make_shared<Graph_Vertex>(_diagram);
 		}
 		for( auto const& [vertex_a, edge_list] : _topology._adjacency_map ){
 			for( auto const& [vertex_b, edges] : edge_list )
@@ -69,7 +69,7 @@ namespace Feynumeric
 				}
 				for( auto const& edge_id : edges )
 				{
-					Edge_Ptr ptr = std::make_shared<Feynman_Graph::Edge>(_diagram, get_particle_ptr(edge_id));
+					Edge_Ptr ptr = std::make_shared<Graph_Edge>(_diagram, get_particle_ptr(edge_id));
 					if( _topology._edge_list[edge_id].from == vertex_a )
 					{
 						// add pointer shortcut
@@ -117,15 +117,15 @@ namespace Feynumeric
 
 	}
 
-	Feynman_Graph::Edge::Edge(Feynman_Diagram* diagram, Particle_Ptr const& P)
+	Graph_Edge::Graph_Edge(Feynman_Diagram* diagram, Particle_Ptr const& P)
 	: _diagram(diagram)
 	, _particle(P)
 	{
 
 	}
 
-	Feynman_Graph::Edge::Edge(Feynman_Graph::Edge const& edge)
-	: std::enable_shared_from_this<Edge>(edge)
+	Graph_Edge::Graph_Edge(Graph_Edge const& edge)
+	: std::enable_shared_from_this<Graph_Edge>(edge)
 	, _diagram(edge._diagram)
 	, _particle(edge._particle)
 	, _front(edge._front)
@@ -137,7 +137,7 @@ namespace Feynumeric
 
 	}
 
-	Feynman_Graph::Edge& Feynman_Graph::Edge::operator=(Feynman_Graph::Edge const& edge)
+	Graph_Edge& Graph_Edge::operator=(Graph_Edge const& edge)
 	{
 		_diagram = edge._diagram;
 		_particle = edge._particle;
@@ -149,22 +149,22 @@ namespace Feynumeric
 		return *this;
 	}
 
-	bool Feynman_Graph::Edge::is_incoming() const
+	bool Graph_Edge::is_incoming() const
 	{
 		return _front != nullptr && _back == nullptr;
 	}
 
-	bool Feynman_Graph::Edge::is_outgoing() const
+	bool Graph_Edge::is_outgoing() const
 	{
 		return _back != nullptr && _front == nullptr;
 	}
 
-	bool Feynman_Graph::Edge::is_virtual() const
+	bool Graph_Edge::is_virtual() const
 	{
 		return _back != nullptr && _front != nullptr;
 	}
 
-	std::string Feynman_Graph::Vertex::particles_to_string() const
+	std::string Graph_Vertex::particles_to_string() const
 	{
 		std::string str;
 		for( auto const& e : all() )
@@ -174,22 +174,22 @@ namespace Feynumeric
 		return str;
 	}
 
-	Feynman_Graph::Vertex_Ptr Feynman_Graph::Edge::front() const
+	std::shared_ptr<Graph_Vertex> Graph_Edge::front() const
 	{
 		return _front;
 	}
 
-	Feynman_Graph::Vertex_Ptr Feynman_Graph::Edge::back() const
+	std::shared_ptr<Graph_Vertex> Graph_Edge::back() const
 	{
 		return _back;
 	}
 
-	Particle_Ptr Feynman_Graph::Edge::particle() const
+	Particle_Ptr Graph_Edge::particle() const
 	{
 		return _particle;
 	}
 
-	Four_Vector Feynman_Graph::Edge::four_momentum(Kinematics const& kin) const
+	Four_Vector Graph_Edge::four_momentum(Kinematics const& kin) const
 	{
 		Four_Vector result;
 		for( std::size_t i = 0; i < _relative_momentum.n_rows(); ++i )
@@ -199,47 +199,47 @@ namespace Feynumeric
 		return result;
 	}
 
-	void Feynman_Graph::Edge::front(Feynman_Graph::Vertex_Ptr const& v)
+	void Graph_Edge::front(std::shared_ptr<Graph_Vertex> const& v)
 	{
 		_front = v;
 	}
 
-	void Feynman_Graph::Edge::back(Feynman_Graph::Vertex_Ptr const& v)
+	void Graph_Edge::back(std::shared_ptr<Graph_Vertex> const& v)
 	{
 		_back = v;
 	}
 
-	Matrix Feynman_Graph::Edge::relative_momentum() const
+	Matrix Graph_Edge::relative_momentum() const
 	{
 		return _relative_momentum;
 	}
 
-	void Feynman_Graph::Edge::relative_momentum(Matrix const& momentum)
+	void Graph_Edge::relative_momentum(Matrix const& momentum)
 	{
 		_relative_momentum = momentum;
 	}
 
-	void Feynman_Graph::Edge::spin(Angular_Momentum_Ptr const& spin)
+	void Graph_Edge::spin(Angular_Momentum_Ptr const& spin)
 	{
 		_spin = spin;
 	}
 
-	Angular_Momentum_Ptr Feynman_Graph::Edge::spin() const
+	Angular_Momentum_Ptr Graph_Edge::spin() const
 	{
 		return _spin;
 	}
 
-	void Feynman_Graph::Edge::add_lorentz_index(Lorentz_Index_Ptr const& index)
+	void Graph_Edge::add_lorentz_index(Lorentz_Index_Ptr const& index)
 	{
 		_lorentz_indices.push_back(index);
 	}
 
-	std::vector<Lorentz_Index_Ptr> Feynman_Graph::Edge::lorentz_indices() const
+	std::vector<Lorentz_Index_Ptr> Graph_Edge::lorentz_indices() const
 	{
 		return _lorentz_indices;
 	}
 
-	std::vector<Lorentz_Index_Ptr> Feynman_Graph::Edge::lorentz_indices(Feynman_Graph::Vertex_Ptr const& ptr) const
+	std::vector<Lorentz_Index_Ptr> Graph_Edge::lorentz_indices(std::shared_ptr<Graph_Vertex> const& ptr) const
 	{
 		if( contains(ptr->front(), shared_from_this()) )
 		{
@@ -248,7 +248,7 @@ namespace Feynumeric
 		return std::vector<Lorentz_Index_Ptr>({_lorentz_indices.begin() + _lorentz_indices.size()/2, _lorentz_indices.end()});
 	}
 
-	std::function<Matrix(Kinematics const&)> Feynman_Graph::Edge::feynman_rule()
+	std::function<Matrix(Kinematics const&)> Graph_Edge::feynman_rule()
 	{
 		using namespace std::placeholders;
 		auto e = shared_from_this();
@@ -267,90 +267,82 @@ namespace Feynumeric
 		critical_error("Edge::feynman_rule() control structure reached invalid point. Edge is undefined.");
 	}
 
-	Feynman_Graph::Vertex::Vertex(Feynman_Diagram* diagram)
+	Graph_Vertex::Graph_Vertex(Feynman_Diagram* diagram)
 	: _diagram(diagram)
 	{
 
 	}
 
-	Feynman_Graph::Vertex::Vertex(Feynman_Graph::Vertex const& vertex)
-	: std::enable_shared_from_this<Feynman_Graph::Vertex>(vertex)
+	Graph_Vertex::Graph_Vertex(Graph_Vertex const& vertex)
+	: std::enable_shared_from_this<Graph_Vertex>(vertex)
 	, _diagram(vertex._diagram)
 	{
 
 	}
 
-	Feynman_Graph::Vertex& Feynman_Graph::Vertex::operator=(Feynman_Graph::Vertex const& vertex)
+	Graph_Vertex& Graph_Vertex::operator=(Graph_Vertex const& vertex)
 	{
 		_diagram = vertex._diagram;
 		return *this;
 	}
 
-	std::vector<Feynman_Graph::Edge_Ptr> Feynman_Graph::Vertex::front() const
+	std::vector<std::shared_ptr<Graph_Edge>> Graph_Vertex::front() const
 	{
 		return _front;
 	}
 
-	std::vector<Feynman_Graph::Edge_Ptr> Feynman_Graph::Vertex::back() const
+	std::vector<std::shared_ptr<Graph_Edge>> Graph_Vertex::back() const
 	{
 		return _back;
 	}
 
-	std::vector<Feynman_Graph::Edge_Ptr> Feynman_Graph::Vertex::all() const
+	std::vector<std::shared_ptr<Graph_Edge>> Graph_Vertex::all() const
 	{
-		std::vector<Feynman_Graph::Edge_Ptr> result;
+		std::vector<std::shared_ptr<Graph_Edge>> result;
 		result.insert(result.end(), _front.cbegin(), _front.cend());
 		result.insert(result.end(), _back.cbegin(), _back.cend());
 		return result;
 	}
 
-	void Feynman_Graph::Edge::lorentz_indices(std::vector<Lorentz_Index_Ptr> const& list)
+	void Graph_Edge::lorentz_indices(std::vector<Lorentz_Index_Ptr> const& list)
 	{
 		_lorentz_indices = list;
 	}
 
-	void Feynman_Graph::Vertex::front(Edge_Ptr const& e)
+	void Graph_Vertex::front(Edge_Ptr const& e)
 	{
 		_front.push_back(e);
 	}
 
-	void Feynman_Graph::Vertex::back(Edge_Ptr const& e)
+	void Graph_Vertex::back(Edge_Ptr const& e)
 	{
 		_back.push_back(e);
 	}
 
-	std::size_t Feynman_Graph::Vertex::hash() const
+	std::vector<Vertex::Particle_Direction> Graph_Vertex::particle_directions()
 	{
-		/*
-		using PD = Feynumeric::Vertex::Particle_Direction;
-		std::vector<PD> lst;
-		for( auto edge_ptr : _back )
-		{
-			lst.push_back({edge_ptr->particle(), Direction::INCOMING});
+		std::vector<Feynumeric::Vertex::Particle_Direction> result;
+		result.reserve(_front.size() + _back.size());
+		for( auto const& item : _back ){
+			result.push_back({item->particle(), Edge_Direction::IN});
 		}
-		for( auto edge_ptr : _front )
-		{
-			lst.push_back({edge_ptr->particle(), Direction::OUTGOING});
+		for( auto const& item : _front ){
+			result.push_back({item->particle(), Edge_Direction::OUT});
 		}
-		return canonical_hash(lst);
-		 */
-		return 0;
+		std::sort(result.begin(), result.end());
+		return result;
 	}
 
-	std::function<Matrix(Kinematics const&)> Feynman_Graph::Vertex::feynman_rule()
+	std::function<Matrix(Kinematics const&)> Graph_Vertex::feynman_rule()
 	{
 		using namespace std::placeholders;
-		/*
-		auto optional_vertex = _diagram->Vertex_Manager()->find_vertex(this);
-		if( !optional_vertex.has_value() )
-		{
+		auto optional_vertex = _diagram->Vertex_Manager()->find(particle_directions());
+		if( !optional_vertex.has_value() ){
 			std::stringstream stream;
-			for( auto const& item : _back )
-			{
+			for( auto const& item : _back ){
 				stream << "[" << item->particle()->name() << " (IN)]";
 			}
-			for( auto const& item : _front )
-			{
+			for( auto const& item : _front ){
 				stream << "[" << item->particle()->name() << " (OUT)]";
 			}
 			critical_error(FORMAT("No suitable vertex found for configuration: {}", stream.str()));
@@ -359,26 +351,41 @@ namespace Feynumeric
 
 		auto edge_ptrs = all();
 
-		for( std::size_t k = 0; k < edge_ptrs.size(); ++k )
-		{
-			if( edge_ptrs[k]->is_virtual() )
-			{
+		for( std::size_t k = 0; k < edge_ptrs.size(); ++k ){
+			if( edge_ptrs[k]->is_virtual() ){
 				auto indices = edge_ptrs[k]->lorentz_indices();
-				auto dummy_ptr = std::make_shared<Feynman_Graph::Edge>(*edge_ptrs[k]);
-				if( contains(_front, edge_ptrs[k]) )
-				{
+				auto dummy_ptr = std::make_shared<Graph_Edge>(*edge_ptrs[k]);
+				if( contains(_front, edge_ptrs[k]) ){
 					dummy_ptr->lorentz_indices({indices.begin(), indices.begin() + indices.size()/2});
 				}
-				else
-				{
+				else{
 					dummy_ptr->lorentz_indices({indices.begin() + indices.size()/2, indices.end()});
 				}
 				_diagram->_graph._dummies.push_back(dummy_ptr);
 				edge_ptrs[k] = dummy_ptr;
 			}
 		}
-		return std::bind(vertex->vertex_function(), _1, vertex->sort(edge_ptrs, shared_from_this()));
-		 */
-		critical_error("not implemented");
+
+		std::vector<std::shared_ptr<Graph_Edge>> permuted;
+		for( auto const& item : vertex.vertex._particle_directions ){
+			for( auto const& edge : edge_ptrs ){
+				if( item.direction == Edge_Direction::IN && edge->_front != shared_from_this() )
+					continue;
+				if( item.direction == Edge_Direction::OUT && edge->_back != shared_from_this() )
+					continue;
+				auto current = edge->particle();
+				while( current ){
+					if( item.particle == current ){
+						permuted.push_back(edge);
+						edge_ptrs.erase(std::remove(edge_ptrs.begin(), edge_ptrs.end(), edge), edge_ptrs.end());
+						goto end_loop;
+					}
+					current = current->parent();
+				}
+			}
+			end_loop:;
+		}
+
+		return std::bind(vertex.vertex._vertex_function, _1, permuted);
 	}
 }

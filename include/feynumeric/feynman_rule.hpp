@@ -26,8 +26,8 @@ namespace Feynumeric
 	class Feynman_Edge_Rule : public Feynman_Rule
 	{
 	private:
-		Feynman_Graph::Edge_Ptr _edge;
-		std::function<Matrix(Feynman_Graph::Edge_Ptr const&, Kinematics const&)> _rule;
+		std::shared_ptr<Graph_Edge> _edge;
+		std::function<Matrix(std::shared_ptr<Graph_Edge> const&, Kinematics const&)> _rule;
 	public:
 		virtual Matrix operator()(Kinematics const& kin)
 		{
@@ -42,8 +42,8 @@ namespace Feynumeric
 	class Feynman_Vertex_Rule : public Feynman_Rule
 	{
 	private:
-		Feynman_Graph::Edge_Ptr _edge;
-		std::function<Matrix(Feynman_Graph::Edge_Ptr const&, Kinematics const&)> _rule;
+		std::shared_ptr<Graph_Edge> _edge;
+		std::function<Matrix(std::shared_ptr<Graph_Edge> const&, Kinematics const&)> _rule;
 	public:
 		virtual Matrix operator()(Kinematics const& kin)
 		{

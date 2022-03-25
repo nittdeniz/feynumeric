@@ -33,10 +33,10 @@ int main(int argc, char** argv)
 			[](Kinematics const&, Particle_List const&){return Matrix(1,1,1);}
 	));
 
-	VM.find({QED::Photon, Direction::OUTGOING}
-			{QED::Positron, Direction::INCOMING},
-	        {QED::Electron, Direction::INCOMING},
-	        );
+	auto found = VM.find({{QED::Photon,   Direction::OUTGOING},
+	         {QED::Positron, Direction::INCOMING},
+	         {QED::Electron, Direction::INCOMING}
+	        });
 
 	std::cout << "end\n";
 

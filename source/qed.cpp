@@ -1,10 +1,11 @@
-#include "feynman_graph.hpp"
 #include "dirac.hpp"
+#include "edge_direction.hpp"
+#include "feynman_graph.hpp"
 #include "matrix.hpp"
 #include "particle.hpp"
 #include "qed.hpp"
-#include "vertex.hpp"
 #include "units.hpp"
+#include "vertex.hpp"
 
 namespace Feynumeric
 {
@@ -26,63 +27,62 @@ namespace Feynumeric
 
 		void init_particles()
 		{
-			Photon->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-			Photon->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon(e, kin); };
-			Photon->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon_star(e, kin); };
+			Photon->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return Propagator(e, kin); };
+			Photon->feynman_incoming = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return epsilon(e, kin); };
+			Photon->feynman_outgoing = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return epsilon_star(e, kin); };
 
-			Electron->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-			Electron->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-			Electron->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
+			Electron->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return Propagator(e, kin); };
+			Electron->feynman_incoming = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return u(e, kin); };
+			Electron->feynman_outgoing = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return ubar(e, kin); };
 
-			Positron->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-			Positron->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return vbar(e, kin); };
-			Positron->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return v(e, kin); };
+			Positron->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return Propagator(e, kin); };
+			Positron->feynman_incoming = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return vbar(e, kin); };
+			Positron->feynman_outgoing = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return v(e, kin); };
 
-			Muon_Minus->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-			Muon_Minus->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-			Muon_Minus->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
+			Muon_Minus->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return Propagator(e, kin); };
+			Muon_Minus->feynman_incoming = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return u(e, kin); };
+			Muon_Minus->feynman_outgoing = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return ubar(e, kin); };
 
-			Muon_Plus->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
-			Muon_Plus->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return vbar(e, kin); };
-			Muon_Plus->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return v(e, kin); };
+			Muon_Plus->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return Propagator(e, kin); };
+			Muon_Plus->feynman_incoming = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return vbar(e, kin); };
+			Muon_Plus->feynman_outgoing = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return v(e, kin); };
 		}
 
 		Feynumeric::Vertex_Manager_Ptr VMP = std::make_shared<Feynumeric::Vertex_Manager>();
 
 		void init_vertices()
 		{
-			/*
 			using Feynumeric::Direction;
 			using namespace Feynumeric::Units;
 			VMP->add(Feynumeric::Vertex(
 					{
-							{Electron, Direction::ANY},
-							{Electron, Direction::ANY},
-							{Photon,   Direction::ANY}
+							{Electron, Edge_Direction::ANY},
+							{Electron, Edge_Direction::ANY},
+							{Photon,   Edge_Direction::ANY}
 					},
-					[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+					[](Feynumeric::Kinematics const&, std::vector<std::shared_ptr<Graph_Edge>> const& edges){
 						auto const& photon = edges[2];
 						return 1._e * Feynumeric::GAC[*( photon->lorentz_indices()[0] )];
 					}
 			));
 			VMP->add(Feynumeric::Vertex(
 					{
-							{Electron, Direction::ANY},
-							{Positron, Direction::ANY},
-							{Photon,   Direction::ANY}
+							{Electron, Edge_Direction::ANY},
+							{Positron, Edge_Direction::ANY},
+							{Photon,   Edge_Direction::ANY}
 					},
-					[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+					[](Feynumeric::Kinematics const&, std::vector<std::shared_ptr<Graph_Edge>> const& edges){
 						auto const& photon = edges[2];
 						return 1._e * Feynumeric::GAC[*( photon->lorentz_indices()[0] )];
 					}
 			));
 			VMP->add(Feynumeric::Vertex(
 					{
-							{Positron, Direction::ANY},
-							{Positron, Direction::ANY},
-							{Photon,   Direction::ANY}
+							{Positron, Edge_Direction::ANY},
+							{Positron, Edge_Direction::ANY},
+							{Photon,   Edge_Direction::ANY}
 					},
-					[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+					[](Feynumeric::Kinematics const&, std::vector<std::shared_ptr<Graph_Edge>> const& edges){
 						auto const& photon = edges[2];
 						return 1._e * Feynumeric::GAC[*( photon->lorentz_indices()[0] )];
 					}
@@ -91,27 +91,26 @@ namespace Feynumeric
 
 			VMP->add(Feynumeric::Vertex(
 					{
-							{Muon_Minus, Direction::ANY},
-							{Muon_Minus, Direction::ANY},
-							{Photon,     Direction::ANY}
+							{Muon_Minus, Edge_Direction::ANY},
+							{Muon_Minus, Edge_Direction::ANY},
+							{Photon,     Edge_Direction::ANY}
 					},
-					[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+					[](Feynumeric::Kinematics const&, std::vector<std::shared_ptr<Graph_Edge>> const& edges){
 						auto const& photon = edges[2];
 						return 1._e * Feynumeric::GAC[*( photon->lorentz_indices()[0] )];
 					})
 			);
 			VMP->add(Feynumeric::Vertex(
 					{
-							{Muon_Minus, Direction::ANY},
-							{Muon_Plus,  Direction::ANY},
-							{Photon,     Direction::ANY}
+							{Muon_Minus, Edge_Direction::ANY},
+							{Muon_Plus,  Edge_Direction::ANY},
+							{Photon,     Edge_Direction::ANY}
 					},
-					[](Feynumeric::Kinematics const&, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+					[](Feynumeric::Kinematics const&, std::vector<std::shared_ptr<Graph_Edge>> const& edges){
 						auto const& photon = edges[2];
 						return 1._e * Feynumeric::GAC[*( photon->lorentz_indices()[0] )];
 					})
 			);
-			 */
 		}
 	}
 }

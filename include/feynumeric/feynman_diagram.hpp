@@ -29,20 +29,20 @@ namespace Feynumeric{
 		Complex _phase{1,0};
 		std::string _name;
 
-		void trace_fermion_line(Feynman_Graph::Edge_Ptr const& ptr, Direction const& start_direction, Feynman_Graph::Vertex_Direction vertex_direction);
-		void trace_fermion_line(Feynman_Graph::Edge_Ptr const& origin, Feynman_Graph::Vertex_Ptr const& ptr, Direction const& start_direction);
+		void trace_fermion_line(std::shared_ptr<Graph_Edge> const& ptr, Direction const& start_direction, Edge_Direction vertex_direction);
+		void trace_fermion_line(std::shared_ptr<Graph_Edge> const& origin, std::shared_ptr<Graph_Vertex> const& ptr, Direction const& start_direction);
 
 		std::string index_to_string(Lorentz_Index_Ptr const& ptr);
-		void print_feynman_edge_rule(std::string const& id, Feynman_Graph::Edge_Ptr const& ptr);
-		void print_feynman_vertex_rule(Feynman_Graph::Vertex_Ptr const& ptr);
+		void print_feynman_edge_rule(std::string const& id, std::shared_ptr<Graph_Edge> const& ptr);
+		void print_feynman_vertex_rule(std::shared_ptr<Graph_Vertex> const& ptr);
 		std::string pretty_momentum(Matrix const& relative) const;
 
 		void fix_momenta();
 		void fix_internal_momenta();
 		void fix_external_momenta();
 
-		void add_spin(Feynman_Graph::Edge_Ptr const& edge_ptr);
-		void add_lorentz_indices(Feynman_Graph::Edge_Ptr const& edge_ptr);
+		void add_spin(std::shared_ptr<Graph_Edge> const& edge_ptr);
+		void add_lorentz_indices(std::shared_ptr<Graph_Edge> const& edge_ptr);
 
 //		Momentum_Func generate_four_momentum(Direction const& direction, std::size_t pos) const;
 
@@ -75,7 +75,7 @@ namespace Feynumeric{
 		std::string const& name() const;
 
 		friend class Feynman_Process;
-		friend class Feynman_Graph::Vertex;
+		friend class Graph_Vertex;
 	};
 
 	using Feynman_Diagram_Ptr = std::shared_ptr<Feynman_Diagram>;

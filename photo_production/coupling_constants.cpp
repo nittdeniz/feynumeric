@@ -27,6 +27,8 @@ int main(int argc, char** argv)
 	Particle_Ptr const& Pi_Minus = P.get("pi-");
 	Particle_Ptr const& Pi_Zero  = P.get("pi0");
 
+	init_vertices(P);
+
 	/********************************************\
 	|*	███    ██  ██ ██   ██ ██   ██  ██████   *|
 	|*	████   ██ ███ ██   ██ ██   ██ ██  ████  *|
@@ -124,7 +126,7 @@ int main(int argc, char** argv)
 		std::cout << "g(N1440p -> proton + photon): " << std::sqrt(literature_value1 / w1) << "\n";
 		std::cout << "g(N1440n -> neutron + photon): " << std::sqrt(literature_value2 / w2) << "\n";
 	}
-	*/
+
 	/********************************************\
 	|*	███    ██  ██ ███████ ██████   ██████   *|
 	|*	████   ██ ███ ██           ██ ██  ████  *|
@@ -132,7 +134,7 @@ int main(int argc, char** argv)
 	|*	██  ██ ██  ██      ██ ██      ████  ██  *|
 	|*	██   ████  ██ ███████ ███████  ██████   *|
 	\********************************************/
-
+	/*
 	// coupling constant N1520 to N pi
 	{
 		N1520p->user_data("gRNpi", 1.);

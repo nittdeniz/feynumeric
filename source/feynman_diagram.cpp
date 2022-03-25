@@ -20,7 +20,7 @@ namespace Feynumeric
 		validate();
 	}
 
-	void Feynman_Diagram::add_spin(Feynman_Graph::Edge_Ptr const& edge_ptr)
+	void Feynman_Diagram::add_spin(std::shared_ptr<Graph_Edge> const& edge_ptr)
 	{
 		auto const spin = edge_ptr->particle()->spin();
 		_spins.push_back(std::make_shared<Angular_Momentum>(spin));
@@ -32,7 +32,7 @@ namespace Feynumeric
 		return _name;
 	}
 
-	void Feynman_Diagram::add_lorentz_indices(Feynman_Graph::Edge_Ptr const& edge_ptr)
+	void Feynman_Diagram::add_lorentz_indices(std::shared_ptr<Graph_Edge> const& edge_ptr)
 	{
 		double j = edge_ptr->particle()->spin().j();
 		while( j --> 0.5 )
@@ -296,7 +296,7 @@ namespace Feynumeric
 		*/
 	}
 
-	void Feynman_Diagram::print_feynman_edge_rule(std::string const& id, Feynman_Graph::Edge_Ptr const& ptr)
+	void Feynman_Diagram::print_feynman_edge_rule(std::string const& id, std::shared_ptr<Graph_Edge> const& ptr)
 	{
 		std::string momentum = pretty_momentum(ptr->relative_momentum());
 		if( !ptr->is_virtual() )
@@ -331,7 +331,7 @@ namespace Feynumeric
 		std::cout << ") ";
 	}
 
-	void Feynman_Diagram::trace_fermion_line(Feynman_Graph::Edge_Ptr const& ptr, Direction const& start_direction, Feynman_Graph::Vertex_Direction vertex_direction)
+	void Feynman_Diagram::trace_fermion_line(std::shared_ptr<Graph_Edge> const& ptr, Direction const& start_direction, Edge_Direction vertex_direction)
 	{
 		if( ptr == nullptr )
 		{
@@ -367,7 +367,7 @@ namespace Feynumeric
 				else{
 					if( ptr->particle()->is_true_fermion() )
 					{
-						if( vertex_direction == Feynman_Graph::Vertex_Direction::IN )
+						if( vertex_direction == Edge_Direction::IN )
 						{
 							#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
 							print_feynman_edge_rule("D", ptr);
@@ -383,7 +383,7 @@ namespace Feynumeric
 					}
 					else if( ptr->particle()->is_anti_fermion() )
 					{
-						if( vertex_direction == Feynman_Graph::Vertex_Direction::OUT )
+						if( vertex_direction == Edge_Direction::OUT )
 						{
 							#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
 							print_feynman_edge_rule("D", ptr);
@@ -427,7 +427,7 @@ namespace Feynumeric
 				else{
 					if( ptr->particle()->is_true_fermion() )
 					{
-						if( vertex_direction == Feynman_Graph::Vertex_Direction::OUT )
+						if( vertex_direction == Edge_Direction::OUT )
 						{
 							#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
 							print_feynman_edge_rule("D", ptr);
@@ -443,7 +443,7 @@ namespace Feynumeric
 					}
 					else if( ptr->particle()->is_anti_fermion() )
 					{
-						if( vertex_direction == Feynman_Graph::Vertex_Direction::IN )
+						if( vertex_direction == Edge_Direction::IN )
 						{
 							#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
 							print_feynman_edge_rule("D", ptr);
@@ -465,17 +465,17 @@ namespace Feynumeric
 	}
 
 
-	void Feynman_Diagram::trace_fermion_line(Feynman_Graph::Edge_Ptr const& origin, Feynman_Graph::Vertex_Ptr const& vertex_ptr, Direction const& start_direction)
+	void Feynman_Diagram::trace_fermion_line(std::shared_ptr<Graph_Edge> const& origin, Feynman_Graph::Vertex_Ptr const& vertex_ptr, Direction const& start_direction)
 	{
-		Feynman_Graph::Edge_Ptr next;
-		Feynman_Graph::Vertex_Direction vertex_direction;
+		std::shared_ptr<Graph_Edge> next;
+		Edge_Direction vertex_direction;
 		for( auto const& e : vertex_ptr->front() )
 		{
 			if( e == origin ) continue;
 			if( e->particle()->is_fermion() ){
 				if( next == nullptr ){
 					next = e;
-					vertex_direction = Feynman_Graph::Vertex_Direction::OUT;
+					vertex_direction = Edge_Direction::OUT;
 				} else{
 					critical_error("Vertex has more than two fermions.");
 				}
@@ -487,7 +487,7 @@ namespace Feynumeric
 			if( e->particle()->is_fermion() ){
 				if( next == nullptr ){
 					next = e;
-					vertex_direction = Feynman_Graph::Vertex_Direction::IN;
+					vertex_direction = Edge_Direction::IN;
 				} else{
 					critical_error("Vertex has more than two fermions.");
 				}

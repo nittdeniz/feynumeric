@@ -31,7 +31,7 @@ namespace Feynumeric
 			for( ; pos < str.size(); ++pos )
 			{
 				char const& c = str[pos];
-				if( ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') )
+				if( ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z')  || c == '%')
 				{
 					break;
 				}
@@ -44,7 +44,8 @@ namespace Feynumeric
 			if( unit == "mev" ) return value * 1._MeV;
 			if( unit == "gev" ) return value * 1._GeV;
 			if( unit == "tev" ) return value * 1._TeV;
-			critical_error(FORMAT("Could not read unit. Supported: eV, keV, MeV, GeV, TeV. Found: {}", unit));
+			if( unit == "%" ) return value * 1._percent;
+			critical_error(FORMAT("Could not read unit. Supported: eV, keV, MeV, GeV, TeV, %. Found: {}", unit));
 		};
 
 		enum class STATE{
@@ -167,7 +168,9 @@ namespace Feynumeric
 						particle._lepton_number = std::stod(temp);
 					}
 					else{
-						warning(FORMAT("Parameter {} ignored.", input));
+						// user data
+						particle.user_data(input, parse_unit(std::move(temp)));
+						//warning(FORMAT("Parameter {} ignored.", input));
 					}
 					break;
 				}

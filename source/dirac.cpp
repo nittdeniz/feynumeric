@@ -1,7 +1,9 @@
 #include <iostream>
+
 #include "dirac.hpp"
 #include "complex.hpp"
 #include "constexpr_math.hpp"
+#include "feynman_graph.hpp"
 #include "lorentz_index.hpp"
 #include "product.hpp"
 #include "sum.hpp"
@@ -78,12 +80,12 @@ namespace Feynumeric
 		return dirac_sigma(GS(p), GAC[*nu]);
 	}
 
-	Matrix u(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
+	Matrix u(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin)
 	{
 		return u(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
 
-	Matrix v(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
+	Matrix v(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin)
 	{
 		return v(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
@@ -156,7 +158,7 @@ namespace Feynumeric
 		return result;
 	}
 
-	Matrix vbar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
+	Matrix vbar(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin)
 	{
 		return vbar(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
@@ -167,7 +169,7 @@ namespace Feynumeric
 		return v(P, p, s, lorentz_indices).T().apply([](Complex const& z){ return std::conj(z); }) * GA[0];
 	}
 
-	Matrix ubar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
+	Matrix ubar(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin)
 	{
 		return ubar(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(), edge_ptr->lorentz_indices());
 	}
@@ -178,13 +180,13 @@ namespace Feynumeric
 		return u(P, p, s, lorentz_indices).T().apply([](Complex const& z){ return std::conj(z); }) * GA[0];
 	}
 
-	Matrix epsilon(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
+	Matrix epsilon(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin)
 	{
 		return epsilon(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(),
 		               edge_ptr->lorentz_indices());
 	}
 
-	Matrix epsilon_star(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin)
+	Matrix epsilon_star(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin)
 	{
 		return epsilon_star(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->spin(),
 		                    edge_ptr->lorentz_indices());
@@ -334,11 +336,11 @@ namespace Feynumeric
 
 
 
-	Matrix Projector(Feynman_Graph::Edge_Ptr edge_ptr, const Kinematics& kin, bool ignore_momentum){
+	Matrix Projector(std::shared_ptr<Graph_Edge> edge_ptr, const Kinematics& kin, bool ignore_momentum){
 		return Projector(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->lorentz_indices(), ignore_momentum);
 	}
 
-	Matrix Propagator(Feynman_Graph::Edge_Ptr edge_ptr, const Kinematics& kin, bool ignore_momentum){
+	Matrix Propagator(std::shared_ptr<Graph_Edge> edge_ptr, const Kinematics& kin, bool ignore_momentum){
 		return Propagator(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->lorentz_indices(), ignore_momentum);
 	}
 

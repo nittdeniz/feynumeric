@@ -17,35 +17,35 @@ namespace Feynumeric{
 
 		void init_particles()
 		{
-			Photon->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Projector(e, kin); };
-			Photon->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon(e, kin); };
-			Photon->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){
+			Photon->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return Projector(e, kin); };
+			Photon->feynman_incoming = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return epsilon(e, kin); };
+			Photon->feynman_outgoing = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){
 				return epsilon_star(e, kin);
 			};
 
-			Electron->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){
+			Electron->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){
 				return Propagator(e, kin);
 			};
-			Electron->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-			Electron->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
+			Electron->feynman_incoming = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return u(e, kin); };
+			Electron->feynman_outgoing = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return ubar(e, kin); };
 
-			Positron->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){
+			Positron->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){
 				return Propagator(e, kin);
 			};
-			Positron->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return vbar(e, kin); };
-			Positron->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return v(e, kin); };
+			Positron->feynman_incoming = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return vbar(e, kin); };
+			Positron->feynman_outgoing = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return v(e, kin); };
 
-			Muon_Minus->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){
+			Muon_Minus->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){
 				return Propagator(e, kin);
 			};
-			Muon_Minus->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-			Muon_Minus->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
+			Muon_Minus->feynman_incoming = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return u(e, kin); };
+			Muon_Minus->feynman_outgoing = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return ubar(e, kin); };
 
-			Muon_Plus->feynman_virtual = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){
+			Muon_Plus->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){
 				return Propagator(e, kin);
 			};
-			Muon_Plus->feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return vbar(e, kin); };
-			Muon_Plus->feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return v(e, kin); };
+			Muon_Plus->feynman_incoming = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return vbar(e, kin); };
+			Muon_Plus->feynman_outgoing = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return v(e, kin); };
 		}
 	}
 }

@@ -1,11 +1,13 @@
 #include <feynumeric/contract.hpp>
 #include <feynumeric/dirac.hpp>
+#include <feynumeric/feynman_graph.hpp>
 #include <feynumeric/particle.hpp>
 #include <feynumeric/particle_manager.hpp>
 #include <feynumeric/qed.hpp>
 #include <feynumeric/units.hpp>
 #include <feynumeric/messages.hpp>
 #include <feynumeric/constexpr_math.hpp>
+#include <feynumeric/vertex.hpp>
 
 
 #include "effective_lagrangian_model.hpp"
@@ -168,7 +170,7 @@ void init_particles()
 
 Feynumeric::Vertex_Manager_Ptr VMP = std::make_shared<Feynumeric::Vertex_Manager>();
 
-double isospin2_2(Feynumeric::Feynman_Graph::Edge_Ptr a, Feynumeric::Feynman_Graph::Edge_Ptr b)
+double isospin2_2(std::shared_ptr<Feynumeric::Graph_Edge> a, std::shared_ptr<Feynumeric::Graph_Edge> b)
 {
 	static Matrix tau(2, 2, {1, std::sqrt(2.), std::sqrt(2.), -1});
 	if( a->particle()->isospin().j() != 0.5 || b->particle()->isospin().j() != 0.5 )
@@ -195,27 +197,25 @@ double isospin2_2(Feynumeric::Feynman_Graph::Edge_Ptr a, Feynumeric::Feynman_Gra
 
 void init_vertices(Feynumeric::Particle_Manager const& P)
 {
-	using Feynumeric::Direction;
+	using Feynumeric::Edge_Direction;
 	using namespace Feynumeric::Units;
 
 	Feynumeric::QED::init_vertices();
-	VMP->import(Feynumeric::QED::VMP);
+	VMP->import(*Feynumeric::QED::VMP);
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{P["N12p"], Direction::ANY},
-					{P["N"], Direction::ANY},
-					{P["Pion"],   Direction::ANY}
+					{P["N12p"], Edge_Direction::ANY},
+					{P["N"], Edge_Direction::ANY},
+					{P["Pion"],   Edge_Direction::ANY}
 			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
-
+			[](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
 				using namespace Feynumeric;
 				auto const& R = edges[0];
 				auto const& N = edges[1];
 				auto const& pi = edges[2];
 				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
 				auto const m_pi = pi->particle()->mass();
-				//auto constexpr isospin = constexpr_sqrt(2.);
 				auto isospin = isospin2_2(R, N);
 				return -g/m_pi * isospin * GA5 * GS(pi->four_momentum(kin));
 			}
@@ -227,7 +227,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 					{Proton, Direction::ANY},
 					{Feynumeric::QED::Photon, Direction::ANY}
 			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::std::shared_ptr<Graph_Edge>> const& edges){
 				using namespace Feynumeric;
 				auto const& n1440 = edges[0];
 				auto const& photon = edges[2];
@@ -243,7 +243,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 					{Neutron, Direction::ANY},
 					{Feynumeric::QED::Photon, Direction::ANY}
 			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::std::shared_ptr<Graph_Edge>> const& edges){
 				using namespace Feynumeric;
 				auto const& n1440 = edges[0];
 				auto const& photon = edges[2];
@@ -259,7 +259,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 					{Proton, Direction::ANY},
 					{Pi_Zero, Direction::ANY}
 			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::std::shared_ptr<Graph_Edge>> const& edges){
 				using namespace Feynumeric;
 				auto const& R = edges[0];
 				auto const& N = edges[1];
@@ -282,7 +282,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 					{Neutron, Direction::ANY},
 					{Pi_Plus, Direction::ANY}
 			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::std::shared_ptr<Graph_Edge>> const& edges){
 				using namespace Feynumeric;
 				auto const& R = edges[0];
 				auto const& N = edges[1];
@@ -305,7 +305,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 					{Proton, Direction::ANY},
 					{Pi_Minus, Direction::ANY}
 			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::std::shared_ptr<Graph_Edge>> const& edges){
 				using namespace Feynumeric;
 				auto const& R = edges[0];
 				auto const& N = edges[1];
@@ -328,7 +328,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 					{Neutron, Direction::ANY},
 					{Pi_Zero, Direction::ANY}
 			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::Feynman_Graph::Edge_Ptr> const& edges){
+			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::std::shared_ptr<Graph_Edge>> const& edges){
 				using namespace Feynumeric;
 				auto const& R = edges[0];
 				auto const& N = edges[1];
@@ -344,5 +344,5 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 
 			}
 	));
-	 */
+	*/
 }

@@ -9,16 +9,23 @@
 
 #include "angular_momentum.hpp"
 #include "complex.hpp"
-#include "feynman_graph.hpp"
 #include "format.hpp"
+#include "kinematics.hpp"
 #include "matrix.hpp"
+#include "messages.hpp"
 #include "momentum.hpp"
 #include "types.hpp"
 
 namespace Feynumeric
 {
+	class Graph_Edge;
+	class Graph_Vertex;
+
     class Particle
     {
+    using Edge_Ptr = std::shared_ptr<Graph_Edge>;
+    using Vertex_Ptr = std::shared_ptr<Graph_Vertex>;
+
     public:
         enum class Type : uint64_t
         {
@@ -110,9 +117,9 @@ namespace Feynumeric
         bool is_true_fermion() const;
         bool is_anti_fermion() const;
 
-        std::function<Matrix(Feynman_Graph::Edge_Ptr e, Kinematics const&)> feynman_outgoing;
-        std::function<Matrix(Feynman_Graph::Edge_Ptr e, Kinematics const&)> feynman_incoming;
-        std::function<Matrix(Feynman_Graph::Edge_Ptr e, Kinematics const&)> feynman_virtual;
+        std::function<Matrix(Edge_Ptr e, Kinematics const&)> feynman_outgoing;
+        std::function<Matrix(Edge_Ptr e, Kinematics const&)> feynman_incoming;
+        std::function<Matrix(Edge_Ptr e, Kinematics const&)> feynman_virtual;
 
         unsigned int n_lorentz_indices() const;
 

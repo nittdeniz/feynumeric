@@ -5,17 +5,22 @@
 #include <functional>
 #include <vector>
 
-#include "angular_momentum.hpp"
+//#include "angular_momentum.hpp"
 #include "lorentz_transformation.hpp"
-#include "feynman_graph.hpp"
+//#include "feynman_graph.hpp"
 #include "kinematics.hpp"
 #include "matrix.hpp"
 #include "momentum.hpp"
-#include "particle.hpp"
+//#include "particle.hpp"
 
 
 namespace Feynumeric
 {
+	class Angular_Momentum;
+	class Graph_Edge;
+	class Lorentz_Index;
+	class Particle;
+	
     extern std::array<Matrix, 4> GA;
     extern std::array<Matrix, 4> GAC;
     extern Matrix GA5;
@@ -25,46 +30,46 @@ namespace Feynumeric
     Matrix GS(Four_Vector const& p);
 	Matrix GS(Matrix const& matrix);
 
-	Matrix dirac_sigma(Lorentz_Index_Ptr mu, Lorentz_Index_Ptr nu);
-	Matrix dirac_sigma(Lorentz_Index_Ptr mu, Four_Vector const& p);
-	Matrix dirac_sigma(Four_Vector const& p, Lorentz_Index_Ptr nu);
+	Matrix dirac_sigma(std::shared_ptr<Lorentz_Index> mu, std::shared_ptr<Lorentz_Index> nu);
+	Matrix dirac_sigma(std::shared_ptr<Lorentz_Index> mu, Four_Vector const& p);
+	Matrix dirac_sigma(Four_Vector const& p, std::shared_ptr<Lorentz_Index> nu);
 
-	Matrix dirac_sigmac(Lorentz_Index_Ptr mu, Lorentz_Index_Ptr nu);
-	Matrix dirac_sigmac(Lorentz_Index_Ptr mu, Four_Vector const& p);
-	Matrix dirac_sigmac(Four_Vector const& p, Lorentz_Index_Ptr nu);
-
-
+	Matrix dirac_sigmac(std::shared_ptr<Lorentz_Index> mu, std::shared_ptr<Lorentz_Index> nu);
+	Matrix dirac_sigmac(std::shared_ptr<Lorentz_Index> mu, Four_Vector const& p);
+	Matrix dirac_sigmac(Four_Vector const& p, std::shared_ptr<Lorentz_Index> nu);
 
 
-	Matrix O32(Four_Vector const& p, Lorentz_Index_Ptr const& mu, Lorentz_Index_Ptr const& lambda);
-	Matrix O32c(Four_Vector const& p, Lorentz_Index_Ptr const& mu, Lorentz_Index_Ptr const& lambda);
-	Matrix O(Angular_Momentum_Ptr const& s, Four_Vector const& p, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
 
-    Matrix u(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
-    Matrix u(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
-    Matrix ubar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
-    Matrix ubar(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
 
-	Matrix v(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
-	Matrix v(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
-	Matrix vbar(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
-	Matrix vbar(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+	Matrix O32(Four_Vector const& p, std::shared_ptr<Lorentz_Index> const& mu, std::shared_ptr<Lorentz_Index> const& lambda);
+	Matrix O32c(Four_Vector const& p, std::shared_ptr<Lorentz_Index> const& mu, std::shared_ptr<Lorentz_Index> const& lambda);
+	Matrix O(std::shared_ptr<Angular_Momentum> const& s, Four_Vector const& p, std::vector<std::shared_ptr<Lorentz_Index>> const& lorentz_indices);
 
-	Matrix spinor(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+    Matrix u(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin);
+    Matrix u(std::shared_ptr<Particle> const& P, Four_Vector const& p, std::shared_ptr<Angular_Momentum> s, std::vector<std::shared_ptr<Lorentz_Index>> const& lorentz_indices);
+    Matrix ubar(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin);
+    Matrix ubar(std::shared_ptr<Particle> const& P, Four_Vector const& p, std::shared_ptr<Angular_Momentum> s, std::vector<std::shared_ptr<Lorentz_Index>> const& lorentz_indices);
 
-	Complex epsilon(Angular_Momentum_Ptr const& spin, double q, double mass, double cos_theta, double cos_phi, std::vector<Lorentz_Index_Ptr> const& mus);
-    Matrix epsilon(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
-    Matrix epsilon_star(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin);
+	Matrix v(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin);
+	Matrix v(std::shared_ptr<Particle> const& P, Four_Vector const& p, std::shared_ptr<Angular_Momentum> s, std::vector<std::shared_ptr<Lorentz_Index>> const& lorentz_indices);
+	Matrix vbar(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin);
+	Matrix vbar(std::shared_ptr<Particle> const& P, Four_Vector const& p, std::shared_ptr<Angular_Momentum> s, std::vector<std::shared_ptr<Lorentz_Index>> const& lorentz_indices);
 
-    Matrix epsilon(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
-    Matrix epsilon_star(Particle_Ptr const& P, Four_Vector const& p, Angular_Momentum_Ptr s, std::vector<Lorentz_Index_Ptr> const& lorentz_indices);
+	Matrix spinor(std::shared_ptr<Particle> const& P, Four_Vector const& p, std::shared_ptr<Angular_Momentum> s, std::vector<std::shared_ptr<Lorentz_Index>> const& lorentz_indices);
 
-    Matrix Projector(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin, bool ignore_momentum = false);
-    Matrix Propagator(Feynman_Graph::Edge_Ptr edge_ptr, Kinematics const& kin, bool ignore_momentum = false);
+	Complex epsilon(std::shared_ptr<Angular_Momentum> const& spin, double q, double mass, double cos_theta, double cos_phi, std::vector<std::shared_ptr<Lorentz_Index>> const& mus);
+    Matrix epsilon(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin);
+    Matrix epsilon_star(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin);
 
-    Matrix Projector(Particle_Ptr const& P, const Four_Vector &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum = false);
-	Matrix Projector(Particle_Ptr const& P, Angular_Momentum const& spin, const Four_Vector &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum = false);
-    Matrix Propagator(Particle_Ptr const& P, const Four_Vector &p, const std::vector<Lorentz_Index_Ptr> &lorentz_indices, bool ignore_momentum = false);
+    Matrix epsilon(std::shared_ptr<Particle> const& P, Four_Vector const& p, std::shared_ptr<Angular_Momentum> s, std::vector<std::shared_ptr<Lorentz_Index>> const& lorentz_indices);
+    Matrix epsilon_star(std::shared_ptr<Particle> const& P, Four_Vector const& p, std::shared_ptr<Angular_Momentum> s, std::vector<std::shared_ptr<Lorentz_Index>> const& lorentz_indices);
+
+    Matrix Projector(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin, bool ignore_momentum = false);
+    Matrix Propagator(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin, bool ignore_momentum = false);
+
+    Matrix Projector(std::shared_ptr<Particle> const& P, const Four_Vector &p, const std::vector<std::shared_ptr<Lorentz_Index>> &lorentz_indices, bool ignore_momentum = false);
+	Matrix Projector(std::shared_ptr<Particle> const& P, Angular_Momentum const& spin, const Four_Vector &p, const std::vector<std::shared_ptr<Lorentz_Index>> &lorentz_indices, bool ignore_momentum = false);
+    Matrix Propagator(std::shared_ptr<Particle> const& P, const Four_Vector &p, const std::vector<std::shared_ptr<Lorentz_Index>> &lorentz_indices, bool ignore_momentum = false);
 }
 
 #endif // Feynumeric_DIRAC_HPP

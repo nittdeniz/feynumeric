@@ -11,7 +11,7 @@ namespace Feynumeric
 	{
 	}
 
-	std::function<Matrix(Kinematics const&, Particle_List const&)> Vertex::vertex_function() const
+	std::function<Matrix(Kinematics const&, Vertex::Particle_List const&)> Vertex::vertex_function() const
 	{
 		return _vertex_function;
 	}
@@ -30,7 +30,7 @@ namespace Feynumeric
 		return *this;
 	}
 
-	Vertex::Particle_Direction::Particle_Direction(Particle_Ptr ptr, Direction dir)
+	Vertex::Particle_Direction::Particle_Direction(Particle_Ptr ptr, Edge_Direction dir)
 	: particle(ptr)
 	, direction(dir)
 	{

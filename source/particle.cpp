@@ -1,9 +1,10 @@
-#include "feynman_graph.hpp"
 #include "dirac.hpp"
 #include "particle.hpp"
 
 namespace Feynumeric
 {
+	class Graph_Edge;
+
     Particle::Particle(std::string&& name, Type type, double mass, double width, double charge, double spin)
     : _name(std::move(name))
     , _mass(mass)
@@ -116,17 +117,17 @@ namespace Feynumeric
 			_lepton_number = sign * 1.;
 		}
 
-		feynman_virtual  = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return Propagator(e, kin); };
+		feynman_virtual  = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return Propagator(e, kin); };
 
 		if( is_set(type, Type::Fermion) )
 		{
-			feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return u(e, kin); };
-			feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return ubar(e, kin); };
+			feynman_incoming = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return u(e, kin); };
+			feynman_outgoing = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return ubar(e, kin); };
 		}
 		if( type & Type::Boson )
 		{
-			feynman_incoming = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon(e, kin); };
-			feynman_outgoing = [](Feynman_Graph::Edge_Ptr e, Kinematics const& kin){ return epsilon_star(e, kin); };
+			feynman_incoming = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return epsilon(e, kin); };
+			feynman_outgoing = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return epsilon_star(e, kin); };
 		}
 
 	}

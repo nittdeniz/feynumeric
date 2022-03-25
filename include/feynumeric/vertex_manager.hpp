@@ -15,6 +15,11 @@ namespace Feynumeric
     class Vertex_Manager
     {
     private:
+    	struct Vertex_Permutation
+	    {
+    		Vertex vertex;
+		    std::map<std::size_t, std::size_t> permutation;
+	    };
 		struct Node
 		{
 			std::map<int, Vertex> data;
@@ -22,7 +27,10 @@ namespace Feynumeric
 			std::map<std::string, Node> children;
 		};
 
+	    int directions_to_int(std::vector<Vertex::Particle_Direction> const& list);
 		int directions_to_int(std::vector<Vertex::Particle_Direction> const& list, std::map<std::size_t, std::size_t> const& permutation);
+
+		std::vector<std::vector<Vertex::Particle_Direction>> advance(std::vector<Vertex::Particle_Direction> const& list) const;
 
 		Node _root;
 		std::map<std::size_t, std::size_t> permutation_map(std::vector<Vertex::Particle_Direction> const& lst);
@@ -30,9 +38,10 @@ namespace Feynumeric
 
     public:
     	Vertex_Manager();
+    	void import(Vertex_Manager const& v);
     	void add(Vertex const& vertex);
 
-    	std::optional<Vertex> find(std::vector<Vertex::Particle_Direction> lst);
+    	std::optional<Vertex_Permutation> find(std::vector<Vertex::Particle_Direction> const& particle_directions);
     };
     using Vertex_Manager_Ptr = std::shared_ptr<Vertex_Manager>;
 }
