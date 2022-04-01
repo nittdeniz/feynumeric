@@ -1,13 +1,10 @@
 #include <feynumeric/contract.hpp>
 #include <feynumeric/dirac.hpp>
 #include <feynumeric/feynman_graph.hpp>
-#include <feynumeric/particle.hpp>
 #include <feynumeric/particle_manager.hpp>
 #include <feynumeric/qed.hpp>
-#include <feynumeric/units.hpp>
-#include <feynumeric/messages.hpp>
 #include <feynumeric/constexpr_math.hpp>
-#include <feynumeric/vertex.hpp>
+#include <feynumeric/units.hpp>
 
 
 #include "effective_lagrangian_model.hpp"
@@ -214,7 +211,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& R = edges[0];
 				auto const& N = edges[1];
 				auto const& pi = edges[2];
-				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
+				auto const g = R->particle()->user_data<double>("gRNpi");
 				auto const m_pi = pi->particle()->mass();
 				auto isospin = isospin2_2(R, N);
 				return -g/m_pi * isospin * GA5 * GS(pi->four_momentum(kin));

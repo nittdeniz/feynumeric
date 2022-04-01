@@ -390,14 +390,14 @@ namespace Feynumeric
 		std::vector<std::shared_ptr<Graph_Edge>> permuted;
 		for( auto const& item : vertex.vertex._particle_directions ){
 			for( auto const& edge : edge_ptrs ){
-				if( item.direction == Edge_Direction::IN  && edge->_front && edge->_front->id() != _vid )
-					continue;
-				if( item.direction == Edge_Direction::OUT && edge->_back  && edge->_back->id() != _vid )
-					continue;
-//				if( item.direction == Edge_Direction::IN && edge->_front != shared_from_this() )
+//				if( item.direction == Edge_Direction::IN  && edge->_front && edge->_front->id() != _vid )
 //					continue;
-//				if( item.direction == Edge_Direction::OUT && edge->_back != shared_from_this() )
+//				if( item.direction == Edge_Direction::OUT && edge->_back  && edge->_back->id() != _vid )
 //					continue;
+				if( item.direction == Edge_Direction::IN && edge->_front != shared_from_this() )
+					continue;
+				if( item.direction == Edge_Direction::OUT && edge->_back != shared_from_this() )
+					continue;
 				auto current = edge->particle();
 				while( current ){
 					if( item.particle == current ){

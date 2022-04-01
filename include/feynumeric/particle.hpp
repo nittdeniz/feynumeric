@@ -135,6 +135,10 @@ namespace Feynumeric
 	        {
 		        critical_error(FORMAT("Key <{}> is not set for particle {}\n", key, _name));
 	        }
+	        catch( std::bad_any_cast const& e)
+	        {
+		        critical_error(FORMAT("Bad cast for key {} of particle {}\n", key, _name));
+	        }
         }
 
         void user_data(std::string key, std::any data);

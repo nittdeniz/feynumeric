@@ -80,10 +80,10 @@ int main(int argc, char** argv)
 		auto w4 = decay_n1440n2.decay_width();
 
 
-		double const literature_value1 = N1440p->width() * ( N1440p->user_data<long double>("branching_N_pi_upper") +
-		                                                    N1440p->user_data<long double>("branching_N_pi_lower")) / 2.;
-		double const literature_value2 = N1440n->width() * ( N1440n->user_data<long double>("branching_N_pi_upper") +
-		                                                    N1440n->user_data<long double>("branching_N_pi_lower")) / 2.;
+		double const literature_value1 = N1440p->width() * ( N1440p->user_data<double>("branching_N_pi_upper") +
+		                                                    N1440p->user_data<double>("branching_N_pi_lower")) / 2.;
+		double const literature_value2 = N1440n->width() * ( N1440n->user_data<double>("branching_N_pi_upper") +
+		                                                    N1440n->user_data<double>("branching_N_pi_lower")) / 2.;
 
 		std::cout << "g(N1440p -> N + pi): " << std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
 		std::cout << "g(N1440n -> N + pi): " << std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
@@ -119,10 +119,10 @@ int main(int argc, char** argv)
 		auto w2 = decay_n1440n1.decay_width();
 
 
-		double const literature_value1 = N1440p->width() * ( N1440p->user_data<long double>("branching_proton_photon_upper") +
-		                                                     N1440p->user_data<long double>("branching_proton_photon_lower")) / 2.;
-		double const literature_value2 = N1440n->width() * ( N1440n->user_data<long double>("branching_neutron_photon_upper") +
-		                                                     N1440n->user_data<long double>("branching_neutron_photon_lower")) / 2.;
+		double const literature_value1 = N1440p->width() * ( N1440p->user_data<double>("branching_proton_photon_upper") +
+		                                                     N1440p->user_data<double>("branching_proton_photon_lower")) / 2.;
+		double const literature_value2 = N1440n->width() * ( N1440n->user_data<double>("branching_neutron_photon_upper") +
+		                                                     N1440n->user_data<double>("branching_neutron_photon_lower")) / 2.;
 		std::cout << "g(N1440p -> proton + photon): " << std::sqrt(literature_value1 / w1) << "\n";
 		std::cout << "g(N1440n -> neutron + photon): " << std::sqrt(literature_value2 / w2) << "\n";
 	}
@@ -178,10 +178,10 @@ int main(int argc, char** argv)
 		auto w4 = decay_N1520n2.decay_width();
 
 
-		double const literature_value1 = N1520p->width() * ( N1520p->user_data<long double>("branching_N_pi_upper") +
-		                                                     N1520p->user_data<long double>("branching_N_pi_lower")) / 2.;
-		double const literature_value2 = N1520n->width() * ( N1520n->user_data<long double>("branching_N_pi_upper") +
-		                                                     N1520n->user_data<long double>("branching_N_pi_lower")) / 2.;
+		double const literature_value1 = N1520p->width() * ( N1520p->user_data<double>("branching_N_pi_upper") +
+		                                                     N1520p->user_data<double>("branching_N_pi_lower")) / 2.;
+		double const literature_value2 = N1520n->width() * ( N1520n->user_data<double>("branching_N_pi_upper") +
+		                                                     N1520n->user_data<double>("branching_N_pi_lower")) / 2.;
 
 
 		std::cout << "g(N1520p -> N + pi): " << std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
@@ -219,10 +219,10 @@ int main(int argc, char** argv)
 		auto w2 = decay_n1520n1.decay_width();
 
 
-		double const literature_value1 = N1520p->width() * ( N1520p->user_data<long double>("branching_proton_photon_upper") +
-		                                                     N1520p->user_data<long double>("branching_proton_photon_lower")) / 2.;
-		double const literature_value2 = N1520n->width() * ( N1520n->user_data<long double>("branching_neutron_photon_upper") +
-		                                                     N1520n->user_data<long double>("branching_neutron_photon_lower")) / 2.;
+		double const literature_value1 = N1520p->width() * ( N1520p->user_data<double>("branching_proton_photon_upper") +
+		                                                     N1520p->user_data<double>("branching_proton_photon_lower")) / 2.;
+		double const literature_value2 = N1520n->width() * ( N1520n->user_data<double>("branching_neutron_photon_upper") +
+		                                                     N1520n->user_data<double>("branching_neutron_photon_lower")) / 2.;
 		std::cout << "g(N1520p -> proton + photon): " << std::sqrt(literature_value1 / w1) << "\n";
 		std::cout << "g(N1520n -> neutron + photon): " << std::sqrt(literature_value2 / w2) << "\n";
 	}
