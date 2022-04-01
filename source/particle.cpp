@@ -107,7 +107,7 @@ namespace Feynumeric
 		if( is_set(type, Type::TrueParticle) ) sign = 1;
 		else if( is_set(type, Type::AntiParticle) ) sign = -1;
 		else if( is_set(type, Type::NeutralParticle) ) sign = 0;
-		else if( !_is_group ){ warning("Particle type does not contain valid type (Neither True, Anti nor Neutral)"); sign = -666;}
+		else if( !_is_group ){ warning(FORMAT("Particle type of {} does not contain valid type (Neither True, Anti nor Neutral)", _name)); sign = -666;}
 		if( is_set(type, Type::Baryon) )
 		{
 			_baryon_number = sign * 1.;
@@ -146,6 +146,10 @@ namespace Feynumeric
 	    {
     		critical_error(FORMAT("Key <{}> is not set for particle {}\n", key, _name));
 	    }
+    	catch( std::exception const& e)
+	    {
+    		critical_error("nope");
+	    }
     }
 
 	void Particle::parity(int p)
@@ -160,12 +164,10 @@ namespace Feynumeric
 
 	void Particle::validate() const
 	{
-		if( is_set(_type, Type::Boson) &&  _spin.is_half_odd_integer() )
-		{
+		if( is_set(_type, Type::Boson) &&  _spin.is_half_odd_integer() ){
 			critical_error(FORMAT("Particle {} is classified as a boson but has spin {}.", _name, _spin.j()));
 		}
-		if( is_set(_type, Type::Fermion) &&  !_spin.is_half_odd_integer() )
-		{
+		if( is_set(_type, Type::Fermion) &&  !_spin.is_half_odd_integer() ){
 			critical_error(FORMAT("Particle {} is classified as a fermion but has spin {}.", _name, _spin.j()));
 		}
 	}

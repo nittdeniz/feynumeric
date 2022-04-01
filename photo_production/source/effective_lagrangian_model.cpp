@@ -220,46 +220,31 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				return -g/m_pi * isospin * GA5 * GS(pi->four_momentum(kin));
 			}
 	));
-	/*
+
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1440p, Direction::ANY},
-					{Proton, Direction::ANY},
-					{Feynumeric::QED::Photon, Direction::ANY}
+					{P["N12p"], Edge_Direction::ANY},
+					{P["N"], Edge_Direction::ANY},
+					{Feynumeric::QED::Photon, Edge_Direction::ANY}
 			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::std::shared_ptr<Graph_Edge>> const& edges){
+			[&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
 				using namespace Feynumeric;
-				auto const& n1440 = edges[0];
-				auto const& photon = edges[2];
-				auto const g = std::any_cast<double>(n1440->particle()->user_data("gRproton_photon"));
-				auto const m_rho = Rho_Zero->mass();
-				return -g/m_rho * dirac_sigmac(photon->four_momentum(kin), photon->lorentz_indices()[0]);
+				auto const& R = edges[0];
+				auto const& N = edges[1];
+				auto const& gamma = edges[2];
+				auto const g = R->particle()->user_data<double>("gRNphoton");
+				auto const m_rho = P["rho0"]->mass();
+				return -g/m_rho * dirac_sigmac(gamma->four_momentum(kin), gamma->lorentz_indices()[0]);
 			}
 	));
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1440n, Direction::ANY},
-					{Neutron, Direction::ANY},
-					{Feynumeric::QED::Photon, Direction::ANY}
+					{P["N32m"], Edge_Direction::ANY},
+					{P["N"], Edge_Direction::ANY},
+					{P["Pion"], Edge_Direction::ANY}
 			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::std::shared_ptr<Graph_Edge>> const& edges){
-				using namespace Feynumeric;
-				auto const& n1440 = edges[0];
-				auto const& photon = edges[2];
-				auto const g = std::any_cast<double>(n1440->particle()->user_data("gRneutron_photon"));
-				auto const m_rho = Rho_Zero->mass();
-				return -g/m_rho * dirac_sigmac(photon->four_momentum(kin), photon->lorentz_indices()[0]);
-			}
-	));
-
-	VMP->add(Feynumeric::Vertex(
-			{
-					{N1520p, Direction::ANY},
-					{Proton, Direction::ANY},
-					{Pi_Zero, Direction::ANY}
-			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::std::shared_ptr<Graph_Edge>> const& edges){
+			[](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
 				using namespace Feynumeric;
 				auto const& R = edges[0];
 				auto const& N = edges[1];
@@ -267,7 +252,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto mu = R->lorentz_indices()[0];
 				auto const& pR = R->four_momentum(kin);
 				auto const& pPi = pi->four_momentum(kin);
-				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
+				auto const g = R->particle()->user_data<double>("gRNpi");
 				auto const m_pi = pi->particle()->mass();
 				auto const isospin = isospin2_2(R, N);
 				return 1.i * isospin * g/(m_pi*m_pi) *
@@ -278,71 +263,48 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1520p, Direction::ANY},
-					{Neutron, Direction::ANY},
-					{Pi_Plus, Direction::ANY}
+					{P["N32m"], Edge_Direction::IN},
+					{P["N"], Edge_Direction::OUT},
+					{Feynumeric::QED::Photon, Edge_Direction::ANY}
 			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::std::shared_ptr<Graph_Edge>> const& edges){
+			[&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
 				using namespace Feynumeric;
 				auto const& R = edges[0];
 				auto const& N = edges[1];
-				auto const& pi = edges[2];
-				auto mu = R->lorentz_indices()[0];
+				auto const& photon = edges[2];
+				auto kappa = photon->lorentz_indices()[0];
+				auto lambda = R->lorentz_indices()[0];
 				auto const& pR = R->four_momentum(kin);
-				auto const& pPi = pi->four_momentum(kin);
-				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
-				auto const m_pi = pi->particle()->mass();
-				auto const isospin = isospin2_2(R, N);
-				return 1.i * isospin * g/(m_pi*m_pi) *
-				       CONTRACT_MATRIX(O32c(pR, mu, lambda) * pPi.contra(lambda), lambda) * GA5;
+				auto const& pPhoton = photon->four_momentum(kin);
+				auto const g = R->particle()->user_data<double>("gRNpi");
+//				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
+				auto const m_rho = P["rho0"]->mass();
+				return g/(4*m_rho*m_rho) * CONTRACT_MATRIX(O32c(pPhoton, kappa, mu) * O32c(pR, mu, lambda) * MT[*mu][*mu], mu);
 
 			}
 	));
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{N1520n, Direction::ANY},
-					{Proton, Direction::ANY},
-					{Pi_Minus, Direction::ANY}
+					{P["N32m"], Edge_Direction::OUT},
+					{P["N"], Edge_Direction::IN},
+					{Feynumeric::QED::Photon, Edge_Direction::ANY}
 			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::std::shared_ptr<Graph_Edge>> const& edges){
+			[&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+				using namespace Feynumeric;
 				using namespace Feynumeric;
 				auto const& R = edges[0];
 				auto const& N = edges[1];
-				auto const& pi = edges[2];
-				auto mu = R->lorentz_indices()[0];
+				auto const& photon = edges[2];
+				auto kappa = photon->lorentz_indices()[0];
+				auto lambda = R->lorentz_indices()[0];
 				auto const& pR = R->four_momentum(kin);
-				auto const& pPi = pi->four_momentum(kin);
-				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
-				auto const m_pi = pi->particle()->mass();
-				auto const isospin = isospin2_2(R, N);
-				return 1.i * isospin * g/(m_pi*m_pi) *
-				       CONTRACT_MATRIX(O32c(pR, mu, lambda) * pPi.contra(lambda), lambda) * GA5;
+				auto const& pPhoton = photon->four_momentum(kin);
+				auto const g = R->particle()->user_data<double>("gRNpi");
+//				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
+				auto const m_rho = P["rho0"]->mass();
+				return g/(4*m_rho*m_rho) * CONTRACT_MATRIX(O32c(pR, lambda, mu) * O32c(pPhoton, mu, kappa) * MT[*mu][*mu], mu);
 
 			}
 	));
-
-	VMP->add(Feynumeric::Vertex(
-			{
-					{N1520n, Direction::ANY},
-					{Neutron, Direction::ANY},
-					{Pi_Zero, Direction::ANY}
-			},
-			[](Feynumeric::Kinematics const& kin, std::vector<Feynumeric::std::shared_ptr<Graph_Edge>> const& edges){
-				using namespace Feynumeric;
-				auto const& R = edges[0];
-				auto const& N = edges[1];
-				auto const& pi = edges[2];
-				auto mu = R->lorentz_indices()[0];
-				auto const& pR = R->four_momentum(kin);
-				auto const& pPi = pi->four_momentum(kin);
-				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
-				auto const m_pi = pi->particle()->mass();
-				auto const isospin = isospin2_2(R, N);
-				return 1.i * isospin * g/(m_pi*m_pi) *
-				       CONTRACT_MATRIX(O32c(pR, mu, lambda) * pPi.contra(lambda), lambda) * GA5;
-
-			}
-	));
-	*/
 }

@@ -39,12 +39,13 @@ namespace Feynumeric
 			double value = std::stod(std::string(str.begin(), str.begin()+pos));
 			std::string unit  = std::string(str.begin()+pos, str.end());
 			std::transform(unit.begin(), unit.end(), unit.begin(), [](unsigned char c){ return std::tolower(c);});
-			if( unit == "ev"  ) return value * 1._eV;
-			if( unit == "kev" ) return value * 1._keV;
-			if( unit == "mev" ) return value * 1._MeV;
-			if( unit == "gev" ) return value * 1._GeV;
-			if( unit == "tev" ) return value * 1._TeV;
-			if( unit == "%" ) return value * 1._percent;
+			if( unit == "ev"  ) return static_cast<double>(value * 1._eV);
+			if( unit == "kev" ) return static_cast<double>(value * 1._keV);
+			if( unit == "mev" ) return static_cast<double>(value * 1._MeV);
+			if( unit == "gev" ) return static_cast<double>(value * 1._GeV);
+			if( unit == "tev" ) return static_cast<double>(value * 1._TeV);
+			if( unit == "%" ) return static_cast<double>(value * 1._percent);
+			if( unit == "" )  return static_cast<double>(value);
 			critical_error(FORMAT("Could not read unit. Supported: eV, keV, MeV, GeV, TeV, %. Found: {}", unit));
 		};
 
@@ -175,6 +176,9 @@ namespace Feynumeric
 					break;
 				}
 				case STATE::END:{
+					if( _particles.contains(particle._name) ){
+						warning(FORMAT("Overwriting particle {}.", particle._name));
+					}
 					_particles[particle._name] = std::make_shared<Particle>(particle);
 					state = STATE::READ_DECLARATION;
 					break;
@@ -209,7 +213,11 @@ namespace Feynumeric
 
 	Particle_Ptr const& Particle_Manager::operator[](std::string const& key) const
 	{
-		return _particles.at(key);
+		try{
+			return _particles.at(key);
+		} catch( std::out_of_range const& e ){
+			critical_error(FORMAT("Particle {} is not defined.", key));
+		}
 	}
 
 	Particle_Ptr& Particle_Manager::operator[](std::string const& key)

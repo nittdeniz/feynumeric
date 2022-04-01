@@ -52,26 +52,42 @@ branching_neutron_photon_lower 0.02%
 group N1440
 charge 1
 isospin 1/2 1/2
+gRNpi 0.380006
+gRNphoton 0.0604956
 
 @particle N1440n
 group N1440
 charge 0
 isospin 1/2 -1/2
+gRNpi 0.379619
+gRNphoton 0.0515926
 
 @group N1520
 group N32m
 mass 1.515GeV
-width 150MeV
+width 110MeV
+branching_N_pi_upper 65%
+branching_N_pi_lower 55%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.52%
+branching_proton_photon_lower 0.31%
+branching_neutron_photon_upper 0.53%
+branching_neutron_photon_lower 0.30%
 
 @particle N1520p
 group N1520
 charge 1
 isospin 1/2 1/2
+gRNpi 0.144174
+gRNphoton 0.309589
 
 @particle N1520n
 group N1520
 charge 0
 isospin 1/2 -1/2
+gRNpi 0.143973
+gRNphoton 0.310388
 
 @group Pion
 type Meson
@@ -97,3 +113,27 @@ type NeutralMeson
 charge 0
 isospin 1 0
 mass 134.9768MeV
+
+@group Rho
+type Meson
+spin 1
+mass 755.26MeV
+width 149.1MeV
+
+@particle rho+
+group Rho
+type AntiMeson
+charge 1
+isospin 1 1
+
+@particle rho0
+group Rho
+type NeutralMeson
+charge 0
+isospin 1 0
+
+@particle rho-
+group Rho
+type TrueMeson
+charge -1
+isospin 1 -1

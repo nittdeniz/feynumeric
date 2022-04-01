@@ -165,6 +165,9 @@ namespace Feynumeric
 
 	double Three_Vector::cos_theta() const
 	{
+		if( magnitude() == 0 ){
+			return 1.;
+		}
 		return _data[2].real() / magnitude();
 	}
 

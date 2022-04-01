@@ -131,13 +131,13 @@ namespace Feynumeric
 			Four_Vector p_new = -p;
 			return u(P, p_new, s, lorentz_indices);
 		}
-		if( s->j() == 1. / 2 ){
+		if( s->j() == 1/2. ){
 			auto N = p.E() + P->mass();
-			if( s->m() == 1. / 2 ){
+			if( s->m() == 1/2. ){
 				auto result = std::sqrt(N) * Matrix(4, 1, {1, 0, p.z() / N, ( p.x() + 1.i * p.y()) / N});
 				return result;
 			}
-			if( s->m() == -1. / 2 ){
+			if( s->m() == -1/2. ){
 				return std::sqrt(N) * Matrix(4, 1, {0, 1, ( p.x() - 1.i * p.y()) / N, -p.z() / N});
 			}
 			critical_error("Invalid state in polarisation vector.\n");

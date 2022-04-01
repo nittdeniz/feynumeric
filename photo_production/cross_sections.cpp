@@ -5,13 +5,29 @@
 
 #include <iostream>
 
-int main()
+int main(int argc, char** argv)
 {
 	using namespace Feynumeric;
 	using namespace Feynumeric::Units;
 
-	init_particles();
-	init_vertices();
+	if( argc != 2 )
+	{
+		critical_error("Program expects filename as a single and only argument.");
+	}
+	Particle_Manager P((std::string(argv[1])));
+	Particle_Ptr const& N1440p   = P.get("N1440p");
+	Particle_Ptr const& N1440n   = P.get("N1440n");
+	Particle_Ptr const& N1520p   = P.get("N1520p");
+	Particle_Ptr const& N1520n   = P.get("N1520n");
+	Particle_Ptr const& Proton   = P.get("proton");
+	Particle_Ptr const& Neutron  = P.get("neutron");
+	Particle_Ptr const& Pi_Plus  = P.get("pi+");
+	Particle_Ptr const& Pi_Minus = P.get("pi-");
+	Particle_Ptr const& Pi_Zero  = P.get("pi0");
+
+	init_vertices(P);
+
+	//init_particles();
 
 //	N1440p->user_data("gRNpi", 0.38);
 //	N1440p->user_data("gRNgamma", 0.0528755);

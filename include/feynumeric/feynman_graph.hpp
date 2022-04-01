@@ -24,6 +24,7 @@ namespace Feynumeric{
 	class Graph_Edge : public std::enable_shared_from_this<Graph_Edge>
 	{
 	private:
+		std::size_t _eid;
 		using Angular_Momentum_Ptr = std::shared_ptr<Angular_Momentum>;
 		using Lorentz_Index_Ptr = std::shared_ptr<Lorentz_Index>;
 		using Vertex_Ptr = std::shared_ptr<Graph_Vertex>;
@@ -37,7 +38,7 @@ namespace Feynumeric{
 
 		std::function<Matrix(Kinematics const&)> _feynman_rule;
 	public:
-		Graph_Edge(Feynman_Diagram* diagram, Particle_Ptr const& P);
+		Graph_Edge(std::size_t id, Feynman_Diagram* diagram, Particle_Ptr const& P);
 		Graph_Edge(Graph_Edge const& edge);
 		Graph_Edge& operator=(Graph_Edge const& edge);
 
@@ -47,6 +48,8 @@ namespace Feynumeric{
 
 		Vertex_Ptr front() const;
 		Vertex_Ptr back() const;
+
+		std::size_t id() const;
 
 		Particle_Ptr particle() const;
 
@@ -76,6 +79,7 @@ namespace Feynumeric{
 	class Graph_Vertex : public std::enable_shared_from_this<Graph_Vertex>
 	{
 	private:
+		std::size_t _vid;
 		Feynman_Diagram* _diagram;
 		std::vector<Edge_Ptr> _front;
 		std::vector<Edge_Ptr> _back;
@@ -83,13 +87,15 @@ namespace Feynumeric{
 		std::vector<Vertex::Particle_Direction> particle_directions();
 
 	public:
-		explicit Graph_Vertex(Feynman_Diagram* diagram);
+		explicit Graph_Vertex(std::size_t id, Feynman_Diagram* diagram);
 		Graph_Vertex(Graph_Vertex const& vertex);
 		Graph_Vertex& operator=(Graph_Vertex const& vertex);
 
 		std::vector<Edge_Ptr> front() const;
 		std::vector<Edge_Ptr> back() const;
 		std::vector<Edge_Ptr> all() const;
+
+		std::size_t id() const;
 
 		void front(Edge_Ptr const& e);
 		void back(Edge_Ptr const& e);

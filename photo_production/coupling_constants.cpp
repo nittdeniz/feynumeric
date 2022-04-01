@@ -39,10 +39,10 @@ int main(int argc, char** argv)
 	// coupling constant N1440 to N pi
 	{
 		N1440p->user_data("gRNpi", 1.);
-		N1440p->user_data("gRNgamma", 1.);
+		N1440p->user_data("gRNphoton", 1.);
 		N1440p->user_data("gRNrho", 1.);
 		N1440n->user_data("gRNpi", 1.);
-		N1440n->user_data("gRNgamma", 1.);
+		N1440n->user_data("gRNphoton", 1.);
 		N1440n->user_data("gRNrho", 1.);
 		auto channel_decay_n1440p1 = create_diagram("decay_n1440p to proton pi0", Wrench, VMP,
 		                                            {N1440p},
@@ -92,10 +92,10 @@ int main(int argc, char** argv)
 	// coupling constant N1440 to N gamma
 	{
 		N1440p->user_data("gRNpi", 1.);
-		N1440p->user_data("gRproton_photon", 1.);
+		N1440p->user_data("gRN_photon", 1.);
 		N1440p->user_data("gRNrho", 1.);
 		N1440n->user_data("gRNpi", 1.);
-		N1440n->user_data("gRneutron_photon", 1.);
+		N1440n->user_data("gRN_photon", 1.);
 		N1440n->user_data("gRNrho", 1.);
 
 		auto channel_decay_n1440p1 = create_diagram("decay_n1440p to proton photon", Wrench, VMP,
@@ -134,14 +134,14 @@ int main(int argc, char** argv)
 	|*	██  ██ ██  ██      ██ ██      ████  ██  *|
 	|*	██   ████  ██ ███████ ███████  ██████   *|
 	\********************************************/
-	/*
+
 	// coupling constant N1520 to N pi
 	{
 		N1520p->user_data("gRNpi", 1.);
 		N1520p->user_data("gRNgamma", 1.);
 		N1520p->user_data("gRNrho", 1.);
 		N1520n->user_data("gRNpi", 1.);
-		N1520n->user_data("gRNgamma", 1.);
+		N1520n->user_data("gRNphoton", 1.);
 		N1520n->user_data("gRNrho", 1.);
 		auto channel_decay_N1520p1 = create_diagram("decay_N1520p to proton pi0", Wrench, VMP,
 		                                            {N1520p},
@@ -187,45 +187,44 @@ int main(int argc, char** argv)
 		std::cout << "g(N1520p -> N + pi): " << std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
 		std::cout << "g(N1520n -> N + pi): " << std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
 	}
-	*/
-	/*
+
+
 	// coupling constant N1520 to N gamma
 	{
-		N1440p->user_data("gRNpi", 1.);
-		N1440p->user_data("gRproton_photon", 1.);
-		N1440p->user_data("gRNrho", 1.);
-		N1440n->user_data("gRNpi", 1.);
-		N1440n->user_data("gRneutron_photon", 1.);
-		N1440n->user_data("gRNrho", 1.);
+		N1520p->user_data("gRNpi", 1.);
+		N1520p->user_data("gRN_photon", 1.);
+		N1520p->user_data("gRNrho", 1.);
+		N1520n->user_data("gRNpi", 1.);
+		N1520n->user_data("gRN_photon", 1.);
+		N1520n->user_data("gRNrho", 1.);
 
-		auto channel_decay_n1440p1 = create_diagram("decay_n1440p to proton photon", Wrench, VMP,
-		                                            {N1440p},
+		auto channel_decay_n1520p1 = create_diagram("decay_n1520p to proton photon", Wrench, VMP,
+		                                            {N1520p},
 		                                            {},
 		                                            {Proton, QED::Photon}
 		);
 
-		auto channel_decay_n1440n1 = create_diagram("decay_n1440n to neutron photon", Wrench, VMP,
-		                                            {N1440n},
+		auto channel_decay_n1520n1 = create_diagram("decay_n1520n to neutron photon", Wrench, VMP,
+		                                            {N1520n},
 		                                            {},
 		                                            {Neutron, QED::Photon}
 		);
 
-		//	channel_decay_n1440p->print_amplitude();
+		//	channel_decay_n1520p->print_amplitude();
 		//
-		Feynman_Process decay_n1440p1({channel_decay_n1440p1});
-		Feynman_Process decay_n1440n1({channel_decay_n1440n1});
+		Feynman_Process decay_n1520p1({channel_decay_n1520p1});
+		Feynman_Process decay_n1520n1({channel_decay_n1520n1});
 
-		auto w1 = decay_n1440p1.decay_width();
-		auto w2 = decay_n1440n1.decay_width();
+		auto w1 = decay_n1520p1.decay_width();
+		auto w2 = decay_n1520n1.decay_width();
 
 
-		double const literature_value1 = N1440p->width() * ( N1440p->user_data<long double>("branching_proton_photon_upper") +
-		                                                     N1440p->user_data<long double>("branching_proton_photon_lower")) / 2.;
-		double const literature_value2 = N1440n->width() * ( N1440n->user_data<long double>("branching_neutron_photon_upper") +
-		                                                     N1440n->user_data<long double>("branching_neutron_photon_lower")) / 2.;
+		double const literature_value1 = N1520p->width() * ( N1520p->user_data<long double>("branching_proton_photon_upper") +
+		                                                     N1520p->user_data<long double>("branching_proton_photon_lower")) / 2.;
+		double const literature_value2 = N1520n->width() * ( N1520n->user_data<long double>("branching_neutron_photon_upper") +
+		                                                     N1520n->user_data<long double>("branching_neutron_photon_lower")) / 2.;
 		std::cout << "g(N1520p -> proton + photon): " << std::sqrt(literature_value1 / w1) << "\n";
 		std::cout << "g(N1520n -> neutron + photon): " << std::sqrt(literature_value2 / w2) << "\n";
 	}
-	 */
 	return EXIT_SUCCESS;
 }
