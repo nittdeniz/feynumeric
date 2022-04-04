@@ -24,7 +24,7 @@ namespace Feynumeric
 	    {
     		Particle_Ptr particle;
     		Edge_Direction direction;
-    		Particle_Direction(Particle_Ptr ptr, Edge_Direction dir);
+    		Particle_Direction(Particle_Ptr ptr, Edge_Direction dir = Edge_Direction::ANY);
     		Particle_Direction(Particle_Direction const& pd);
     		Particle_Direction& operator=(Particle_Direction const& pd);
 	    };

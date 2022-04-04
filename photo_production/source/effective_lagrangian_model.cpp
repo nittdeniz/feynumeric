@@ -202,9 +202,9 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{P["N12p"], Edge_Direction::ANY},
-					{P["N"], Edge_Direction::ANY},
-					{P["Pion"],   Edge_Direction::ANY}
+					{P["N12p"]},
+					{P["N"]},
+					{P["Pion"]}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
 				using namespace Feynumeric;
@@ -220,9 +220,9 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{P["N12p"], Edge_Direction::ANY},
-					{P["N"], Edge_Direction::ANY},
-					{Feynumeric::QED::Photon, Edge_Direction::ANY}
+					{P["N12p"]},
+					{P["N"]},
+					{Feynumeric::QED::Photon}
 			},
 			[&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
 				using namespace Feynumeric;
@@ -237,9 +237,9 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{P["N32m"], Edge_Direction::ANY},
-					{P["N"], Edge_Direction::ANY},
-					{P["Pion"], Edge_Direction::ANY}
+					{P["N32m"]},
+					{P["N"]},
+					{P["Pion"]}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
 				using namespace Feynumeric;
@@ -262,7 +262,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 			{
 					{P["N32m"], Edge_Direction::IN},
 					{P["N"], Edge_Direction::OUT},
-					{Feynumeric::QED::Photon, Edge_Direction::ANY}
+					{Feynumeric::QED::Photon}
 			},
 			[&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
 				using namespace Feynumeric;
@@ -276,7 +276,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const g = R->particle()->user_data<double>("gRNpi");
 //				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
 				auto const m_rho = P["rho0"]->mass();
-				return g/(4*m_rho*m_rho) * CONTRACT_MATRIX(O32c(pPhoton, kappa, mu) * O32c(pR, mu, lambda) * MT[*mu][*mu], mu);
+				return g/(4*m_rho*m_rho) * CONTRACT_MATRIX(O32c(pPhoton, mu, kappa) * O32c(pR, lambda, mu) * MT[*mu][*mu], mu);
 
 			}
 	));
@@ -285,7 +285,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 			{
 					{P["N32m"], Edge_Direction::OUT},
 					{P["N"], Edge_Direction::IN},
-					{Feynumeric::QED::Photon, Edge_Direction::ANY}
+					{Feynumeric::QED::Photon}
 			},
 			[&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
 				using namespace Feynumeric;

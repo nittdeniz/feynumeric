@@ -12,7 +12,7 @@ isospin 1/2 1/2
 @particle neutron
 group N
 charge 0
-mass 939.565413MeV
+mass 938.9MeV
 isospin 1/2 -1/2
 
 @group N12p
