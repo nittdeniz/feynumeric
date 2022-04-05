@@ -13,9 +13,13 @@ namespace Feynumeric
 	Feynman_Process::Feynman_Process(std::initializer_list<Feynman_Diagram_Ptr> list)
 			: _diagrams(list){
 		validate_diagram_compatibility();
+		for( auto& diagram : _diagrams ){
+			diagram->generate_amplitude();
+		}
 	}
 
 	void Feynman_Process::add_diagram(Feynman_Diagram_Ptr diagram){
+		diagram->generate_amplitude();
 		_diagrams.push_back(diagram);
 		validate_diagram_compatibility();
 	}
@@ -91,7 +95,7 @@ namespace Feynumeric
 		kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
 
 		for( auto& diagram : _diagrams ){
-			diagram->generate_amplitude();
+//			diagram->generate_amplitude();
 			diagram->reset_spins();
 			diagram->reset_indices();
 		}
@@ -179,8 +183,9 @@ namespace Feynumeric
 		kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
 
 		for( auto& diagram : _diagrams ){
-			diagram->generate_amplitude();
+//			diagram->generate_amplitude();
 			diagram->reset_spins();
+			diagram->reset_indices();
 		}
 
 		std::size_t const N_spins = [&](){
@@ -253,8 +258,9 @@ namespace Feynumeric
 		double Ms_squared{0.};
 
 		for( auto& diagram : _diagrams ){
-			diagram->generate_amplitude();
+//			diagram->generate_amplitude();
 			diagram->reset_spins();
+			diagram->reset_indices();
 		}
 
 		std::size_t const N_spins = [&](){
