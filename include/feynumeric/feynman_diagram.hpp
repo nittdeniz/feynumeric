@@ -1,7 +1,7 @@
 #ifndef FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 #define FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 
-#define PRINT_AMPLITUDE 1
+#define PRINT_AMPLITUDE 0
 #define DEBUG_AMPLITUDE 0
 
 #include <initializer_list>
@@ -69,6 +69,7 @@ namespace Feynumeric{
 		void cross_outgoing(std::size_t a, std::size_t b);
 
 		void reset_spins();
+		void reset_indices();
 
 		void phase(Complex phi);
 

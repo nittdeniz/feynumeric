@@ -32,7 +32,7 @@ int main()
                              );
      
     Feynman_Process pair_production({s_channel}); // add the diagram to the process
-	  pair_production.dsigma_dcos_table(std::cout, 500._MeV, 0.1); // print to std::cout, sqrt_s is 500 MeV and we go from cos \theta = -1 to 1 in 0.1-sized steps
+	  pair_production.print_dsigma_dcos_table(std::cout, 500._MeV, 0.1); // print to std::cout, sqrt_s is 500 MeV and we go from cos \theta = -1 to 1 in 0.1-sized steps
 }
 
 ```

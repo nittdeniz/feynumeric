@@ -19,16 +19,22 @@ namespace Feynumeric
 
 		void validate_diagram_compatibility() const;
 
+		double no_check_dsigma_dcos(double sqrt_s, double cos_theta);
+
 	public:
 		Feynman_Process(std::initializer_list<Feynman_Diagram_Ptr> list);
 		void add_diagram(Feynman_Diagram_Ptr diagram);
 
-		void dsigma_dcos_table(std::ostream& out, double sqrt_s, std::size_t steps);
-		void dsigma_dcos_table(std::ostream& out, double sqrt_s, double delta);
-		void dsigma_dcos_table(std::ostream& out, double sqrt_s, std::vector<double>&& values);
+		void print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::size_t steps);
+		void print_dsigma_dcos_table(std::ostream& out, double sqrt_s, double delta);
+		void print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::vector<double>&& values);
 
-		void sigma(std::ostream& out, std::vector<double>&& values);
+		void print_sigma_table(std::ostream& out, std::vector<double>&& values);
 
+
+
+		std::map<double, std::vector<double>> dsigma_dcos_table(double sqrt_s, std::size_t steps);
+		std::map<double, std::vector<double>> dsigma_dcos_table(double sqrt_s, double delta);
 		std::map<double, std::vector<double>> dsigma_dcos_table(double sqrt_s, std::vector<double>&& values);
 
 		double decay_width();

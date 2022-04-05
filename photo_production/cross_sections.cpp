@@ -3,6 +3,7 @@
 
 #include "effective_lagrangian_model.hpp"
 
+#include <iomanip>
 #include <iostream>
 
 int main(int argc, char** argv)
@@ -42,8 +43,11 @@ int main(int argc, char** argv)
 
 
 		Feynman_Process scattering_n1440p({channel_s});
-		scattering_n1440p.dsigma_dcos_table(std::cout, 1.49_GeV, 0.1);
-//		scattering_n1440p.sigma_table(std::cout, {{1.4_GeV}});
+
+
+
+		scattering_n1440p.print_dsigma_dcos_table(std::cout, 1.49_GeV, 0.1);
+		scattering_n1440p.print_sigma_table(std::cout, {{1.49_GeV}});
 	}
 	return EXIT_SUCCESS;
 }
