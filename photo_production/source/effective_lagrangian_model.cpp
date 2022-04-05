@@ -274,10 +274,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& pR = R->four_momentum(kin);
 				auto const& pPhoton = photon->four_momentum(kin);
 				auto const g = R->particle()->user_data<double>("gRNpi");
-//				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
 				auto const m_rho = P["rho0"]->mass();
 				return g/(4*m_rho*m_rho) * CONTRACT_MATRIX(O32c(pPhoton, mu, kappa) * O32c(pR, lambda, mu) * MT[*mu][*mu], mu);
-
 			}
 	));
 

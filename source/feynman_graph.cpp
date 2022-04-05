@@ -243,11 +243,15 @@ namespace Feynumeric
 
 	std::vector<Lorentz_Index_Ptr> Graph_Edge::lorentz_indices(std::shared_ptr<Graph_Vertex> const& ptr) const
 	{
-		if( contains(ptr->front(), shared_from_this()) )
-		{
-			return std::vector<Lorentz_Index_Ptr>({_lorentz_indices.begin(), _lorentz_indices.begin() + _lorentz_indices.size()/2});
+		if( is_virtual() ){
+			if( contains(ptr->front(), shared_from_this()) ){
+				return std::vector<Lorentz_Index_Ptr>({_lorentz_indices.begin(), _lorentz_indices.begin() + _lorentz_indices.size()/2});
+			}
+			return std::vector<Lorentz_Index_Ptr>({_lorentz_indices.begin() + _lorentz_indices.size()/2, _lorentz_indices.end()});
 		}
-		return std::vector<Lorentz_Index_Ptr>({_lorentz_indices.begin() + _lorentz_indices.size()/2, _lorentz_indices.end()});
+		else{
+			return _lorentz_indices;
+		}
 	}
 
 	std::function<Matrix(Kinematics const&)> Graph_Edge::feynman_rule()
