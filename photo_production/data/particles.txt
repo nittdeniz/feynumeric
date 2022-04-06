@@ -53,14 +53,14 @@ group N1440
 charge 1
 isospin 1/2 1/2
 gRNpi 0.380006
-gRNphoton 0.0604956
+gRNphoton 0.0620975
 
 @particle N1440n
 group N1440
 charge 0
 isospin 1/2 -1/2
 gRNpi 0.379619
-gRNphoton 0.0515926
+gRNphoton 0.0529588
 
 @group N1520
 group N32m
@@ -80,14 +80,14 @@ group N1520
 charge 1
 isospin 1/2 1/2
 gRNpi 0.144174
-gRNphoton 0.309589
+gRNphoton 0.354675
 
 @particle N1520n
 group N1520
 charge 0
 isospin 1/2 -1/2
 gRNpi 0.143973
-gRNphoton 0.310388
+gRNphoton 0.355534
 
 @group Pion
 type Meson

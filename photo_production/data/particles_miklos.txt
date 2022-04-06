@@ -6,7 +6,7 @@ parity 1
 @particle proton
 group N
 charge 1
-mass 938.272081MeV
+mass 938.9MeV
 isospin 1/2 1/2
 
 @particle neutron
@@ -52,15 +52,15 @@ branching_neutron_photon_lower 0.02%
 group N1440
 charge 1
 isospin 1/2 1/2
-gRNpi 0.380006
-gRNphoton 0.0604956
+gRNpi 0.384704
+gRNphoton 0.0621897
 
 @particle N1440n
 group N1440
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.379619
-gRNphoton 0.0515926
+gRNpi 0.384704
+gRNphoton 0.0528755
 
 @group N1520
 group N32m
@@ -98,21 +98,21 @@ group Pion
 type AntiMeson
 charge 1
 isospin 1 1
-mass 139.57039MeV
+mass 139.57MeV
 
 @particle pi-
 group Pion
 type TrueMeson
 charge -1
 isospin 1 -1
-mass 139.57039MeV
+mass 139.57MeV
 
 @particle pi0
 group Pion
 type NeutralMeson
 charge 0
 isospin 1 0
-mass 134.9768MeV
+mass 134.98MeV
 
 @group Rho
 type Meson
