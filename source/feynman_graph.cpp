@@ -381,10 +381,10 @@ namespace Feynumeric
 				auto indices = edge_ptrs[k]->lorentz_indices();
 				auto dummy_ptr = std::make_shared<Graph_Edge>(*edge_ptrs[k]);
 				if( contains(_front, edge_ptrs[k]) ){
-					dummy_ptr->lorentz_indices({indices.begin(), indices.begin() + indices.size()/2});
+					dummy_ptr->lorentz_indices({indices.begin() + indices.size()/2, indices.end()});
 				}
 				else{
-					dummy_ptr->lorentz_indices({indices.begin() + indices.size()/2, indices.end()});
+					dummy_ptr->lorentz_indices({indices.begin(), indices.begin() + indices.size()/2});
 				}
 				_diagram->_graph._dummies.push_back(dummy_ptr);
 				edge_ptrs[k] = dummy_ptr;

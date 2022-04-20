@@ -314,23 +314,20 @@ namespace Feynumeric
 	}
 
 
-	Matrix Projector(std::shared_ptr<Graph_Edge> edge_ptr, const Kinematics& kin, bool ignore_momentum){
-		return Projector(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->lorentz_indices(),
-		                 ignore_momentum);
+	Matrix Projector(std::shared_ptr<Graph_Edge> edge_ptr, const Kinematics& kin){
+		return Projector(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->lorentz_indices());
 	}
 
-	Matrix Propagator(std::shared_ptr<Graph_Edge> edge_ptr, const Kinematics& kin, bool ignore_momentum){
-		return Propagator(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->lorentz_indices(),
-		                  ignore_momentum);
+	Matrix Propagator(std::shared_ptr<Graph_Edge> edge_ptr, const Kinematics& kin){
+		return Propagator(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->lorentz_indices());
 	}
 
-	Matrix Projector(Particle_Ptr const& P, const Four_Vector& p, const std::vector<Lorentz_Index_Ptr>& lorentz_indices,
-	                 bool ignore_momentum){
-		return Projector(P, P->spin(), p, lorentz_indices, ignore_momentum);
+	Matrix Projector(Particle_Ptr const& P, const Four_Vector& p, const std::vector<Lorentz_Index_Ptr>& lorentz_indices){
+		return Projector(P, P->spin(), p, lorentz_indices);
 	}
 
 	Matrix Projector(Particle_Ptr const& P, Angular_Momentum const& spin, const Four_Vector& p,
-	                 const std::vector<Lorentz_Index_Ptr>& lorentz_indices, bool ignore_momentum){
+	                 const std::vector<Lorentz_Index_Ptr>& lorentz_indices){
 		int const n = static_cast<int>(spin.j());
 		if( spin.is_half_odd_integer()){
 			Angular_Momentum new_spin(spin.j() + 0.5, spin.j() + 0.5);
@@ -343,7 +340,7 @@ namespace Feynumeric
 			for( std::size_t i = 0; i < 4; ++i ){
 				for( std::size_t j = 0; j < 4; ++j ){
 					//contraction += -( GAC[*mu] * GAC[*nu] * Projector(P, new_spin, p, copy, ignore_momentum));
-					contraction += -( GAC[*nu] * GAC[*mu] * Projector(P, new_spin, p, copy, ignore_momentum));
+					contraction += -( GAC[*mu] * GAC[*nu] * Projector(P, new_spin, p, copy));
 					++( *nu );
 				}
 				++( *mu );
@@ -370,15 +367,18 @@ namespace Feynumeric
 		std::vector<Lorentz_Index_Ptr> indices_right(lorentz_indices.begin() + half_size, lorentz_indices.end());
 
 		// since the whole projector is symmetric, we sort the indices so we can use std::next_permutation
-		std::sort(indices_left.begin(), indices_left.end());
-		std::sort(indices_right.begin(), indices_right.end());
+//		std::sort(indices_left.begin(), indices_left.end());
+//		std::sort(indices_right.begin(), indices_right.end());
 
 		auto all_permutations = [&](std::vector<Lorentz_Index_Ptr>& v){
 			std::vector<Lorentz_Index_Ptr> result;
-			result.reserve(v.size() * f(v.size()));
-			do{
+			std::size_t const N = constexpr_factorial(v.size());
+			result.reserve(v.size() * N);
+
+			for( std::size_t i = 0; i < N; ++i ){
 				result.insert(result.end(), v.begin(), v.end());
-			} while( std::next_permutation(v.begin(), v.end()));
+				std::next_permutation(v.begin(), v.end());
+			}
 			return result;
 		};
 
@@ -391,9 +391,6 @@ namespace Feynumeric
 				critical_error("Lorentz_Index_Ptr is nullptr.\n");
 			}
 			auto const mt = metric_tensor.at(*mu, *nu);
-			if( ignore_momentum ){
-				return -mt;
-			}
 			auto pmu = p.contra(mu);
 			auto pnu = p.contra(nu);
 			auto denominator = p.squared();
@@ -437,8 +434,7 @@ namespace Feynumeric
 	}
 
 	Matrix
-	Propagator(const Particle_Ptr& P, const Four_Vector& p, const std::vector<Lorentz_Index_Ptr>& lorentz_indices,
-	           bool ignore_momentum){
+	Propagator(const Particle_Ptr& P, const Four_Vector& p, const std::vector<Lorentz_Index_Ptr>& lorentz_indices){
 		Complex breit_wigner;
 		double p2 = p.squared();
 		if( p2 > 0 ){
@@ -446,7 +442,7 @@ namespace Feynumeric
 		} else{
 			breit_wigner = -1.i / ( p.squared() - P->mass() * P->mass());
 		}
-		auto project = Projector(P, p, lorentz_indices, ignore_momentum);
+		auto project = Projector(P, p, lorentz_indices);
 		return breit_wigner * project;
 //		return breit_wigner * Projector(P, p, lorentz_indices, ignore_momentum);
 	}

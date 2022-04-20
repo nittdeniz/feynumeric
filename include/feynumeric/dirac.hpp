@@ -64,12 +64,12 @@ namespace Feynumeric
     Matrix epsilon(std::shared_ptr<Particle> const& P, Four_Vector const& p, std::shared_ptr<Angular_Momentum> s, std::vector<std::shared_ptr<Lorentz_Index>> const& lorentz_indices);
     Matrix epsilon_star(std::shared_ptr<Particle> const& P, Four_Vector const& p, std::shared_ptr<Angular_Momentum> s, std::vector<std::shared_ptr<Lorentz_Index>> const& lorentz_indices);
 
-    Matrix Projector(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin, bool ignore_momentum = false);
-    Matrix Propagator(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin, bool ignore_momentum = false);
+    Matrix Projector(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin);
+    Matrix Propagator(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin);
 
-    Matrix Projector(std::shared_ptr<Particle> const& P, const Four_Vector &p, const std::vector<std::shared_ptr<Lorentz_Index>> &lorentz_indices, bool ignore_momentum = false);
-	Matrix Projector(std::shared_ptr<Particle> const& P, Angular_Momentum const& spin, const Four_Vector &p, const std::vector<std::shared_ptr<Lorentz_Index>> &lorentz_indices, bool ignore_momentum = false);
-    Matrix Propagator(std::shared_ptr<Particle> const& P, const Four_Vector &p, const std::vector<std::shared_ptr<Lorentz_Index>> &lorentz_indices, bool ignore_momentum = false);
+    Matrix Projector(std::shared_ptr<Particle> const& P, const Four_Vector &p, const std::vector<std::shared_ptr<Lorentz_Index>> &lorentz_indices);
+	Matrix Projector(std::shared_ptr<Particle> const& P, Angular_Momentum const& spin, const Four_Vector &p, const std::vector<std::shared_ptr<Lorentz_Index>> &lorentz_indices);
+    Matrix Propagator(std::shared_ptr<Particle> const& P, const Four_Vector &p, const std::vector<std::shared_ptr<Lorentz_Index>> &lorentz_indices);
 }
 
 #endif // Feynumeric_DIRAC_HPP
