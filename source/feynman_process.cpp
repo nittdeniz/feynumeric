@@ -139,9 +139,9 @@ namespace Feynumeric
 				}
 				Ms_squared[_diagrams.size()] += ( M * std::conj(M)).real();
 			}
-
 			for( auto& value : Ms_squared ){
 				value *= phase_space_factor;
+//				value = phase_space_factor;
 			}
 			result[cos_theta] = Ms_squared;
 		}

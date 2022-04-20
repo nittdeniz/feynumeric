@@ -224,12 +224,12 @@ namespace Feynumeric
 		return result;
 	}
 
-	Matrix O32(Four_Vector const& p, Lorentz_Index_Ptr const& mu, Lorentz_Index_Ptr const& lambda){
-		return p.contra(mu) * GA[*( lambda )] - GS(p) * MT[*mu][*lambda];
+	Matrix O32(Four_Vector const& p, Lorentz_Index_Ptr const& mu, Lorentz_Index_Ptr const& nu){
+		return p.contra(mu) * GA[*( nu )] - GS(p) * MT[*mu][*nu];
 	}
 
-	Matrix O32c(Four_Vector const& p, Lorentz_Index_Ptr const& mu, Lorentz_Index_Ptr const& lambda){
-		return p.co(mu) * GAC[*( lambda )] - GS(p) * MT[*mu][*lambda];
+	Matrix O32c(Four_Vector const& p, Lorentz_Index_Ptr const& mu, Lorentz_Index_Ptr const& nu){
+		return p.co(mu) * GAC[*( nu )] - GS(p) * MT[*mu][*nu];
 	}
 
 	Matrix O(Angular_Momentum_Ptr const& s, Four_Vector const& p, std::vector<Lorentz_Index_Ptr> const& mu,
@@ -342,7 +342,8 @@ namespace Feynumeric
 			Matrix contraction(4, 4, 0);
 			for( std::size_t i = 0; i < 4; ++i ){
 				for( std::size_t j = 0; j < 4; ++j ){
-					contraction += -( GAC[*mu] * GAC[*nu] * Projector(P, new_spin, p, copy, ignore_momentum));
+					//contraction += -( GAC[*mu] * GAC[*nu] * Projector(P, new_spin, p, copy, ignore_momentum));
+					contraction += -( GAC[*nu] * GAC[*mu] * Projector(P, new_spin, p, copy, ignore_momentum));
 					++( *nu );
 				}
 				++( *mu );
@@ -445,6 +446,8 @@ namespace Feynumeric
 		} else{
 			breit_wigner = -1.i / ( p.squared() - P->mass() * P->mass());
 		}
-		return breit_wigner * Projector(P, p, lorentz_indices, ignore_momentum);
+		auto project = Projector(P, p, lorentz_indices, ignore_momentum);
+		return breit_wigner * project;
+//		return breit_wigner * Projector(P, p, lorentz_indices, ignore_momentum);
 	}
 }

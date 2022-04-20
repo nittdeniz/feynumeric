@@ -41,8 +41,8 @@ namespace Feynumeric
 
 
 
-	Matrix O32(Four_Vector const& p, std::shared_ptr<Lorentz_Index> const& mu, std::shared_ptr<Lorentz_Index> const& lambda);
-	Matrix O32c(Four_Vector const& p, std::shared_ptr<Lorentz_Index> const& mu, std::shared_ptr<Lorentz_Index> const& lambda);
+	Matrix O32(Four_Vector const& p, std::shared_ptr<Lorentz_Index> const& mu, std::shared_ptr<Lorentz_Index> const& nu);
+	Matrix O32c(Four_Vector const& p, std::shared_ptr<Lorentz_Index> const& mu, std::shared_ptr<Lorentz_Index> const& nu);
 	Matrix O(std::shared_ptr<Angular_Momentum> const& s, Four_Vector const& p, std::vector<std::shared_ptr<Lorentz_Index>> const& lorentz_indices);
 
     Matrix u(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin);
