@@ -23,6 +23,7 @@ namespace Feynumeric
 
 	public:
 		Feynman_Process(std::initializer_list<Feynman_Diagram_Ptr> list);
+		Feynman_Process(std::vector<Feynman_Diagram_Ptr> list);
 		void add_diagram(Feynman_Diagram_Ptr diagram);
 
 		void print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::size_t steps);

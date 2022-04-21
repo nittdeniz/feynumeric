@@ -18,6 +18,14 @@ namespace Feynumeric
 		}
 	}
 
+	Feynman_Process::Feynman_Process(std::vector<Feynman_Diagram_Ptr> list)
+			: _diagrams(std::move(list)){
+		validate_diagram_compatibility();
+		for( auto& diagram : _diagrams ){
+			diagram->generate_amplitude();
+		}
+	}
+
 	void Feynman_Process::add_diagram(Feynman_Diagram_Ptr diagram){
 		diagram->generate_amplitude();
 		_diagrams.push_back(diagram);
