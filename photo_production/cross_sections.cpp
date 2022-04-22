@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 	Command_Line_Manager cmd(argc, argv);
 
 	cmd.register_command("particle_file", true, "file with particle parameters");
-	cmd.register_command("form_factor", std::string("none"), "which form factor to use (none, cassing, manley, monitz)");
+	cmd.register_command("form_factor", std::string("none"), "which form factor to use (none, cassing, manley, moniz)");
 	cmd.register_command("channel", std::string("s"), "which channel to use [s, t, u, c] or any combination.");
 	cmd.register_command("sqrt_s", true, "the energy in the center of mass frame in GeV");
 
@@ -25,10 +25,10 @@ int main(int argc, char** argv)
 	double sqrt_s = cmd.as_double("sqrt_s");
 
 	auto const& channel = cmd.as_string("channel");
-	bool s_channel = channel.find("s") != std::string::npos;
-	bool u_channel = channel.find("u") != std::string::npos;
-	bool t_channel = channel.find("t") != std::string::npos;
-	bool c_channel = channel.find("c") != std::string::npos;
+	bool const s_channel = channel.find('s') != std::string::npos;
+	bool const u_channel = channel.find('u') != std::string::npos;
+	bool const t_channel = channel.find('t') != std::string::npos;
+	bool const c_channel = channel.find('c') != std::string::npos;
 
 
 
@@ -43,6 +43,42 @@ int main(int argc, char** argv)
 	Particle_Ptr const& Pi_Plus  = P.get("pi+");
 	Particle_Ptr const& Pi_Minus = P.get("pi-");
 	Particle_Ptr const& Pi_Zero  = P.get("pi0");
+
+	std::string const& form_factor = cmd.as_string("form_factor");
+
+	if( form_factor == "none" ){
+		N1440p->user_data("form_factor", identity);
+		N1440n->user_data("form_factor", identity);
+		N1520p->user_data("form_factor", identity);
+		N1520n->user_data("form_factor", identity);
+	}
+	else if( form_factor == "moniz" ){
+		N1440p->user_data("form_factor", moniz);
+		N1440n->user_data("form_factor", moniz);
+		N1520p->user_data("form_factor", moniz);
+		N1520n->user_data("form_factor", moniz);
+	}
+	else if( form_factor == "manley" ){
+		N1440p->user_data("form_factor", manley);
+		N1440n->user_data("form_factor", manley);
+		N1520p->user_data("form_factor", manley);
+		N1520n->user_data("form_factor", manley);
+	}
+	else if( form_factor == "cutkosky" ){
+		N1440p->user_data("form_factor", cutkosky);
+		N1440n->user_data("form_factor", cutkosky);
+		N1520p->user_data("form_factor", cutkosky);
+		N1520n->user_data("form_factor", cutkosky);
+	}
+	else if( form_factor == "cassing" ){
+		N1440p->user_data("form_factor", cassing);
+		N1440n->user_data("form_factor", cassing);
+		N1520p->user_data("form_factor", cassing);
+		N1520n->user_data("form_factor", cassing);
+	}
+	else{
+		critical_error("Unknown form factor");
+	}
 
 	init_vertices(P);
 
@@ -59,19 +95,19 @@ int main(int argc, char** argv)
 	{
 		if( s_channel ){
 			diagrams_proton_pi_zero.push_back(
-					create_diagram("N1440 s_channel1", Double_Wrench, VMP,
+					create_diagram("N1440 s", Double_Wrench, VMP,
 					               {Proton, QED::Photon},
 					               {N1440p},
 					               {Pi_Zero, Proton}
 					));
 			diagrams_proton_pi_minus.push_back(
-					create_diagram("N1440 s_channel2", Double_Wrench, VMP,
+					create_diagram("N1440 s", Double_Wrench, VMP,
 					               {Neutron, QED::Photon},
 					               {N1440n},
 					               {Pi_Minus, Proton}
 					));
 			diagrams_neutron_pi_plus.push_back(
-					create_diagram("N1440 s_channel3", Double_Wrench, VMP,
+					create_diagram("N1440 s", Double_Wrench, VMP,
 					               {Proton, QED::Photon},
 					               {N1440p},
 					               {Pi_Plus, Neutron}
@@ -79,21 +115,21 @@ int main(int argc, char** argv)
 		}
 		if( u_channel ){
 			diagrams_proton_pi_zero.push_back(
-					create_diagram("N1440 u_channel1", X_Man, VMP,
+					create_diagram("N1440 u", X_Man, VMP,
 					               {Proton, QED::Photon},
 					               {N1440p},
 					               {Pi_Zero, Proton}
 					));
 			diagrams_proton_pi_minus.push_back(
-					create_diagram("N1440 u_channel2", X_Man, VMP,
+					create_diagram("N1440 u", X_Man, VMP,
 					               {Neutron, QED::Photon},
-					               {N1440n},
+					               {N1440p},
 					               {Pi_Minus, Proton}
 					));
 			diagrams_neutron_pi_plus.push_back(
-					create_diagram("N1440 u_channel3", X_Man, VMP,
+					create_diagram("N1440 u", X_Man, VMP,
 					               {Proton, QED::Photon},
-					               {N1440p},
+					               {N1440n},
 					               {Pi_Plus, Neutron}
 					));
 		}
@@ -102,19 +138,19 @@ int main(int argc, char** argv)
 	{
 		if( s_channel ){
 			diagrams_proton_pi_zero.push_back(
-					create_diagram("N1520 s_channel1", Double_Wrench, VMP,
+					create_diagram("N1520 s", Double_Wrench, VMP,
 					               {Proton, QED::Photon},
 					               {N1520p},
 					               {Pi_Zero, Proton}
 					));
 			diagrams_proton_pi_minus.push_back(
-					create_diagram("N1520 s_channel2", Double_Wrench, VMP,
+					create_diagram("N1520 s", Double_Wrench, VMP,
 					               {Neutron, QED::Photon},
 					               {N1520n},
 					               {Pi_Minus, Proton}
 					));
 			diagrams_neutron_pi_plus.push_back(
-					create_diagram("N1520 s_channel3", Double_Wrench, VMP,
+					create_diagram("N1520 s", Double_Wrench, VMP,
 					               {Proton, QED::Photon},
 					               {N1520p},
 					               {Pi_Plus, Neutron}
@@ -122,21 +158,21 @@ int main(int argc, char** argv)
 		}
 		if( u_channel ){
 			diagrams_proton_pi_zero.push_back(
-					create_diagram("N1520 u_channel1", X_Man, VMP,
+					create_diagram("N1520 u", X_Man, VMP,
 					               {Proton, QED::Photon},
 					               {N1520p},
 					               {Pi_Zero, Proton}
 					));
 			diagrams_proton_pi_minus.push_back(
-					create_diagram("N1520 u_channel2", X_Man, VMP,
+					create_diagram("N1520 u", X_Man, VMP,
 					               {Neutron, QED::Photon},
-					               {N1520n},
+					               {N1520p},
 					               {Pi_Minus, Proton}
 					));
 			diagrams_neutron_pi_plus.push_back(
-					create_diagram("N1520 u_channel3", X_Man, VMP,
+					create_diagram("N1520 u", X_Man, VMP,
 					               {Proton, QED::Photon},
-					               {N1520p},
+					               {N1520n},
 					               {Pi_Plus, Neutron}
 					));
 		}
@@ -146,14 +182,15 @@ int main(int argc, char** argv)
 	Feynman_Process scattering_proton_pi_minus(diagrams_proton_pi_minus);
 	Feynman_Process scattering_neutron_pi_plus(diagrams_neutron_pi_plus);
 
-	std::cout << "Scattering proton gamma -> proton pi0\n";
-	std::cout << "sqrt_s = " << sqrt_s << "\n";
+	status("Scattering proton gamma -> proton pi0");
+	status(FORMAT("sqrt_s = {}", sqrt_s));
 	scattering_proton_pi_zero.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
-	std::cout << "Scattering neutron gamma -> proton pi-\n";
-	std::cout << "sqrt_s = " << sqrt_s << "\n";
+	std::cout << "\n\n";
+	status("Scattering neutron gamma -> proton pi-");
+	status(FORMAT("sqrt_s = {}", sqrt_s));
 	scattering_proton_pi_minus.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
-	std::cout << "Scattering proton gamma -> neutron pi+\n";
-	std::cout << "sqrt_s = " << sqrt_s << "\n";
+	status("Scattering proton gamma -> neutron pi+");
+	status(FORMAT("sqrt_s = {}", sqrt_s));
 	scattering_proton_pi_zero.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
 	return EXIT_SUCCESS;
 }

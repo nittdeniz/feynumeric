@@ -261,7 +261,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				++(*nu);
 				auto const check3 = O32c(pR, nu, mu) * pPi.contra(nu);
 				auto result = CONTRACT_MATRIX(O32c(pR, lambda, mu) * pPi.contra(lambda), lambda) * GA5;
-				return 1.i * isospin * g/(m_pi*m_pi) *
+				return /*1.i * isospin * g/(m_pi*m_pi) **/
 					CONTRACT_MATRIX(O32c(pR, lambda, mu) * pPi.contra(lambda), lambda) * GA5;
 
 			}
@@ -282,9 +282,9 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto lambda = R->lorentz_indices()[0];
 				auto const& pR = R->four_momentum(kin);
 				auto const& pPhoton = photon->four_momentum(kin);
-				auto const g = R->particle()->user_data<double>("gRNpi");
+				auto const g = R->particle()->user_data<double>("gRNphoton");
 				auto const m_rho = P["rho0"]->mass();
-				auto result = g/(4*m_rho*m_rho) * CONTRACT_MATRIX(O32c(pPhoton, mu, kappa) * O32c(pR, mu, lambda) * MT[*mu][*mu], mu);
+				auto result = /*g/(4*m_rho*m_rho) */ CONTRACT_MATRIX(O32c(pPhoton, mu, kappa) * O32c(pR, mu, lambda) * MT[*mu][*mu], mu);
 				return result;
 			}
 	));
@@ -305,10 +305,10 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto lambda = R->lorentz_indices()[0];
 				auto const& pR = R->four_momentum(kin);
 				auto const& pPhoton = photon->four_momentum(kin);
-				auto const g = R->particle()->user_data<double>("gRNpi");
+				auto const g = R->particle()->user_data<double>("gRNphoton");
 //				auto const g = std::any_cast<double>(R->particle()->user_data("gRNpi"));
 				auto const m_rho = P["rho0"]->mass();
-				auto result = g/(4*m_rho*m_rho) * CONTRACT_MATRIX(O32c(pR, mu, lambda) * O32c(pPhoton, mu, kappa) * MT[*mu][*mu], mu);
+				auto result = /*g/(4*m_rho*m_rho) */ CONTRACT_MATRIX(O32c(pR, mu, lambda) * O32c(pPhoton, mu, kappa) * MT[*mu][*mu], mu);
 				return result;
 
 			}

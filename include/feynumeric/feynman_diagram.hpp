@@ -33,7 +33,7 @@ namespace Feynumeric{
 		void trace_fermion_line(std::shared_ptr<Graph_Edge> const& origin, std::shared_ptr<Graph_Vertex> const& ptr, Direction const& start_direction);
 
 		std::string index_to_string(Lorentz_Index_Ptr const& ptr);
-		void print_feynman_edge_rule(std::string const& id, std::shared_ptr<Graph_Edge> const& ptr);
+		void print_feynman_edge_rule(std::string const& id, std::shared_ptr<Graph_Edge> const& ptr, bool reverse=false);
 		void print_feynman_vertex_rule(std::shared_ptr<Graph_Vertex> const& ptr);
 		std::string pretty_momentum(Matrix const& relative) const;
 

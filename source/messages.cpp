@@ -22,7 +22,7 @@ namespace Feynumeric
 
     void status(const std::string &message)
     {
-        std::cerr << "[Status] " << message << "\n";
+        std::cout << "[Status] " << message << "\n";
     }
 
 	critical_exception::critical_exception(std::string&& message)

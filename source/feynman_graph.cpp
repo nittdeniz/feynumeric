@@ -380,11 +380,19 @@ namespace Feynumeric
 			if( edge_ptrs[k]->is_virtual() ){
 				auto indices = edge_ptrs[k]->lorentz_indices();
 				auto dummy_ptr = std::make_shared<Graph_Edge>(*edge_ptrs[k]);
-				if( contains(_front, edge_ptrs[k]) ){
-					dummy_ptr->lorentz_indices({indices.begin() + indices.size()/2, indices.end()});
-				}
-				else{
-					dummy_ptr->lorentz_indices({indices.begin(), indices.begin() + indices.size()/2});
+				// If it's a fermion we need to reverse the indices, because we're tracing the line backwards
+				if( edge_ptrs[k]->particle()->is_true_fermion() ){
+					if( contains(_front, edge_ptrs[k])){
+						dummy_ptr->lorentz_indices({indices.begin() + indices.size() / 2, indices.end()});
+					} else{
+						dummy_ptr->lorentz_indices({indices.begin(), indices.begin() + indices.size() / 2});
+					}
+				}else{
+					if( contains(_front, edge_ptrs[k])){
+						dummy_ptr->lorentz_indices({indices.begin(), indices.begin() + indices.size() / 2});
+					} else{
+						dummy_ptr->lorentz_indices({indices.begin() + indices.size() / 2, indices.end()});
+					}
 				}
 				_diagram->_graph._dummies.push_back(dummy_ptr);
 				edge_ptrs[k] = dummy_ptr;

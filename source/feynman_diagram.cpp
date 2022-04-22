@@ -130,7 +130,6 @@ namespace Feynumeric
 			}
 		}
 		for( auto& edge_ptr : _graph._virtual ){
-			// do this twice since it's a virtual particle
 			if( !( edge_ptr->particle()->is_true_fermion() || edge_ptr->particle()->is_anti_fermion())){
 #if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
 				print_feynman_edge_rule("D", edge_ptr);
@@ -258,30 +257,44 @@ namespace Feynumeric
 		*/
 	}
 
-	void Feynman_Diagram::print_feynman_edge_rule(std::string const& id, std::shared_ptr<Graph_Edge> const& ptr){
+	void Feynman_Diagram::print_feynman_edge_rule(std::string const& id, std::shared_ptr<Graph_Edge> const& ptr, bool reverse){
 		std::string momentum = pretty_momentum(ptr->relative_momentum());
 		if( !ptr->is_virtual()){
 			momentum.erase(0, 1);
 		}
 		std::cout << id << "(" << ptr->particle()->name() << ", " << momentum;
-		for( auto const& i : ptr->lorentz_indices()){
-			std::cout << ", " << index_to_string(i);
+		auto lorentz_indices = ptr->lorentz_indices();
+		auto print = [&](std::vector<Lorentz_Index_Ptr> const& list){
+			for( auto const& item : list ){
+				std::cout << ", " << index_to_string(item);
+			}
+		};
+		if( reverse ){
+			auto lhs = std::vector<Lorentz_Index_Ptr>(lorentz_indices.begin(), lorentz_indices.begin() + lorentz_indices.size()/2);
+			auto rhs = std::vector<Lorentz_Index_Ptr>(lorentz_indices.begin() + lorentz_indices.size()/2, lorentz_indices.end());
+			print(rhs);
+			print(lhs);
+		}else{
+			print(lorentz_indices);
 		}
 		std::cout << ") ";
 	}
 
 	void Feynman_Diagram::print_feynman_vertex_rule(Feynman_Graph::Vertex_Ptr const& ptr){
 		bool first = true;
-		std::cout << "VV(";
+		std::cout << "V(";
 		for( auto const& edge_ptr : ptr->all()){
 			if( !first ){
 				std::cout << " // ";
 			}
 			std::cout << edge_ptr->particle()->name() << ", " << pretty_momentum(edge_ptr->relative_momentum());
 			auto lorentz_indices = edge_ptr->lorentz_indices(ptr);
-			for( auto const& i : lorentz_indices ){
-				std::cout << ", " << index_to_string(i);
-			}
+			auto print = [&](std::vector<Lorentz_Index_Ptr> const& list){
+				for( auto const& item : list ){
+					std::cout << ", " << index_to_string(item);
+				}
+			};
+			print(lorentz_indices);
 			first = false;
 		}
 		std::cout << ") ";
@@ -319,7 +332,7 @@ namespace Feynumeric
 					if( ptr->particle()->is_true_fermion()){
 						if( vertex_direction == Edge_Direction::IN ){
 #if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-							print_feynman_edge_rule("D", ptr);
+							print_feynman_edge_rule("D", ptr, true);
 #endif
 							_amplitude.push_back(ptr->feynman_rule());
 							trace_fermion_line(ptr, ptr->back(), start_direction);

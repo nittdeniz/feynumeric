@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "format.hpp"
 #include "dirac.hpp"
 #include "complex.hpp"
 #include "constexpr_math.hpp"
@@ -443,6 +444,7 @@ namespace Feynumeric
 			breit_wigner = -1.i / ( p.squared() - P->mass() * P->mass());
 		}
 		auto project = Projector(P, p, lorentz_indices);
+//		status(FORMAT("Breit_Wigner: real: {} imag: {}", breit_wigner.real(), breit_wigner.imag()));
 		return breit_wigner * project;
 //		return breit_wigner * Projector(P, p, lorentz_indices, ignore_momentum);
 	}
