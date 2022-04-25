@@ -213,7 +213,7 @@ namespace Feynumeric
 			if( abs(spin->m()) <= spin->j() && abs(spin->m() - n) <= spin->j() - 1 ){
 				Angular_Momentum_Ptr s1 = std::make_shared<Angular_Momentum>(
 						Angular_Momentum(spin->j() - 1, spin->m() - n));
-				Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(Angular_Momentum(1, n));
+				Angular_Momentum_Ptr s2 = std::make_shared<Angular_Momentum>(Angular_Momentum(1, static_cast<double>(n)));
 				auto indices1 = std::vector<Lorentz_Index_Ptr>(mus.begin(), mus.end() - 1);
 				auto indices2 = std::vector<Lorentz_Index_Ptr>(mus.end() - 1, mus.end());
 				result +=
@@ -245,13 +245,14 @@ namespace Feynumeric
 		}
 
 		Matrix result(4, 4);
-		// since the whole projector is symmetric, we sort the indices so we can use std::next_permutation
+
 		std::vector<std::vector<Lorentz_Index_Ptr>> permutations;
 		std::size_t const n = constexpr_factorial(lambda.size());
 		permutations.reserve(n);
-		do{
+		for( std::size_t i = 0; i < n; ++i ){
 			permutations.push_back(lambda);
-		} while( std::next_permutation(lambda.begin(), lambda.end()));
+			std::next_permutation(lambda.begin(), lambda.end());
+		}
 
 		for( auto const& permutation : permutations ){
 			Matrix temp(4, 4, 1);
@@ -275,13 +276,13 @@ namespace Feynumeric
 		}
 
 		Matrix result(4, 4);
-		// since the whole projector is symmetric, we sort the indices so we can use std::next_permutation
 		std::vector<std::vector<Lorentz_Index_Ptr>> permutations;
 		std::size_t const n = constexpr_factorial(lambda.size());
 		permutations.reserve(n);
-		do{
+		for( std::size_t i = 0; i < n; ++i ){
 			permutations.push_back(lambda);
-		} while( std::next_permutation(lambda.begin(), lambda.end()));
+			std::next_permutation(lambda.begin(), lambda.end());
+		}
 
 		for( auto const& permutation : permutations ){
 			Matrix temp(4, 4, 1);
@@ -331,6 +332,18 @@ namespace Feynumeric
 	                 const std::vector<Lorentz_Index_Ptr>& lorentz_indices){
 		int const n = static_cast<int>(spin.j());
 		if( spin.is_half_odd_integer()){
+			/*if( spin.j() == 1.5 ){
+				auto mu = lorentz_indices[0];
+				auto nu = lorentz_indices[1];
+				double m = P->mass();
+				auto I = Matrix(4,4, 1);
+				auto a = -(GS(p)+m * I);
+				auto b = MT[*mu][*nu] * I;
+				auto c = GA[*mu]*GA[*nu]/3.;
+				auto d = 2./3. * p.contra(*mu) * p.contra(*nu)/(m*m) * I;
+				auto e = GS(p)*(p.contra(*mu) * GA[*nu] - p.contra(*nu) * GA[*mu])/(3*m*m);
+				return a * (b - c);
+			}*/
 			Angular_Momentum new_spin(spin.j() + 0.5, spin.j() + 0.5);
 			auto copy = lorentz_indices;
 			auto mu = std::make_shared<Lorentz_Index>();
@@ -367,9 +380,6 @@ namespace Feynumeric
 		std::vector<Lorentz_Index_Ptr> indices_left(lorentz_indices.begin(), lorentz_indices.begin() + half_size);
 		std::vector<Lorentz_Index_Ptr> indices_right(lorentz_indices.begin() + half_size, lorentz_indices.end());
 
-		// since the whole projector is symmetric, we sort the indices so we can use std::next_permutation
-//		std::sort(indices_left.begin(), indices_left.end());
-//		std::sort(indices_right.begin(), indices_right.end());
 
 		auto all_permutations = [&](std::vector<Lorentz_Index_Ptr>& v){
 			std::vector<Lorentz_Index_Ptr> result;

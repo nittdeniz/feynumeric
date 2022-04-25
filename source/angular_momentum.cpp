@@ -29,6 +29,11 @@ namespace Feynumeric
         }
     }
 
+	Angular_Momentum::Angular_Momentum(double j, bool massless)
+	: Angular_Momentum(j, j, massless)
+	{
+	}
+
 	Angular_Momentum::Angular_Momentum(const Angular_Momentum& J)
 	: _j(J._j)
 	, _m(J._m)

@@ -34,7 +34,16 @@ namespace Feynumeric
         {
             return false;
         }
-        return abs(a-b) < std::abs(max(a, b)) * rel_epsilon;
+        if( a == b ){
+        	return true;
+        }
+        if( a == 0 ){
+        	return std::abs(b) < rel_epsilon;
+        }
+        if( b == 0 ){
+        	return std::abs(a) < rel_epsilon;
+        }
+        return abs(a-b) < max(std::abs(a), std::abs(b)) * rel_epsilon;
     }
 
     constexpr double constexpr_sqrt(double x, double curr, double prev)

@@ -13,6 +13,7 @@ namespace Feynumeric
         bool _massless;
     public:
     	Angular_Momentum() = default;
+	    Angular_Momentum(double j, bool massless = false);
         Angular_Momentum(double j, double m, bool massless = false);
         Angular_Momentum(Angular_Momentum const& J);
         Angular_Momentum& operator=(Angular_Momentum const& J);
