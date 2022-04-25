@@ -1,12 +1,14 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.17)
 project(Feynumeric)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} C:\\fmt)
+#set(FMT_LIB C:\\fmt\\cmake-build-debug)
 #if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
 #    set(FMT_LIB C:\\fmt\\cmake-build-debug)
 #elseif (CMAKE_BUILD_TYPE EQUAL "RELEASE")
 #    set(FMT_LIB C:\\fmt\\cmake-build-release)
+#endif()
 
 include_directories(include)
 include_directories(C:\\fmt\\include)
@@ -27,13 +29,15 @@ add_library(Feynumeric
 
 find_package(OpenMP REQUIRED)
 
-find_library(FMT_LIB fmt)
-target_link_libraries(Feynumeric PRIVATE "${FMT_LIB}" OpenMP::OpenMP_CXX)
+
+
+find_library(FMT_LIB NAMES fmt HINTS "C:\\fmt\\build")
+target_link_libraries(Feynumeric PRIVATE "${FMT_LIB}")
 target_include_directories(Feynumeric PRIVATE include/Feynumeric)
 target_compile_options(Feynumeric PRIVATE -Werror -Wall -Wextra)
 
 
 
-add_subdirectory(tests)
+#add_subdirectory(tests)
 add_subdirectory(photo_production)
 add_subdirectory(electron_muon)

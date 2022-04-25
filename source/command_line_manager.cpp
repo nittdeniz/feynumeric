@@ -26,7 +26,16 @@ namespace Feynumeric
 		}
 	}
 
-	void
+    Command::Command(std::string cmd, std::string default_value, std::string description, bool is_mandatory)
+    : cmd(cmd)
+    , default_value(default_value)
+    , description(description)
+    , is_mandatory(is_mandatory)
+    {
+
+    }
+
+    void
 	Command_Line_Manager::register_command(const std::string& cmd, bool is_mandatory, const std::string& description){
 		commands.emplace_back(cmd, "", description, is_mandatory);
 	}
@@ -34,6 +43,9 @@ namespace Feynumeric
 	void Command_Line_Manager::register_command(std::string const& cmd, std::string const& default_value,
 	                                            std::string const& description){
 		commands.emplace_back(cmd, default_value, description, false);
+		if( !arguments.contains(cmd) ){
+		    arguments[cmd] = default_value;
+		}
 
 	}
 

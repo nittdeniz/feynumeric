@@ -85,6 +85,10 @@ namespace Feynumeric
 					}
 				}
 			}
+            if( c == '#' ){ // ignore the comment
+                std::getline(in, input);
+                continue;
+            }
 			switch( state ){
 				case STATE::READ_DECLARATION:{
 					if( input[0] != '@' ){

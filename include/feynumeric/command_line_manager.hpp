@@ -15,6 +15,7 @@ namespace Feynumeric
 		std::string default_value;
 		std::string description;
 		bool is_mandatory;
+		Command(std::string cmd = "", std::string default_value = "", std::string description = "" , bool is_mandatory = false);
 	};
 
 	class Command_Line_Manager

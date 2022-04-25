@@ -1,3 +1,4 @@
+# VALUES TAKEN FROM https://pdg.lbl.gov/2021/tables/contents_tables.html *|
 @group N
 type TrueBaryon
 spin 1/2
@@ -19,21 +20,25 @@ isospin 1/2 -1/2
 type TrueBaryon
 spin 1/2
 parity 1
+l 1
 
 @group N12m
 type TrueBaryon
 spin 1/2
 parity -1
+l 0
 
 @group N32p
 type TrueBaryon
 spin 3/2
 parity 1
+l 1
 
 @group N32m
 type TrueBaryon
 spin 3/2
 parity -1
+l 2
 
 @group N1440
 group N12p
