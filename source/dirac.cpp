@@ -229,8 +229,24 @@ namespace Feynumeric
 		return p.contra(mu) * GA[*( nu )] - GS(p) * MT[*mu][*nu];
 	}
 
+	Matrix O32(Four_Vector const& p, Four_Vector const& q, std::shared_ptr<Lorentz_Index> const& nu){
+		return dot(p, q) * GA[*( nu )] - GS(p) * q.contra(nu);
+	}
+
+	Matrix O32(Four_Vector const& p, std::shared_ptr<Lorentz_Index> const& mu, Four_Vector const& q){
+		return p.contra(mu) * GS(q) - GS(p) * q.contra(mu);
+	}
+
 	Matrix O32c(Four_Vector const& p, Lorentz_Index_Ptr const& mu, Lorentz_Index_Ptr const& nu){
 		return p.co(mu) * GAC[*( nu )] - GS(p) * MT[*mu][*nu];
+	}
+
+	Matrix O32c(Four_Vector const& p, Four_Vector const& q, std::shared_ptr<Lorentz_Index> const& nu){
+		return dot(p, q) * GA[*( nu )] - GS(p) * q.co(nu);
+	}
+
+	Matrix O32c(Four_Vector const& p, std::shared_ptr<Lorentz_Index> const& mu, Four_Vector const& q){
+		return p.contra(mu) * GS(q) - GS(p) * q.co(mu);
 	}
 
 	Matrix O(Angular_Momentum_Ptr const& s, Four_Vector const& p, std::vector<Lorentz_Index_Ptr> const& mu,

@@ -193,7 +193,7 @@ namespace Feynumeric
 				_graph._topology._incoming_edges.size() + _graph._topology._outgoing_edges.size();
 		Matrix zeroes(n_external, 1);
 
-		while( !virtuals_left.empty()){
+		while( !virtuals_left.empty() ){
 			bool changed = false;
 			for( auto const& edge_ptr : virtuals_left ){
 				if( edge_ptr->relative_momentum().n_cols() == 1 ){
@@ -230,6 +230,7 @@ namespace Feynumeric
 					for( auto const& outgoing_ptr : edge_ptr->front()->front()){
 						sum_outgoing += outgoing_ptr->relative_momentum();
 					}
+					edge_ptr->relative_momentum(sum_outgoing + sum_incoming);
 					changed = true;
 					virtuals_left.erase(std::remove(virtuals_left.begin(), virtuals_left.end(), edge_ptr),
 					                    virtuals_left.end());
@@ -287,7 +288,13 @@ namespace Feynumeric
 			if( !first ){
 				std::cout << " // ";
 			}
-			std::cout << edge_ptr->particle()->name() << ", " << pretty_momentum(edge_ptr->relative_momentum());
+			std::cout << edge_ptr->particle()->name() << ", ";
+			if( edge_ptr->is_virtual() && contains(ptr->front(), edge_ptr) ){
+				std::cout << "-(" << pretty_momentum(edge_ptr->relative_momentum()) << ")";
+			}else{
+				std::cout << pretty_momentum(edge_ptr->relative_momentum());
+			}
+
 			auto lorentz_indices = edge_ptr->lorentz_indices(ptr);
 			auto print = [&](std::vector<Lorentz_Index_Ptr> const& list){
 				for( auto const& item : list ){

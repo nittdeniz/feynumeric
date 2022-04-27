@@ -16,32 +16,18 @@ charge 0
 mass 939.565413MeV
 isospin 1/2 -1/2
 
-@group N12p
-type TrueBaryon
-spin 1/2
-parity 1
-l 1
-
-@group N12m
-type TrueBaryon
-spin 1/2
-parity -1
-l 0
-
-@group N32p
+@group R32
 type TrueBaryon
 spin 3/2
-parity 1
-l 1
 
-@group N32m
+@group R12
 type TrueBaryon
-spin 3/2
-parity -1
-l 2
+spin 1/2
 
 @group N1440
-group N12p
+group R12
+parity 1
+l 0
 mass 1.44GeV
 width 350MeV
 branching_N_pi_upper 75%
@@ -68,7 +54,8 @@ gRNpi 0.379619
 gRNphoton 0.0529588
 
 @group N1520
-group N32m
+group R32
+parity -1
 mass 1.515GeV
 width 110MeV
 branching_N_pi_upper 65%
@@ -79,6 +66,7 @@ branching_proton_photon_upper 0.52%
 branching_proton_photon_lower 0.31%
 branching_neutron_photon_upper 0.53%
 branching_neutron_photon_lower 0.30%
+l 1
 
 @particle N1520p
 group N1520
@@ -142,3 +130,34 @@ group Rho
 type TrueMeson
 charge -1
 isospin 1 -1
+
+@group Delta1232
+group R32
+mass 1232MeV
+width 117MeV
+parity 1
+branching_N_pi 100%
+branching_N_photon_12_upper 0.13%
+branching_N_photon_12_lower 0.11%
+branching_N_photon_32_upper 0.52%
+branching_N_photon_32_lower 0.44%
+
+@particle Delta1232pp
+group Delta1232
+isospin 3/2 3/2
+charge 2
+
+@particle Delta1232p
+group Delta1232
+isospin 3/2 1/2
+charge 1
+
+@particle Delta1232n
+group Delta1232
+isospin 3/2 -1/2
+charge 0
+
+@particle Delta1232m
+group Delta1232
+isospin 3/2 -3/2
+charge -1

@@ -185,12 +185,15 @@ int main(int argc, char** argv)
 	status("Scattering proton gamma -> proton pi0");
 	status(FORMAT("sqrt_s = {}", sqrt_s));
 	scattering_proton_pi_zero.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
+//	scattering_proton_pi_zero.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
 	std::cout << "\n\n";
 	status("Scattering neutron gamma -> proton pi-");
 	status(FORMAT("sqrt_s = {}", sqrt_s));
 	scattering_proton_pi_minus.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
+//	scattering_proton_pi_minus.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
 	status("Scattering proton gamma -> neutron pi+");
 	status(FORMAT("sqrt_s = {}", sqrt_s));
-	scattering_proton_pi_zero.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
+	scattering_neutron_pi_plus.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
+//	scattering_neutron_pi_plus.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
 	return EXIT_SUCCESS;
 }

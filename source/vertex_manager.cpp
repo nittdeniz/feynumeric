@@ -86,15 +86,17 @@ namespace Feynumeric
 			}
 		}
 		auto permutation = permutation_map(vertex._particle_directions);
+		auto inverted = invert_map(permutation);
 		Node* current = &_root;
 		for( std::size_t i = 0; i < vertex._particle_directions.size(); ++i ){
-			auto pd = vertex._particle_directions[permutation[i]];
+			auto index = inverted[i];
+			auto pd = vertex._particle_directions[index];
 			current = &(current->children[pd.particle->name()]);
 		}
 
-		auto key = directions_to_int(vertex._particle_directions, permutation);
+		auto key = directions_to_int(vertex._particle_directions, inverted);
 		current->data.insert({key, vertex});
-		current->permutation = invert_map(permutation);
+		current->permutation = permutation;
 	}
 
 	void Vertex_Manager::import(Vertex_Manager const& v)

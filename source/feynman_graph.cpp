@@ -361,7 +361,8 @@ namespace Feynumeric
 	std::function<Matrix(Kinematics const&)> Graph_Vertex::feynman_rule()
 	{
 		using namespace std::placeholders;
-		auto optional_vertex = _diagram->Vertex_Manager()->find(particle_directions());
+		auto pd = particle_directions();
+		auto optional_vertex = _diagram->Vertex_Manager()->find(pd);
 		if( !optional_vertex.has_value() ){
 			std::stringstream stream;
 			for( auto const& item : _back ){

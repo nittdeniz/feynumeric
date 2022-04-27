@@ -1,3 +1,4 @@
+# VALUES TAKEN FROM Miklos
 @group N
 type TrueBaryon
 spin 1/2
@@ -15,28 +16,18 @@ charge 0
 mass 938.9MeV
 isospin 1/2 -1/2
 
-@group N12p
-type TrueBaryon
-spin 1/2
-parity 1
-
-@group N12m
-type TrueBaryon
-spin 1/2
-parity -1
-
-@group N32p
+@group R32
 type TrueBaryon
 spin 3/2
-parity 1
 
-@group N32m
+@group R12
 type TrueBaryon
-spin 3/2
-parity -1
+spin 1/2
 
 @group N1440
-group N12p
+group R12
+parity 1
+l 0
 mass 1.44GeV
 width 350MeV
 branching_N_pi_upper 75%
@@ -63,7 +54,8 @@ gRNpi 0.384704
 gRNphoton 0.0528755
 
 @group N1520
-group N32m
+group R32
+parity -1
 mass 1.515GeV
 width 110MeV
 branching_N_pi_upper 65%
@@ -74,20 +66,21 @@ branching_proton_photon_upper 0.52%
 branching_proton_photon_lower 0.31%
 branching_neutron_photon_upper 0.53%
 branching_neutron_photon_lower 0.30%
+l 1
 
 @particle N1520p
 group N1520
 charge 1
 isospin 1/2 1/2
-gRNpi 0.144174
-gRNphoton 0.309589
+gRNpi 0.147741
+gRNphoton 0.355091
 
 @particle N1520n
 group N1520
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.143973
-gRNphoton 0.310388
+gRNpi 0.147741
+gRNphoton 0.355091
 
 @group Pion
 type Meson
@@ -112,7 +105,7 @@ group Pion
 type NeutralMeson
 charge 0
 isospin 1 0
-mass 134.98MeV
+mass 139.57MeV
 
 @group Rho
 type Meson
