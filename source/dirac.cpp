@@ -242,7 +242,7 @@ namespace Feynumeric
 	}
 
 	Matrix O32c(Four_Vector const& p, Four_Vector const& q, std::shared_ptr<Lorentz_Index> const& nu){
-		return dot(p, q) * GA[*( nu )] - GS(p) * q.co(nu);
+		return dot(p, q) * GAC[*( nu )] - GS(p) * q.co(nu);
 	}
 
 	Matrix O32c(Four_Vector const& p, std::shared_ptr<Lorentz_Index> const& mu, Four_Vector const& q){
