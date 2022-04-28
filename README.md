@@ -24,7 +24,7 @@ int main()
     init_vertices();
     
     auto s_channel = create_diagram("s_channel", // Name of the diagram (can be anything)
-                                    Double_Wrench, // Topology (see more below)
+                                    s_channel, // Topology (see more below)
                                     VMP, // A pointer to the Vertex Manager
 	                            {Electron, Positron}, // incoming particles
 	                            {Photon}, // virtual particles

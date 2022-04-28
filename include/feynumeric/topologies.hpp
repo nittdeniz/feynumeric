@@ -5,10 +5,9 @@
 
 namespace Feynumeric
 {
-	[[maybe_unused]] extern const Topology Wrench;
-    [[maybe_unused]] extern const Topology Double_Wrench;
-    [[maybe_unused]] extern const Topology X_Man;
-    [[maybe_unused]] extern const Topology Scissors;
+	[[maybe_unused]] extern const Topology Decay_1_to_2;
+    [[maybe_unused]] extern const Topology Scattering_Horizontal_2_to_2;
+    [[maybe_unused]] extern const Topology Scattering_Vertical_2_to_2;
 }
 
 #endif // Feynumeric_TOPOLOGIES_HPP

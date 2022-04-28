@@ -27,6 +27,8 @@ int main(int argc, char** argv)
 	Particle_Ptr const& N1440n   = P.get("N1440n");
 	Particle_Ptr const& N1520p   = P.get("N1520p");
 	Particle_Ptr const& N1520n   = P.get("N1520n");
+	Particle_Ptr const& N1535p   = P["N1535p"];
+	Particle_Ptr const& N1535n   = P["N1535n"];
 	Particle_Ptr const& Proton   = P.get("proton");
 	Particle_Ptr const& Neutron  = P.get("neutron");
 	Particle_Ptr const& Pi_Plus  = P.get("pi+");
@@ -35,190 +37,95 @@ int main(int argc, char** argv)
 
 	init_vertices(P);
 
-	/********************************************\
-	|*	███    ██  ██ ██   ██ ██   ██  ██████   *|
-	|*	████   ██ ███ ██   ██ ██   ██ ██  ████  *|
-	|*	██ ██  ██  ██ ███████ ███████ ██ ██ ██  *|
-	|*	██  ██ ██  ██      ██      ██ ████  ██  *|
-	|*	██   ████  ██      ██      ██  ██████   *|
-    \********************************************/
-	// coupling constant N1440 to N pi
+
+	std::vector<Particle_Ptr> particles_Np = {N1440p, N1520p, N1535p};
+	std::vector<Particle_Ptr> particles_Nn = {N1440n, N1520n, N1535n};
+
+	for( std::size_t i = 0; i < particles_Np.size(); ++i )
 	{
-		N1440p->user_data("gRNpi", 1.);
-		N1440n->user_data("gRNpi", 1.);
-		auto channel_decay_n1440p1 = create_diagram("decay_n1440p to proton pi0", Wrench, VMP,
-		                                            {N1440p},
-		                                            {},
-		                                            {Proton, Pi_Zero}
+		auto& Np = particles_Np[i];
+		auto& Nn = particles_Nn[i];
+		Np->user_data("gRNpi", 1.);
+		Np->user_data("form_factor", identity);
+		Nn->user_data("gRNpi", 1.);
+		Nn->user_data("form_factor", identity);
+		auto channel_decay_Np1 = create_diagram(FORMAT("decay {} to proton pi0", Np->name()), Decay_1_to_2, VMP,
+		                                        {Np},
+		                                        {},
+		                                        {Proton, Pi_Zero}
 		);
-		auto channel_decay_n1440p2 = create_diagram("decay_n1440p to neutron pi+", Wrench, VMP,
-		                                            {N1440p},
-		                                            {},
-		                                            {Neutron, Pi_Plus}
-		);
-
-
-		auto channel_decay_n1440n1 = create_diagram("decay_n1440n to neutron pi0", Wrench, VMP,
-		                                            {N1440n},
-		                                            {},
-		                                            {Neutron, Pi_Zero}
-		);
-		auto channel_decay_n1440n2 = create_diagram("decay_n1440n to proton pi-", Wrench, VMP,
-		                                            {N1440n},
-		                                            {},
-		                                            {Proton, Pi_Minus}
+		auto channel_decay_Np2 = create_diagram(FORMAT("decay {} to neutron pi+", Np->name()), Decay_1_to_2, VMP,
+		                                        {Np},
+		                                        {},
+		                                        {Neutron, Pi_Plus}
 		);
 
-		Feynman_Process decay_n1440p1({channel_decay_n1440p1});
-		Feynman_Process decay_n1440p2({channel_decay_n1440p2});
 
-		Feynman_Process decay_n1440n1({channel_decay_n1440n1});
-		Feynman_Process decay_n1440n2({channel_decay_n1440n2});
+		auto channel_decay_Nn1 = create_diagram(FORMAT("decay {} to neutron pi0", Nn->name()), Decay_1_to_2, VMP,
+		                                        {Nn},
+		                                        {},
+		                                        {Neutron, Pi_Zero}
+		);
+		auto channel_decay_Nn2 = create_diagram(FORMAT("decay {} to proton pi-", Nn->name()), Decay_1_to_2, VMP,
+		                                        {Nn},
+		                                        {},
+		                                        {Proton, Pi_Minus}
+		);
 
-		auto w1 = decay_n1440p1.decay_width();
-		auto w2 = decay_n1440p2.decay_width();
+		Feynman_Process decay_Np1({channel_decay_Np1});
+		Feynman_Process decay_Np2({channel_decay_Np2});
 
-		auto w3 = decay_n1440n1.decay_width();
-		auto w4 = decay_n1440n2.decay_width();
+		Feynman_Process decay_Nn1({channel_decay_Nn1});
+		Feynman_Process decay_Nn2({channel_decay_Nn2});
+
+		auto w1 = decay_Np1.decay_width();
+		auto w2 = decay_Np2.decay_width();
+
+		auto w3 = decay_Nn1.decay_width();
+		auto w4 = decay_Nn2.decay_width();
 
 
-		double const literature_value1 = N1440p->width() * ( N1440p->user_data<double>("branching_N_pi_upper") +
-		                                                    N1440p->user_data<double>("branching_N_pi_lower")) / 2.;
-		double const literature_value2 = N1440n->width() * ( N1440n->user_data<double>("branching_N_pi_upper") +
-		                                                    N1440n->user_data<double>("branching_N_pi_lower")) / 2.;
+		double const literature_value1 = Np->width() * ( Np->user_data<double>("branching_N_pi_upper") +
+		                                                    Np->user_data<double>("branching_N_pi_lower")) / 2.;
+		double const literature_value2 = Nn->width() * ( Nn->user_data<double>("branching_N_pi_upper") +
+		                                                    Nn->user_data<double>("branching_N_pi_lower")) / 2.;
 
-		std::cout << "g(N1440p -> N + pi): " << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
-		std::cout << "g(N1440n -> N + pi): " << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
+		std::cout << FORMAT("g({} -> N + pi): ", Np->name()) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
+		std::cout << FORMAT("g({} -> N + pi): ", Nn->name()) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
 	}
 
-	// coupling constant N1440 to N gamma
+	for( std::size_t i = 0; i < particles_Np.size(); ++i )
 	{
-		N1440p->user_data("gRNphoton", 1.);
-		N1440n->user_data("gRNphoton", 1.);
+		auto& Np = particles_Np[i];
+		auto& Nn = particles_Nn[i];
+		Np->user_data("gRNphoton", 1.);
+		Nn->user_data("gRNphoton", 1.);
 
-		auto channel_decay_n1440p1 = create_diagram("decay_n1440p to proton photon", Wrench, VMP,
-		                                            {N1440p},
-		                                            {},
-		                                            {Proton, QED::Photon}
+		auto channel_decay_Np1 = create_diagram(FORMAT("decay {} to proton photon", Np->name()), Decay_1_to_2, VMP,
+		                                        {Np},
+		                                        {},
+		                                        {Proton, QED::Photon}
 		);
 
-		auto channel_decay_n1440n1 = create_diagram("decay_n1440n to neutron photon", Wrench, VMP,
-		                                            {N1440n},
-		                                            {},
-		                                            {Neutron, QED::Photon}
+		auto channel_decay_Nn1 = create_diagram(FORMAT("decay {} to neutron photon", Nn->name()), Decay_1_to_2, VMP,
+		                                        {Nn},
+		                                        {},
+		                                        {Neutron, QED::Photon}
 		);
 
-		//	channel_decay_n1440p->print_amplitude();
-		//
-		Feynman_Process decay_n1440p1({channel_decay_n1440p1});
-		Feynman_Process decay_n1440n1({channel_decay_n1440n1});
+		Feynman_Process decay_Np1({channel_decay_Np1});
+		Feynman_Process decay_Nn1({channel_decay_Nn1});
 
-		auto w1 = decay_n1440p1.decay_width();
-		auto w2 = decay_n1440n1.decay_width();
+		auto w1 = decay_Np1.decay_width();
+		auto w2 = decay_Nn1.decay_width();
 
 
-		double const literature_value1 = N1440p->width() * ( N1440p->user_data<double>("branching_proton_photon_upper") +
-		                                                     N1440p->user_data<double>("branching_proton_photon_lower")) / 2.;
-		double const literature_value2 = N1440n->width() * ( N1440n->user_data<double>("branching_neutron_photon_upper") +
-		                                                     N1440n->user_data<double>("branching_neutron_photon_lower")) / 2.;
-		std::cout << "g(N1440p -> proton + photon): " << std::setw(10) << std::setprecision(10)  << std::sqrt(literature_value1 / w1) << "\n";
-		std::cout << "g(N1440n -> neutron + photon): " << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value2 / w2) << "\n";
-	}
-
-	/********************************************\
-	|*	███    ██  ██ ███████ ██████   ██████   *|
-	|*	████   ██ ███ ██           ██ ██  ████  *|
-	|*	██ ██  ██  ██ ███████  █████  ██ ██ ██  *|
-	|*	██  ██ ██  ██      ██ ██      ████  ██  *|
-	|*	██   ████  ██ ███████ ███████  ██████   *|
-	\********************************************/
-
-	// coupling constant N1520 to N pi
-	{
-		N1520p->user_data("gRNpi", 1.);
-		N1520p->user_data("form_factor", identity);
-		N1520n->user_data("gRNpi", 1.);
-		N1520n->user_data("form_factor", identity);
-		auto channel_decay_N1520p1 = create_diagram("decay_N1520p to proton pi0", Wrench, VMP,
-		                                            {N1520p},
-		                                            {},
-		                                            {Proton, Pi_Zero}
-		);
-		auto channel_decay_N1520p2 = create_diagram("decay_N1520p to neutron pi+", Wrench, VMP,
-		                                            {N1520p},
-		                                            {},
-		                                            {Neutron, Pi_Plus}
-		);
-
-		auto channel_decay_N1520n1 = create_diagram("decay_N1520n to neutron pi0", Wrench, VMP,
-		                                            {N1520n},
-		                                            {},
-		                                            {Neutron, Pi_Zero}
-		);
-		auto channel_decay_N1520n2 = create_diagram("decay_N1520n to proton pi-", Wrench, VMP,
-		                                            {N1520n},
-		                                            {},
-		                                            {Proton, Pi_Minus}
-		);
-
-		Feynman_Process decay_N1520p1({channel_decay_N1520p1});
-		Feynman_Process decay_N1520p2({channel_decay_N1520p2});
-
-		Feynman_Process decay_N1520n1({channel_decay_N1520n1});
-		Feynman_Process decay_N1520n2({channel_decay_N1520n2});
-
-		auto w1 = decay_N1520p1.decay_width();
-		auto w2 = decay_N1520p2.decay_width();
-
-		auto w3 = decay_N1520n1.decay_width();
-		auto w4 = decay_N1520n2.decay_width();
-
-
-		double const literature_value1 = N1520p->width() * ( N1520p->user_data<double>("branching_N_pi_upper") +
-		                                                     N1520p->user_data<double>("branching_N_pi_lower")) / 2.;
-		double const literature_value2 = N1520n->width() * ( N1520n->user_data<double>("branching_N_pi_upper") +
-		                                                     N1520n->user_data<double>("branching_N_pi_lower")) / 2.;
-
-
-		std::cout << "g(N1520p -> N + pi): " << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
-		std::cout << "g(N1520n -> N + pi): " << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
-	}
-
-	// coupling constant N1520 to N gamma
-	{
-		N1520p->user_data("gRNphoton", 1.);
-		N1520p->user_data("form_factor", identity);
-		N1520n->user_data("gRNpi", 1.);
-		N1520n->user_data("gRNphoton", 1.);
-		N1520n->user_data("form_factor", identity);
-
-		auto channel_decay_n1520p1 = create_diagram("decay_n1520p to proton photon", Wrench, VMP,
-		                                            {N1520p},
-		                                            {},
-		                                            {Proton, QED::Photon}
-		);
-
-		auto channel_decay_n1520n1 = create_diagram("decay_n1520n to neutron photon", Wrench, VMP,
-		                                            {N1520n},
-		                                            {},
-		                                            {Neutron, QED::Photon}
-		);
-
-		//	channel_decay_n1520p->print_amplitude();
-		//
-		Feynman_Process decay_n1520p1({channel_decay_n1520p1});
-		Feynman_Process decay_n1520n1({channel_decay_n1520n1});
-
-		auto w1 = decay_n1520p1.decay_width();
-		auto w2 = decay_n1520n1.decay_width();
-
-
-		double const literature_value1 = N1520p->width() * ( N1520p->user_data<double>("branching_proton_photon_upper") +
-		                                                     N1520p->user_data<double>("branching_proton_photon_lower")) / 2.;
-		double const literature_value2 = N1520n->width() * ( N1520n->user_data<double>("branching_neutron_photon_upper") +
-		                                                     N1520n->user_data<double>("branching_neutron_photon_lower")) / 2.;
-		std::cout << "g(N1520p -> proton + photon): "  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value1 / w1) << "\n";
-		std::cout << "g(N1520n -> neutron + photon): " << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value2 / w2) << "\n";
+		double const literature_value1 = Np->width() * ( Np->user_data<double>("branching_proton_photon_upper") +
+		                                                     Np->user_data<double>("branching_proton_photon_lower")) / 2.;
+		double const literature_value2 = Nn->width() * ( Nn->user_data<double>("branching_neutron_photon_upper") +
+		                                                     Nn->user_data<double>("branching_neutron_photon_lower")) / 2.;
+		std::cout << FORMAT("g({} -> proton + photon): ", Np->name()) << std::setw(10) << std::setprecision(10)  << std::sqrt(literature_value1 / w1) << "\n";
+		std::cout << FORMAT("g({} -> neutron + photon): ", Nn->name()) << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value2 / w2) << "\n";
 	}
 
 	// coupling constant D1232 to N pi
@@ -231,35 +138,35 @@ int main(int argc, char** argv)
 		D1232n->user_data("form_factor", identity);
 		D1232m->user_data("gRNpi", 1.);
 		D1232m->user_data("form_factor", identity);
-		auto channel_decay_D1232pp1 = create_diagram("decay_D1232++ to proton pi+", Wrench, VMP,
-		                                            {D1232pp},
-		                                            {},
-		                                            {Proton, Pi_Plus}
+		auto channel_decay_D1232pp1 = create_diagram("decay_D1232++ to proton pi+", Decay_1_to_2, VMP,
+		                                             {D1232pp},
+		                                             {},
+		                                             {Proton, Pi_Plus}
 		);
 
-		auto channel_decay_D1232p1 = create_diagram("decay_D1232+ to neutron pi+", Wrench, VMP,
+		auto channel_decay_D1232p1 = create_diagram("decay_D1232+ to neutron pi+", Decay_1_to_2, VMP,
 		                                            {D1232p},
 		                                            {},
 		                                            {Neutron, Pi_Plus}
 		);
-		auto channel_decay_D1232p2 = create_diagram("decay_ND1232+ to proton pi0", Wrench, VMP,
+		auto channel_decay_D1232p2 = create_diagram("decay_ND1232+ to proton pi0", Decay_1_to_2, VMP,
 		                                            {D1232p},
 		                                            {},
 		                                            {Proton, Pi_Zero}
 		);
 
-		auto channel_decay_D1232n1 = create_diagram("decay_D1232_0 to neutron pi0", Wrench, VMP,
+		auto channel_decay_D1232n1 = create_diagram("decay_D1232_0 to neutron pi0", Decay_1_to_2, VMP,
 		                                            {D1232n},
 		                                            {},
 		                                            {Neutron, Pi_Zero}
 		);
-		auto channel_decay_D1232n2 = create_diagram("decay_ND1232_0 to proton pi-", Wrench, VMP,
+		auto channel_decay_D1232n2 = create_diagram("decay_ND1232_0 to proton pi-", Decay_1_to_2, VMP,
 		                                            {D1232n},
 		                                            {},
 		                                            {Proton, Pi_Minus}
 		);
 
-		auto channel_decay_D1232m1 = create_diagram("decay_ND1232- to neutron pi-", Wrench, VMP,
+		auto channel_decay_D1232m1 = create_diagram("decay_ND1232- to neutron pi-", Decay_1_to_2, VMP,
 		                                            {D1232m},
 		                                            {},
 		                                            {Neutron, Pi_Minus}
@@ -305,13 +212,13 @@ int main(int argc, char** argv)
 		D1232n->user_data("gRNphoton", 1.);
 		D1232n->user_data("form_factor", identity);
 
-		auto channel_decay_D1232p1 = create_diagram("decay_D1232+ to proton photon", Wrench, VMP,
+		auto channel_decay_D1232p1 = create_diagram("decay_D1232+ to proton photon", Decay_1_to_2, VMP,
 		                                            {D1232p},
 		                                            {},
 		                                            {Proton, QED::Photon}
 		);
 
-		auto channel_decay_D1232n1 = create_diagram("decay_D1232_0 to neutron photon", Wrench, VMP,
+		auto channel_decay_D1232n1 = create_diagram("decay_D1232_0 to neutron photon", Decay_1_to_2, VMP,
 		                                            {D1232n},
 		                                            {},
 		                                            {Neutron, QED::Photon}

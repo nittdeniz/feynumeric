@@ -89,7 +89,7 @@ int main(int argc, char** argv)
 			double const q0 = momentum(resonance->mass(), Neutron->mass(), Pi_Plus->mass());
 			double const q = momentum(std::sqrt(p2), Neutron->mass(), Pi_Plus->mass());
 			int l = resonance->user_data<double>("l");
-			return resonance->width() * ff(beta, q0, q, l);
+			return resonance->width() * std::pow(ff(beta, q0, q, l), 2);
 		});
 	}
 
@@ -104,7 +104,7 @@ int main(int argc, char** argv)
 		if( cmd.is_enabled("D1232") ){
 			if( s_channel ){
 				diagrams_proton_pi_plus.push_back(
-						create_diagram("D1232 s", Double_Wrench, VMP,
+						create_diagram("D1232 s", Scattering_Horizontal_2_to_2, VMP,
 						               {Proton, Pi_Plus},
 						               {D1232pp},
 						               {Pi_Plus, Proton}
@@ -130,19 +130,19 @@ int main(int argc, char** argv)
 		{
 			if( s_channel ){
 				diagrams_proton_pi_zero.push_back(
-						create_diagram("N1440 s", Double_Wrench, VMP,
+						create_diagram("N1440 s", Scattering_Horizontal_2_to_2, VMP,
 						               {Proton, QED::Photon},
 						               {N1440p},
 						               {Pi_Zero, Proton}
 						));
 				diagrams_proton_pi_minus.push_back(
-						create_diagram("N1440 s", Double_Wrench, VMP,
+						create_diagram("N1440 s", Scattering_Horizontal_2_to_2, VMP,
 						               {Neutron, QED::Photon},
 						               {N1440n},
 						               {Pi_Minus, Proton}
 						));
 				diagrams_neutron_pi_plus.push_back(
-						create_diagram("N1440 s", Double_Wrench, VMP,
+						create_diagram("N1440 s", Scattering_Horizontal_2_to_2, VMP,
 						               {Proton, QED::Photon},
 						               {N1440p},
 						               {Pi_Plus, Neutron}
@@ -150,19 +150,19 @@ int main(int argc, char** argv)
 			}
 			if( u_channel ){
 				diagrams_proton_pi_zero.push_back(
-						create_diagram("N1440 u", X_Man, VMP,
+						create_diagram("N1440 u", Scattering_Vertical_2_to_2, VMP,
 						               {Proton, QED::Photon},
 						               {N1440p},
 						               {Pi_Zero, Proton}
 						));
 				diagrams_proton_pi_minus.push_back(
-						create_diagram("N1440 u", X_Man, VMP,
+						create_diagram("N1440 u", Scattering_Vertical_2_to_2, VMP,
 						               {Neutron, QED::Photon},
 						               {N1440p},
 						               {Pi_Minus, Proton}
 						));
 				diagrams_neutron_pi_plus.push_back(
-						create_diagram("N1440 u", X_Man, VMP,
+						create_diagram("N1440 u", Scattering_Vertical_2_to_2, VMP,
 						               {Proton, QED::Photon},
 						               {N1440n},
 						               {Pi_Plus, Neutron}
@@ -173,19 +173,19 @@ int main(int argc, char** argv)
 		{
 			if( s_channel ){
 				diagrams_proton_pi_zero.push_back(
-						create_diagram("N1520 s", Double_Wrench, VMP,
+						create_diagram("N1520 s", Scattering_Horizontal_2_to_2, VMP,
 						               {Proton, QED::Photon},
 						               {N1520p},
 						               {Pi_Zero, Proton}
 						));
 				diagrams_proton_pi_minus.push_back(
-						create_diagram("N1520 s", Double_Wrench, VMP,
+						create_diagram("N1520 s", Scattering_Horizontal_2_to_2, VMP,
 						               {Neutron, QED::Photon},
 						               {N1520n},
 						               {Pi_Minus, Proton}
 						));
 				diagrams_neutron_pi_plus.push_back(
-						create_diagram("N1520 s", Double_Wrench, VMP,
+						create_diagram("N1520 s", Scattering_Horizontal_2_to_2, VMP,
 						               {Proton, QED::Photon},
 						               {N1520p},
 						               {Pi_Plus, Neutron}
@@ -193,19 +193,19 @@ int main(int argc, char** argv)
 			}
 			if( u_channel ){
 				diagrams_proton_pi_zero.push_back(
-						create_diagram("N1520 u", X_Man, VMP,
+						create_diagram("N1520 u", Scattering_Vertical_2_to_2, VMP,
 						               {Proton, QED::Photon},
 						               {N1520p},
 						               {Pi_Zero, Proton}
 						));
 				diagrams_proton_pi_minus.push_back(
-						create_diagram("N1520 u", X_Man, VMP,
+						create_diagram("N1520 u", Scattering_Vertical_2_to_2, VMP,
 						               {Neutron, QED::Photon},
 						               {N1520p},
 						               {Pi_Minus, Proton}
 						));
 				diagrams_neutron_pi_plus.push_back(
-						create_diagram("N1520 u", X_Man, VMP,
+						create_diagram("N1520 u", Scattering_Vertical_2_to_2, VMP,
 						               {Proton, QED::Photon},
 						               {N1520n},
 						               {Pi_Plus, Neutron}
@@ -219,17 +219,17 @@ int main(int argc, char** argv)
 
 		status("Scattering proton gamma -> proton pi0");
 		status(FORMAT("sqrt_s = {}", sqrt_s));
-		scattering_proton_pi_zero.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
-	//	scattering_proton_pi_zero.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
+//		scattering_proton_pi_zero.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
+		scattering_proton_pi_zero.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
 		std::cout << "\n\n";
 		status("Scattering neutron gamma -> proton pi-");
 		status(FORMAT("sqrt_s = {}", sqrt_s));
-		scattering_proton_pi_minus.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
-	//	scattering_proton_pi_minus.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
+//		scattering_proton_pi_minus.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
+		scattering_proton_pi_minus.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
 		status("Scattering proton gamma -> neutron pi+");
 		status(FORMAT("sqrt_s = {}", sqrt_s));
-		scattering_neutron_pi_plus.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
-	//	scattering_neutron_pi_plus.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
+//		scattering_neutron_pi_plus.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
+		scattering_neutron_pi_plus.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
 	}
 	return EXIT_SUCCESS;
 }

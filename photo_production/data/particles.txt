@@ -82,6 +82,35 @@ isospin 1/2 -1/2
 gRNpi 0.1439730508
 gRNphoton 0.3555341842
 
+@group N1535
+group R12
+parity -1
+mass 1.530GeV
+width 150MeV
+branching_N_pi_upper 52%
+branching_N_pi_lower 32%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.30%
+branching_proton_photon_lower 0.15%
+branching_neutron_photon_upper 0.25%
+branching_neutron_photon_lower 0.01%
+l 0
+
+@particle N1535p
+group N1535
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N1535n
+group N1535
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
 @group Pion
 type Meson
 spin 0

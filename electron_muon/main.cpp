@@ -21,7 +21,7 @@ int main()
     init_particles();
 	init_vertices();
 
-	auto s_channel = create_diagram("s_channel", Double_Wrench, VMP,
+	auto s_channel = create_diagram("s_channel", s_channel, VMP,
 	                                {Positron, Electron},
 	                                {Photon},
 	                                {Positron, Electron});
