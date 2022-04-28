@@ -43,15 +43,15 @@ branching_neutron_photon_lower 0.02%
 group N1440
 charge 1
 isospin 1/2 1/2
-gRNpi 0.380006
-gRNphoton 0.0620975
+gRNpi 0.3800062588
+gRNphoton 0.06209754151
 
 @particle N1440n
 group N1440
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.379619
-gRNphoton 0.0529588
+gRNpi 0.379618652
+gRNphoton 0.05295881342
 
 @group N1520
 group R32
@@ -72,15 +72,15 @@ l 1
 group N1520
 charge 1
 isospin 1/2 1/2
-gRNpi 0.144174
-gRNphoton 0.354675
+gRNpi 0.1441737274
+gRNphoton 0.3546745953
 
 @particle N1520n
 group N1520
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.143973
-gRNphoton 0.355534
+gRNpi 0.1439730508
+gRNphoton 0.3555341842
 
 @group Pion
 type Meson
@@ -131,33 +131,38 @@ type TrueMeson
 charge -1
 isospin 1 -1
 
-@group Delta1232
+@group D1232
 group R32
 mass 1232MeV
 width 117MeV
 parity 1
-branching_N_pi 100%
-branching_N_photon_12_upper 0.13%
-branching_N_photon_12_lower 0.11%
-branching_N_photon_32_upper 0.52%
-branching_N_photon_32_lower 0.44%
+branching_N_pi 99.4%
+branching_N_photon_upper 0.65%
+branching_N_photon_lower 0.55%
+l 1
 
-@particle Delta1232pp
-group Delta1232
+@particle D1232pp
+group D1232
 isospin 3/2 3/2
 charge 2
+gRNpi 0.2459885557
 
-@particle Delta1232p
-group Delta1232
+@particle D1232p
+group D1232
 isospin 3/2 1/2
 charge 1
+gRNpi 0.2331641266
+gRNphoton 1.274993334
 
-@particle Delta1232n
-group Delta1232
+@particle D1232n
+group D1232
 isospin 3/2 -1/2
 charge 0
+gRNpi 0.2338038388
+gRNphoton 1.28202803
 
-@particle Delta1232m
-group Delta1232
+@particle D1232m
+group D1232
 isospin 3/2 -3/2
 charge -1
+gRNpi 0.2477326742

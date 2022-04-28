@@ -348,7 +348,8 @@ namespace Feynumeric
 	                 const std::vector<Lorentz_Index_Ptr>& lorentz_indices){
 		int const n = static_cast<int>(spin.j());
 		if( spin.is_half_odd_integer()){
-			/*if( spin.j() == 1.5 ){
+
+			if( spin.j() == 1.5 ){
 				auto mu = lorentz_indices[0];
 				auto nu = lorentz_indices[1];
 				double m = P->mass();
@@ -358,8 +359,9 @@ namespace Feynumeric
 				auto c = GA[*mu]*GA[*nu]/3.;
 				auto d = 2./3. * p.contra(*mu) * p.contra(*nu)/(m*m) * I;
 				auto e = GS(p)*(p.contra(*mu) * GA[*nu] - p.contra(*nu) * GA[*mu])/(3*m*m);
-				return a * (b - c);
-			}*/
+				return a * (b - c - d + e);
+			}
+
 			Angular_Momentum new_spin(spin.j() + 0.5, spin.j() + 0.5);
 			auto copy = lorentz_indices;
 			auto mu = std::make_shared<Lorentz_Index>();

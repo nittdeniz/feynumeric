@@ -79,13 +79,12 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const g = R->particle()->user_data<double>("gRNpi");
 				auto const m_pi = pi->particle()->mass();
 				auto const isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
-				auto result = CONTRACT_MATRIX(O32c(pR, lambda, mu) * pPi.contra(lambda), lambda) * GA5;
 				double beta = 300._MeV;
-				double q0 = 1.;
-                double q = 2.;
+				double q0 = momentum(R->particle()->mass(), N->particle()->mass(), pi->particle()->mass());
+                double q = momentum(kin.sqrt_s(), N->particle()->mass(), pi->particle()->mass());
 				int l = R->particle()->user_data<double>("l");
 				auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(beta, q0, q, l);
-				auto const ga5 = (R->particle()->parity() == 1 ? GA5 : Identity);
+				auto const ga5 = (R->particle()->parity() == -1 ? GA5 : Identity);
 				return -1.i * form_factor * isospin * g/(m_pi*m_pi) * O32c(pR, pPi, mu) * ga5;
 
 			}
