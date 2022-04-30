@@ -4,6 +4,8 @@
 #include "integrate.hpp"
 #include "units.hpp"
 
+#include <omp.h>
+
 #include <iomanip>
 #include <format.hpp>
 #include <iostream>
@@ -26,7 +28,16 @@ namespace Feynumeric
 		}
 	}
 
-	void Feynman_Process::add_diagram(Feynman_Diagram_Ptr diagram){
+    Feynman_Process::Feynman_Process(const Feynman_Process &other)
+    {
+        _diagrams.reserve(other._diagrams.size());
+        for( auto const& diagram : other._diagrams ){
+            _diagrams.push_back(std::make_shared<Feynman_Diagram>(*diagram));
+            _diagrams.back()->generate_amplitude();
+        }
+    }
+
+    void Feynman_Process::add_diagram(Feynman_Diagram_Ptr diagram){
 		diagram->generate_amplitude();
 		_diagrams.push_back(diagram);
 		validate_diagram_compatibility();
@@ -305,8 +316,19 @@ namespace Feynumeric
 		using namespace Feynumeric::Units;
 		using namespace std::placeholders;
 
-		for( auto const& sqrt_s : values ){
-			auto f = std::bind(&Feynman_Process::no_check_dsigma_dcos, this, sqrt_s, _1);
+
+		std::vector<Feynman_Process> copies;
+		copies.reserve(values.size());
+
+		for( std::size_t i = 0; i < values.size(); ++i ){
+		    copies.emplace_back(*this);
+		}
+
+
+        #pragma omp parallel for
+		for( std::size_t i = 0; i < copies.size(); ++i ){
+		    double const sqrt_s = values[i];
+			auto f = std::bind(&Feynman_Process::no_check_dsigma_dcos, &copies[i], sqrt_s, _1);
 			out << FORMAT("{}\t{}\n", sqrt_s, integrate(f, -1., 1., 1.e-2));
 		}
 	}

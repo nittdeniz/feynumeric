@@ -1,7 +1,7 @@
 #ifndef FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 #define FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 
-#define PRINT_AMPLITUDE 1
+#define PRINT_AMPLITUDE 0
 #define DEBUG_AMPLITUDE 0
 
 #include <initializer_list>
@@ -28,6 +28,10 @@ namespace Feynumeric{
 		std::map<Lorentz_Index_Ptr, std::string> _indices_to_string;
 		Complex _phase{1,0};
 		std::string _name;
+		Topology _topology;
+		std::vector<Particle_Ptr> _incoming_particles;
+		std::vector<Particle_Ptr> _virtual_particles;
+		std::vector<Particle_Ptr> _outgoing_particles;
 
 		void trace_fermion_line(std::shared_ptr<Graph_Edge> const& ptr, Direction const& start_direction, Edge_Direction vertex_direction);
 		void trace_fermion_line(std::shared_ptr<Graph_Edge> const& origin, std::shared_ptr<Graph_Vertex> const& ptr, Direction const& start_direction);
@@ -55,7 +59,9 @@ namespace Feynumeric{
 		void validate();
 
 	public:
-		Feynman_Diagram(std::string&& name, Topology const& topology, Vertex_Manager_Ptr const& VMP, std::initializer_list<Particle_Ptr> const& incoming_particles, std::initializer_list<Particle_Ptr> const& virtual_particles, std::initializer_list<Particle_Ptr> const& outgoing_particles);
+		Feynman_Diagram(std::string&& name, Topology const& topology, Vertex_Manager_Ptr const& VMP, std::vector<Particle_Ptr> const& incoming_particles, std::vector<Particle_Ptr> const& virtual_particles, std::vector<Particle_Ptr> const& outgoing_particles);
+		Feynman_Diagram(Feynman_Diagram const& other);
+		Feynman_Diagram& operator=(Feynman_Diagram const& other);
 		void generate_amplitude();
 		Four_Vector four_momentum(std::size_t index, Particle_Ptr const& P, Kinematics const& kin);
 		double dsigma_dcos(Kinematics& kin);
@@ -83,7 +89,7 @@ namespace Feynumeric{
 
 	Feynman_Diagram_Ptr operator*(Complex phi, Feynman_Diagram_Ptr& p);
 
-	Feynman_Diagram_Ptr create_diagram(std::string&& name, Topology const& topology, Vertex_Manager_Ptr const& VMP, std::initializer_list<Particle_Ptr> const& incoming_particles, std::initializer_list<Particle_Ptr> const& virtual_particles, std::initializer_list<Particle_Ptr> const& outgoing_particles);
+	Feynman_Diagram_Ptr create_diagram(std::string&& name, Topology const& topology, Vertex_Manager_Ptr const& VMP, std::vector<Particle_Ptr> const& incoming_particles, std::vector<Particle_Ptr> const& virtual_particles, std::vector<Particle_Ptr> const& outgoing_particles);
 }
 
 #endif // FEYNUMERIC_FEYNMAN_DIAGRAM_HPP

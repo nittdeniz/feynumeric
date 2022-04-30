@@ -10,17 +10,34 @@
 namespace Feynumeric
 {
 	Feynman_Diagram::Feynman_Diagram(std::string&& name, Topology const& topology, Vertex_Manager_Ptr const& VMP,
-	                                 std::initializer_list<Particle_Ptr> const& incoming_particles,
-	                                 std::initializer_list<Particle_Ptr> const& virtual_particles,
-	                                 std::initializer_list<Particle_Ptr> const& outgoing_particles)
-			: _graph(this, topology, incoming_particles, virtual_particles, outgoing_particles)
-			  , _VMP(VMP)
-			  , _name(name){
+	                                 std::vector<Particle_Ptr> const& incoming_particles,
+	                                 std::vector<Particle_Ptr> const& virtual_particles,
+	                                 std::vector<Particle_Ptr> const& outgoing_particles)
+    : _graph(this, topology, incoming_particles, virtual_particles, outgoing_particles)
+    , _VMP(VMP)
+    , _name(name)
+    , _topology(topology)
+    , _incoming_particles(incoming_particles)
+    , _virtual_particles(virtual_particles)
+    , _outgoing_particles(outgoing_particles)
+    {
 		initialize();
 		validate();
 	}
 
-	void Feynman_Diagram::add_spin(std::shared_ptr<Graph_Edge> const& edge_ptr){
+    Feynman_Diagram::Feynman_Diagram(const Feynman_Diagram &other)
+    : _graph(this, other._topology, other._incoming_particles, other._virtual_particles, other._outgoing_particles)
+    , _VMP(other._VMP)
+    , _name(other._name)
+    , _topology(other._topology)
+    , _incoming_particles(other._incoming_particles)
+    , _virtual_particles(other._virtual_particles)
+    , _outgoing_particles(other._outgoing_particles)
+    {
+        initialize();
+    }
+
+    void Feynman_Diagram::add_spin(std::shared_ptr<Graph_Edge> const& edge_ptr){
 		auto const spin = edge_ptr->particle()->spin();
 		_spins.push_back(std::make_shared<Angular_Momentum>(spin));
 		edge_ptr->spin(_spins.back());
@@ -39,9 +56,9 @@ namespace Feynumeric
 	}
 
 	Feynman_Diagram_Ptr create_diagram(std::string&& name, Topology const& topology, Vertex_Manager_Ptr const& VMP,
-	                                   std::initializer_list<Particle_Ptr> const& incoming_particles,
-	                                   std::initializer_list<Particle_Ptr> const& virtual_particles,
-	                                   std::initializer_list<Particle_Ptr> const& outgoing_particles){
+	                                   std::vector<Particle_Ptr> const& incoming_particles,
+	                                   std::vector<Particle_Ptr> const& virtual_particles,
+	                                   std::vector<Particle_Ptr> const& outgoing_particles){
 		return std::make_shared<Feynman_Diagram>(std::move(name), topology, VMP, incoming_particles, virtual_particles,
 		                                         outgoing_particles);
 	}

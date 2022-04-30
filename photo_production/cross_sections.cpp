@@ -1,7 +1,7 @@
 #include <feynumeric/command_line_manager.hpp>
 #include <feynumeric/core.hpp>
 #include <feynumeric/qed.hpp>
-
+#include <feynumeric/timer.hpp>
 
 #include "effective_lagrangian_model.hpp"
 #include "form_factors.hpp"
@@ -217,6 +217,9 @@ int main(int argc, char** argv)
 		Feynman_Process scattering_proton_pi_minus(diagrams_proton_pi_minus);
 		Feynman_Process scattering_neutron_pi_plus(diagrams_neutron_pi_plus);
 
+
+		Timer stopwatch;
+		stopwatch.start();
 		status("Scattering proton gamma -> proton pi0");
 		status(FORMAT("sqrt_s = {}", sqrt_s));
 //		scattering_proton_pi_zero.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
@@ -230,6 +233,8 @@ int main(int argc, char** argv)
 		status(FORMAT("sqrt_s = {}", sqrt_s));
 //		scattering_neutron_pi_plus.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
 		scattering_neutron_pi_plus.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
+		stopwatch.stop();
+		std::cout << "Time: " << stopwatch.time<std::chrono::seconds>() << "\n";
 	}
 	return EXIT_SUCCESS;
 }
