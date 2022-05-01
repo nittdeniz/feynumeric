@@ -47,6 +47,10 @@ int main(int argc, char** argv)
 	Particle_Ptr const& D1232p   = P["D1232p"];
 	Particle_Ptr const& D1232n   = P["D1232n"];
 	Particle_Ptr const& D1232m   = P["D1232m"];
+	Particle_Ptr const& D1600pp  = P["D1600pp"];
+	Particle_Ptr const& D1600p   = P["D1600p"];
+	Particle_Ptr const& D1600n   = P["D1600n"];
+	Particle_Ptr const& D1600m   = P["D1600m"];
 	Particle_Ptr const& N1440p   = P["N1440p"];
 	Particle_Ptr const& N1440n   = P["N1440n"];
 	Particle_Ptr const& N1520p   = P["N1520p"];
@@ -101,22 +105,30 @@ int main(int argc, char** argv)
 
 	if( cmd.as_string("process") == CMD_PROCESS_ELASTIC_SCATTERING ){
 		std::vector<Feynman_Diagram_Ptr> diagrams_proton_pi_plus;
+		std::vector<double> values = {1.321,1.362,1.390,1.417,1.427,1.443,1.450,1.462,1.470,1.481,1.495,1.501,1.512,1.528,1.540,1.561,1.562,1.572,1.586,1.612,1.621,1.638,1.641,1.643,1.669,1.673,1.688,1.694,1.716,1.738,1.769,1.777,1.783,1.791,1.821,1.851,1.839,1.878,1.881,1.896,1.903,1.911,1.927,1.945,1.955,1.969,1.978,2.016,2.020,2.057,2.071,2.089,2.102,2.115,2.155,2.189,2.194,2.206,2.240,2.286,2.306,2.520,2.556,2.575,2.778,2.785,2.868,2.900,3.207,3.487,3.696,3.999,4.105,4.173,4.601,4.781,4.916,4.992,5.355,5.561,5.678,5.968,9.733,11.500,13.732,16.236,18.147,19.396,21.680};
+		std::vector<Particle_Ptr> particles;
 		if( cmd.is_enabled("D1232") ){
+			particles.push_back(D1232pp);
+		}
+		if( cmd.is_enabled("D1600") ){
+			particles.push_back(D1600pp);
+		}
+		for( auto const& particle : particles ){
 			if( s_channel ){
 				diagrams_proton_pi_plus.push_back(
-						create_diagram("D1232 s", Scattering_Horizontal_2_to_2, VMP,
+						create_diagram(FORMAT("{} s", particle->name()), Scattering_Horizontal_2_to_2, VMP,
 						               {Proton, Pi_Plus},
-						               {D1232pp},
+						               {particle},
 						               {Pi_Plus, Proton}
 						));
 			}
 		}
+
 		Feynman_Process scattering_proton_pi_plus(diagrams_proton_pi_plus);
 
 		status("Scattering proton pi_plus -> proton pi_plus");
 		status(FORMAT("sqrt_s = {}", sqrt_s));
-		scattering_proton_pi_plus.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
-		scattering_proton_pi_plus.print_sigma_table(std::cout, {sqrt_s});
+		scattering_proton_pi_plus.print_sigma_table(std::cout, values);
 		std::cout << "\n\n";
 	}
 	else if( cmd.as_string("process") == CMD_PROCESS_PHOTO_PRODUCTION ){
@@ -217,22 +229,24 @@ int main(int argc, char** argv)
 		Feynman_Process scattering_proton_pi_minus(diagrams_proton_pi_minus);
 		Feynman_Process scattering_neutron_pi_plus(diagrams_neutron_pi_plus);
 
-
 		Timer stopwatch;
 		stopwatch.start();
+
+		std::vector<double> const values = {1.175, 1.2,1.225,1.25,1.275,1.3,1.325,1.35,1.375,1.4,1.41,1.42,1.43,1.44,1.45,1.46,1.47,1.48,1.49,1.5,1.51,1.52,1.53,1.54,1.55,1.56,1.57,1.58,1.59,1.6,1.6,1.65,1.7,1.75,1.8,1.85,1.9,1.95,2};
 		status("Scattering proton gamma -> proton pi0");
 		status(FORMAT("sqrt_s = {}", sqrt_s));
 //		scattering_proton_pi_zero.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
-		scattering_proton_pi_zero.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
+		scattering_proton_pi_zero.print_sigma_table(std::cout, values);
 		std::cout << "\n\n";
 		status("Scattering neutron gamma -> proton pi-");
 		status(FORMAT("sqrt_s = {}", sqrt_s));
 //		scattering_proton_pi_minus.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
-		scattering_proton_pi_minus.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
+		scattering_proton_pi_minus.print_sigma_table(std::cout, values);
 		status("Scattering proton gamma -> neutron pi+");
 		status(FORMAT("sqrt_s = {}", sqrt_s));
 //		scattering_neutron_pi_plus.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
 		scattering_neutron_pi_plus.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
+		scattering_neutron_pi_plus.print_sigma_table(std::cout, values);
 		stopwatch.stop();
 		std::cout << "Time: " << stopwatch.time<std::chrono::seconds>() << "\n";
 	}

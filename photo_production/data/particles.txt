@@ -165,7 +165,8 @@ group R32
 mass 1232MeV
 width 117MeV
 parity 1
-branching_N_pi 99.4%
+branching_N_pi_upper 99.4%
+branching_N_pi_lower 99.4%
 branching_N_photon_upper 0.65%
 branching_N_photon_lower 0.55%
 l 1
@@ -175,6 +176,7 @@ group D1232
 isospin 3/2 3/2
 charge 2
 gRNpi 0.2459885557
+gRnphoton 0
 
 @particle D1232p
 group D1232
@@ -195,3 +197,43 @@ group D1232
 isospin 3/2 -3/2
 charge -1
 gRNpi 0.2477326742
+gRnphoton 0
+
+@group D1600
+group R32
+parity 1
+mass 1570MeV
+width 250MeV
+branching_N_pi_upper 24%
+branching_N_pi_lower 8%
+branching_N_photon_upper 0.035%
+branching_N_photon_lower 0.001%
+l 1
+
+@particle D1600pp
+group D1600
+isospin 3/2 3/2
+charge 2
+gRNpi 0.03921422011
+gRNphoton 0
+
+@particle D1600p
+group D1600
+isospin 3/2 1/2
+charge 1
+gRNpi 0.03741671777
+gRNphoton 0.09602372065
+
+@particle D1600n
+group D1600
+isospin 3/2 -1/2
+charge 0
+gRNpi 0.03744503026
+gRNphoton 0.09623079036
+
+@particle D1600m
+group D1600
+isospin 3/2 -3/2
+charge -1
+gRNpi 0.03929034772
+gRNphoton 0

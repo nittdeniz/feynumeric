@@ -312,7 +312,7 @@ namespace Feynumeric
 		return Ms_squared * phase_space;
 	}
 
-	void Feynman_Process::print_sigma_table(std::ostream& out, std::vector<double>&& values){
+	void Feynman_Process::print_sigma_table(std::ostream& out, std::vector<double> const& values){
 		using namespace Feynumeric::Units;
 		using namespace std::placeholders;
 

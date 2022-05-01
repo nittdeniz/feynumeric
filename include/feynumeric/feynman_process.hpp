@@ -31,7 +31,7 @@ namespace Feynumeric
 		void print_dsigma_dcos_table(std::ostream& out, double sqrt_s, double delta);
 		void print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::vector<double>&& values);
 
-		void print_sigma_table(std::ostream& out, std::vector<double>&& values);
+		void print_sigma_table(std::ostream& out, std::vector<double> const& values);
 
 
 

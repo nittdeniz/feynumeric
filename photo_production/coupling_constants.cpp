@@ -23,6 +23,10 @@ int main(int argc, char** argv)
 	Particle_Ptr const& D1232p   = P["D1232p"];
 	Particle_Ptr const& D1232n   = P["D1232n"];
 	Particle_Ptr const& D1232m   = P["D1232m"];
+	Particle_Ptr const& D1600pp  = P["D1600pp"];
+	Particle_Ptr const& D1600p   = P["D1600p"];
+	Particle_Ptr const& D1600n   = P["D1600n"];
+	Particle_Ptr const& D1600m   = P["D1600m"];
 	Particle_Ptr const& N1440p   = P.get("N1440p");
 	Particle_Ptr const& N1440n   = P.get("N1440n");
 	Particle_Ptr const& N1520p   = P.get("N1520p");
@@ -40,6 +44,11 @@ int main(int argc, char** argv)
 
 	std::vector<Particle_Ptr> particles_Np = {N1440p, N1520p, N1535p};
 	std::vector<Particle_Ptr> particles_Nn = {N1440n, N1520n, N1535n};
+
+	std::vector<Particle_Ptr> particles_Dpp = {D1232pp, D1600pp};
+	std::vector<Particle_Ptr> particles_Dp  = {D1232p,  D1600p};
+	std::vector<Particle_Ptr> particles_Dn  = {D1232n,  D1600n};
+	std::vector<Particle_Ptr> particles_Dm  = {D1232m,  D1600m};
 
 	for( std::size_t i = 0; i < particles_Np.size(); ++i )
 	{
@@ -128,119 +137,136 @@ int main(int argc, char** argv)
 		std::cout << FORMAT("g({} -> neutron + photon): ", Nn->name()) << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value2 / w2) << "\n";
 	}
 
-	// coupling constant D1232 to N pi
+	for( std::size_t i = 0; i < particles_Dp.size(); ++i )
 	{
-		D1232pp->user_data("gRNpi", 1.);
-		D1232pp->user_data("form_factor", identity);
-		D1232p->user_data("gRNpi", 1.);
-		D1232p->user_data("form_factor", identity);
-		D1232n->user_data("gRNpi", 1.);
-		D1232n->user_data("form_factor", identity);
-		D1232m->user_data("gRNpi", 1.);
-		D1232m->user_data("form_factor", identity);
-		auto channel_decay_D1232pp1 = create_diagram("decay_D1232++ to proton pi+", Decay_1_to_2, VMP,
-		                                             {D1232pp},
+		auto& Dpp = particles_Dpp[i];
+		auto& Dp = particles_Dp[i];
+		auto& Dn = particles_Dn[i];
+		auto& Dm = particles_Dm[i];
+		Dpp->user_data("gRNpi", 1.);
+		Dpp->user_data("form_factor", identity);
+		Dp->user_data("gRNpi", 1.);
+		Dp->user_data("form_factor", identity);
+		Dn->user_data("gRNpi", 1.);
+		Dn->user_data("form_factor", identity);
+		Dm->user_data("gRNpi", 1.);
+		Dm->user_data("form_factor", identity);
+
+		auto channel_decay_Dpp1 = create_diagram(FORMAT("decay {} to proton pi+", Dpp->name()), Decay_1_to_2, VMP,
+		                                             {Dpp},
 		                                             {},
 		                                             {Proton, Pi_Plus}
 		);
 
-		auto channel_decay_D1232p1 = create_diagram("decay_D1232+ to neutron pi+", Decay_1_to_2, VMP,
-		                                            {D1232p},
+		auto channel_decay_Dp1 = create_diagram(FORMAT("decay {} to neutron pi+", Dp->name()), Decay_1_to_2, VMP,
+		                                            {Dp},
 		                                            {},
 		                                            {Neutron, Pi_Plus}
 		);
-		auto channel_decay_D1232p2 = create_diagram("decay_ND1232+ to proton pi0", Decay_1_to_2, VMP,
-		                                            {D1232p},
+		auto channel_decay_Dp2 = create_diagram(FORMAT("decay {} to proton pi0", Dp->name()), Decay_1_to_2, VMP,
+		                                            {Dp},
 		                                            {},
 		                                            {Proton, Pi_Zero}
 		);
 
-		auto channel_decay_D1232n1 = create_diagram("decay_D1232_0 to neutron pi0", Decay_1_to_2, VMP,
-		                                            {D1232n},
+		auto channel_decay_Dn1 = create_diagram(FORMAT("decay {} to neutron pi0", Dn->name()), Decay_1_to_2, VMP,
+		                                            {Dn},
 		                                            {},
 		                                            {Neutron, Pi_Zero}
 		);
-		auto channel_decay_D1232n2 = create_diagram("decay_ND1232_0 to proton pi-", Decay_1_to_2, VMP,
-		                                            {D1232n},
+		auto channel_decay_Dn2 = create_diagram(FORMAT("decay {} to proton pi-", Dn->name()), Decay_1_to_2, VMP,
+		                                            {Dn},
 		                                            {},
 		                                            {Proton, Pi_Minus}
 		);
 
-		auto channel_decay_D1232m1 = create_diagram("decay_ND1232- to neutron pi-", Decay_1_to_2, VMP,
-		                                            {D1232m},
+		auto channel_decay_Dm1 = create_diagram(FORMAT("decay {} to neutron pi-", Dm->name()), Decay_1_to_2, VMP,
+		                                            {Dm},
 		                                            {},
 		                                            {Neutron, Pi_Minus}
 		);
 
-		Feynman_Process decay_D1232pp1({channel_decay_D1232pp1});
+		Feynman_Process decay_Dpp1({channel_decay_Dpp1});
 
-		Feynman_Process decay_D1232p1({channel_decay_D1232p1});
-		Feynman_Process decay_D1232p2({channel_decay_D1232p2});
+		Feynman_Process decay_Dp1({channel_decay_Dp1});
+		Feynman_Process decay_Dp2({channel_decay_Dp2});
 
-		Feynman_Process decay_D1232n1({channel_decay_D1232n1});
-		Feynman_Process decay_D1232n2({channel_decay_D1232n2});
+		Feynman_Process decay_Dn1({channel_decay_Dn1});
+		Feynman_Process decay_Dn2({channel_decay_Dn2});
 
-		Feynman_Process decay_D1232m1({channel_decay_D1232m1});
+		Feynman_Process decay_Dm1({channel_decay_Dm1});
 
-		auto w1 = decay_D1232pp1.decay_width();
+		auto w1 = decay_Dpp1.decay_width();
 
-		auto w2 = decay_D1232p1.decay_width();
-		auto w3 = decay_D1232p2.decay_width();
+		auto w2 = decay_Dp1.decay_width();
+		auto w3 = decay_Dp2.decay_width();
 
-		auto w4 = decay_D1232n1.decay_width();
-		auto w5 = decay_D1232n2.decay_width();
+		auto w4 = decay_Dn1.decay_width();
+		auto w5 = decay_Dn2.decay_width();
 
-		auto w6 = decay_D1232m1.decay_width();
+		auto w6 = decay_Dm1.decay_width();
 
 
 
-		double const literature_value1 = D1232pp->width() * D1232pp->user_data<double>("branching_N_pi");
-		double const literature_value2 = D1232p->width() * D1232p->user_data<double>("branching_N_pi");
-		double const literature_value3 = D1232n->width() * D1232n->user_data<double>("branching_N_pi");
-		double const literature_value4 = D1232m->width() * D1232m->user_data<double>("branching_N_pi");
+		double const literature_value1 = Dpp->width() *  ( Dpp->user_data<double>("branching_N_pi_upper") +
+		                                                   Dpp->user_data<double>("branching_N_pi_lower")) / 2.;
+		double const literature_value2 = Dp->width() *  ( Dp->user_data<double>("branching_N_pi_upper") +
+		                                                  Dp->user_data<double>("branching_N_pi_lower")) / 2.;
+		double const literature_value3 = Dn->width() *  ( Dn->user_data<double>("branching_N_pi_upper") +
+		                                                  Dn->user_data<double>("branching_N_pi_lower")) / 2.;
+		double const literature_value4 = Dm->width() *  ( Dm->user_data<double>("branching_N_pi_upper") +
+		                                                  Dm->user_data<double>("branching_N_pi_lower")) / 2.;
 
-		std::cout << "g(D1232pp -> N + pi): " << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value1 / ( w1 )) << "\n";
-		std::cout << "g(D1232p -> N + pi): "  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value2 / ( w2 + w3 )) << "\n";
-		std::cout << "g(D1232n -> N + pi): "  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value3 / ( w4 + w5 )) << "\n";
-		std::cout << "g(D1232m -> N + pi): "  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value4 / ( w6 )) << "\n";
+		std::cout << FORMAT("g({} -> N + pi): ", Dpp->name()) << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value1 / ( w1 )) << "\n";
+		std::cout << FORMAT("g({} -> N + pi): ", Dp->name())  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value2 / ( w2 + w3 )) << "\n";
+		std::cout << FORMAT("g({} -> N + pi): ", Dn->name())  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value3 / ( w4 + w5 )) << "\n";
+		std::cout << FORMAT("g({} -> N + pi): ", Dm->name())  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value4 / ( w6 )) << "\n";
 	}
 
-	// coupling constant D1232 to N gamma
+	for( std::size_t i = 0; i < particles_Dp.size(); ++i )
 	{
-		D1232p->user_data("gRNphoton", 1.);
-		D1232p->user_data("form_factor", identity);
-		D1232n->user_data("gRNphoton", 1.);
-		D1232n->user_data("form_factor", identity);
+		auto& Dpp = particles_Dpp[i];
+		auto& Dp = particles_Dp[i];
+		auto& Dn = particles_Dn[i];
+		auto& Dm = particles_Dm[i];
+		Dpp->user_data("gRNphoton", 1.);
+		Dpp->user_data("form_factor", identity);
+		Dp->user_data("gRNphoton", 1.);
+		Dp->user_data("form_factor", identity);
+		Dn->user_data("gRNphoton", 1.);
+		Dn->user_data("form_factor", identity);
+		Dm->user_data("gRNphoton", 1.);
+		Dm->user_data("form_factor", identity);
 
-		auto channel_decay_D1232p1 = create_diagram("decay_D1232+ to proton photon", Decay_1_to_2, VMP,
-		                                            {D1232p},
+		auto channel_decay_Dp1 = create_diagram(FORMAT("decay {} to proton photon", Dp->name()), Decay_1_to_2, VMP,
+		                                            {Dp},
 		                                            {},
 		                                            {Proton, QED::Photon}
 		);
 
-		auto channel_decay_D1232n1 = create_diagram("decay_D1232_0 to neutron photon", Decay_1_to_2, VMP,
-		                                            {D1232n},
+		auto channel_decay_Dn1 = create_diagram(FORMAT("decay {} to neutron photon", Dn->name()), Decay_1_to_2, VMP,
+		                                            {Dn},
 		                                            {},
 		                                            {Neutron, QED::Photon}
 		);
 
 
 
-		Feynman_Process decay_D1232p1({channel_decay_D1232p1});
-		Feynman_Process decay_D1232n1({channel_decay_D1232n1});
+		Feynman_Process decay_Dp1({channel_decay_Dp1});
+		Feynman_Process decay_Dn1({channel_decay_Dn1});
 
 
-		auto w1 = decay_D1232p1.decay_width();
-		auto w2 = decay_D1232n1.decay_width();
+		auto w1 = decay_Dp1.decay_width();
+		auto w2 = decay_Dn1.decay_width();
 
 
 
 
-		double const literature_value1 = D1232p->width() * ( D1232p->user_data<double>("branching_N_photon_upper") +
-		                                                      D1232p->user_data<double>("branching_N_photon_lower")) / 2.;
+		double const literature_value1 = Dp->width() * ( Dp->user_data<double>("branching_N_photon_upper") +
+		                                                      Dp->user_data<double>("branching_N_photon_lower")) / 2.;
 
-		std::cout << "g(D1232p -> N + photon): "  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value1 / ( w1 )) << "\n";
-		std::cout << "g(D1232n -> N + photon): "  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value1 / ( w2 )) << "\n";
+		std::cout << FORMAT("g({} -> N + photon): ", Dp->name())  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value1 / ( w1 )) << "\n";
+		std::cout << FORMAT("g({} -> N + photon): ", Dn->name())  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value1 / ( w2 )) << "\n";
 	}
 	return EXIT_SUCCESS;
 }
