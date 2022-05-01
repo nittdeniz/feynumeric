@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 	cmd.register_command("form_factor", std::string("none"), "which form factor to use (none, cassing, manley, moniz, cutkosky)");
 	cmd.register_command("channel", std::string("s"), "which channel to use [s, t, u, c] or any combination.");
 	cmd.register_command("process", std::string("photoproduction"), FORMAT("which process to use: {} {}", CMD_PROCESS_PHOTO_PRODUCTION, CMD_PROCESS_ELASTIC_SCATTERING));
-	cmd.register_command("sqrt_s", true, "the energy in the center of mass frame in GeV");
+	cmd.register_command("sqrt_s", false, "the energy in the center of mass frame in GeV");
 	cmd.register_command("help", false, "list all command line parameters");
 
 	if( cmd.is_enabled("help") ){
@@ -30,8 +30,6 @@ int main(int argc, char** argv)
 	}
 
 	cmd.crash_on_missing_mandatory_command();
-
-	double sqrt_s = cmd.as_double("sqrt_s");
 
 	auto const& channel = cmd.as_string("channel");
 	bool const s_channel = channel.find('s') != std::string::npos;
@@ -51,6 +49,10 @@ int main(int argc, char** argv)
 	Particle_Ptr const& D1600p   = P["D1600p"];
 	Particle_Ptr const& D1600n   = P["D1600n"];
 	Particle_Ptr const& D1600m   = P["D1600m"];
+	Particle_Ptr const& D1920pp  = P["D1920pp"];
+	Particle_Ptr const& D1920p   = P["D1920p"];
+	Particle_Ptr const& D1920n   = P["D1920n"];
+	Particle_Ptr const& D1920m   = P["D1920m"];
 	Particle_Ptr const& N1440p   = P["N1440p"];
 	Particle_Ptr const& N1440n   = P["N1440n"];
 	Particle_Ptr const& N1520p   = P["N1520p"];
@@ -61,7 +63,7 @@ int main(int argc, char** argv)
 	Particle_Ptr const& Pi_Minus = P["pi-"];
 	Particle_Ptr const& Pi_Zero  = P["pi0"];
 
-	std::vector<Particle_Ptr> resonances = {D1232pp, D1232p, D1232n, D1232m, N1440p, N1440n, N1520p, N1520n};
+	std::vector<Particle_Ptr> resonances = {D1232pp, D1232p, D1232n, D1232m, D1600pp, D1600p, D1600n, D1600m, N1440p, N1440n, N1520p, N1520n, D1920pp, D1920p, D1920n, D1920m};
 
 	std::string const& form_factor = cmd.as_string("form_factor");
 
@@ -113,6 +115,9 @@ int main(int argc, char** argv)
 		if( cmd.is_enabled("D1600") ){
 			particles.push_back(D1600pp);
 		}
+		if( cmd.is_enabled("D1920") ){
+			particles.push_back(D1920pp);
+		}
 		for( auto const& particle : particles ){
 			if( s_channel ){
 				diagrams_proton_pi_plus.push_back(
@@ -127,7 +132,6 @@ int main(int argc, char** argv)
 		Feynman_Process scattering_proton_pi_plus(diagrams_proton_pi_plus);
 
 		status("Scattering proton pi_plus -> proton pi_plus");
-		status(FORMAT("sqrt_s = {}", sqrt_s));
 		scattering_proton_pi_plus.print_sigma_table(std::cout, values);
 		std::cout << "\n\n";
 	}
@@ -231,6 +235,8 @@ int main(int argc, char** argv)
 
 		Timer stopwatch;
 		stopwatch.start();
+
+		double sqrt_s = cmd.as_double("sqrt_s");
 
 		std::vector<double> const values = {1.175, 1.2,1.225,1.25,1.275,1.3,1.325,1.35,1.375,1.4,1.41,1.42,1.43,1.44,1.45,1.46,1.47,1.48,1.49,1.5,1.51,1.52,1.53,1.54,1.55,1.56,1.57,1.58,1.59,1.6,1.6,1.65,1.7,1.75,1.8,1.85,1.9,1.95,2};
 		status("Scattering proton gamma -> proton pi0");
