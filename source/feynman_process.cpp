@@ -312,6 +312,75 @@ namespace Feynumeric
 		return Ms_squared * phase_space;
 	}
 
+	std::map<double, double> Feynman_Process::sigma_table(std::vector<double> const& values, double epsilon){
+		using namespace Feynumeric::Units;
+		using namespace std::placeholders;
+		std::vector<Feynman_Process> copies;
+		copies.reserve(values.size());
+		for( std::size_t i = 0; i < values.size(); ++i ){
+			copies.emplace_back(*this);
+		}
+
+		std::map<double, double> result;
+
+		#pragma omp parallel for
+		for( std::size_t i = 0; i < copies.size(); ++i ){
+			double const sqrt_s = values[i];
+			auto f = std::bind(&Feynman_Process::no_check_dsigma_dcos, &copies[i], sqrt_s, _1);
+			result[sqrt_s] = integrate(f, -1., 1., epsilon);
+		}
+		return result;
+	}
+
+	std::map<double, double> Feynman_Process::sigma_table(double start, double end, double delta, double epsilon){
+		if( end < start ){
+			warning(FORMAT("sigma_table end {} is smaller than start{}.", end, start));
+		}
+		std::size_t const steps = (end-start) / delta;
+		std::vector<double> values(steps + 1);
+		for( std::size_t i = 0; i < steps; ++i ){
+			values[i] = start + i * delta;
+		}
+		values[steps] = end;
+		return sigma_table(values, epsilon);
+	}
+
+	std::map<double, double> Feynman_Process::sigma_table(double start, double end, std::size_t steps, double epsilon){
+		if( end < start ){
+			warning(FORMAT("sigma_table end {} is smaller than start{}.", end, start));
+		}
+		std::vector<double> values(steps + 1);
+		double const delta = (end-start) / steps;
+		for( std::size_t i = 0; i < steps; ++i ){
+			values[i] = start + i * delta;
+		}
+		values[steps] = end;
+		return sigma_table(values, epsilon);
+	}
+
+	void Feynman_Process::print_sigma_table(std::ostream& out, std::vector<double> const& values, double epsilon){
+		auto result = sigma_table(values, epsilon);
+		for( auto const& [key, value] : result ){
+			out << std::setw(10) << std::setprecision(10) << key << "\t" << value << "\n";
+		}
+	}
+
+	void Feynman_Process::print_sigma_table(std::ostream& out, double start, double end, double delta, double epsilon){
+		auto result = sigma_table(start, end, delta, epsilon);
+		for( auto const& [key, value] : result ){
+			out << std::setw(10) << std::setprecision(10) << key << "\t" << value << "\n";
+		}
+	}
+
+	void
+	Feynman_Process::print_sigma_table(std::ostream& out, double start, double end, std::size_t steps, double epsilon){
+		auto result = sigma_table(start, end, steps, epsilon);
+		for( auto const& [key, value] : result ){
+			out << std::setw(10) << std::setprecision(10) << key << "\t" << value << "\n";
+		}
+	}
+
+	/*
 	void Feynman_Process::print_sigma_table(std::ostream& out, std::vector<double> const& values){
 		using namespace Feynumeric::Units;
 		using namespace std::placeholders;
@@ -332,4 +401,5 @@ namespace Feynumeric
 			out << FORMAT("{}\t{}\n", sqrt_s, integrate(f, -1., 1., 1.e-2));
 		}
 	}
+	 */
 }

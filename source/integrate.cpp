@@ -21,7 +21,7 @@ namespace Feynumeric
 		double const area_left = trapezoid(f_left, f_mid, half_delta);
 		double const area_right = trapezoid(f_mid, f_right, half_delta);
 
-		if( almost_identical(area_total, area_left + area_right, epsilon)){
+		if( almost_identical(area_total, area_left + area_right, epsilon) || std::isnan(area_total) ){
 			return area_total;
 		}
 		return integrate(f, left, f_left, mid, f_mid, epsilon) + integrate(f, mid, f_mid, right, f_right, epsilon);
