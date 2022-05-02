@@ -84,19 +84,15 @@ int main(int argc, char** argv)
 	else if( form_factor == "cassing" ){
 		ff = cassing;
 	}
+	else if( form_factor == "breit_wigner" ){
+		ff = breit_wigner;
+	}
 	else{
 		critical_error("Unknown form factor");
 	}
 
 	for( auto& resonance : resonances ){
 		resonance->user_data("form_factor", ff);
-		resonance->width([&](double p2){
-			double const beta = 300._MeV;
-			double const q0 = momentum(resonance->mass(), Neutron->mass(), Pi_Plus->mass());
-			double const q = momentum(std::sqrt(p2), Neutron->mass(), Pi_Plus->mass());
-			int l = resonance->user_data<double>("l");
-			return resonance->width() * std::pow(ff(beta, q0, q, l), 2);
-		});
 	}
 
 	if( !cmd.is_enabled("D1232") &&  !cmd.is_enabled("N1440") && !cmd.is_enabled("N1520") && !cmd.is_enabled("N1535") ){
@@ -120,6 +116,13 @@ int main(int argc, char** argv)
 		}
 		for( auto const& particle : particles ){
 			if( s_channel ){
+				if( particle->spin().j() == 1.5 ){
+					particle->width([&](double p2){
+						auto const m = std::sqrt(p2);
+						auto const ff = particle->user_data<FORM_FACTOR_FUNCTION>("form_factor")(particle, Proton, Pi_Plus, m);
+						return particle->width() * ff * ff * dyson_factor_32p(particle, Proton, Pi_Plus, m);
+					});
+				}
 				diagrams_proton_pi_plus.push_back(
 						create_diagram(FORMAT("{} s", particle->name()), Scattering_Horizontal_2_to_2, VMP,
 						               {Proton, Pi_Plus},
@@ -129,10 +132,18 @@ int main(int argc, char** argv)
 			}
 		}
 
+		status(FORMAT("2mubarn: {}", 1._2mubarn));
+		status(FORMAT("2mbarn: {}", 1._2mbarn));
+		status(FORMAT("2barn: {}", 1._2barn));
+
 		Feynman_Process scattering_proton_pi_plus(diagrams_proton_pi_plus);
+		scattering_proton_pi_plus.conversion_factor(1._2mbarn);
 
 		status("Scattering proton pi_plus -> proton pi_plus");
-		scattering_proton_pi_plus.print_sigma_table(std::cout, 1.1, 2.0, 100ULL);
+		double start = cmd.is_enabled("start") ? cmd.as_double("start") : 1.1;
+		double end = cmd.is_enabled("end") ? cmd.as_double("end") : 2.0;
+		std::size_t steps = cmd.is_enabled("steps") ? static_cast<std::size_t>(cmd.as_int("steps")) : 100ULL;
+		scattering_proton_pi_plus.print_sigma_table(std::cout, start, end, steps);
 		std::cout << "\n\n";
 	}
 	else if( cmd.as_string("process") == CMD_PROCESS_PHOTO_PRODUCTION ){

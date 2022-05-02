@@ -7,6 +7,8 @@
 #include <ostream>
 #include <vector>
 
+#include "units.hpp"
+
 namespace Feynumeric
 {
 	class Feynman_Diagram;
@@ -21,11 +23,15 @@ namespace Feynumeric
 
 		double no_check_dsigma_dcos(double sqrt_s, double cos_theta);
 
+		double _conversion_factor = Units::operator""_2barn(1.);
+
 	public:
 		Feynman_Process(std::initializer_list<Feynman_Diagram_Ptr> list);
 		Feynman_Process(std::vector<Feynman_Diagram_Ptr> list);
 		Feynman_Process(Feynman_Process const& other);
 		void add_diagram(Feynman_Diagram_Ptr diagram);
+
+		void conversion_factor(long double x);
 
 		void print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::size_t steps);
 		void print_dsigma_dcos_table(std::ostream& out, double sqrt_s, double delta);

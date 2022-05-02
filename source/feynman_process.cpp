@@ -29,6 +29,7 @@ namespace Feynumeric
 	}
 
     Feynman_Process::Feynman_Process(const Feynman_Process &other)
+    : _conversion_factor(other._conversion_factor)
     {
         _diagrams.reserve(other._diagrams.size());
         for( auto const& diagram : other._diagrams ){
@@ -92,10 +93,14 @@ namespace Feynumeric
 		for( auto const&[cosine, results] : table ){
 			out << cosine << "\t";
 			for( auto const& value : results ){
-				out << std::setw(10) << std::setprecision(10) << value << "\t";
+				out << std::setw(10) << std::fixed << std::setprecision(10) << value << "\t";
 			}
 			out << "\n";
 		}
+	}
+
+	void Feynman_Process::conversion_factor(long double x){
+		_conversion_factor = static_cast<double>(x);
 	}
 
 	std::map<double, std::vector<double>>
@@ -137,7 +142,7 @@ namespace Feynumeric
 
 		double const phase_space_factor =
 				1. / N_polarisations * 1. / ( 32 * M_PI * kin.sqrt_s() * kin.sqrt_s()) * 1._hbarc * 1._hbarc *
-				fm_to_mub * qout / qin;
+				_conversion_factor * qout / qin;
 
 		std::map<double, std::vector<double>> result;
 
@@ -225,7 +230,7 @@ namespace Feynumeric
 
 		double const phase_space_factor =
 				1. / N_polarisations * 1. / ( 32 * M_PI * kin.sqrt_s() * kin.sqrt_s()) * 1._hbarc * 1._hbarc *
-				fm_to_mub * qout / qin;
+				_conversion_factor * qout / qin;
 
 
 		std::map<double, std::vector<double>> result;
@@ -361,14 +366,14 @@ namespace Feynumeric
 	void Feynman_Process::print_sigma_table(std::ostream& out, std::vector<double> const& values, double epsilon){
 		auto result = sigma_table(values, epsilon);
 		for( auto const& [key, value] : result ){
-			out << std::setw(10) << std::setprecision(10) << key << "\t" << value << "\n";
+			out << std::setw(10) << std::fixed << std::setprecision(10) << key << "\t" << value << "\n";
 		}
 	}
 
 	void Feynman_Process::print_sigma_table(std::ostream& out, double start, double end, double delta, double epsilon){
 		auto result = sigma_table(start, end, delta, epsilon);
 		for( auto const& [key, value] : result ){
-			out << std::setw(10) << std::setprecision(10) << key << "\t" << value << "\n";
+			out << std::setw(10) << std::fixed << std::setprecision(10) << key << "\t" << value << "\n";
 		}
 	}
 
@@ -376,7 +381,7 @@ namespace Feynumeric
 	Feynman_Process::print_sigma_table(std::ostream& out, double start, double end, std::size_t steps, double epsilon){
 		auto result = sigma_table(start, end, steps, epsilon);
 		for( auto const& [key, value] : result ){
-			out << std::setw(10) << std::setprecision(10) << key << "\t" << value << "\n";
+			out << std::setw(10) << std::fixed <<  std::setprecision(10) << key << "\t" << value << "\n";
 		}
 	}
 

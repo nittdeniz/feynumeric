@@ -66,6 +66,18 @@ namespace Feynumeric
         	return value * 0.01;
         }
 
+        constexpr long double operator"" _2mubarn(long double value){
+        	return value * 1.e4;
+        }
+
+        constexpr long double operator"" _2mbarn(long double value){
+        	return value * 1.e1;
+        }
+
+        constexpr long double operator"" _2barn(long double value){
+        	return value * 1.e-2;
+        }
+
         constexpr double fm_to_mub = 1.e4;
     }
 }
