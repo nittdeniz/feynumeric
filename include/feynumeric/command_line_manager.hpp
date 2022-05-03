@@ -39,6 +39,8 @@ namespace Feynumeric
 
 		bool is_enabled(const std::string& option);
 
+		bool exists(std::string const& option);
+
 		void crash_on_missing_mandatory_command() const;
 	};
 }

@@ -1,4 +1,4 @@
-#include <feynumeric/feynumeric.hpp>
+/*#include <feynumeric/feynumeric.hpp>
 #include <feynumeric/qed.hpp>
 
 #include <iostream>
@@ -41,4 +41,9 @@ int main(int argc, char** argv)
 	std::cout << "end\n";
 
 }
+*/
+#include <iostream>
 
+int main(){
+	std::cout << "hello world\n";
+}

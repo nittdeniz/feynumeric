@@ -1,4 +1,4 @@
-#include <initializer_list>
+/*#include <initializer_list>
 #include <iostream>
 #include <memory>
 
@@ -20,7 +20,7 @@ int main()
 
     init_particles();
 	init_vertices();
-
+/*
 	auto s_channel = create_diagram("s_channel", s_channel, VMP,
 	                                {Positron, Electron},
 	                                {Photon},
@@ -32,4 +32,9 @@ int main()
 //	compton.dsigma_dcos_table(std::cout, 500._MeV, 0.1);
     return EXIT_SUCCESS;
 }
+*/
+#include <iostream>
 
+int main(){
+	std::cout << "Hello World!\n";
+}

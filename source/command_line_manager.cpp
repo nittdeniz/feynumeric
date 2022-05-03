@@ -49,6 +49,10 @@ namespace Feynumeric
 
 	}
 
+	bool Command_Line_Manager::exists(std::string const& option){
+		return arguments.contains(option);
+	}
+
 	bool Command_Line_Manager::is_enabled(const std::string& option){
 		return arguments[option] == "1";
 	}

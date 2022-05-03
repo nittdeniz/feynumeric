@@ -1,6 +1,7 @@
 #include <feynumeric/command_line_manager.hpp>
 #include <feynumeric/core.hpp>
 #include <feynumeric/qed.hpp>
+#include <feynumeric/messages.hpp>
 #include <feynumeric/timer.hpp>
 
 #include "effective_lagrangian_model.hpp"
@@ -8,22 +9,35 @@
 
 #include <iostream>
 
+std::string const CMD_PROCESS_ELASTIC_SCATTERING = "elasticscattering";
+std::string const CMD_PROCESS_PHOTO_PRODUCTION   = "photoproduction";
+std::string const CMD_CHANNEL_S                  = "s";
+std::string const CMD_CHANNEL_T                  = "t";
+std::string const CMD_CHANNEL_U                  = "u";
+std::string const CMD_CHANNEL_C                  = "c";
+std::string const CMD_CROSS_SECTION_TOTAL        = "total";
+std::string const CMD_CROSS_SECTION_DIFFERENTIAL = "differential";
+std::string const CMD_FORM_FACTOR_NONE           = "none";
+std::string const CMD_FORM_FACTOR_CASSING        = "cassing";
+std::string const CMD_FORM_FACTOR_CUTKOSKY       = "cutkosky";
+std::string const CMD_FORM_FACTOR_MANLEY         = "manley";
+std::string const CMD_FORM_FACTOR_MONIZ          = "moniz";
+std::string const CMD_FORM_FACTOR_BREIT_WIGNER   = "breit_wigner";
+
 int main(int argc, char** argv)
 {
 	using namespace Feynumeric;
 	using namespace Feynumeric::Units;
 
-	std::string const CMD_PROCESS_ELASTIC_SCATTERING = "elasticscattering";
-	std::string const CMD_PROCESS_PHOTO_PRODUCTION   = "photoproduction";
-
 	Command_Line_Manager cmd(argc, argv);
 
 	cmd.register_command("particle_file", true, "file with particle parameters");
-	cmd.register_command("form_factor", std::string("none"), "which form factor to use (none, cassing, manley, moniz, cutkosky)");
-	cmd.register_command("channel", std::string("s"), "which channel to use [s, t, u, c] or any combination.");
-	cmd.register_command("process", std::string("photoproduction"), FORMAT("which process to use: {} {}", CMD_PROCESS_PHOTO_PRODUCTION, CMD_PROCESS_ELASTIC_SCATTERING));
+	cmd.register_command("form_factor", CMD_FORM_FACTOR_NONE, FORMAT("which form factor to use ({}, {}, {}, {}, {}, {})", CMD_FORM_FACTOR_NONE, CMD_FORM_FACTOR_CASSING, CMD_FORM_FACTOR_CUTKOSKY, CMD_FORM_FACTOR_MANLEY, CMD_FORM_FACTOR_MONIZ, CMD_FORM_FACTOR_BREIT_WIGNER));
+	cmd.register_command("channel", CMD_CHANNEL_S, "which channel to use [s, t, u, c] or any combination.");
+	cmd.register_command("process", CMD_PROCESS_PHOTO_PRODUCTION, FORMAT("which process to use: {} {}", CMD_PROCESS_PHOTO_PRODUCTION, CMD_PROCESS_ELASTIC_SCATTERING));
 	cmd.register_command("sqrt_s", false, "the energy in the center of mass frame in GeV");
 	cmd.register_command("help", false, "list all command line parameters");
+	cmd.register_command("cross_section", CMD_CROSS_SECTION_TOTAL, FORMAT("get {} or {} cross section", CMD_CROSS_SECTION_DIFFERENTIAL, CMD_CROSS_SECTION_TOTAL));
 
 	if( cmd.is_enabled("help") ){
 		return EXIT_SUCCESS;
@@ -41,29 +55,12 @@ int main(int argc, char** argv)
 
 
 	Particle_Manager P(cmd.as_string("particle_file"));
-	Particle_Ptr const& D1232pp  = P["D1232pp"];
-	Particle_Ptr const& D1232p   = P["D1232p"];
-	Particle_Ptr const& D1232n   = P["D1232n"];
-	Particle_Ptr const& D1232m   = P["D1232m"];
-	Particle_Ptr const& D1600pp  = P["D1600pp"];
-	Particle_Ptr const& D1600p   = P["D1600p"];
-	Particle_Ptr const& D1600n   = P["D1600n"];
-	Particle_Ptr const& D1600m   = P["D1600m"];
-	Particle_Ptr const& D1920pp  = P["D1920pp"];
-	Particle_Ptr const& D1920p   = P["D1920p"];
-	Particle_Ptr const& D1920n   = P["D1920n"];
-	Particle_Ptr const& D1920m   = P["D1920m"];
-	Particle_Ptr const& N1440p   = P["N1440p"];
-	Particle_Ptr const& N1440n   = P["N1440n"];
-	Particle_Ptr const& N1520p   = P["N1520p"];
-	Particle_Ptr const& N1520n   = P["N1520n"];
 	Particle_Ptr const& Proton   = P["proton"];
 	Particle_Ptr const& Neutron  = P["neutron"];
 	Particle_Ptr const& Pi_Plus  = P["pi+"];
 	Particle_Ptr const& Pi_Minus = P["pi-"];
 	Particle_Ptr const& Pi_Zero  = P["pi0"];
 
-	std::vector<Particle_Ptr> resonances = {D1232pp, D1232p, D1232n, D1232m, D1600pp, D1600p, D1600n, D1600m, N1440p, N1440n, N1520p, N1520n, D1920pp, D1920p, D1920n, D1920m};
 
 	std::string const& form_factor = cmd.as_string("form_factor");
 
@@ -78,7 +75,7 @@ int main(int argc, char** argv)
 	else if( form_factor == "manley" ){
 		ff = manley;
 	}
-	else if( form_factor == "cutkostky" ){
+	else if( form_factor == "cutkosky" ){
 		ff = cutkosky;
 	}
 	else if( form_factor == "cassing" ){
@@ -91,29 +88,63 @@ int main(int argc, char** argv)
 		critical_error("Unknown form factor");
 	}
 
-	for( auto& resonance : resonances ){
-		resonance->user_data("form_factor", ff);
-	}
+	status(FORMAT("Form factor: {}", form_factor));
 
-	if( !cmd.is_enabled("D1232") &&  !cmd.is_enabled("N1440") && !cmd.is_enabled("N1520") && !cmd.is_enabled("N1535") ){
-		critical_error("No particle activated.\n");
+	std::vector<std::string> const nucleon_resonances = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900", "N2060", "N2100", "N2120", "N2190", "N2220", "N2250", "N2600"};
+	std::vector<std::string> const delta_resonances   = {"D1232", "D1600", "D1620", "D1700", "D1900", "D1905", "D1910", "D1920", "D1930", "D1950", "D2200", "D2420"};
+
+	std::vector<std::string> resonances;
+	resonances.insert(resonances.end(), nucleon_resonances.cbegin(), nucleon_resonances.cend());
+	resonances.insert(resonances.end(), delta_resonances.cbegin(), delta_resonances.cend());
+
+	auto pp_string = [](std::string const& p){ return FORMAT("{}pp", p);};
+	auto p_string  = [](std::string const& p){ return FORMAT("{}p", p);};
+	auto n_string  = [](std::string const& p){ return FORMAT("{}n", p);};
+	auto m_string  = [](std::string const& p){ return FORMAT("{}m", p);};
+
+	for( auto const& nucleon_resonance : nucleon_resonances ){
+		auto const& Np = p_string(nucleon_resonance);
+		auto const& Nn = n_string(nucleon_resonance);
+		if( P.exists(Np) ){
+			P[Np]->user_data("form_factor", ff);
+		}
+		if( P.exists(Nn) ){
+			P[Nn]->user_data("form_factor", ff);
+		}
+	}
+	for( auto const& delta_resonance : delta_resonances ){
+		auto const& Dpp = pp_string(delta_resonance);
+		auto const& Dp  = p_string(delta_resonance);
+		auto const& Dn  = n_string(delta_resonance);
+		auto const& Dm  = m_string(delta_resonance);
+		if( P.exists(Dpp) ){
+			P[Dpp]->user_data("form_factor", ff);
+		}
+		if( P.exists(Dp) ){
+			P[Dp]->user_data("form_factor", ff);
+		}
+		if( P.exists(Dn) ){
+			P[Dn]->user_data("form_factor", ff);
+		}
+		if( P.exists(Dm) ){
+			P[Dm]->user_data("form_factor", ff);
+		}
 	}
 
 	init_vertices(P);
-
+	Timer stopwatch;
+	stopwatch.start();
 	if( cmd.as_string("process") == CMD_PROCESS_ELASTIC_SCATTERING ){
 		std::vector<Feynman_Diagram_Ptr> diagrams_proton_pi_plus;
 		//std::vector<double> values = {1.321,1.362,1.390,1.417,1.427,1.443,1.450,1.462,1.470,1.481,1.495,1.501,1.512,1.528,1.540,1.561,1.562,1.572,1.586,1.612,1.621,1.638,1.641,1.643,1.669,1.673,1.688,1.694,1.716,1.738,1.769,1.777,1.783,1.791,1.821,1.851,1.839,1.878,1.881,1.896,1.903,1.911,1.927,1.945,1.955,1.969,1.978,2.016,2.020,2.057,2.071,2.089,2.102,2.115,2.155,2.189,2.194,2.206,2.240,2.286,2.306,2.520,2.556,2.575,2.778,2.785,2.868,2.900,3.207,3.487,3.696,3.999,4.105,4.173,4.601,4.781,4.916,4.992,5.355,5.561,5.678,5.968,9.733,11.500,13.732,16.236,18.147,19.396,21.680};
 		std::vector<Particle_Ptr> particles;
-		if( cmd.is_enabled("D1232") ){
-			particles.push_back(D1232pp);
+		for( auto const& R : delta_resonances ){
+			if( cmd.is_enabled(R) ){
+				status(FORMAT("{} activated", R));
+				particles.push_back(P[pp_string(R)]);
+			}
 		}
-		if( cmd.is_enabled("D1600") ){
-			particles.push_back(D1600pp);
-		}
-		if( cmd.is_enabled("D1920") ){
-			particles.push_back(D1920pp);
-		}
+
 		for( auto const& particle : particles ){
 			if( s_channel ){
 				if( particle->spin().j() == 1.5 ){
@@ -132,16 +163,12 @@ int main(int argc, char** argv)
 			}
 		}
 
-		status(FORMAT("2mubarn: {}", 1._2mubarn));
-		status(FORMAT("2mbarn: {}", 1._2mbarn));
-		status(FORMAT("2barn: {}", 1._2barn));
-
 		Feynman_Process scattering_proton_pi_plus(diagrams_proton_pi_plus);
 		scattering_proton_pi_plus.conversion_factor(1._2mbarn);
 
 		status("Scattering proton pi_plus -> proton pi_plus");
-		double start = cmd.is_enabled("start") ? cmd.as_double("start") : 1.1;
-		double end = cmd.is_enabled("end") ? cmd.as_double("end") : 2.0;
+		double start = cmd.exists("start") ? cmd.as_double("start") : 1.1;
+		double end = cmd.exists("end") ? cmd.as_double("end") : 2.0;
 		std::size_t steps = cmd.is_enabled("steps") ? static_cast<std::size_t>(cmd.as_int("steps")) : 100ULL;
 		scattering_proton_pi_plus.print_sigma_table(std::cout, start, end, steps);
 		std::cout << "\n\n";
@@ -152,100 +179,60 @@ int main(int argc, char** argv)
 		std::vector<Feynman_Diagram_Ptr> diagrams_neutron_pi_plus;
 
 
+		std::vector<Particle_Ptr> N_plus = {};
+		std::vector<Particle_Ptr> N_null = {};
 
-		if( cmd.is_enabled("N1440") )
-		{
-			if( s_channel ){
-				diagrams_proton_pi_zero.push_back(
-						create_diagram("N1440 s", Scattering_Horizontal_2_to_2, VMP,
-						               {Proton, QED::Photon},
-						               {N1440p},
-						               {Pi_Zero, Proton}
-						));
-				diagrams_proton_pi_minus.push_back(
-						create_diagram("N1440 s", Scattering_Horizontal_2_to_2, VMP,
-						               {Neutron, QED::Photon},
-						               {N1440n},
-						               {Pi_Minus, Proton}
-						));
-				diagrams_neutron_pi_plus.push_back(
-						create_diagram("N1440 s", Scattering_Horizontal_2_to_2, VMP,
-						               {Proton, QED::Photon},
-						               {N1440p},
-						               {Pi_Plus, Neutron}
-						));
-			}
-			if( u_channel ){
-				diagrams_proton_pi_zero.push_back(
-						create_diagram("N1440 u", Scattering_Vertical_2_to_2, VMP,
-						               {Proton, QED::Photon},
-						               {N1440p},
-						               {Pi_Zero, Proton}
-						));
-				diagrams_proton_pi_minus.push_back(
-						create_diagram("N1440 u", Scattering_Vertical_2_to_2, VMP,
-						               {Neutron, QED::Photon},
-						               {N1440p},
-						               {Pi_Minus, Proton}
-						));
-				diagrams_neutron_pi_plus.push_back(
-						create_diagram("N1440 u", Scattering_Vertical_2_to_2, VMP,
-						               {Proton, QED::Photon},
-						               {N1440n},
-						               {Pi_Plus, Neutron}
-						));
-			}
-		}
-		if( cmd.is_enabled("N1520") )
-		{
-			if( s_channel ){
-				diagrams_proton_pi_zero.push_back(
-						create_diagram("N1520 s", Scattering_Horizontal_2_to_2, VMP,
-						               {Proton, QED::Photon},
-						               {N1520p},
-						               {Pi_Zero, Proton}
-						));
-				diagrams_proton_pi_minus.push_back(
-						create_diagram("N1520 s", Scattering_Horizontal_2_to_2, VMP,
-						               {Neutron, QED::Photon},
-						               {N1520n},
-						               {Pi_Minus, Proton}
-						));
-				diagrams_neutron_pi_plus.push_back(
-						create_diagram("N1520 s", Scattering_Horizontal_2_to_2, VMP,
-						               {Proton, QED::Photon},
-						               {N1520p},
-						               {Pi_Plus, Neutron}
-						));
-			}
-			if( u_channel ){
-				diagrams_proton_pi_zero.push_back(
-						create_diagram("N1520 u", Scattering_Vertical_2_to_2, VMP,
-						               {Proton, QED::Photon},
-						               {N1520p},
-						               {Pi_Zero, Proton}
-						));
-				diagrams_proton_pi_minus.push_back(
-						create_diagram("N1520 u", Scattering_Vertical_2_to_2, VMP,
-						               {Neutron, QED::Photon},
-						               {N1520p},
-						               {Pi_Minus, Proton}
-						));
-				diagrams_neutron_pi_plus.push_back(
-						create_diagram("N1520 u", Scattering_Vertical_2_to_2, VMP,
-						               {Proton, QED::Photon},
-						               {N1520n},
-						               {Pi_Plus, Neutron}
-						));
+
+		for( auto const& particle : resonances ){
+			if( cmd.is_enabled(particle) ){
+				auto const& Rp = P[p_string(particle)];
+				auto const& Rn = P[n_string(particle)];
+				if( s_channel ){
+					diagrams_proton_pi_zero.push_back(
+							create_diagram(FORMAT("{} s", particle), Scattering_Horizontal_2_to_2, VMP,
+							               {Proton, QED::Photon},
+							               {Rp},
+							               {Pi_Zero, Proton}
+							));
+					diagrams_proton_pi_minus.push_back(
+							create_diagram(FORMAT("{} s", particle), Scattering_Horizontal_2_to_2, VMP,
+							               {Neutron, QED::Photon},
+							               {Rn},
+							               {Pi_Minus, Proton}
+							));
+					diagrams_neutron_pi_plus.push_back(
+							create_diagram(FORMAT("{} s", particle), Scattering_Horizontal_2_to_2, VMP,
+							               {Proton, QED::Photon},
+							               {Rp},
+							               {Pi_Plus, Neutron}
+							));
+				}
+				if( u_channel ){
+					diagrams_proton_pi_zero.push_back(
+							create_diagram(FORMAT("{} u", particle), Scattering_Vertical_2_to_2, VMP,
+							               {Proton, QED::Photon},
+							               {Rp},
+							               {Pi_Zero, Proton}
+							));
+					diagrams_proton_pi_minus.push_back(
+							create_diagram(FORMAT("{} u", particle), Scattering_Vertical_2_to_2, VMP,
+							               {Neutron, QED::Photon},
+							               {Rp},
+							               {Pi_Minus, Proton}
+							));
+					diagrams_neutron_pi_plus.push_back(
+							create_diagram(FORMAT("{} u", particle), Scattering_Vertical_2_to_2, VMP,
+							               {Proton, QED::Photon},
+							               {Rn},
+							               {Pi_Plus, Neutron}
+							));
+				}
 			}
 		}
 
 		Feynman_Process scattering_proton_pi_zero(diagrams_proton_pi_zero);
 		Feynman_Process scattering_proton_pi_minus(diagrams_proton_pi_minus);
 		Feynman_Process scattering_neutron_pi_plus(diagrams_neutron_pi_plus);
-
-		Timer stopwatch;
-		stopwatch.start();
 
 		double sqrt_s = cmd.as_double("sqrt_s");
 
@@ -264,8 +251,8 @@ int main(int argc, char** argv)
 //		scattering_neutron_pi_plus.print_dsigma_dcos_table(std::cout, sqrt_s, 0.1);
 		scattering_neutron_pi_plus.print_sigma_table(std::cout, {{1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0}});
 		scattering_neutron_pi_plus.print_sigma_table(std::cout, values);
-		stopwatch.stop();
-		std::cout << "Time: " << stopwatch.time<std::chrono::seconds>() << "\n";
 	}
+	stopwatch.stop();
+	std::cout << "Time: " << stopwatch.time<std::chrono::seconds>() << "\n";
 	return EXIT_SUCCESS;
 }

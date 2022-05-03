@@ -195,6 +195,10 @@ namespace Feynumeric
 		}
 	}
 
+	bool Particle_Manager::exists(std::string const& key) const{
+		return _particles.find(key) != _particles.end();
+	}
+
 	Particle_Manager::Particle_Manager(std::string const& file_name)
 	{
 		parse_file(file_name);
@@ -208,11 +212,6 @@ namespace Feynumeric
 	Particle_Manager& Particle_Manager::operator=(Particle_Manager const&)
 	{
 		return *this;
-	}
-
-	Particle_Ptr Particle_Manager::get(std::string&& key) const
-	{
-		return _particles.at(std::move(key));
 	}
 
 	Particle_Ptr const& Particle_Manager::operator[](std::string const& key) const
