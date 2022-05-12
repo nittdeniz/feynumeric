@@ -67,13 +67,29 @@ FORM_FACTOR_FUNCTION breit_wigner = [](Feynumeric::Particle_Ptr const& R, Feynum
 	return std::pow(a/(a + b*b), c);
 };
 
-FORM_FACTOR_FUNCTION dyson_factor_32p =  [](Feynumeric::Particle_Ptr const& R, Feynumeric::Particle_Ptr const& N, Feynumeric::Particle_Ptr const& pi, double E){
+FORM_FACTOR_FUNCTION dyson_factor_32 =  [](Feynumeric::Particle_Ptr const& R, Feynumeric::Particle_Ptr const& N, Feynumeric::Particle_Ptr const& pi, double E){
 	using namespace Feynumeric;
 	double const& m_R  = R->mass();
 	double const& m_N  = N->mass();
 	double const& m_pi = pi->mass();
 	double const q0 = momentum(m_R, m_N, m_pi);
 	double const qE = momentum(E, m_N, m_pi);
-	auto f = [&](double m){ return (m + m_N - m_pi) * (m + m_N + m_pi);}; // obtained from mathematica
-	return std::pow(qE/q0, 3);// * f(E) / f(m_R);
+	auto f = [](double a, double b){ return std::sqrt(a*a + b*b);};
+	return std::pow(qE/q0, 3) * E/m_R * (m_N + f(m_N, qE))/(m_N + f(m_N, q0));
+};
+
+FORM_FACTOR_FUNCTION dyson_factor_12 =  [](Feynumeric::Particle_Ptr const& R, Feynumeric::Particle_Ptr const& N, Feynumeric::Particle_Ptr const& pi, double E){
+	using namespace Feynumeric;
+	double const& m_R  = R->mass();
+	double const& m_N  = N->mass();
+	double const& m_pi = pi->mass();
+	double const q0 = momentum(m_R, m_N, m_pi);
+	double const qE = momentum(E, m_N, m_pi);
+	auto f = [](double a, double b){ return std::sqrt(a*a + b*b);};
+	auto g = [&](double q){
+		double mp2 = m_pi* m_pi;
+		double m2 = m_N * m_N;
+		return q * (m_N * mp2 + mp2 * f(m_N, q) + 2 * q*q * (f(m_N, q) + f(m_pi, q)));
+	};
+	return m_R/E * g(qE)/g(q0);
 };

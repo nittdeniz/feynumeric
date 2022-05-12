@@ -12,7 +12,6 @@ extern FORM_FACTOR_FUNCTION manley;
 extern FORM_FACTOR_FUNCTION cassing;
 extern FORM_FACTOR_FUNCTION cutkosky;
 extern FORM_FACTOR_FUNCTION breit_wigner;
-extern FORM_FACTOR_FUNCTION dyson_factor_32p;
-
-
+extern FORM_FACTOR_FUNCTION dyson_factor_32;
+extern FORM_FACTOR_FUNCTION dyson_factor_12;
 #endif

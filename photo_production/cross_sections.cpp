@@ -147,11 +147,18 @@ int main(int argc, char** argv)
 
 		for( auto const& particle : particles ){
 			if( s_channel ){
+				if( particle->spin().j() == 0.5 ){
+					particle->width([&](double p2){
+						auto const m = std::sqrt(p2);
+						auto const ff = particle->user_data<FORM_FACTOR_FUNCTION>("form_factor")(particle, Proton, Pi_Plus, m);
+						return particle->width() * ff * ff * dyson_factor_12(particle, Proton, Pi_Plus, m);
+					});
+				}
 				if( particle->spin().j() == 1.5 ){
 					particle->width([&](double p2){
 						auto const m = std::sqrt(p2);
 						auto const ff = particle->user_data<FORM_FACTOR_FUNCTION>("form_factor")(particle, Proton, Pi_Plus, m);
-						return particle->width() * ff * ff * dyson_factor_32p(particle, Proton, Pi_Plus, m);
+						return particle->width() * ff * ff * dyson_factor_32(particle, Proton, Pi_Plus, m);
 					});
 				}
 				diagrams_proton_pi_plus.push_back(

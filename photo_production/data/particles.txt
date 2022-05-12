@@ -121,6 +121,519 @@ isospin 1/2 -1/2
 gRNpi 0.3555341842
 gRNphoton 0.05833554672
 
+@group N1650
+group R12
+parity -1
+mass 1.650GeV
+width 125MeV
+branching_N_pi_upper 70%
+branching_N_pi_lower 50%
+branching_N_pi_pi_upper 36%
+branching_N_pi_pi_lower 8%
+branching_N_D1232_pi_upper 18%
+branching_N_D1232_pi_lower 6%
+branching_N_sigma_upper 18%
+branching_N_sigma_lower 2%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.20%
+branching_proton_photon_lower 0.04%
+branching_neutron_photon_upper 0.17%
+branching_neutron_photon_lower 0.003%
+l 0
+
+@particle N1650p
+group N1650
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N1650n
+group N1650
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
+@group N1675
+group R52
+parity -1
+mass 1.675GeV
+width 145MeV
+branching_N_pi_upper 42%
+branching_N_pi_lower 38%
+branching_N_pi_pi_upper 45%
+branching_N_pi_pi_lower 25%
+branching_N_D1232_pi_upper 37%
+branching_N_D1232_pi_lower 23%
+branching_N_sigma_upper 7%
+branching_N_sigma_lower 3%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.02%
+branching_proton_photon_lower 0.0%
+branching_neutron_photon_upper 0.15%
+branching_neutron_photon_lower 0.1%
+l 2
+
+@particle N1675p
+group N1675
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N1675n
+group N1675
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
+@group N1680
+group R52
+parity 1
+mass 1.685GeV
+width 120MeV
+branching_N_pi_upper 70%
+branching_N_pi_lower 60%
+branching_N_pi_pi_upper 40%
+branching_N_pi_pi_lower 20%
+branching_N_D1232_pi_upper 23%
+branching_N_D1232_pi_lower 11%
+branching_N_sigma_upper 19%
+branching_N_sigma_lower 9%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.32%
+branching_proton_photon_lower 0.21%
+branching_neutron_photon_upper 0.046%
+branching_neutron_photon_lower 0.021%
+l 3
+
+@particle N1680p
+group N1680
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N1680n
+group N1680
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
+@group N1700
+group R32
+parity -1
+mass 1.720GeV
+width 200MeV
+branching_N_pi_upper 17%
+branching_N_pi_lower 7%
+branching_N_omega_upper 34%
+branching_N_omega_lower 10%
+branching_N_pi_pi_upper 90%
+branching_N_pi_pi_lower 60%
+branching_N_D1232_pi_upper 85%
+branching_N_D1232_pi_lower 55%
+branching_N1440_pi_upper 11%
+branching_N1440_pi_upper 3%
+branching_N1520_pi_upper 4%
+branching_N1520_pi_upper 0%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.05%
+branching_proton_photon_lower 0.01%
+branching_neutron_photon_upper 0.13%
+branching_neutron_photon_lower 0.01%
+l 2
+
+@particle N1700p
+group N1700
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N1700n
+group N1700
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
+@group N1710
+group R12
+parity 1
+mass 1.710GeV
+width 140MeV
+branching_N_pi_upper 20%
+branching_N_pi_lower 5%
+branching_N_eta_upper 50%
+branching_N_eta_lower 10%
+branching_N_omega_upper 5%
+branching_N_omega_lower 1%
+branching_N_pi_pi_upper 9%
+branching_N_pi_pi_lower 3%
+branching_N_D1232_pi_upper 9%
+branching_N_D1232_pi_lower 3%
+branching_N1535_pi_upper 21%
+branching_N1535_pi_upper 9%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.08%
+branching_proton_photon_lower 0.002%
+branching_neutron_photon_upper 0.02%
+branching_neutron_photon_lower 0.0%
+l 2
+
+@particle N1710p
+group N1710
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N1710n
+group N1710
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
+@group N1720
+group R32
+parity 1
+mass 1.720GeV
+width 250MeV
+branching_N_pi_upper 14%
+branching_N_pi_lower 8%
+branching_N_eta_upper 5%
+branching_N_eta_lower 1%
+branching_N_omega_upper 40%
+branching_N_omega_lower 12%
+branching_N_pi_pi_upper 90%
+branching_N_pi_pi_lower 50%
+branching_N_D1232_pi_upper 89%
+branching_N_D1232_pi_lower 47%
+branching_N1440_pi_upper 2%
+branching_N1440_pi_upper 0%
+branching_N1520_pi_upper 5%
+branching_N1520_pi_upper 1%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.25%
+branching_proton_photon_lower 0.05%
+branching_neutron_photon_upper 0.016%
+branching_neutron_photon_lower 0.0%
+l 1
+
+@particle N1720p
+group N1720
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N1720n
+group N1720
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
+@group N1875
+group R32
+parity -1
+mass 1.875GeV
+width 200MeV
+branching_N_pi_upper 11%
+branching_N_pi_lower 3%
+branching_N_eta_upper 1%
+branching_N_eta_lower 0%
+branching_N_omega_upper 25%
+branching_N_omega_lower 15%
+branching_N_pi_pi_upper 95%
+branching_N_pi_pi_lower 40%
+branching_N_D1232_pi_upper 35%
+branching_N_D1232_pi_lower 10%
+branching_N_sigma_upper 60%
+branching_N_sigma_lower 30%
+branching_N1440_pi_upper 8%
+branching_N1440_pi_upper 2%
+branching_N1520_pi_upper 2%
+branching_N1520_pi_upper 0%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.025%
+branching_proton_photon_lower 0.001%
+branching_neutron_photon_upper 0.04%
+branching_neutron_photon_lower 0.0%
+l 1
+
+@particle N1875p
+group N1875
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N1875n
+group N1875
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
+@group N1880
+group R12
+parity 1
+mass 1.880GeV
+width 300MeV
+branching_N_pi_upper 9%
+branching_N_pi_lower 3%
+branching_N_eta_upper 55%
+branching_N_eta_lower 5%
+branching_N_omega_upper 28%
+branching_N_omega_lower 12%
+branching_N_pi_pi_upper 80%
+branching_N_pi_pi_lower 30%
+branching_N_D1232_pi_upper 42%
+branching_N_D1232_pi_lower 10%
+branching_N_sigma_upper 60%
+branching_N_sigma_lower 30%
+branching_N1535_pi_upper 12%
+branching_N1535_pi_upper 4%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_N_a0_upper 5%
+branching_N_a0_lower 1%
+branching_proton_photon_upper 0.0%
+branching_proton_photon_lower 0.0%
+branching_neutron_photon_upper 0.63%
+branching_neutron_photon_lower 0.002%
+l 1
+
+@particle N1880p
+group N1880
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N1880n
+group N1880
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
+@group N1895
+group R12
+parity -1
+mass 1.895GeV
+width 120MeV
+branching_N_pi_upper 18%
+branching_N_pi_lower 2%
+branching_N_eta_upper 40%
+branching_N_eta_lower 15%
+branching_N_etap_upper 40%
+branching_N_etap_lower 10%
+branching_N_omega_upper 40%
+branching_N_omega_lower 16%
+branching_N_pi_pi_upper 80%
+branching_N_pi_pi_lower 30%
+branching_N1440_pi_upper 4%
+branching_N1440_pi_upper 1%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.06%
+branching_proton_photon_lower 0.01%
+branching_neutron_photon_upper 0.05%
+branching_neutron_photon_lower 0.003%
+l 0
+
+@particle N1895p
+group N1895
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N1895n
+group N1895
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
+@group N1900
+group R32
+parity 1
+mass 1.920GeV
+width 200MeV
+branching_N_pi_upper 20%
+branching_N_pi_lower 1%
+branching_N_eta_upper 14%
+branching_N_eta_lower 2%
+branching_N_etap_upper 8%
+branching_N_etap_lower 4%
+branching_N_omega_upper 13%
+branching_N_omega_lower 7%
+branching_N_pi_pi_upper 80%
+branching_N_pi_pi_lower 40%
+branching_N_D1232_pi_upper 70%
+branching_N_D1232_pi_lower 30%
+branching_N1520_pi_upper 23%
+branching_N1520_pi_lower 7%
+branching_N1535_pi_upper 10%
+branching_N1535_pi_lower 4%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.025%
+branching_proton_photon_lower 0.001%
+branching_neutron_photon_upper 0.021%
+branching_neutron_photon_lower 0.001%
+l 1
+
+@particle N1900p
+group N1900
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N1900n
+group N1900
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
+@group N2060
+group R52
+parity -1
+mass 2.100GeV
+width 400MeV
+branching_N_pi_upper 12%
+branching_N_pi_lower 7%
+branching_N_eta_upper 6%
+branching_N_eta_lower 2%
+branching_N_omega_upper 7%
+branching_N_omega_lower 1%
+branching_N_pi_pi_upper 19%
+branching_N_pi_pi_lower 7%
+branching_N_D1232_pi_upper 10%
+branching_N_D1232_pi_lower 4%
+branching_N1440_pi_upper 14%
+branching_N1440_pi_lower 4%
+branching_N1520_pi_upper 21%
+branching_N1520_pi_lower 9%
+branching_N1680_pi_upper 22%
+branching_N1680_pi_lower 8%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.19%
+branching_proton_photon_lower 0.03%
+branching_neutron_photon_upper 0.07%
+branching_neutron_photon_lower 0.003%
+l 2
+
+@particle N2060p
+group N2060
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N2060n
+group N2060
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
+@group N2100
+group R12
+parity 1
+mass 2.100GeV
+width 260MeV
+branching_N_pi_upper 18%
+branching_N_pi_lower 8%
+branching_N_etap_upper 11%
+branching_N_etap_lower 5%
+branching_N_omega_upper 25%
+branching_N_omega_lower 10%
+branching_N_pi_pi_upper 40%
+branching_N_pi_pi_lower 20%
+branching_N_D1232_pi_upper 14%
+branching_N_D1232_pi_lower 6%
+branching_N1535_pi_upper 34%
+branching_N1535_pi_lower 26%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.012%
+branching_proton_photon_lower 0.001%
+branching_neutron_photon_upper 0.012%
+branching_neutron_photon_lower 0.001%
+l 1
+
+@particle N2100p
+group N2100
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N2100n
+group N2100
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
+@group N2120
+group R32
+parity -1
+mass 2.120GeV
+width 300MeV
+branching_N_pi_upper 15%
+branching_N_pi_lower 5%
+branching_N_etap_upper 6%
+branching_N_etap_lower 2%
+branching_N_omega_upper 20%
+branching_N_omega_lower 4%
+branching_N_pi_pi_upper 95%
+branching_N_pi_pi_lower 50%
+branching_N_D1232_pi_upper 90%
+branching_N_D1232_pi_lower 40%
+branching_N1535_pi_upper 23%
+branching_N1535_pi_lower 7%
+branching_N_rho_upper 0%
+branching_N_rho_lower 0%
+branching_proton_photon_upper 0.21%
+branching_proton_photon_lower 0.16%
+branching_neutron_photon_upper 0.722%
+branching_neutron_photon_lower 0.04%
+l 2
+
+@particle N2120p
+group N2120
+charge 1
+isospin 1/2 1/2
+gRNpi 0.3546745953
+gRNphoton 0.0765541439
+
+@particle N2120n
+group N2120
+charge 0
+isospin 1/2 -1/2
+gRNpi 0.3555341842
+gRNphoton 0.05833554672
+
 @group Pion
 type Meson
 spin 0
