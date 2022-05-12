@@ -32,6 +32,26 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 
 	VMP->add(Feynumeric::Vertex(
 			{
+					{P["N"]},
+					{P["N"]},
+					{P["Pion"]}
+			},
+			[](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+				using namespace Feynumeric;
+				auto const& R = edges[0];
+				auto const& N = edges[1];
+				auto const& pi = edges[2];
+				auto const g = R->particle()->user_data<double>("gRNpi");
+				auto const m_pi = pi->particle()->mass();
+				auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
+				//int l = static_cast<int>(R->particle()->user_data<double>("l"));
+				//auto isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
+				return 0.97/m_pi * iso * GA5 * GS(pi->four_momentum(kin));
+			}
+	));
+
+	VMP->add(Feynumeric::Vertex(
+			{
 					{P["R12"]},
 					{P["N"]},
 					{P["Pion"]}

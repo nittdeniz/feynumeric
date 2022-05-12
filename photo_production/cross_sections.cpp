@@ -138,29 +138,32 @@ int main(int argc, char** argv)
 		std::vector<Feynman_Diagram_Ptr> diagrams_proton_pi_plus;
 		//std::vector<double> values = {1.321,1.362,1.390,1.417,1.427,1.443,1.450,1.462,1.470,1.481,1.495,1.501,1.512,1.528,1.540,1.561,1.562,1.572,1.586,1.612,1.621,1.638,1.641,1.643,1.669,1.673,1.688,1.694,1.716,1.738,1.769,1.777,1.783,1.791,1.821,1.851,1.839,1.878,1.881,1.896,1.903,1.911,1.927,1.945,1.955,1.969,1.978,2.016,2.020,2.057,2.071,2.089,2.102,2.115,2.155,2.189,2.194,2.206,2.240,2.286,2.306,2.520,2.556,2.575,2.778,2.785,2.868,2.900,3.207,3.487,3.696,3.999,4.105,4.173,4.601,4.781,4.916,4.992,5.355,5.561,5.678,5.968,9.733,11.500,13.732,16.236,18.147,19.396,21.680};
 		std::vector<Particle_Ptr> particles;
-		for( auto const& R : delta_resonances ){
+		for( auto const& R : resonances ){
 			if( cmd.is_enabled(R) ){
 				status(FORMAT("{} activated", R));
-				particles.push_back(P[pp_string(R)]);
+				if( R[0] == 'D' ){
+					particles.push_back(P.get(pp_string(R)));
+				}
+				particles.push_back(P.get(n_string(R)));
 			}
 		}
 
 		for( auto const& particle : particles ){
-			if( s_channel ){
-				if( particle->spin().j() == 0.5 ){
-					particle->width([&](double p2){
-						auto const m = std::sqrt(p2);
-						auto const ff = particle->user_data<FORM_FACTOR_FUNCTION>("form_factor")(particle, Proton, Pi_Plus, m);
-						return particle->width() * ff * ff * dyson_factor_12(particle, Proton, Pi_Plus, m);
-					});
-				}
-				if( particle->spin().j() == 1.5 ){
-					particle->width([&](double p2){
-						auto const m = std::sqrt(p2);
-						auto const ff = particle->user_data<FORM_FACTOR_FUNCTION>("form_factor")(particle, Proton, Pi_Plus, m);
-						return particle->width() * ff * ff * dyson_factor_32(particle, Proton, Pi_Plus, m);
-					});
-				}
+			if( particle->spin().j() == 0.5 ){
+				particle->width([&](double p2){
+					auto const m = std::sqrt(p2);
+					auto const ff = particle->user_data<FORM_FACTOR_FUNCTION>("form_factor")(particle, Proton, Pi_Plus, m);
+					return particle->width() * ff * ff * dyson_factor_12(particle, Proton, Pi_Plus, m);
+				});
+			}
+			if( particle->spin().j() == 1.5 ){
+				particle->width([&](double p2){
+					auto const m = std::sqrt(p2);
+					auto const ff = particle->user_data<FORM_FACTOR_FUNCTION>("form_factor")(particle, Proton, Pi_Plus, m);
+					return particle->width() * ff * ff * dyson_factor_32(particle, Proton, Pi_Plus, m);
+				});
+			}
+			if( s_channel && particle->charge() == 2){
 				diagrams_proton_pi_plus.push_back(
 						create_diagram(FORMAT("{} s", particle->name()), Scattering_Horizontal_2_to_2, VMP,
 						               {Proton, Pi_Plus},
@@ -168,6 +171,26 @@ int main(int argc, char** argv)
 						               {Pi_Plus, Proton}
 						));
 			}
+			if( u_channel && particle->charge() == 0){
+				diagrams_proton_pi_plus.push_back(
+						create_diagram(FORMAT("{} u", particle->name()), Scattering_Vertical_2_to_2, VMP,
+						               {Proton, Pi_Plus},
+						               {particle},
+						               {Pi_Plus, Proton}
+						)
+				);
+			}
+		}
+
+
+		if( u_channel && cmd.exists("Nucleon") ){
+			diagrams_proton_pi_plus.push_back(
+					create_diagram(FORMAT("{} u", Neutron->name()), Scattering_Vertical_2_to_2, VMP,
+					               {Proton, Pi_Plus},
+					               {Neutron},
+					               {Pi_Plus, Proton}
+					)
+			);
 		}
 
 		Feynman_Process scattering_proton_pi_plus(diagrams_proton_pi_plus);
