@@ -18,13 +18,17 @@ using Feynumeric::Matrix;
 
 Feynumeric::Vertex_Manager_Ptr VMP = std::make_shared<Feynumeric::Vertex_Manager>();
 
+Feynumeric::Matrix gamma5(int l, int p){
+	return std::pow(-1, l) == -p ? Matrix(1,1,1) : Feynumeric::GA5;
+}
+
 void init_vertices(Feynumeric::Particle_Manager const& P)
 {
 	using Feynumeric::Edge_Direction;
 	using namespace Feynumeric::Units;
 
-//	Feynumeric::QED::init_vertices();
-//	VMP->import(*Feynumeric::QED::VMP);
+	Feynumeric::QED::init_vertices();
+	VMP->import(*Feynumeric::QED::VMP);
 
 	VMP->add(Feynumeric::Vertex(
 			{
@@ -39,8 +43,10 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& pi = edges[2];
 				auto const g = R->particle()->user_data<double>("gRNpi");
 				auto const m_pi = pi->particle()->mass();
-				auto isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
-				return -g/m_pi * isospin * GA5 * GS(pi->four_momentum(kin));
+				auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
+				int l = static_cast<int>(R->particle()->user_data<double>("l"));
+				//auto isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
+				return -g/m_pi * iso * gamma5(l, R->particle()->parity()) * GS(pi->four_momentum(kin));
 			}
 	));
 
@@ -78,10 +84,11 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& pPi = pi->four_momentum(kin);
 				auto const g = R->particle()->user_data<double>("gRNpi");
 				auto const m_pi = pi->particle()->mass();
-				auto const isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
+				//auto const isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
+				auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
 				auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), pi->particle(), pR.E().real());
-				auto const ga5 = (R->particle()->parity() == -1 ? GA5 : Identity);
-				return -1.i * form_factor * isospin * g/(m_pi*m_pi) * O32c(pR, pPi, mu) * ga5;
+				int l = static_cast<int>(R->particle()->user_data<double>("l"));
+				return -1.i * form_factor * iso * g/(m_pi*m_pi) * O32c(pR, pPi, mu) * gamma5(l, R->particle()->parity());
 			}
 	));
 

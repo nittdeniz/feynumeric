@@ -73,7 +73,7 @@ extern Feynumeric::Vertex_Manager_Ptr VMP;
 
 
 //
-void init_particles();
+//void init_particles();
 void init_vertices(Feynumeric::Particle_Manager const& P);
 //
 

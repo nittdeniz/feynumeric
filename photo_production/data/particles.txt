@@ -27,7 +27,7 @@ spin 1/2
 @group N1440
 group R12
 parity 1
-l 0
+l 1
 mass 1.44GeV
 width 350MeV
 branching_N_pi_upper 75%
@@ -66,7 +66,7 @@ branching_proton_photon_upper 0.52%
 branching_proton_photon_lower 0.31%
 branching_neutron_photon_upper 0.53%
 branching_neutron_photon_lower 0.30%
-l 1
+l 2
 
 @particle N1520p
 group N1520

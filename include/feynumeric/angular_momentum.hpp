@@ -5,6 +5,8 @@
 
 namespace Feynumeric
 {
+	class Particle;
+
     class Angular_Momentum
     {
     private:

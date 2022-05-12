@@ -37,6 +37,8 @@ int main(int argc, char** argv)
 //	std::vector<Particle_Ptr> particles_Dn  = {P["D1232n"],  P["D1600n"], P["D1920n"]};
 	std::vector<Particle_Ptr> particles_Dm  = {P["D1232m"],  P["D1600m"], P["D1920m"]};
 
+
+
 	for( std::size_t i = 0; i < particles_Np.size(); ++i )
 	{
 		auto& Np = particles_Np[i];
@@ -89,6 +91,7 @@ int main(int argc, char** argv)
 		std::cout << FORMAT("g({} -> N + pi): ", Np->name()) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
 		std::cout << FORMAT("g({} -> N + pi): ", Nn->name()) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
 	}
+
 
 	for( std::size_t i = 0; i < particles_Np.size(); ++i )
 	{
