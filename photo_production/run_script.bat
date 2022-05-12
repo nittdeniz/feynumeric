@@ -1,2 +1,7 @@
 ..\build\release-mingw\photo_production\cross_sections.exe particle_file=data/particles.txt channel=s D1232 process=elasticscattering form_factor=none start=1.0 end=3 steps=200 > D1232.txt
 ..\build\release-mingw\photo_production\cross_sections.exe particle_file=data/particles.txt channel=s D1600 process=elasticscattering form_factor=none start=1.0 end=3 steps=200 > D1600.txt
+..\build\release-mingw\photo_production\cross_sections.exe particle_file=data/particles.txt channel=s D1620 process=elasticscattering form_factor=none start=1.0 end=3 steps=200 > D1620.txt
+..\build\release-mingw\photo_production\cross_sections.exe particle_file=data/particles.txt channel=s D1700 process=elasticscattering form_factor=none start=1.0 end=3 steps=200 > D1700.txt
+..\build\release-mingw\photo_production\cross_sections.exe particle_file=data/particles.txt channel=s D1900 process=elasticscattering form_factor=none start=1.0 end=3 steps=200 > D1900.txt
+..\build\release-mingw\photo_production\cross_sections.exe particle_file=data/particles.txt channel=s D1910 process=elasticscattering form_factor=none start=1.0 end=3 steps=200 > D1910.txt
+..\build\release-mingw\photo_production\cross_sections.exe particle_file=data/particles.txt channel=s D1920 process=elasticscattering form_factor=none start=1.0 end=3 steps=200 > D1920.txt

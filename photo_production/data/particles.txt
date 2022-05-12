@@ -16,6 +16,14 @@ charge 0
 mass 939.565413MeV
 isospin 1/2 -1/2
 
+@group R72
+type TrueBaryon
+spin 7/2
+
+@group R52
+type TrueBaryon
+spin 5/2
+
 @group R32
 type TrueBaryon
 spin 3/2
@@ -28,6 +36,7 @@ spin 1/2
 group R12
 parity 1
 l 1
+phase 0
 mass 1.44GeV
 width 350MeV
 branching_N_pi_upper 75%
@@ -56,6 +65,7 @@ gRNphoton 0.05295881342
 @group N1520
 group R32
 parity -1
+phase 0
 mass 1.515GeV
 width 110MeV
 branching_N_pi_upper 65%
@@ -274,28 +284,28 @@ l 0
 group D1620
 isospin 3/2 3/2
 charge 2
-gRNpi 0.03921422011
+gRNpi 0.1806386257
 gRNphoton 0
 
 @particle D1620p
 group D1620
 isospin 3/2 1/2
 charge 1
-gRNpi 0.03741671777
-gRNphoton 0.09602372065
+gRNpi 0.1766259215
+gRNphoton 0.03258934878
 
 @particle D1620n
 group D1620
 isospin 3/2 -1/2
 charge 0
-gRNpi 0.03744503026
-gRNphoton 0.09623079036
+gRNpi 0.1767650286
+gRNphoton 0.03265882987
 
 @particle D1620m
 group D1620
 isospin 3/2 -3/2
 charge -1
-gRNpi 0.03929034772
+gRNpi 0.1810312228
 gRNphoton 0
 
 @group D1700
@@ -326,28 +336,28 @@ l 2
 group D1700
 isospin 3/2 3/2
 charge 2
-gRNpi 0.03921422011
+gRNpi 0.03017529901
 gRNphoton 0
 
 @particle D1700p
 group D1700
 isospin 3/2 1/2
 charge 1
-gRNpi 0.03741671777
-gRNphoton 0.09602372065
+gRNpi 0.02880476531
+gRNphoton 0.3607018894
 
 @particle D1700n
 group D1700
 isospin 3/2 -1/2
 charge 0
-gRNpi 0.03744503026
-gRNphoton 0.09623079036
+gRNpi 0.02882025042
+gRNphoton 0.3613003514
 
 @particle D1700m
 group D1700
 isospin 3/2 -3/2
 charge -1
-gRNpi 0.03929034772
+gRNpi 0.03021688347
 gRNphoton 0
 
 @group D1900
@@ -380,28 +390,28 @@ l 0
 group D1900
 isospin 3/2 3/2
 charge 2
-gRNpi 0.03921422011
+gRNpi 0.08635815959
 gRNphoton 0
 
 @particle D1900p
 group D1900
 isospin 3/2 1/2
 charge 1
-gRNpi 0.03741671777
-gRNphoton 0.09602372065
+gRNpi 0.08444146474
+gRNphoton 0.05890480828
 
 @particle D1900n
 group D1900
 isospin 3/2 -1/2
 charge 0
-gRNpi 0.03744503026
-gRNphoton 0.09623079036
+gRNpi 0.08448520831
+gRNphoton 0.05898810517
 
 @particle D1900m
 group D1900
 isospin 3/2 -3/2
 charge -1
-gRNpi 0.03929034772
+gRNpi 0.08648155551
 gRNphoton 0
 
 @group D1905
@@ -478,33 +488,34 @@ l 1
 group D1910
 isospin 3/2 3/2
 charge 2
-gRNpi 0.03921422011
+gRNpi 0.1503664098
 gRNphoton 0
 
 @particle D1910p
 group D1910
 isospin 3/2 1/2
 charge 1
-gRNpi 0.03741671777
-gRNphoton 0.09602372065
+gRNpi 0.1470288458
+gRNphoton 0.01236229099
 
 @particle D1910n
 group D1910
 isospin 3/2 -1/2
 charge 0
-gRNpi 0.03744503026
-gRNphoton 0.09623079036
+gRNpi 0.1471007541
+gRNphoton 0.01237880814
 
 @particle D1910m
 group D1910
 isospin 3/2 -3/2
 charge -1
-gRNpi 0.03929034772
+gRNpi 0.1505692464
 gRNphoton 0
 
 @group D1920
 group R32
 parity 1
+phase 0
 mass 1920MeV
 width 300MeV
 branching_N_pi_upper 20%

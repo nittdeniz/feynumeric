@@ -28,14 +28,30 @@ int main(int argc, char** argv)
 
 	init_vertices(P);
 
+	std::vector<std::string> particle_strings = {"N1440", "N1520", "N1535", "D1232", "D1600", "D1620", "D1700", "D1900", "D1910", "D1920"};
 
-	std::vector<Particle_Ptr> particles_Np = {P["N1440p"], P["N1520p"], P["N1535p"],P["D1232p"],  P["D1600p"], P["D1920p"]};
-	std::vector<Particle_Ptr> particles_Nn = {P["N1440n"], P["N1520n"], P["N1535n"],P["D1232n"],  P["D1600n"], P["D1920n"]};
+	std::vector<Particle_Ptr> particles_Np;
+	std::vector<Particle_Ptr> particles_Nn;
+	std::vector<Particle_Ptr> particles_Dpp;
+	std::vector<Particle_Ptr> particles_Dm;
 
-	std::vector<Particle_Ptr> particles_Dpp = {P["D1232pp"], P["D1600pp"], P["D1920pp"]};
+	for( auto const& str : particle_strings ){
+		if( str[0] == 'D' ){
+			particles_Dpp.push_back(P.get(str + "pp"));
+			particles_Dm.push_back(P.get(str + "m"));
+		}
+		particles_Np.push_back(P.get(str + "p"));
+		particles_Nn.push_back(P.get(str + "n"));
+	}
+
+
+//	std::vector<Particle_Ptr> particles_Np = {P["N1440p"], P["N1520p"], P["N1535p"],P["D1232p"],  P["D1600p"], P["D1920p"]};
+//	std::vector<Particle_Ptr> particles_Nn = {P["N1440n"], P["N1520n"], P["N1535n"],P["D1232n"],  P["D1600n"], P["D1920n"]};
+
+//	std::vector<Particle_Ptr> particles_Dpp = {P["D1232pp"], P["D1600pp"], P["D1920pp"]};
 //	std::vector<Particle_Ptr> particles_Dp  = {P["D1232p"],  P["D1600p"], P["D1920p"]};
 //	std::vector<Particle_Ptr> particles_Dn  = {P["D1232n"],  P["D1600n"], P["D1920n"]};
-	std::vector<Particle_Ptr> particles_Dm  = {P["D1232m"],  P["D1600m"], P["D1920m"]};
+//	std::vector<Particle_Ptr> particles_Dm  = {P["D1232m"],  P["D1600m"], P["D1920m"]};
 
 
 

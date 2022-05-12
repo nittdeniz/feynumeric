@@ -20,6 +20,8 @@ namespace Feynumeric
 		Particle_Ptr const& operator[](std::string const& key) const;
 		Particle_Ptr& operator[](std::string const& key);
 
+		Particle_Ptr const& get(std::string const& key) const;
+
 		bool exists(std::string const& key) const;
 	};
 }

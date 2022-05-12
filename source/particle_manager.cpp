@@ -195,8 +195,15 @@ namespace Feynumeric
 		}
 	}
 
+	Particle_Ptr const& Particle_Manager::get(std::string const& key) const{
+		if( _particles.contains(key) ){
+			return _particles.at(key);
+		}
+		critical_error(FORMAT("Particle {} does not exist in Particle Manager.", key));
+	}
+
 	bool Particle_Manager::exists(std::string const& key) const{
-		return _particles.find(key) != _particles.end();
+		return _particles.contains(key);
 	}
 
 	Particle_Manager::Particle_Manager(std::string const& file_name)
