@@ -84,7 +84,7 @@ namespace Feynumeric
 		// table header
 		out << "cos";
 		for( auto const& diagram : _diagrams ){
-			out << FORMAT("\t{} ({},{})", diagram->_name, diagram->_phase.real(), diagram->_phase.imag());
+			out << FORMAT("\t{}", diagram->_name);
 		}
 		out << "\tsum\n";
 

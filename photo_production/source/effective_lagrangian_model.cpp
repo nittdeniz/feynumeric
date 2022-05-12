@@ -88,7 +88,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
 				auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), pi->particle(), pR.E().real());
 				int l = static_cast<int>(R->particle()->user_data<double>("l"));
-				return -1.i * form_factor * iso * g/(m_pi*m_pi) * O32c(pR, pPi, mu) * gamma5(l, R->particle()->parity());
+				Complex phase = std::exp(2.i * M_PI/360. * R->particle()->user_data<double>("phase"));
+				return -1.i * phase * form_factor * iso * g/(m_pi*m_pi) * O32c(pR, pPi, mu) * gamma5(l, R->particle()->parity());
 			}
 	));
 

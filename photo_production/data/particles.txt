@@ -165,6 +165,7 @@ group R32
 mass 1232MeV
 width 117MeV
 parity 1
+phase 0
 branching_N_pi_upper 99.4%
 branching_N_pi_lower 99.4%
 branching_proton_photon_upper 0.65%
@@ -204,10 +205,17 @@ gRnphoton 0
 @group D1600
 group R32
 parity 1
+phase 0
 mass 1570MeV
 width 250MeV
 branching_N_pi_upper 24%
 branching_N_pi_lower 8%
+branching_N_pi_pi_upper 90%
+branching_N_pi_pi_lower 75%
+branching_N_D1232_pi_upper 83%
+branching_N_D1232_pi_lower 73%
+branching_N_N1440_pi_upper 25%
+branching_N_N1440_pi_lower 15%
 branching_proton_photon_upper 0.035%
 branching_proton_photon_lower 0.001%
 branching_neutron_photon_upper 0.035%
@@ -242,6 +250,258 @@ charge -1
 gRNpi 0.03929034772
 gRNphoton 0
 
+@group D1620
+group R12
+parity -1
+phase 0
+mass 1610MeV
+width 130MeV
+branching_N_pi_upper 35%
+branching_N_pi_lower 25%
+branching_N_pi_pi_upper 80%
+branching_N_pi_pi_lower 55%
+branching_N_D1232_pi_upper 72%
+branching_N_D1232_pi_lower 52%
+branching_N1440_pi_upper 9%
+branching_N1440_pi_upper 3%
+branching_proton_photon_upper 0.1%
+branching_proton_photon_lower 0.03%
+branching_neutron_photon_upper 0.1%
+branching_neutron_photon_lower 0.03%
+l 0
+
+@particle D1620pp
+group D1620
+isospin 3/2 3/2
+charge 2
+gRNpi 0.03921422011
+gRNphoton 0
+
+@particle D1620p
+group D1620
+isospin 3/2 1/2
+charge 1
+gRNpi 0.03741671777
+gRNphoton 0.09602372065
+
+@particle D1620n
+group D1620
+isospin 3/2 -1/2
+charge 0
+gRNpi 0.03744503026
+gRNphoton 0.09623079036
+
+@particle D1620m
+group D1620
+isospin 3/2 -3/2
+charge -1
+gRNpi 0.03929034772
+gRNphoton 0
+
+@group D1700
+group R32
+parity -1
+phase 0
+mass 1710MeV
+width 300MeV
+branching_N_pi_upper 20%
+branching_N_pi_lower 10%
+branching_N_pi_pi_upper 55%
+branching_N_pi_pi_lower 10%
+branching_N_D1232_pi_upper 50%
+branching_N_D1232_pi_lower 10%
+branching_N1520_pi_upper 5%
+branching_N1520_pi_upper 1%
+branching_N1535_pi_upper 1.5%
+branching_N1535_pi_upper 0.5%
+branching_D1232_eta_upper 7%
+branching_D1232_eta_lower 3%
+branching_proton_photon_upper 0.6%
+branching_proton_photon_lower 0.22%
+branching_neutron_photon_upper 0.6%
+branching_neutron_photon_lower 0.22%
+l 2
+
+@particle D1700pp
+group D1700
+isospin 3/2 3/2
+charge 2
+gRNpi 0.03921422011
+gRNphoton 0
+
+@particle D1700p
+group D1700
+isospin 3/2 1/2
+charge 1
+gRNpi 0.03741671777
+gRNphoton 0.09602372065
+
+@particle D1700n
+group D1700
+isospin 3/2 -1/2
+charge 0
+gRNpi 0.03744503026
+gRNphoton 0.09623079036
+
+@particle D1700m
+group D1700
+isospin 3/2 -3/2
+charge -1
+gRNpi 0.03929034772
+gRNphoton 0
+
+@group D1900
+group R12
+parity -1
+phase 0
+mass 1860MeV
+width 250MeV
+branching_N_pi_upper 12%
+branching_N_pi_lower 4%
+branching_N_pi_pi_upper 85%
+branching_N_pi_pi_lower 45%
+branching_N_D1232_pi_upper 70%
+branching_N_D1232_pi_lower 30%
+branching_N_rho_upper 16%
+branching_N_rho_lower 8%
+branching_N1440_pi_upper 32%
+branching_N1440_pi_upper 8%
+branching_N1520_pi_upper 10%
+branching_N1520_pi_upper 2%
+branching_D1232_eta_upper 2%
+branching_D1232_eta_lower 0%
+branching_proton_photon_upper 0.43%
+branching_proton_photon_lower 0.06%
+branching_neutron_photon_upper 0.43%
+branching_neutron_photon_lower 0.06%
+l 0
+
+@particle D1900pp
+group D1900
+isospin 3/2 3/2
+charge 2
+gRNpi 0.03921422011
+gRNphoton 0
+
+@particle D1900p
+group D1900
+isospin 3/2 1/2
+charge 1
+gRNpi 0.03741671777
+gRNphoton 0.09602372065
+
+@particle D1900n
+group D1900
+isospin 3/2 -1/2
+charge 0
+gRNpi 0.03744503026
+gRNphoton 0.09623079036
+
+@particle D1900m
+group D1900
+isospin 3/2 -3/2
+charge -1
+gRNpi 0.03929034772
+gRNphoton 0
+
+@group D1905
+group R52
+parity 1
+phase 0
+mass 1880MeV
+width 330MeV
+branching_N_pi_upper 15%
+branching_N_pi_lower 9%
+branching_N_pi_pi_upper 100%
+branching_N_pi_pi_lower 80%
+branching_N1680_pi_upper 15%
+branching_N1680_pi_upper 5%
+branching_D1232_eta_upper 6%
+branching_D1232_eta_lower 2%
+branching_proton_photon_upper 0.036%
+branching_proton_photon_lower 0.012%
+branching_neutron_photon_upper 0.036%
+branching_neutron_photon_lower 0.012%
+l 3
+
+@particle D1905pp
+group D1905
+isospin 3/2 3/2
+charge 2
+gRNpi 0.03921422011
+gRNphoton 0
+
+@particle D1905p
+group D1905
+isospin 3/2 1/2
+charge 1
+gRNpi 0.03741671777
+gRNphoton 0.09602372065
+
+@particle D1905n
+group D1905
+isospin 3/2 -1/2
+charge 0
+gRNpi 0.03744503026
+gRNphoton 0.09623079036
+
+@particle D1905m
+group D1905
+isospin 3/2 -3/2
+charge -1
+gRNpi 0.03929034772
+gRNphoton 0
+
+@group D1910
+group R12
+parity 1
+phase 0
+mass 1900MeV
+width 300MeV
+branching_N_pi_upper 30%
+branching_N_pi_lower 15%
+branching_N_pi_pi_upper 66%
+branching_N_pi_pi_lower 34%
+branching_N_D1232_pi_lower 66%
+branching_N_D1232_pi_lower 34%
+branching_N1440_pi_upper 9%
+branching_N1440_pi_upper 3%
+branching_D1232_eta_upper 13%
+branching_D1232_eta_lower 5%
+branching_proton_photon_upper 0.02%
+branching_proton_photon_lower 0.0%
+branching_neutron_photon_upper 0.02%
+branching_neutron_photon_lower 0.0%
+l 1
+
+@particle D1910pp
+group D1910
+isospin 3/2 3/2
+charge 2
+gRNpi 0.03921422011
+gRNphoton 0
+
+@particle D1910p
+group D1910
+isospin 3/2 1/2
+charge 1
+gRNpi 0.03741671777
+gRNphoton 0.09602372065
+
+@particle D1910n
+group D1910
+isospin 3/2 -1/2
+charge 0
+gRNpi 0.03744503026
+gRNphoton 0.09623079036
+
+@particle D1910m
+group D1910
+isospin 3/2 -3/2
+charge -1
+gRNpi 0.03929034772
+gRNphoton 0
+
 @group D1920
 group R32
 parity 1
@@ -249,6 +509,16 @@ mass 1920MeV
 width 300MeV
 branching_N_pi_upper 20%
 branching_N_pi_lower 5%
+branching_N_pi_pi_upper 90%
+branching_N_pi_pi_lower 50%
+branching_N_D1232_pi_upper 90%
+branching_N_D1232_pi_lower 50%
+branching_N_N1440_upper 4%
+branching_N_N1440_lower 0%
+branching_N_N1520_upper 5%
+branching_N_N1520_lower 0%
+branching_N_N1535_upper 2%
+branching_N_N1535_lower 0%
 branching_proton_photon_upper 0.0%
 branching_proton_photon_lower 0.0%
 branching_neutron_photon_upper 0.0%
@@ -278,6 +548,53 @@ gRNphoton 0
 
 @particle D1920m
 group D1920
+isospin 3/2 -3/2
+charge -1
+gRNpi 0.01870100518
+gRNphoton 0
+
+@group D1950
+group R72
+parity 1
+mass 1930MeV
+width 285MeV
+branching_N_pi_upper 45%
+branching_N_pi_lower 35%
+branching_N_pi_pi_upper 9%
+branching_N_pi_pi_lower 1%
+branching_N_D1232_pi_upper 9%
+branching_N_D1232_pi_lower 1%
+branching_N_N1680_upper 9%
+branching_N_N1680_lower 3%
+branching_proton_photon_upper 0.0%
+branching_proton_photon_lower 0.0%
+branching_neutron_photon_upper 0.0%
+branching_neutron_photon_lower 0.0%
+l 3
+
+@particle D1950pp
+group D1950
+isospin 3/2 3/2
+charge 2
+gRNpi 0.01868446977
+gRNphoton 0
+
+@particle D1950p
+group D1950
+isospin 3/2 1/2
+charge 1
+gRNpi 0.0178415173
+gRNphoton 0
+
+@particle D1950n
+group D1950
+isospin 3/2 -1/2
+charge 0
+gRNpi 0.01784768099
+gRNphoton 0
+
+@particle D1950m
+group D1950
 isospin 3/2 -3/2
 charge -1
 gRNpi 0.01870100518

@@ -533,23 +533,11 @@ namespace Feynumeric
 			}
 			iterate_indices();
 		}
-		return _phase * M;
-	}
-
-	void Feynman_Diagram::phase(Complex phi){
-		if( !almost_identical(1., std::abs(phi))){
-			warning("Phase angle phi has modulus != 1.");
-		}
-		_phase = phi;
+		return M;
 	}
 
 	Vertex_Manager_Ptr Feynman_Diagram::Vertex_Manager(){
 		return _VMP;
-	}
-
-	Feynman_Diagram_Ptr operator*(Complex phi, Feynman_Diagram_Ptr& p){
-		p->phase(phi);
-		return p;
 	}
 
 	std::vector<Particle_Ptr> Feynman_Diagram::incoming_particles() const{

@@ -169,7 +169,7 @@ int main(int argc, char** argv)
 		status("Scattering proton pi_plus -> proton pi_plus");
 		double start = cmd.exists("start") ? cmd.as_double("start") : 1.1;
 		double end = cmd.exists("end") ? cmd.as_double("end") : 2.0;
-		std::size_t steps = cmd.is_enabled("steps") ? static_cast<std::size_t>(cmd.as_int("steps")) : 100ULL;
+		std::size_t steps = cmd.exists("steps") ? static_cast<std::size_t>(cmd.as_int("steps")) : 100ULL;
 		scattering_proton_pi_plus.print_sigma_table(std::cout, start, end, steps);
 		std::cout << "\n\n";
 	}

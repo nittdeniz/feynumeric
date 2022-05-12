@@ -26,7 +26,6 @@ namespace Feynumeric{
 		std::vector<Feynman_Rule> _amplitude;
 		std::vector<Momentum_Func> _four_momenta;
 		std::map<Lorentz_Index_Ptr, std::string> _indices_to_string;
-		Complex _phase{1,0};
 		std::string _name;
 		Topology _topology;
 		std::vector<Particle_Ptr> _incoming_particles;
