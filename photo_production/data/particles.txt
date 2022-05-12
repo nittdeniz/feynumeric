@@ -52,14 +52,14 @@ branching_neutron_photon_lower 0.02%
 group N1440
 charge 1
 isospin 1/2 1/2
-gRNpi 0.3800062588
+gRNpi 0.3659186916
 gRNphoton 0.06209754151
 
 @particle N1440n
 group N1440
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.379618652
+gRNpi 0.3655686504
 gRNphoton 0.05295881342
 
 @group N1520
@@ -82,19 +82,20 @@ l 2
 group N1520
 charge 1
 isospin 1/2 1/2
-gRNpi 0.1441737274
+gRNpi 0.03290134815
 gRNphoton 0.3546745953
 
 @particle N1520n
 group N1520
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.1439730508
+gRNpi 0.03288118171
 gRNphoton 0.3555341842
 
 @group N1535
 group R12
 parity -1
+phase 0
 mass 1.530GeV
 width 150MeV
 branching_N_pi_upper 52%
@@ -111,19 +112,20 @@ l 0
 group N1535
 charge 1
 isospin 1/2 1/2
-gRNpi 0.3546745953
+gRNpi 0.1547611753
 gRNphoton 0.0765541439
 
 @particle N1535n
 group N1535
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.3555341842
+gRNpi 0.1546413164
 gRNphoton 0.05833554672
 
 @group N1650
 group R12
 parity -1
+phase 0
 mass 1.650GeV
 width 125MeV
 branching_N_pi_upper 70%
@@ -146,19 +148,20 @@ l 0
 group N1650
 charge 1
 isospin 1/2 1/2
-gRNpi 0.3546745953
+gRNpi 0.1328435674
 gRNphoton 0.0765541439
 
 @particle N1650n
 group N1650
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.3555341842
+gRNpi 0.1327625749
 gRNphoton 0.05833554672
 
 @group N1675
 group R52
 parity -1
+phase 0
 mass 1.675GeV
 width 145MeV
 branching_N_pi_upper 42%
@@ -194,6 +197,7 @@ gRNphoton 0.05833554672
 @group N1680
 group R52
 parity 1
+phase 0
 mass 1.685GeV
 width 120MeV
 branching_N_pi_upper 70%
@@ -229,6 +233,7 @@ gRNphoton 0.05833554672
 @group N1700
 group R32
 parity -1
+phase 0
 mass 1.720GeV
 width 200MeV
 branching_N_pi_upper 17%
@@ -253,21 +258,23 @@ l 2
 
 @particle N1700p
 group N1700
+phase 0
 charge 1
 isospin 1/2 1/2
-gRNpi 0.3546745953
+gRNpi 0.01217793967
 gRNphoton 0.0765541439
 
 @particle N1700n
 group N1700
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.3555341842
+gRNpi 0.01217347612
 gRNphoton 0.05833554672
 
 @group N1710
 group R12
 parity 1
+phase 0
 mass 1.710GeV
 width 140MeV
 branching_N_pi_upper 20%
@@ -293,20 +300,22 @@ l 2
 @particle N1710p
 group N1710
 charge 1
+phase 0
 isospin 1/2 1/2
-gRNpi 0.3546745953
+gRNpi 0.05870746512
 gRNphoton 0.0765541439
 
 @particle N1710n
 group N1710
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.3555341842
+gRNpi 0.05867426759
 gRNphoton 0.05833554672
 
 @group N1720
 group R32
 parity 1
+phase 0
 mass 1.720GeV
 width 250MeV
 branching_N_pi_upper 14%
@@ -333,21 +342,23 @@ l 1
 
 @particle N1720p
 group N1720
+phase 0
 charge 1
 isospin 1/2 1/2
-gRNpi 0.3546745953
+gRNpi 0.01303570562
 gRNphoton 0.0765541439
 
 @particle N1720n
 group N1720
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.3555341842
+gRNpi 0.01303092767
 gRNphoton 0.05833554672
 
 @group N1875
 group R32
 parity -1
+phase 0
 mass 1.875GeV
 width 200MeV
 branching_N_pi_upper 11%
@@ -378,19 +389,20 @@ l 1
 group N1875
 charge 1
 isospin 1/2 1/2
-gRNpi 0.3546745953
+gRNpi 0.02110097132
 gRNphoton 0.0765541439
 
 @particle N1875n
 group N1875
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.3555341842
+gRNpi 0.02108470414
 gRNphoton 0.05833554672
 
 @group N1880
 group R12
 parity 1
+phase 0
 mass 1.880GeV
 width 300MeV
 branching_N_pi_upper 9%
@@ -421,19 +433,20 @@ l 1
 group N1880
 charge 1
 isospin 1/2 1/2
-gRNpi 0.3546745953
+gRNpi 0.04554648792
 gRNphoton 0.0765541439
 
 @particle N1880n
 group N1880
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.3555341842
+gRNpi 0.04552734708
 gRNphoton 0.05833554672
 
 @group N1895
 group R12
 parity -1
+phase 0
 mass 1.895GeV
 width 120MeV
 branching_N_pi_upper 18%
@@ -460,19 +473,20 @@ l 0
 group N1895
 charge 1
 isospin 1/2 1/2
-gRNpi 0.3546745953
+gRNpi 0.03645382503
 gRNphoton 0.0765541439
 
 @particle N1895n
 group N1895
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.3555341842
+gRNpi 0.03643882979
 gRNphoton 0.05833554672
 
 @group N1900
 group R32
 parity 1
+phase 0
 mass 1.920GeV
 width 200MeV
 branching_N_pi_upper 20%
@@ -503,19 +517,20 @@ l 1
 group N1900
 charge 1
 isospin 1/2 1/2
-gRNpi 0.3546745953
+gRNpi 0.007887538683
 gRNphoton 0.0765541439
 
 @particle N1900n
 group N1900
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.3555341842
+gRNpi 0.007885637589
 gRNphoton 0.05833554672
 
 @group N2060
 group R52
 parity -1
+phase 0
 mass 2.100GeV
 width 400MeV
 branching_N_pi_upper 12%
@@ -559,6 +574,7 @@ gRNphoton 0.05833554672
 @group N2100
 group R12
 parity 1
+phase 0
 mass 2.100GeV
 width 260MeV
 branching_N_pi_upper 18%
@@ -585,19 +601,20 @@ l 1
 group N2100
 charge 1
 isospin 1/2 1/2
-gRNpi 0.3546745953
+gRNpi 0.04793070498
 gRNphoton 0.0765541439
 
 @particle N2100n
 group N2100
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.3555341842
+gRNpi 0.04791560866
 gRNphoton 0.05833554672
 
 @group N2120
 group R32
 parity -1
+phase 0
 mass 2.120GeV
 width 300MeV
 branching_N_pi_upper 15%
@@ -624,14 +641,14 @@ l 2
 group N2120
 charge 1
 isospin 1/2 1/2
-gRNpi 0.3546745953
+gRNpi 0.0069576254
 gRNphoton 0.0765541439
 
 @particle N2120n
 group N2120
 charge 0
 isospin 1/2 -1/2
-gRNpi 0.3555341842
+gRNpi 0.006956474942
 gRNphoton 0.05833554672
 
 @group Pion
@@ -1080,6 +1097,7 @@ gRNphoton 0
 @group D1950
 group R72
 parity 1
+phase 0
 mass 1930MeV
 width 285MeV
 branching_N_pi_upper 45%

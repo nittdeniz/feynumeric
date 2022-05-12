@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
 	init_vertices(P);
 
-	std::vector<std::string> particle_strings = {"N1440", "N1520", "N1535", "D1232", "D1600", "D1620", "D1700", "D1900", "D1910", "D1920"};
+	std::vector<std::string> particle_strings = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900", "N2060", "N2100", "N2120","D1232", "D1600", "D1620", "D1700", "D1900", "D1910", "D1920"};
 
 	std::vector<Particle_Ptr> particles_Np;
 	std::vector<Particle_Ptr> particles_Nn;
@@ -59,6 +59,9 @@ int main(int argc, char** argv)
 	{
 		auto& Np = particles_Np[i];
 		auto& Nn = particles_Nn[i];
+		if( Np->spin().j() > 2 ){
+			continue;
+		}
 		Np->user_data("gRNpi", 1.);
 		Np->user_data("form_factor", identity);
 		Nn->user_data("gRNpi", 1.);
@@ -113,6 +116,9 @@ int main(int argc, char** argv)
 	{
 		auto& Np = particles_Np[i];
 		auto& Nn = particles_Nn[i];
+		if( Np->spin().j() > 2 ){
+			continue;
+		}
 		Np->user_data("gRNphoton", 1.);
 		Nn->user_data("gRNphoton", 1.);
 
@@ -149,6 +155,9 @@ int main(int argc, char** argv)
 //		auto& Dp = particles_Dp[i];
 //		auto& Dn = particles_Dn[i];
 		auto& Dm = particles_Dm[i];
+		if( Dpp->spin().j() > 2 ){
+			continue;
+		}
 		Dpp->user_data("gRNpi", 1.);
 		Dpp->user_data("form_factor", identity);
 //		Dp->user_data("gRNpi", 1.);
