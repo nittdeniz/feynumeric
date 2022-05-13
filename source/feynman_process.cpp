@@ -262,10 +262,7 @@ namespace Feynumeric
 		return result[cos_theta].back();
 	}
 
-	double Feynman_Process::decay_width(){
-		if( _diagrams[0]->_graph._incoming.size() != 1 || _diagrams[0]->_graph._outgoing.size() != 2 ){
-			critical_error("Only single particle decays into a two particle final state are implemented.");
-		}
+	double Feynman_Process::decay_1_2(){
 		using namespace Feynumeric::Units;
 		validate_diagram_compatibility();
 
@@ -315,6 +312,88 @@ namespace Feynumeric
 		}
 		auto phase_space = 1. / N_polarisations * q / ( 8 * M_PI * incoming[0]->mass() * incoming[0]->mass());
 		return Ms_squared * phase_space;
+	}
+
+	double Feynman_Process::partial_decay_1_3(double const invariant_mass, double const cos_theta, std::size_t const N_spins, std::size_t const N_polarisations){
+		using namespace Feynumeric::Units;
+
+		auto const& incoming = _diagrams[0]->incoming_particles();
+		auto const& outgoing = _diagrams[0]->outgoing_particles();
+
+		Kinematics kin(incoming[0]->mass(), 1, 3);
+
+		auto const q12 = momentum(invariant_mass, outgoing[0]->mass(), outgoing[1]->mass());
+		auto const q3 = momentum(incoming[0]->mass(), invariant_mass, outgoing[2]->mass());
+
+		auto const p_out = four_momentum(q3, outgoing[3]->mass(), cos_theta);
+
+		kin.incoming(0, four_momentum(0, incoming[0]->mass()));
+		kin.outgoing(0, four_momentum(q12, outgoing[0]->mass()).boost(p_out));
+		kin.outgoing(1, four_momentum(-q12, outgoing[1]->mass()).boost(p_out));
+		kin.outgoing(2, four_momentum(-q3, outgoing[2]->mass(), cos_theta));
+
+		double Ms_squared{0.};
+
+		for( auto& diagram : _diagrams ){
+			diagram->reset_spins();
+			diagram->reset_indices();
+		}
+
+		for( std::size_t i = 0; i < N_spins; ++i ){
+			Complex M{0, 0};
+			for( auto& diagram : _diagrams ){
+				auto const& temp = diagram->evaluate_amplitude(kin);
+				M += temp;
+				diagram->iterate_spins();
+			}
+			Ms_squared += ( M * std::conj(M)).real();
+		}
+
+		auto phase_space = 1. / N_polarisations * std::pow(2 * M_PI, -5) * 1./(16 *  incoming[0]->mass() * incoming[0]->mass()) * q12 * q3 * 8 * M_PI * M_PI;
+
+		return Ms_squared * phase_space;
+	}
+
+	double Feynman_Process::decay_1_3(){
+		using namespace std::placeholders;
+		validate_diagram_compatibility();
+		std::size_t const N_spins = [&](){
+			std::size_t n = 1;
+			for( auto const& j : _diagrams[0]->_spins ){
+				n *= j->n_states();
+			}
+			return n;
+		}();
+
+		std::size_t const N_polarisations = [&](){
+			std::size_t n = 1;
+			for( auto const& p : _diagrams[0]->_graph._incoming ){
+				n *= p->spin()->n_states();
+			}
+			return n;
+		}();
+		auto const M_min = _diagrams[0]->_graph._outgoing[0]->particle()->mass() + _diagrams[0]->_graph._outgoing[1]->particle()->mass();
+		auto const M_max = _diagrams[0]->_graph._incoming[0]->particle()->mass() - _diagrams[0]->_graph._outgoing[2]->particle()->mass();
+		auto partial = [&](double M){
+			auto f = std::bind(&Feynman_Process::partial_decay_1_3, this, M, _1, N_spins, N_polarisations);
+			return integrate(f, -1., 1., 1.e-2);
+		};
+		return integrate(partial, M_min, M_max, 1.e-2);
+	}
+
+	double Feynman_Process::decay_width(){
+		if( _diagrams.empty() ){
+			critical_error("Process has no diagrams.");
+		}
+		if( _diagrams[0]->_graph._incoming.size() == 1 ){
+			if( _diagrams[0]->_graph._outgoing.size() == 2 ){
+				return decay_1_2();
+			}
+			if( _diagrams[0]->_graph._outgoing.size() == 3 ){
+				return decay_1_3();
+			}
+		}
+		critical_error("Only single particle decays into a two or three particle final state are implemented.");
 	}
 
 	std::map<double, double> Feynman_Process::sigma_table(std::vector<double> const& values, double epsilon){

@@ -25,6 +25,10 @@ namespace Feynumeric
 
 		double _conversion_factor = Units::operator""_2barn(1.);
 
+		double decay_1_2();
+		double decay_1_3();
+		double partial_decay_1_3(double const invariant_mass, double const cos_theta, std::size_t const N_spins, std::size_t const N_polarisations);
+
 	public:
 		Feynman_Process(std::initializer_list<Feynman_Diagram_Ptr> list);
 		Feynman_Process(std::vector<Feynman_Diagram_Ptr> list);
