@@ -41,12 +41,49 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& R = edges[0];
 				auto const& N = edges[1];
 				auto const& pi = edges[2];
-				auto const g = R->particle()->user_data<double>("gRNpi");
+				auto const g = 0.97;
 				auto const m_pi = pi->particle()->mass();
 				auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
+				return g/m_pi * iso * GA5 * GS(pi->four_momentum(kin));
+			}
+	));
+
+	VMP->add(Feynumeric::Vertex(
+			{
+					{P["N"]},
+					{P["N"]},
+					{P["Rho"]}
+			},
+			[](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+				using namespace Feynumeric;
+				auto const& N1 = edges[0];
+				auto const& N2 = edges[1];
+				auto const& rho = edges[2];
+				auto mu = rho->lorentz_indices()[0];
+				auto const g = 5.96;
+				auto const iso = (N1->back() == N2->front())? isospin(N1, N2, rho) : isospin(N2, N1, rho);
+				return g/2. * iso * GAC[*mu];
+			}
+	));
+
+	VMP->add(Feynumeric::Vertex(
+			{
+					{P["pi+"], Edge_Direction::IN},
+					{P["pi+"], Edge_Direction::OUT},
+					{P["rho0"]}
+			},
+			[](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+				using namespace Feynumeric;
+				auto const& piP = edges[0];
+				auto const& piM = edges[1];
+				auto const& rho = edges[2];
+				auto const& p = piP->four_momentum(kin);
+				auto const& q = piM->four_momentum(kin);
+				auto mu = rho->lorentz_indices()[0];
+				auto const g = 5.96;
 				//int l = static_cast<int>(R->particle()->user_data<double>("l"));
 				//auto isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
-				return 0.97/m_pi * iso * GA5 * GS(pi->four_momentum(kin));
+				return g * (p-q).co(mu);
 			}
 	));
 
