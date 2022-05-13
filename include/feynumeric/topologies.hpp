@@ -6,6 +6,7 @@
 namespace Feynumeric
 {
 	[[maybe_unused]] extern const Topology Decay_1_to_2;
+	[[maybe_unused]] extern const Topology Decay_1_to_3;
     [[maybe_unused]] extern const Topology Scattering_Horizontal_2_to_2;
     [[maybe_unused]] extern const Topology Scattering_Vertical_2_to_2;
 }
