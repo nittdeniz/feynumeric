@@ -83,6 +83,8 @@ namespace Feynumeric
 
         std::string name() const;
         double mass() const;
+        void mass(double mass);
+
         double charge() const;
         Angular_Momentum spin() const;
         Angular_Momentum isospin()const;

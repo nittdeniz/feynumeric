@@ -132,7 +132,12 @@ namespace Feynumeric
 
 	}
 
-	Particle_Ptr Particle::parent() const
+    void Particle::mass(double mass)
+    {
+        _mass = mass;
+    }
+
+    Particle_Ptr Particle::parent() const
 	{
 		return _parent;
 	}
