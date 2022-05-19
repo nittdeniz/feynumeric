@@ -202,33 +202,12 @@ int main(int argc, char** argv)
 		);
 
 		Feynman_Process decay_Dpp1({channel_decay_Dpp1});
-
-//		Feynman_Process decay_Dp1({channel_decay_Dp1});
-//		Feynman_Process decay_Dp2({channel_decay_Dp2});
-//
-//		Feynman_Process decay_Dn1({channel_decay_Dn1});
-//		Feynman_Process decay_Dn2({channel_decay_Dn2});
-
 		Feynman_Process decay_Dm1({channel_decay_Dm1});
 
 		auto w1 = decay_Dpp1.decay_width();
-
-//		auto w2 = decay_Dp1.decay_width();
-//		auto w3 = decay_Dp2.decay_width();
-//
-//		auto w4 = decay_Dn1.decay_width();
-//		auto w5 = decay_Dn2.decay_width();
-
 		auto w6 = decay_Dm1.decay_width();
-
-
-
 		double const literature_value1 = Dpp->width() *  ( Dpp->user_data<double>("branching_N_pi_upper") +
 		                                                   Dpp->user_data<double>("branching_N_pi_lower")) / 2.;
-//		double const literature_value2 = Dp->width() *  ( Dp->user_data<double>("branching_N_pi_upper") +
-//		                                                  Dp->user_data<double>("branching_N_pi_lower")) / 2.;
-//		double const literature_value3 = Dn->width() *  ( Dn->user_data<double>("branching_N_pi_upper") +
-//		                                                  Dn->user_data<double>("branching_N_pi_lower")) / 2.;
 		double const literature_value4 = Dm->width() *  ( Dm->user_data<double>("branching_N_pi_upper") +
 		                                                  Dm->user_data<double>("branching_N_pi_lower")) / 2.;
 
