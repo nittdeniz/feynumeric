@@ -651,55 +651,6 @@ isospin 1/2 -1/2
 gRNpi 0.006956474942
 gRNphoton 0.05833554672
 
-@group Pion
-type Meson
-spin 0
-
-@particle pi+
-group Pion
-type AntiMeson
-charge 1
-isospin 1 1
-mass 139.57039MeV
-
-@particle pi-
-group Pion
-type TrueMeson
-charge -1
-isospin 1 -1
-mass 139.57039MeV
-
-@particle pi0
-group Pion
-type NeutralMeson
-charge 0
-isospin 1 0
-mass 134.9768MeV
-
-@group Rho
-type Meson
-spin 1
-mass 775.26MeV
-width 149.1MeV
-
-@particle rho+
-group Rho
-type AntiMeson
-charge 1
-isospin 1 1
-
-@particle rho0
-group Rho
-type NeutralMeson
-charge 0
-isospin 1 0
-
-@particle rho-
-group Rho
-type TrueMeson
-charge -1
-isospin 1 -1
-
 @group D1232
 group R32
 mass 1232MeV
@@ -1141,3 +1092,65 @@ isospin 3/2 -3/2
 charge -1
 gRNpi 0.01870100518
 gRNphoton 0
+
+@group Pion
+type Meson
+spin 0
+
+@particle pi+
+group Pion
+type AntiMeson
+charge 1
+isospin 1 1
+mass 139.57039MeV
+
+@particle pi-
+group Pion
+type TrueMeson
+charge -1
+isospin 1 -1
+mass 139.57039MeV
+
+@particle pi0
+group Pion
+type NeutralMeson
+charge 0
+isospin 1 0
+mass 134.9768MeV
+
+@group Rho
+type Meson
+spin 1
+parity -1
+mass 775.26MeV
+width 149.1MeV
+
+@particle rho+
+group Rho
+type AntiMeson
+charge 1
+isospin 1 1
+
+@particle rho0
+group Rho
+type NeutralMeson
+charge 0
+isospin 1 0
+
+@particle rho-
+group Rho
+type TrueMeson
+charge -1
+isospin 1 -1
+
+@particle f0_500 #https://arxiv.org/pdf/hep-ex/0207067.pdf
+type TrueMeson
+spin 0
+mass 513MeV
+width 335MeV
+parity 1
+isospin 0 0
+branching_ratio_pipi 100%
+g_pipi 1
+
+

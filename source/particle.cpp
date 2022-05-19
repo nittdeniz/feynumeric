@@ -242,6 +242,21 @@ namespace Feynumeric
         return (_type & Type::AntiFermion) == static_cast<uint64_t>(Type::AntiFermion);
     }
 
+    bool Particle::is_boson() const
+    {
+        return (_type & Type::Boson) == static_cast<uint64_t>(Type::Boson);
+    }
+
+    bool Particle::is_true_boson() const
+    {
+        return (_type & Type::TrueBoson) == static_cast<uint64_t>(Type::TrueBoson);
+    }
+
+    bool Particle::is_anti_boson() const
+    {
+        return (_type & Type::AntiBoson) == static_cast<uint64_t>(Type::AntiBoson);
+    }
+
     unsigned int Particle::n_lorentz_indices() const
     {
         return static_cast<unsigned int>(_spin.j());

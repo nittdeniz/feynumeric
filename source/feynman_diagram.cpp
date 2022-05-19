@@ -154,8 +154,25 @@ namespace Feynumeric
 				_amplitude.push_back(edge_ptr->feynman_rule());
 			}
 		}
+		for( auto const& [id, ptr] : _graph._vertices ){
+		    auto all = ptr->all();
+		    if( all.empty() ) continue;
+            bool only_bosons = true;
+            for( auto const& edge : all ){
+                if( edge->particle()->is_fermion() ){
+                    only_bosons = false;
+                    break;
+                }
+            }
+            if( only_bosons ){
 #if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
-		std::cout << "\n";
+                print_feynman_vertex_rule(ptr);
+#endif
+                _amplitude.push_back(ptr->feynman_rule());
+            }
+		}
+#if DEBUG_AMPLITUDE == 1 || PRINT_AMPLITUDE == 1
+        std::cout << "\n";
 #endif
 	}
 

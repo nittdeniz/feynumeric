@@ -87,6 +87,24 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 			}
 	));
 
+    VMP->add(Feynumeric::Vertex(
+            {
+                    {P["Pion"], Edge_Direction::ANY},
+                    {P["Pion"], Edge_Direction::ANY},
+                    {P["f0_500"], Edge_Direction::ANY}
+            },
+            [](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                auto const& piP = edges[0];
+                auto const& piM = edges[1];
+                auto const& f0  = edges[2];
+                auto const& p = f0->four_momentum(kin);
+                auto const m = piP->particle()->mass();
+                auto const g = f0->particle()->user_data<double>("g_pipi");
+                return Matrix(1, 1, g/m * p.squared());
+            }
+    ));
+
 	VMP->add(Feynumeric::Vertex(
 			{
 					{P["R12"]},

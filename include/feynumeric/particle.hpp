@@ -119,6 +119,10 @@ namespace Feynumeric
         bool is_true_fermion() const;
         bool is_anti_fermion() const;
 
+        bool is_boson() const;
+        bool is_true_boson() const;
+        bool is_anti_boson() const;
+
         std::function<Matrix(Edge_Ptr e, Kinematics const&)> feynman_outgoing;
         std::function<Matrix(Edge_Ptr e, Kinematics const&)> feynman_incoming;
         std::function<Matrix(Edge_Ptr e, Kinematics const&)> feynman_virtual;

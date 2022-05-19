@@ -50,4 +50,22 @@ int main(int argc, char** argv)
         }
         write_map(dyson_factor, "data/dyson_factors/D1232.txt");
     }
+    {/// N1440 -> Npi
+        auto dummy = std::make_shared<Particle>(*P.get("N1440p"));
+        dummy->user_data("form_factor", identity);
+        auto decay_1 = create_diagram(FORMAT("decay {} to proton pi0", dummy->name()), Decay_1_to_2, VMP,
+                                      {dummy},
+                                      {},
+                                      {Proton, Pi_Zero}
+        );
+        Feynman_Process decay({decay_1});
+        double Gamma0 = decay.decay_width();
+        std::map<double, double> dyson_factor;
+        for( int i = 0; i <= steps; ++i ){
+            double value = start + (end - start) / steps * i;
+            dummy->mass(value);
+            dyson_factor[value] = decay.decay_width()/Gamma0;
+        }
+        write_map(dyson_factor, "data/dyson_factors/N1440.txt");
+    }
 }
