@@ -5,11 +5,16 @@
 
 namespace Feynumeric
 {
+    [[maybe_unused]] extern const Topology s_channel;
+    [[maybe_unused]] extern const Topology t_channel;
+    [[maybe_unused]] extern const Topology u_channel;
+
 	[[maybe_unused]] extern const Topology Decay_1_to_2;
+
 	[[maybe_unused]] extern const Topology Decay_1_to_M2_1;
+    [[maybe_unused]] extern const Topology Decay_1_to_M2_1_cross;
     [[maybe_unused]] extern const Topology Decay_1_to_1_M2;
-    [[maybe_unused]] extern const Topology Scattering_Horizontal_2_to_2;
-    [[maybe_unused]] extern const Topology Scattering_Vertical_2_to_2;
+    [[maybe_unused]] extern const Topology Decay_1_to_1_M2_cross;
 }
 
 #endif // Feynumeric_TOPOLOGIES_HPP

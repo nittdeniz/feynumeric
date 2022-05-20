@@ -3,41 +3,40 @@
 
 namespace Feynumeric
 {
-	const Topology Decay_1_to_2({
-			                     {0, 1, Direction::INCOMING},
-			                     {1, 2, Direction::OUTGOING},
-			                     {1, 3, Direction::OUTGOING}
-	});
+    const Topology s_channel = {{
+                    {"i1", "v1"},
+                    {"v1", "v2"},
+                    {"i2", "v1"},
+                    {"v2", "o1"},
+                    {"v2", "o2"}
+    }};
 
-	const Topology Decay_1_to_M2_1({
-			                            {0, 1, Direction::INCOMING},
-			                            {1, 2, Direction::VIRTUAL},
-			                            {2, 3, Direction::OUTGOING},
-			                            {2, 4, Direction::OUTGOING},
-			                            {1, 5, Direction::OUTGOING}
-	                            });
+    const Topology t_channel = {{
+                                        {"i1", "v1"},
+                                        {"v1", "v2"},
+                                        {"i2", "v1"},
+                                        {"v1", "o1"},
+                                        {"v2", "o2"}
+                                }};
 
-    const Topology Decay_1_to_1_M2({
-                                           {0, 1, Direction::INCOMING},
-                                           {1, 2, Direction::OUTGOING},
-                                           {1, 3, Direction::VIRTUAL},
-                                           {3, 4, Direction::OUTGOING},
-                                           {3, 5, Direction::OUTGOING}
-                                   });
+    const Topology u_channel = {{
+                                        {"i1", "v1"},
+                                        {"v1", "v2"},
+                                        {"i2", "v1"},
+                                        {"v1", "o2"},
+                                        {"v2", "o1"}
+                                }};
 
-	const Topology Scattering_Vertical_2_to_2({
-			                     {0, 2, Direction::INCOMING},
-			                     {1, 3, Direction::INCOMING},
-			                     {2, 3, Direction::VIRTUAL},
-			                     {2, 4, Direction::OUTGOING},
-			                     {3,5, Direction::OUTGOING}
-	                     });
+    const Topology Decay_1_to_2 = {{
+                                           {"i1", "v1"},
+                                           {"v1", "o1"},
+                                           {"v1", "o2"}
+    }};
 
-	const Topology Scattering_Horizontal_2_to_2({
-			                             {0, 2, Direction::INCOMING},
-			                             {1,2, Direction::INCOMING},
-			                             {2,3, Direction::VIRTUAL},
-			                             {3, 4, Direction::OUTGOING},
-			                             {3, 5, Direction::OUTGOING}
-	                             });
+    const Topology Decay_1_to_M2_1 = {{
+                                           {"i1", "v1"},
+                                           {"v1", "o3"},
+                                           {"v1", "v2"},
+                                           {"v2", "o1"},
+                                   }};
 }

@@ -8,21 +8,34 @@
 
 namespace Feynumeric
 {
+    struct Vertex{
+        enum class Type{
+            INCOMING,
+            VIRTUAL,
+            OUTGOING
+        };
+        using ID = std::size_t;
+        Type type;
+        ID id;
+        Vertex(std::string const& id);
+        Vertex(Type t, ID i);
+        Vertex(Vertex const& vertex);
+        Vertex& operator=(Vertex const& vertex);
+    };
+    struct Edge
+    {
+        Vertex from, to;
+        Edge(Vertex const& f, Vertex const& t);
+        Edge(std::string const& from, std::string const& to);
+    };
 	class Topology{
 	public:
-		using Vertex_ID = std::size_t;
-		struct Edge
-		{
-			Vertex_ID from, to;
-			Direction direction;
-		};
-		using Adjacency_Map = std::map<Vertex_ID, std::map<Vertex_ID, std::vector<std::size_t>>>;
 	private:
-		Adjacency_Map _adjacency_map;
-		std::vector<Edge> _edge_list;
-		std::vector<std::size_t> _incoming_edges, _outgoing_edges, _virtual_edges;
-
-		void create_adjacency_map();
+	    std::vector<Edge> _edges;
+	    std::vector<std::size_t> _incoming_edges;
+	    std::vector<std::size_t> _outgoing_edges;
+	    std::vector<std::size_t> _virtual_edges;
+	    std::map<Vertex::ID, std::map<Vertex::ID, std::vector<std::size_t>>> _adjacency_map;
 		void validate() const;
 	public:
 		Topology(std::vector<Edge> const& edge_list);

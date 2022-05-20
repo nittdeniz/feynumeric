@@ -108,8 +108,8 @@ namespace Feynumeric{
 		using Angular_Momentum_Ptr = std::shared_ptr<Angular_Momentum>;
 		using Lorentz_Index_Ptr = std::shared_ptr<Lorentz_Index>;
 		using Vertex_Ptr = std::shared_ptr<Graph_Vertex>;
-		using Edge_Map = std::map<Topology::Vertex_ID, std::map<Topology::Vertex_ID, std::vector<Edge_Ptr>>>;
-		using Vertex_Map = std::map<Topology::Vertex_ID, Vertex_Ptr>;
+		using Edge_Map = std::map<Vertex::ID, std::map<Vertex::ID, std::vector<Edge_Ptr>>>;
+		using Vertex_Map = std::map<Vertex::ID, Vertex_Ptr>;
 
 		Feynman_Diagram* _diagram;
 		Topology _topology;

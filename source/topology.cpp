@@ -2,76 +2,106 @@
 #include "messages.hpp"
 #include "topology.hpp"
 
+namespace Feynumeric{
+    Vertex::Vertex(std::string const& id)
+    {
+        if( id.size() < 2 ){
+            critical_error("Topology::Vertex must be at least 2 characters long.");
+        }
+        switch( id[0] ){
+            case 'i':{
+                type = Type::INCOMING;
+                break;
+            }
+            case 'o':{
+                type = Type::OUTGOING;
+                break;
+            }
+            case 'v':{
+                type = Type::VIRTUAL;
+                break;
+            }
+            default:{
+                critical_error(FORMAT("Topology::Vertex first character must be 'i', 'o', or 'v'. Given: {}.", id[0]));
+            }
+        }
+        id = std::stoull(id.substr(1));
+    }
 
-namespace Feynumeric
-{
-	Topology::Topology(std::vector<Edge> const& edge_list)
-	: _edge_list(edge_list)
-	{
-		create_adjacency_map();
-		validate();
-	}
+    Vertex::Vertex(Vertex::Type t, Vertex::ID i)
+    : type(t)
+    , id(i)
+    {
+    }
 
-	Topology::Topology(Topology const& copy)
-	: _adjacency_map(copy._adjacency_map)
-	, _edge_list(copy._edge_list)
-	, _incoming_edges(copy._incoming_edges)
-	, _outgoing_edges(copy._outgoing_edges)
-	, _virtual_edges(copy._virtual_edges)
-	{
-	}
+    Vertex::Vertex(const Vertex &vertex)
+    : type(vertex.type)
+    , id(vertex.id)
+    {
 
-	Topology& Topology::operator=(Topology const& copy){
-		_adjacency_map = copy._adjacency_map;
-		_edge_list = copy._edge_list;
-		_incoming_edges = copy._incoming_edges;
-		_outgoing_edges = copy._outgoing_edges;
-		_virtual_edges = copy._outgoing_edges;
-		return *this;
-	}
+    }
 
-	void Topology::validate() const{
-		for( auto const& edge : _edge_list )
-		{
-			if( edge.direction == Direction::VIRTUAL )
-			{
-				if( !(_adjacency_map.at(edge.from).size() > 1 && _adjacency_map.at(edge.to).size() > 1) )
-				{
-					critical_error(FORMAT("Edge({}, {}) does not appear to be virtual.", edge.from, edge.to));
-				}
-			}
-			else
-			{
-				if( (_adjacency_map.at(edge.from).size() > 1 && _adjacency_map.at(edge.to).size() > 1) )
-				{
-					critical_error(FORMAT("Edge({}, {}) does not appear to be external.", edge.from, edge.to));
-				}
-			}
-		}
-	}
+    Vertex& Vertex::operator=(const Vertex &vertex)
+    {
+        type = vertex.type;
+        id = vertex.id;
+        return *this;
+    }
 
-	void Topology::create_adjacency_map(){
-		std::size_t k = 0;
-		for( auto const& edge : _edge_list )
-		{
-			_adjacency_map[edge.from][edge.to].push_back(k);
-			_adjacency_map[edge.to][edge.from].push_back(k);
-			switch( edge.direction )
-			{
-				case Direction::INCOMING:
-					_incoming_edges.push_back(k);
-					break;
-				case Direction::OUTGOING:
-					_outgoing_edges.push_back(k);
-					break;
-				case Direction::VIRTUAL:
-					_virtual_edges.push_back(k);
-					break;
-				default:
-					critical_error("Invalid direction in topology.");
-			}
-			k++;
-		}
-	}
+    Edge::Edge(const Vertex &f, const Vertex &t)
+    : from(f)
+    , to(t)
+    {
 
+    }
+
+    Edge::Edge(std::string const& from, std::string const& to)
+    : from(Vertex(from))
+    , to(Vertex(to))
+    {
+
+    }
+
+    void Topology::validate() const
+    {
+        if( _edges.empty() ){
+            critical_error("Topology contains no edges.");
+        }
+        if( _incoming_edges.empty() ){
+            critical_error("Topology contains no incoming edges.");
+        }
+        if( _outgoing_edges.empty() ){
+            critical_error("Topology contains no outgoing edges.");
+        }
+    }
+
+    Topology::Topology(const std::vector<Edge> &edge_list)
+    {
+        for( auto const& edge : edge_list ){
+            auto pos = _edges.size();
+            if( edge.from.type == Vertex::Type::INCOMING && edge.to.type == Vertex::Type::VIRTUAL ){
+                _incoming_edges.push_back(pos);
+            }
+            else if( edge.from.type == Vertex::Type::VIRTUAL && edge.to.type == Vertex::Type::OUTGOING ){
+                _outgoing_edges.push_back(pos);
+            }
+            else if( edge.from.type == Vertex::Type::VIRTUAL && edge.to.type == Vertex::Type::VIRTUAL ){
+                _virtual_edges.push_back(pos);
+            }
+            else{
+                critical_error("Topology::Edge must be pair (i, v), (v, v), or (v, o).");
+            }
+            _adjacency_map[edge.from.id][edge.to.id].push_back(pos);
+            _edges.push_back(edge);
+        }
+    }
+
+    Topology::Topology(const Topology &copy)
+    {
+
+    }
+
+    Topology &Topology::operator=(const Topology &copy)
+    {
+    }
 }
