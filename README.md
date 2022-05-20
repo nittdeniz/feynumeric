@@ -25,7 +25,7 @@ int main()
     
     auto s_channel = create_diagram("s_channel", // Name of the diagram (can be anything)
                                     s_channel, // Topology (see more below)
-                                    VMP, // A pointer to the Vertex Manager
+                                    VMP, // A pointer to the Topology_Vertex Manager
 	                            {Electron, Positron}, // incoming particles
 	                            {Photon}, // virtual particles
 	                            {Muon_Minus, Muon_Plus} // outgoing particles

@@ -5,6 +5,7 @@
 #include "complex.hpp"
 #include "constexpr_math.hpp"
 #include "feynman_graph.hpp"
+#include "graph_edge.hpp"
 #include "lorentz_index.hpp"
 #include "product.hpp"
 #include "sum.hpp"

@@ -8,37 +8,56 @@
 
 namespace Feynumeric
 {
-    struct Vertex{
-        enum class Type{
-            INCOMING,
-            VIRTUAL,
-            OUTGOING
-        };
-        using ID = std::size_t;
-        Type type;
-        ID id;
-        Vertex(std::string const& id);
-        Vertex(Type t, ID i);
-        Vertex(Vertex const& vertex);
-        Vertex& operator=(Vertex const& vertex);
+    enum class Type{
+        INCOMING,
+        VIRTUAL,
+        OUTGOING
     };
-    struct Edge
+    class Topology_Vertex{
+    public:
+    private:
+        Type _type;
+        std::string _label;
+        std::size_t _id;
+        std::size_t _num;
+    public:
+        Topology_Vertex(std::string const& label);
+        Topology_Vertex(Topology_Vertex const& vertex);
+        Topology_Vertex& operator=(Topology_Vertex const& vertex);
+        std::size_t id() const;
+        void id(std::size_t i);
+        std::size_t num() const;
+        std::string label() const;
+        Type type() const;
+        friend class Topology_Edge;
+        friend class Topology;
+    };
+    class Topology_Edge
     {
-        Vertex from, to;
-        Edge(Vertex const& f, Vertex const& t);
-        Edge(std::string const& from, std::string const& to);
+    private:
+        Topology_Vertex _from, _to;
+        Type _type;
+    public:
+        Topology_Edge(std::string const& from, std::string const& to);
+        Topology_Edge(Topology_Vertex const& f, Topology_Vertex const& t);
+        Topology_Edge(Topology_Edge const& copy);
+        Topology_Edge& operator=(Topology_Edge const& copy);
+        Type type() const;
+        Topology_Vertex& from();
+        Topology_Vertex& to();
+
     };
 	class Topology{
 	public:
 	private:
-	    std::vector<Edge> _edges;
+	    std::vector<Topology_Edge> _edges;
 	    std::vector<std::size_t> _incoming_edges;
 	    std::vector<std::size_t> _outgoing_edges;
 	    std::vector<std::size_t> _virtual_edges;
-	    std::map<Vertex::ID, std::map<Vertex::ID, std::vector<std::size_t>>> _adjacency_map;
-		void validate() const;
+	    std::map<std::size_t, std::map<std::size_t, std::vector<std::size_t>>> _adjacency_map;
+		void validate();
 	public:
-		Topology(std::vector<Edge> const& edge_list);
+		Topology(std::vector<Topology_Edge> edge_list);
 
 		Topology(Topology const& copy);
 		Topology& operator=(Topology const& copy);

@@ -4,19 +4,19 @@
 #include <memory>
 
 #define CONTRACT_MATRIX(EXPR, VAR) [&](){ \
-    Matrix result(4, 4);                      \
+    Matrix result_$$123$$(4, 4);                      \
     Lorentz_Index_Ptr VAR = std::make_shared<Lorentz_Index>();\
-    result += EXPR; ++(*VAR);            \
-    result += EXPR; ++(*VAR);            \
-    result += EXPR; ++(*VAR);            \
-    result += EXPR;            \
-    return result;}()
+    result_$$123$$ += EXPR; ++(*VAR);            \
+    result_$$123$$ += EXPR; ++(*VAR);            \
+    result_$$123$$ += EXPR; ++(*VAR);            \
+    result_$$123$$ += EXPR;            \
+    return result_$$123$$;}()
 #define CONTRACT_SCALAR(EXPR, VAR) [&](){ \
-    Complex result;                      \
+    Complex result_$$123$$;                      \
     Lorentz_Index_Ptr VAR = std::make_shared<Lorentz_Index>();\
-    result += EXPR; ++(*VAR);            \
-    result += EXPR; ++(*VAR);            \
-    result += EXPR; ++(*VAR);            \
-    result += EXPR;            \
-    return result;}()
+    result_$$123$$ += EXPR; ++(*VAR);            \
+    result_$$123$$ += EXPR; ++(*VAR);            \
+    result_$$123$$ += EXPR; ++(*VAR);            \
+    result_$$123$$ += EXPR;            \
+    return result_$$123$$;}()
 #endif

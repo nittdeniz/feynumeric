@@ -27,13 +27,13 @@ namespace Feynumeric
 			std::map<std::string, Node> children;
 		};
 
-	    int directions_to_int(std::vector<Vertex::Particle_Direction> const& list);
-		int directions_to_int(std::vector<Vertex::Particle_Direction> const& list, std::map<std::size_t, std::size_t> const& permutation);
+	    int directions_to_int(std::vector<Particle_Direction> const& list);
+		int directions_to_int(std::vector<Particle_Direction> const& list, std::map<std::size_t, std::size_t> const& permutation);
 
-		std::vector<std::vector<Vertex::Particle_Direction>> advance(std::vector<Vertex::Particle_Direction> const& list) const;
+		std::vector<std::vector<Particle_Direction>> advance(std::vector<Particle_Direction> const& list) const;
 
 		Node _root;
-		std::map<std::size_t, std::size_t> permutation_map(std::vector<Vertex::Particle_Direction> const& lst);
+		std::map<std::size_t, std::size_t> permutation_map(std::vector<Particle_Direction> const& lst);
 		std::map<std::size_t, std::size_t> invert_map(std::map<std::size_t, std::size_t> const& map);
 
     public:
@@ -41,7 +41,7 @@ namespace Feynumeric
     	void import(Vertex_Manager const& v);
     	void add(Vertex const& vertex);
 
-    	std::optional<Vertex_Permutation> find(std::vector<Vertex::Particle_Direction> const& particle_directions);
+    	std::optional<Vertex_Permutation> find(std::vector<Particle_Direction> const& particle_directions);
     };
     using Vertex_Manager_Ptr = std::shared_ptr<Vertex_Manager>;
 }

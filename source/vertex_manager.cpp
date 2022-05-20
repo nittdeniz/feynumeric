@@ -13,7 +13,7 @@ namespace Feynumeric
 	}
 
 	std::map<std::size_t, std::size_t>
-	Vertex_Manager::permutation_map(std::vector<Vertex::Particle_Direction> const& lst){
+	Vertex_Manager::permutation_map(std::vector<Particle_Direction> const& lst){
 		std::map<std::size_t, std::size_t> result;
 		for( std::size_t i = 0; i < lst.size(); ++i ){
 			std::size_t min_pos{0};
@@ -41,7 +41,7 @@ namespace Feynumeric
 		return inverted;
 	}
 
-	int Vertex_Manager::directions_to_int(std::vector<Vertex::Particle_Direction> const& list, std::map<std::size_t, std::size_t> const& permutation){
+	int Vertex_Manager::directions_to_int(std::vector<Particle_Direction> const& list, std::map<std::size_t, std::size_t> const& permutation){
 		int result{0};
 		for( std::size_t i = 0; i < list.size(); ++i )
 		{
@@ -56,7 +56,7 @@ namespace Feynumeric
 		return result;
 	}
 
-	int Vertex_Manager::directions_to_int(std::vector<Vertex::Particle_Direction> const& list){
+	int Vertex_Manager::directions_to_int(std::vector<Particle_Direction> const& list){
 		int result{0};
 		for( std::size_t i = 0; i < list.size(); ++i )
 		{
@@ -106,10 +106,10 @@ namespace Feynumeric
 		}
 	}
 
-	std::vector<std::vector<Vertex::Particle_Direction>>
-	Vertex_Manager::advance(std::vector<Vertex::Particle_Direction> const& list) const
+	std::vector<std::vector<Particle_Direction>>
+	Vertex_Manager::advance(std::vector<Particle_Direction> const& list) const
 	{
-		std::vector<std::vector<Vertex::Particle_Direction>> result;
+		std::vector<std::vector<Particle_Direction>> result;
 		for( std::size_t i = 0; i < list.size(); ++i ){
 			if( list[i].particle->parent() ){
 				auto temp = list;
@@ -124,12 +124,12 @@ namespace Feynumeric
 
 
 
-	std::optional<Vertex_Manager::Vertex_Permutation> Vertex_Manager::find(std::vector<Vertex::Particle_Direction> const& particle_directions)
+	std::optional<Vertex_Manager::Vertex_Permutation> Vertex_Manager::find(std::vector<Particle_Direction> const& particle_directions)
 	{
 		std::optional<Vertex_Manager::Vertex_Permutation> result;
-		std::vector<std::vector<Vertex::Particle_Direction>> search_list = {particle_directions};
+		std::vector<std::vector<Particle_Direction>> search_list = {particle_directions};
 		do{
-			std::vector<std::vector<Vertex::Particle_Direction>> updated_list;
+			std::vector<std::vector<Particle_Direction>> updated_list;
 			std::vector<std::size_t> found_indices;
 			std::size_t depth{0};
 			for( std::size_t i = 0; i < search_list.size(); ++i ){
@@ -161,7 +161,7 @@ namespace Feynumeric
 			}
 			std::sort(updated_list.begin(), updated_list.end());
 			auto last = std::unique(updated_list.begin(), updated_list.end(),
-						   [](std::vector<Vertex::Particle_Direction> const& a, std::vector<Vertex::Particle_Direction> const& b)
+						   [](std::vector<Particle_Direction> const& a, std::vector<Particle_Direction> const& b)
 						   {
 								for( std::size_t i = 0; i < a.size(); ++i ){
 									if( a[i].particle != b[i].particle ) return false;

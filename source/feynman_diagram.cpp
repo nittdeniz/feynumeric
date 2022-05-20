@@ -4,6 +4,8 @@
 
 #include "feynman_diagram.hpp"
 #include "format.hpp"
+#include "graph_edge.hpp"
+#include "graph_vertex.hpp"
 #include "messages.hpp"
 #include "particle.hpp"
 
@@ -284,7 +286,7 @@ namespace Feynumeric
 				#ifdef DEBUG_AMPLITUDE
 				for( auto const& edge_ptr : edge_list )
 				{
-					std::cerr << "Edge(" << vertex_a << ", " << vertex_b << "): " << edge_ptr->relative_momentum() << "\n";
+					std::cerr << "Topology_Edge(" << vertex_a << ", " << vertex_b << "): " << edge_ptr->relative_momentum() << "\n";
 				}
 				#endif
 			}
@@ -466,7 +468,7 @@ namespace Feynumeric
 					next = e;
 					vertex_direction = Edge_Direction::OUT;
 				} else{
-					critical_error("Vertex has more than two fermions.");
+					critical_error("Topology_Vertex has more than two fermions.");
 				}
 			}
 		}
@@ -477,7 +479,7 @@ namespace Feynumeric
 					next = e;
 					vertex_direction = Edge_Direction::IN;
 				} else{
-					critical_error("Vertex has more than two fermions.");
+					critical_error("Topology_Vertex has more than two fermions.");
 				}
 			}
 		}
@@ -485,7 +487,7 @@ namespace Feynumeric
 		print_feynman_vertex_rule(vertex_ptr);
 #endif
 		if( next == nullptr ){
-			CRITICAL_ERROR("Vertex has no connecting fermion.");
+			CRITICAL_ERROR("Topology_Vertex has no connecting fermion.");
 		}
 		_amplitude.push_back(vertex_ptr->feynman_rule());
 		trace_fermion_line(next, start_direction, vertex_direction);

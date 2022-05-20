@@ -8,6 +8,7 @@
 #include "edge_direction.hpp"
 #include "kinematics.hpp"
 #include "particle.hpp"
+#include "particle_direction.hpp"
 
 namespace Feynumeric
 {
@@ -20,14 +21,6 @@ namespace Feynumeric
 	    using Vertex_Ptr = std::shared_ptr<Graph_Vertex>;
 	    using Particle_List = std::vector<Edge_Ptr>;
 
-    	struct Particle_Direction
-	    {
-    		Particle_Ptr particle;
-    		Edge_Direction direction;
-    		Particle_Direction(Particle_Ptr ptr, Edge_Direction dir = Edge_Direction::ANY);
-    		Particle_Direction(Particle_Direction const& pd);
-    		Particle_Direction& operator=(Particle_Direction const& pd);
-	    };
     private:
 	    std::vector<Particle_Direction> _particle_directions;
 	    std::function<Matrix(Kinematics const&, Particle_List const&)> _vertex_function;
@@ -45,9 +38,8 @@ namespace Feynumeric
 
         friend class Graph_Vertex;
         friend class Vertex_Manager;
-        friend bool operator<(Vertex::Particle_Direction const& a, Vertex::Particle_Direction const& b);
+        friend bool operator<(Particle_Direction const& a, Particle_Direction const& b);
     };
-	bool operator<(Vertex::Particle_Direction const& a, Vertex::Particle_Direction const& b);
     using Vertex_Ptr = std::shared_ptr<Vertex>;
 }
 #endif // Feynumeric_VERTEX_HPP

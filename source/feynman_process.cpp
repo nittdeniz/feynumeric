@@ -1,6 +1,8 @@
 #include "feynman_process.hpp"
 #include "feynman_diagram.hpp"
 #include "four_vector.hpp"
+#include "graph_edge.hpp"
+#include "graph_vertex.hpp"
 #include "integrate.hpp"
 #include "units.hpp"
 

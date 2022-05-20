@@ -15,7 +15,7 @@ void init_vertices()
 {
     using Feynumeric::Direction;
     using namespace Feynumeric::Units;
-    VMP->add(Feynumeric::Vertex(
+    VMP->add(Feynumeric::Topology_Vertex(
         {
 				           {Electron, Direction::BOTH},
 				           {Electron, Direction::BOTH},
@@ -28,7 +28,7 @@ void init_vertices()
 			           return 1._e * Feynumeric::GAC[*( photon->lorentz_indices()[0] )];
 		           }
     ));
-	VMP->add(Feynumeric::Vertex(
+	VMP->add(Feynumeric::Topology_Vertex(
 			{
 					{Electron, Direction::BOTH},
 					{Positron, Direction::BOTH},
@@ -43,7 +43,7 @@ void init_vertices()
 	));
 
 
-    VMP->add(Feynumeric::Vertex(
+    VMP->add(Feynumeric::Topology_Vertex(
 		    {
 				     {Muon_Minus, Direction::BOTH}
 				    ,{Muon_Minus, Direction::BOTH}
@@ -57,7 +57,7 @@ void init_vertices()
 	            return 1._e * Feynumeric::GAC[*(photon->lorentz_indices()[0])];
             })
     );
-	VMP->add(Feynumeric::Vertex(
+	VMP->add(Feynumeric::Topology_Vertex(
 			{
 					{Muon_Minus, Direction::BOTH}
 					,{Muon_Plus, Direction::BOTH}

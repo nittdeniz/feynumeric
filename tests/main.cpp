@@ -207,7 +207,7 @@ TEST_CASE("Spin 1 Polarisation Vectors Completeness", "[dirac]"){
 TEST_CASE("Integration Routine", "[math]")
 {
 	using namespace Feynumeric;
-	using f_type = std::function<double(double)>;
+
 
 	auto sin = [](double x){return std::sin(x);};
 	auto x2 = [](double x){return x*x;};
@@ -236,18 +236,17 @@ TEST_CASE("Moller Scattering", "[QED]")
 	init_particles();
 	init_vertices();
 
-	Feynman_Diagram_Ptr t_channel = create_diagram("t_channel", X_Man, VMP,
-	                                               {Electron, Electron},
-	                                               {Photon},
-	                                               {Electron, Electron});
+	Feynman_Diagram_Ptr diagram_t_channel = create_diagram("diagram_t_channel", t_channel, VMP,
+                                                           {Electron, Electron},
+                                                           {Photon},
+                                                           {Electron, Electron});
 
-	Feynman_Diagram_Ptr u_channel = create_diagram("u_channel", X_Man, VMP,
-	                                               {Electron, Electron},
-	                                               {Photon},
-	                                               {Electron, Electron});
-	u_channel->cross_outgoing(0, 1);
+	Feynman_Diagram_Ptr diagram_u_channel = create_diagram("diagram_u_channel", u_channel, VMP,
+                                                           {Electron, Electron},
+                                                           {Photon},
+                                                           {Electron, Electron});
 
-	Feynman_Process e_scattering({t_channel, u_channel});
+	Feynman_Process e_scattering({diagram_t_channel, diagram_u_channel});
 
 	std::stringstream out;
 
@@ -261,6 +260,7 @@ TEST_CASE("Moller Scattering", "[QED]")
 //	REQUIRE( almost_identical(result[cos_theta][2], 0.0085134844703209) );
 }
 
+/*
 TEST_CASE("Bhaba Scattering", "[QED]")
 {
 	using namespace Feynumeric;
@@ -270,30 +270,28 @@ TEST_CASE("Bhaba Scattering", "[QED]")
 	init_particles();
 	init_vertices();
 
-	Feynman_Diagram_Ptr s_channel = create_diagram("s_channel", Double_Wrench, VMP,
-	                                               {Electron, Positron},
-	                                               {Photon},
-	                                               {Electron, Positron});
+	Feynman_Diagram_Ptr diagram_s_channel = create_diagram("diagram_s_channel", s_channel, VMP,
+                                                           {Electron, Positron},
+                                                           {Photon},
+                                                           {Electron, Positron});
 
-	Feynman_Diagram_Ptr t_channel = create_diagram("t_channel", X_Man, VMP,
-	                                               {Electron, Positron},
-	                                               {Photon},
-	                                               {Electron, Positron});
+//	Feynman_Diagram_Ptr diagram_t_channel = create_diagram("diagram_t_channel", t_channel, VMP,
+//                                                           {Electron, Positron},
+//                                                           {Photon},
+//                                                           {Electron, Positron});
 
+//	Feynman_Process e_scattering({diagram_s_channel, diagram_t_channel});
 
-	Feynman_Process e_scattering({s_channel, t_channel});
+//	double const cos_theta = 0.41936;
 
-	//std::stringstream out;
-
-	double const cos_theta = 0.41936;
-
-	auto result = e_scattering.dsigma_dcos_table( 500._MeV, {cos_theta});
+//	auto result = e_scattering.dsigma_dcos_table( 500._MeV, {cos_theta});
 
 	// Compare to analytical values from Mathematica's Feyncalc
 //	REQUIRE( almost_identical(result[cos_theta][0], 0.0095746468309887) );
 //	REQUIRE( almost_identical(result[cos_theta][1], 0.024487089153493090) );
 //	REQUIRE( almost_identical(result[cos_theta][2], 0.017657720374332880) );
 }
+*/
 
 TEST_CASE("Contract", "[dirac]")
 {
@@ -399,12 +397,12 @@ TEST_CASE("projector", "[dirac]"){
 
 	auto I = Matrix(4, 4, 1);
 
-	auto spin32 = [I](Four_Vector p, double m, Lorentz_Index_Ptr mu, Lorentz_Index_Ptr nu){
+	auto spin32 = [I](Four_Vector p, double m, Lorentz_Index_Ptr ka, Lorentz_Index_Ptr la){
 		auto a = -(GS(p)+m * I);
-		auto b = MT[*mu][*nu] * I;
-		auto c = GA[*mu]*GA[*nu]/3.;
-		auto d = 2./3. * p.contra(*mu) * p.contra(*nu)/(m*m) * I;
-		auto e = GS(p)*(p.contra(*mu) * GA[*nu] - p.contra(*nu) * GA[*mu])/(3*m*m);
+		auto b = MT[*ka][*la] * I;
+		auto c = GA[*ka]*GA[*la]/3.;
+		auto d = 2./3. * p.contra(*ka) * p.contra(*la)/(m*m) * I;
+		auto e = GS(p)*(p.contra(*ka) * GA[*la] - p.contra(*la) * GA[*ka])/(3*m*m);
 		return a * (b - c - d + e);
 	};
 

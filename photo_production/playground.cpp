@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 
 	Vertex_Manager VM;
 
-	VM.add(Vertex(
+	VM.add(Topology_Vertex(
 			{
 					{QED::Positron, Direction::ANY},
 					{QED::Electron, Direction::ANY},
@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 				return Matrix(1,1,1);}
 	));
 
-	VM.add(Vertex(
+	VM.add(Topology_Vertex(
 			{
 					{QED::Electron, Direction::ANY},
 					{QED::Electron, Direction::ANY},

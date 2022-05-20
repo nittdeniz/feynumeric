@@ -1,4 +1,5 @@
 #include "feynman_graph.hpp"
+#include "graph_edge.hpp"
 #include "isospin.hpp"
 #include "matrix.hpp"
 #include "messages.hpp"

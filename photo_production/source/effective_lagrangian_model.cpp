@@ -1,6 +1,8 @@
 #include <feynumeric/contract.hpp>
 #include <feynumeric/dirac.hpp>
 #include <feynumeric/feynman_graph.hpp>
+#include <feynumeric/graph_edge.hpp>
+#include <feynumeric/graph_vertex.hpp>
 #include <feynumeric/isospin.hpp>
 #include <feynumeric/particle_manager.hpp>
 #include <feynumeric/qed.hpp>

@@ -103,7 +103,10 @@ namespace Feynumeric
 
     Matrix &Matrix::operator*=(const Matrix &rhs)
     {
-        *this = (*this) * rhs;
+        auto result = (*this) * rhs;
+        _data = result._data;
+        _cols = result._cols;
+        _rows = result._rows;
         return *this;
     }
 
@@ -192,6 +195,26 @@ namespace Feynumeric
             return _data[0];
         }
         throw dimension_exception();
+    }
+
+    std::vector<Complex>::const_iterator Matrix::cbegin() const
+    {
+        return _data.cbegin();
+    }
+
+    std::vector<Complex>::const_iterator Matrix::cend() const
+    {
+        return _data.cend();
+    }
+
+    std::vector<Complex>::iterator Matrix::begin()
+    {
+        return _data.begin();
+    }
+
+    std::vector<Complex>::iterator Matrix::end()
+    {
+        return _data.end();
     }
 
     Matrix Matrix::T() const

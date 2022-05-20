@@ -32,6 +32,12 @@ namespace Feynumeric
         std::size_t n_cols() const;
         std::size_t n_total() const;
 
+        std::vector<Complex>::const_iterator cbegin() const;
+        std::vector<Complex>::const_iterator cend() const;
+
+        std::vector<Complex>::iterator begin();
+        std::vector<Complex>::iterator end();
+
         Complex const& at(size_t i) const;
         Complex& operator[](size_t i);
         Complex& operator()(size_t i, std::size_t j);

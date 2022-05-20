@@ -1,6 +1,7 @@
 #include "dirac.hpp"
 #include "edge_direction.hpp"
 #include "feynman_graph.hpp"
+#include "graph_edge.hpp"
 #include "matrix.hpp"
 #include "particle.hpp"
 #include "qed.hpp"
