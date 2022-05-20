@@ -187,21 +187,17 @@ namespace Feynumeric
 		std::size_t const n_external =
 				_graph._topology._incoming_edges.size() + _graph._topology._outgoing_edges.size();
 		Matrix zeroes(n_external, 1);
-		std::size_t position{0};
+		std::size_t offset = _graph._incoming.size();
 
 		for( auto const& edge_ptr : _graph._incoming ){
 			Matrix p = zeroes;
-			p[position] = 1;
+			p[edge_ptr->topology_edge().from().num()] = 1;
 			edge_ptr->relative_momentum(p);
-//			_four_momenta.push_back(generate_four_momentum(Direction::INCOMING, position));
-			position++;
 		}
 		for( auto const& edge_ptr : _graph._outgoing ){
 			Matrix p = zeroes;
-			p[position] = -1;
+			p[offset + edge_ptr->topology_edge().to().num()] = -1;
 			edge_ptr->relative_momentum(p);
-//			_four_momenta.push_back(generate_four_momentum(Direction::OUTGOING, position));
-			position++;
 		}
 	}
 

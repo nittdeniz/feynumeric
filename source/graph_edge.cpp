@@ -4,10 +4,11 @@
 #include "utility.hpp"
 
 namespace Feynumeric{
-    Graph_Edge::Graph_Edge(std::size_t id, Feynman_Diagram* diagram, Particle_Ptr const& P)
+    Graph_Edge::Graph_Edge(std::size_t id, Feynman_Diagram* diagram, Particle_Ptr const& P, Topology_Edge const& topo_edge)
             : _eid(id)
             , _diagram(diagram)
             , _particle(P)
+            , _topology_edge(topo_edge)
     {
     }
 
@@ -21,6 +22,7 @@ namespace Feynumeric{
             , _relative_momentum(edge._relative_momentum)
             , _spin(edge._spin)
             , _lorentz_indices(edge._lorentz_indices)
+            , _topology_edge(edge._topology_edge)
     {
 
     }
@@ -35,12 +37,18 @@ namespace Feynumeric{
         _relative_momentum = edge._relative_momentum;
         _spin = edge._spin;
         _lorentz_indices = edge._lorentz_indices;
+        _topology_edge = edge._topology_edge;
         return *this;
     }
 
     bool Graph_Edge::is_incoming() const
     {
         return _front != nullptr && _back == nullptr;
+    }
+
+    Topology_Edge Graph_Edge::topology_edge() const
+    {
+        return _topology_edge;
     }
 
     bool Graph_Edge::is_outgoing() const

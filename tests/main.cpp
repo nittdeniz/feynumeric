@@ -236,7 +236,7 @@ TEST_CASE("Moller Scattering", "[QED]")
 	init_particles();
 	init_vertices();
 
-	Feynman_Diagram_Ptr diagram_t_channel = create_diagram("diagram_t_channel", t_channel, VMP,
+	Feynman_Diagram_Ptr diagram_t_channel = create_diagram("diagram_t_channel", u_channel, VMP,
                                                            {Electron, Electron},
                                                            {Photon},
                                                            {Electron, Electron});
@@ -247,20 +247,21 @@ TEST_CASE("Moller Scattering", "[QED]")
                                                            {Electron, Electron});
 
 	Feynman_Process e_scattering({diagram_t_channel, diagram_u_channel});
+	e_scattering.conversion_factor(1._2mubarn);
 
 	std::stringstream out;
 
 	double const cos_theta = 0.2134;
 
-	auto result = e_scattering.dsigma_dcos_table( 500._MeV, {cos_theta});
+	auto result = e_scattering.dsigma_dcos_table( 500._MeV, {{cos_theta}});
 
 	// Compare to analytical values from Mathematica's Feyncalc
-//	REQUIRE( almost_identical(result[cos_theta][0], 0.02227945628277883) );
-//	REQUIRE( almost_identical(result[cos_theta][1], 0.01880419088437939) );
-//	REQUIRE( almost_identical(result[cos_theta][2], 0.0085134844703209) );
+	REQUIRE( almost_identical(result[cos_theta][0], 2.304519072027013000) );
+	REQUIRE( almost_identical(result[cos_theta][1], 0.817391792860742000) );
+	REQUIRE( almost_identical(result[cos_theta][2], 0.937946246752330000) );
 }
 
-/*
+
 TEST_CASE("Bhaba Scattering", "[QED]")
 {
 	using namespace Feynumeric;
@@ -275,23 +276,24 @@ TEST_CASE("Bhaba Scattering", "[QED]")
                                                            {Photon},
                                                            {Electron, Positron});
 
-//	Feynman_Diagram_Ptr diagram_t_channel = create_diagram("diagram_t_channel", t_channel, VMP,
-//                                                           {Electron, Positron},
-//                                                           {Photon},
-//                                                           {Electron, Positron});
+	Feynman_Diagram_Ptr diagram_t_channel = create_diagram("diagram_t_channel", t_channel, VMP,
+                                                           {Electron, Positron},
+                                                           {Photon},
+                                                           {Electron, Positron});
 
-//	Feynman_Process e_scattering({diagram_s_channel, diagram_t_channel});
+	Feynman_Process e_scattering({diagram_s_channel, diagram_t_channel});
+	e_scattering.conversion_factor(1._2mubarn);
 
-//	double const cos_theta = 0.41936;
+	double const cos_theta = 0.41936;
 
-//	auto result = e_scattering.dsigma_dcos_table( 500._MeV, {cos_theta});
+	auto result = e_scattering.dsigma_dcos_table( 500._MeV, {{cos_theta}});
 
-	// Compare to analytical values from Mathematica's Feyncalc
-//	REQUIRE( almost_identical(result[cos_theta][0], 0.0095746468309887) );
-//	REQUIRE( almost_identical(result[cos_theta][1], 0.024487089153493090) );
-//	REQUIRE( almost_identical(result[cos_theta][2], 0.017657720374332880) );
+//	 Compare to analytical values from Mathematica's Feyncalc
+	REQUIRE( almost_identical(result[cos_theta][0], 0.153194349295819100) );
+	REQUIRE( almost_identical(result[cos_theta][1], 4.648436082068221000) );
+	REQUIRE( almost_identical(result[cos_theta][2], 5.705685771407021000) );
 }
-*/
+
 
 TEST_CASE("Contract", "[dirac]")
 {

@@ -74,7 +74,7 @@ namespace Feynumeric
                 for( auto const& edge_id : edges )
                 {
                     Topology_Edge edge = _topology._edges[edge_id];
-                    Edge_Ptr ptr = std::make_shared<Graph_Edge>(edge_id, _diagram, get_particle_ptr(edge_id));
+                    Edge_Ptr ptr = std::make_shared<Graph_Edge>(edge_id, _diagram, get_particle_ptr(edge_id), edge);
                     switch( edge.type() ){
                         case Type::INCOMING:
                             _incoming.push_back(ptr);

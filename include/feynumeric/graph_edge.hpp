@@ -6,6 +6,7 @@
 
 #include "kinematics.hpp"
 #include "matrix.hpp"
+#include "topology.hpp"
 
 namespace Feynumeric
 {
@@ -30,13 +31,14 @@ namespace Feynumeric
         Matrix _relative_momentum;
         Angular_Momentum_Ptr _spin;
         std::vector<Lorentz_Index_Ptr> _lorentz_indices;
+        Topology_Edge _topology_edge;
 
         std::function< Matrix(Kinematics const &)
 
         >
         _feynman_rule;
     public:
-        Graph_Edge(std::size_t id, Feynman_Diagram *diagram, Particle_Ptr const &P);
+        Graph_Edge(std::size_t id, Feynman_Diagram *diagram, Particle_Ptr const &P, Topology_Edge const& topo_edge);
 
         Graph_Edge(Graph_Edge const &edge);
 
@@ -55,6 +57,8 @@ namespace Feynumeric
         std::size_t id() const;
 
         Particle_Ptr particle() const;
+
+        Topology_Edge topology_edge() const;
 
         void spin(Angular_Momentum_Ptr const &spin);
 
