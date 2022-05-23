@@ -421,6 +421,8 @@ namespace Feynumeric
 				critical_error("Lorentz_Index_Ptr is nullptr.\n");
 			}
 			auto const mt = metric_tensor.at(*mu, *nu);
+            if( P->mass() == 0 )
+                return -mt;
 			auto pmu = p.contra(mu);
 			auto pnu = p.contra(nu);
 			auto denominator = p.squared();

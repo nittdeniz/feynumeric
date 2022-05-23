@@ -1,49 +1,37 @@
-/*#include <feynumeric/feynumeric.hpp>
+#include <feynumeric/feynumeric.hpp>
 #include <feynumeric/qed.hpp>
-
-#include <iostream>
-
-int main(int argc, char** argv)
-{
-	using namespace Feynumeric;
-	std::string file_name(argv[1]);
-	volatile Particle_Manager PM(file_name);
-
-	Vertex_Manager VM;
-
-	VM.add(Topology_Vertex(
-			{
-					{QED::Positron, Direction::ANY},
-					{QED::Electron, Direction::ANY},
-					{QED::Photon, Direction::OUTGOING}
-		},
-		[](Kinematics const&, Particle_List const& list){
-				std::cout << list[0]->particle()->name() << "\n";
-				std::cout << list[1]->particle()->name() << "\n";
-				std::cout << list[2]->particle()->name() << "\n";
-				return Matrix(1,1,1);}
-	));
-
-	VM.add(Topology_Vertex(
-			{
-					{QED::Electron, Direction::ANY},
-					{QED::Electron, Direction::ANY},
-					{QED::Photon, Direction::OUTGOING}
-			},
-			[](Kinematics const&, Particle_List const&){return Matrix(1,1,1);}
-	));
-
-	auto found = VM.find({{QED::Photon,   Direction::OUTGOING},
-	         {QED::Positron, Direction::INCOMING},
-	         {QED::Electron, Direction::INCOMING}
-	        });
-
-	std::cout << "end\n";
-
-}
-*/
 #include <iostream>
 
 int main(){
-	std::cout << "hello world\n";
+    using namespace Feynumeric;
+    using namespace Feynumeric::Units;
+    using namespace Feynumeric::QED;
+
+    init_particles();
+    init_vertices();
+
+
+    status("t_channel\n");
+
+    Feynman_Diagram_Ptr diagram_t_channel = create_diagram("diagram_t_channel", t_channel, VMP,
+                                                           {Electron, Electron},
+                                                           {Photon},
+                                                           {Electron, Electron});
+
+    status("u_channel\n");
+
+    Feynman_Diagram_Ptr diagram_u_channel = create_diagram("diagram_u_channel", u_channel, VMP,
+                                                           {Electron, Electron},
+                                                           {Photon},
+                                                           {Electron, Electron});
+
+
+    Feynman_Process e_scattering({diagram_t_channel, diagram_u_channel});
+    e_scattering.conversion_factor(1._2mubarn);
+
+    std::stringstream out;
+
+    double const cos_theta = 0.2134;
+
+    auto result = e_scattering.dsigma_dcos_table( 500._MeV, {{cos_theta}});
 }

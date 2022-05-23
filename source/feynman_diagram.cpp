@@ -43,6 +43,7 @@ namespace Feynumeric
 		auto const spin = edge_ptr->particle()->spin();
 		_spins.push_back(std::make_shared<Angular_Momentum>(spin));
 		edge_ptr->spin(_spins.back());
+		status(FORMAT("Assigned {} to {}", static_cast<void*>(_spins.back().get()), static_cast<void*>(edge_ptr->particle().get())));
 	}
 
 	std::string const& Feynman_Diagram::name() const{
@@ -84,12 +85,16 @@ namespace Feynumeric
 		fix_momenta();
 		_spins.reserve(_graph._outgoing.size() + _graph._incoming.size());
 		for( auto& edge_ptr : _graph._outgoing ){
+		    status(FORMAT("Outgoing particle: {} {}\n", edge_ptr->id(), static_cast<void*>(edge_ptr->particle().get())));
 			add_spin(edge_ptr);
+			status(FORMAT("Spin: {}\n", static_cast<void*>(edge_ptr->spin().get())));
 			add_lorentz_indices(edge_ptr);
 		}
 
 		for( auto& edge_ptr : _graph._incoming ){
+            status(FORMAT("Incoming particle: {} {}\n", edge_ptr->id(), static_cast<void*>(edge_ptr->particle().get())));
 			add_spin(edge_ptr);
+            status(FORMAT("Spin: {}\n", static_cast<void*>(edge_ptr->spin().get())));
 			add_lorentz_indices(edge_ptr);
 		}
 		for( auto& edge_ptr : _graph._virtual ){
@@ -193,11 +198,13 @@ namespace Feynumeric
 			Matrix p = zeroes;
 			p[edge_ptr->topology_edge().from().num()] = 1;
 			edge_ptr->relative_momentum(p);
+            status(FORMAT("Particle momentum: {} {}\n", static_cast<void*>(edge_ptr.get()), edge_ptr->topology_edge().from().num()));
 		}
 		for( auto const& edge_ptr : _graph._outgoing ){
 			Matrix p = zeroes;
 			p[offset + edge_ptr->topology_edge().to().num()] = -1;
 			edge_ptr->relative_momentum(p);
+			status(FORMAT("Particle momentum: {} {}\n", static_cast<void*>(edge_ptr.get()), offset + edge_ptr->topology_edge().to().num()));
 		}
 	}
 

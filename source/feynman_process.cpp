@@ -148,6 +148,8 @@ namespace Feynumeric
 
 		std::map<double, std::vector<double>> result;
 
+		std::cout << std::flush;
+
 		for( std::size_t k = 0; k < values.size(); ++k ){
 			auto const& cos_theta = values[k];
 			kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
@@ -160,10 +162,12 @@ namespace Feynumeric
 				for( std::size_t j = 0; j < _diagrams.size(); ++j ){
 					auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
 					M += temp;
-					Ms_squared[j] += ( temp * std::conj(temp)).real();
+					auto temp2 = temp * std::conj(temp);
+					Ms_squared[j] += temp2.real();
 					_diagrams[j]->iterate_spins();
 				}
-				Ms_squared[_diagrams.size()] += ( M * std::conj(M)).real();
+				auto M2 = M * std::conj(M);
+				Ms_squared[_diagrams.size()] += (M2).real();
 			}
 			for( auto& value : Ms_squared ){
 				value *= phase_space_factor;
@@ -251,7 +255,8 @@ namespace Feynumeric
 					Ms_squared[j] += ( temp * std::conj(temp)).real();
 					_diagrams[j]->iterate_spins();
 				}
-				Ms_squared[_diagrams.size()] += ( M * std::conj(M)).real();
+				auto M2 = ( M * std::conj(M)).real();
+				Ms_squared[_diagrams.size()] += M2;
 			}
 
 			for( auto& value : Ms_squared ){

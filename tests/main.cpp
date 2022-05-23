@@ -236,15 +236,18 @@ TEST_CASE("Moller Scattering", "[QED]")
 	init_particles();
 	init_vertices();
 
-	Feynman_Diagram_Ptr diagram_t_channel = create_diagram("diagram_t_channel", u_channel, VMP,
+
+	Feynman_Diagram_Ptr diagram_t_channel = create_diagram("diagram_t_channel", t_channel, VMP,
                                                            {Electron, Electron},
                                                            {Photon},
                                                            {Electron, Electron});
+
 
 	Feynman_Diagram_Ptr diagram_u_channel = create_diagram("diagram_u_channel", u_channel, VMP,
                                                            {Electron, Electron},
                                                            {Photon},
                                                            {Electron, Electron});
+
 
 	Feynman_Process e_scattering({diagram_t_channel, diagram_u_channel});
 	e_scattering.conversion_factor(1._2mubarn);
