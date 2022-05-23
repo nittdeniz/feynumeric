@@ -11,14 +11,10 @@ int main(){
     init_vertices();
 
 
-    status("t_channel\n");
-
     Feynman_Diagram_Ptr diagram_t_channel = create_diagram("diagram_t_channel", t_channel, VMP,
                                                            {Electron, Electron},
                                                            {Photon},
                                                            {Electron, Electron});
-
-    status("u_channel\n");
 
     Feynman_Diagram_Ptr diagram_u_channel = create_diagram("diagram_u_channel", u_channel, VMP,
                                                            {Electron, Electron},
@@ -34,4 +30,5 @@ int main(){
     double const cos_theta = 0.2134;
 
     auto result = e_scattering.dsigma_dcos_table( 500._MeV, {{cos_theta}});
+    std::cout << (*result.begin()).second[2] << "\n";
 }
