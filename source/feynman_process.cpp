@@ -356,25 +356,11 @@ namespace Feynumeric
 	double Feynman_Process::decay_1_3(){
 		using namespace std::placeholders;
 		validate_diagram_compatibility();
-		std::size_t const N_spins = [&](){
-			std::size_t n = 1;
-			for( auto const& j : _diagrams[0]->_spins ){
-				n *= j->n_states();
-			}
-			return n;
-		}();
 
-		std::size_t const N_polarisations = [&](){
-			std::size_t n = 1;
-			for( auto const& p : _diagrams[0]->_graph._incoming ){
-				n *= p->spin()->n_states();
-			}
-			return n;
-		}();
 		auto const M_min = _diagrams[0]->_graph._outgoing[0]->particle()->mass() + _diagrams[0]->_graph._outgoing[1]->particle()->mass();
 		auto const M_max = _diagrams[0]->_graph._incoming[0]->particle()->mass() - _diagrams[0]->_graph._outgoing[2]->particle()->mass();
 		auto partial = [&](double M){
-			auto f = std::bind(&Feynman_Process::partial_decay_1_3, this, M, _1, N_spins, N_polarisations);
+			auto f = std::bind(&Feynman_Process::partial_decay_1_3, this, M, _1, _n_spins, _n_polarisations);
 			return integrate(f, -1., 1., 1.e-2);
 		};
 		return integrate(partial, M_min, M_max, 1.e-2);
@@ -463,26 +449,8 @@ namespace Feynumeric
 		}
 	}
 
-	/*
-	void Feynman_Process::print_sigma_table(std::ostream& out, std::vector<double> const& values){
-		using namespace Feynumeric::Units;
-		using namespace std::placeholders;
-
-
-		std::vector<Feynman_Process> copies;
-		copies.reserve(values.size());
-
-		for( std::size_t i = 0; i < values.size(); ++i ){
-		    copies.emplace_back(*this);
-		}
-
-
-        #pragma omp parallel for
-		for( std::size_t i = 0; i < copies.size(); ++i ){
-		    double const sqrt_s = values[i];
-			auto f = std::bind(&Feynman_Process::no_check_dsigma_dcos, &copies[i], sqrt_s, _1);
-			out << FORMAT("{}\t{}\n", sqrt_s, integrate(f, -1., 1., 1.e-2));
-		}
-	}
-	 */
+    double Feynman_Process::no_check_dsigma_dcos_dM(double sqrt_s, double M, double cos_theta)
+    {
+        return sqrt_s + M + cos_theta;
+    }
 }
