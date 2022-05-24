@@ -77,8 +77,6 @@ namespace Feynumeric
         constexpr long double operator"" _2barn(long double value){
         	return value * 1.e-2;
         }
-
-        constexpr double fm_to_mub = 1.e4;
     }
 }
 

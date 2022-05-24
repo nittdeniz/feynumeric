@@ -2,6 +2,7 @@
 #define Feynumeric_KINEMATICS_HPP
 
 #include "four_vector.hpp"
+#include "topology.hpp"
 
 #include <vector>
 

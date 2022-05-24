@@ -29,6 +29,12 @@ namespace Feynumeric
 		double decay_1_3();
 		double partial_decay_1_3(double const invariant_mass, double const cos_theta, std::size_t const N_spins, std::size_t const N_polarisations);
 
+		std::size_t _n_spins;
+		std::size_t _n_polarisations;
+
+		std::size_t n_spins();
+		std::size_t n_polarisations();
+
 	public:
 		Feynman_Process(std::initializer_list<Feynman_Diagram_Ptr> list);
 		Feynman_Process(std::vector<Feynman_Diagram_Ptr> list);

@@ -20,8 +20,8 @@ using Feynumeric::Matrix;
 
 Feynumeric::Vertex_Manager_Ptr VMP = std::make_shared<Feynumeric::Vertex_Manager>();
 
-Feynumeric::Matrix gamma5(int l, int p){
-	return std::pow(-1, l) == -p ? Matrix(1,1,1) : Feynumeric::GA5;
+Feynumeric::Matrix gamma5(int lorentz_parity, int particle_parity){
+	return lorentz_parity == particle_parity ? Matrix(1,1,1) : Feynumeric::GA5;
 }
 
 void init_vertices(Feynumeric::Particle_Manager const& P)
@@ -121,9 +121,10 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const g = R->particle()->user_data<double>("gRNpi");
 				auto const m_pi = pi->particle()->mass();
 				auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
-				int l = static_cast<int>(R->particle()->user_data<double>("l"));
+				int const lorentz_parity = 1;
+				int const particle_parity = R->particle()->parity() * N->particle()->parity() * pi->particle()->parity();
 				//auto isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
-				return -g/m_pi * iso * gamma5(l, R->particle()->parity()) * GS(pi->four_momentum(kin));
+				return -g / m_pi * iso * gamma5(lorentz_parity, particle_parity) * GS(pi->four_momentum(kin));
 			}
 	));
 

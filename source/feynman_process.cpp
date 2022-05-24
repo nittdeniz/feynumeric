@@ -1,16 +1,17 @@
+#include <omp.h>
+
+#include <iomanip>
+#include <iostream>
+
 #include "feynman_process.hpp"
 #include "feynman_diagram.hpp"
+#include "format.hpp"
 #include "four_vector.hpp"
 #include "graph_edge.hpp"
 #include "graph_vertex.hpp"
 #include "integrate.hpp"
+#include "phase_space.hpp"
 #include "units.hpp"
-
-#include <omp.h>
-
-#include <iomanip>
-#include <format.hpp>
-#include <iostream>
 
 namespace Feynumeric
 {
@@ -20,6 +21,8 @@ namespace Feynumeric
 		for( auto& diagram : _diagrams ){
 			diagram->generate_amplitude();
 		}
+        _n_spins = n_spins();
+		_n_polarisations = n_polarisations();
 	}
 
 	Feynman_Process::Feynman_Process(std::vector<Feynman_Diagram_Ptr> list)
@@ -101,13 +104,36 @@ namespace Feynumeric
 		}
 	}
 
-	void Feynman_Process::conversion_factor(long double x){
+    std::size_t Feynman_Process::n_spins()
+    {
+        std::size_t n = 1;
+        for( auto const& j : _diagrams[0]->_spins ){
+            n *= j->n_states();
+        }
+        return n;
+    }
+
+    std::size_t Feynman_Process::n_polarisations()
+    {
+        std::size_t n = 1;
+        for( auto const& p : _diagrams[0]->_graph._incoming ){
+            n *= p->spin()->n_states();
+        }
+        return n;
+    }
+
+    void Feynman_Process::conversion_factor(long double x){
 		_conversion_factor = static_cast<double>(x);
 	}
 
 	std::map<double, std::vector<double>>
 	Feynman_Process::dsigma_dcos_table(double sqrt_s, std::vector<double>&& values){
 		using namespace Feynumeric::Units;
+
+        for( auto& diagram : _diagrams ){
+            diagram->reset_spins();
+            diagram->reset_indices();
+        }
 
 		Kinematics kin(sqrt_s, 2, 2);
 
@@ -120,35 +146,8 @@ namespace Feynumeric
 		kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
 		kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
 
-		for( auto& diagram : _diagrams ){
-//			diagram->generate_amplitude();
-			diagram->reset_spins();
-			diagram->reset_indices();
-		}
-
-		std::size_t const N_spins = [&](){
-			std::size_t n = 1;
-			for( auto const& j : _diagrams[0]->_spins ){
-				n *= j->n_states();
-			}
-			return n;
-		}();
-
-		std::size_t const N_polarisations = [&](){
-			std::size_t n = 1;
-			for( auto const& p : _diagrams[0]->_graph._incoming ){
-				n *= p->spin()->n_states();
-			}
-			return n;
-		}();
-
-		double const phase_space_factor =
-				1. / N_polarisations * 1. / ( 32 * M_PI * kin.sqrt_s() * kin.sqrt_s()) * 1._hbarc * 1._hbarc *
-				_conversion_factor * qout / qin;
-
 		std::map<double, std::vector<double>> result;
-
-		std::cout << std::flush;
+        double const phase_space_factor = phase_space2(_n_polarisations, kin.sqrt_s(), qout, qin);
 
 		for( std::size_t k = 0; k < values.size(); ++k ){
 			auto const& cos_theta = values[k];
@@ -157,21 +156,19 @@ namespace Feynumeric
 
 			std::vector<double> Ms_squared(_diagrams.size() + 1);
 
-			for( std::size_t i = 0; i < N_spins; ++i ){
+			for( std::size_t i = 0; i < _n_spins; ++i ){
 				Complex M{0, 0};
 				for( std::size_t j = 0; j < _diagrams.size(); ++j ){
 					auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
 					M += temp;
-					auto temp2 = temp * std::conj(temp);
-					Ms_squared[j] += temp2.real();
+					Ms_squared[j] += (temp * std::conj(temp)).real();
 					_diagrams[j]->iterate_spins();
 				}
 				auto M2 = M * std::conj(M);
 				Ms_squared[_diagrams.size()] += (M2).real();
 			}
 			for( auto& value : Ms_squared ){
-				value *= phase_space_factor;
-//				value = phase_space_factor;
+				value *= phase_space_factor * _conversion_factor;
 			}
 			result[cos_theta] = Ms_squared;
 		}
@@ -213,7 +210,6 @@ namespace Feynumeric
 		kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
 
 		for( auto& diagram : _diagrams ){
-//			diagram->generate_amplitude();
 			diagram->reset_spins();
 			diagram->reset_indices();
 		}
@@ -234,10 +230,7 @@ namespace Feynumeric
 			return n;
 		}();
 
-		double const phase_space_factor =
-				1. / N_polarisations * 1. / ( 32 * M_PI * kin.sqrt_s() * kin.sqrt_s()) * 1._hbarc * 1._hbarc *
-				_conversion_factor * qout / qin;
-
+		double const phase_space_factor = phase_space2(N_polarisations, kin.sqrt_s(), qout, qin);
 
 		std::map<double, std::vector<double>> result;
 
@@ -260,7 +253,7 @@ namespace Feynumeric
 			}
 
 			for( auto& value : Ms_squared ){
-				value *= phase_space_factor;
+				value *= phase_space_factor * _conversion_factor;
 			}
 			result[cos_theta] = Ms_squared;
 
@@ -287,7 +280,6 @@ namespace Feynumeric
 		double Ms_squared{0.};
 
 		for( auto& diagram : _diagrams ){
-//			diagram->generate_amplitude();
 			diagram->reset_spins();
 			diagram->reset_indices();
 		}

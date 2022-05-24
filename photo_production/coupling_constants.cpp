@@ -62,6 +62,8 @@ int main(int argc, char** argv)
         Feynman_Process decay2({channel_decay_f0_2});
         auto g = std::sqrt(particle->width()/(decay1.decay_width()+decay2.decay_width()));
         std::cout << FORMAT("{} -> {} {} g: {}\n", particle->name(), Pi_Plus->name(), Pi_Minus->name(), g);
+
+
     }
 
 
