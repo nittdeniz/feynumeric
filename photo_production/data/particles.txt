@@ -43,6 +43,12 @@ branching_N_pi_upper 75%
 branching_N_pi_lower 55%
 branching_N_rho_upper 0%
 branching_N_rho_lower 0%
+branching_N_pipi_upper 50%
+branching_N_pipi_lower 17%
+branching_N_pipi_D1232_upper 27%
+branching_N_pipi_D1232_lower 6%
+branching_N_pipi_f500_upper 23%
+branching_N_pipi_f500_upper 11%
 branching_proton_photon_upper 0.048%
 branching_proton_photon_lower 0.035%
 branching_neutron_photon_upper 0.04%
@@ -54,6 +60,7 @@ charge 1
 isospin 1/2 1/2
 gRNpi 0.3659186916
 gRNphoton 0.06209754151
+gD1232 0.3091430126
 
 @particle N1440n
 group N1440
@@ -61,6 +68,7 @@ charge 0
 isospin 1/2 -1/2
 gRNpi 0.3655686504
 gRNphoton 0.05295881342
+gD1232 0.3911641317
 
 @group N1520
 group R32

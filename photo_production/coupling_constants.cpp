@@ -64,6 +64,13 @@ int main(int argc, char** argv)
         std::cout << FORMAT("{} -> {} {} g: {}\n", particle->name(), Pi_Plus->name(), Pi_Minus->name(), g);
     }
     {
+        P.get("N1440p")->user_data("form_factor", identity);
+        P.get("N1440n")->user_data("form_factor", identity);
+        P.get("D1232pp")->user_data("form_factor", identity);
+        P.get("D1232p")->user_data("form_factor", identity);
+        P.get("D1232n")->user_data("form_factor", identity);
+        P.get("D1232m")->user_data("form_factor", identity);
+
         auto channel_decay_N1440p_D1232_pi_1 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1, VMP,
                                                          {P.get("N1440p")},
                                                          {P.get("D1232pp")},
@@ -103,29 +110,29 @@ int main(int argc, char** argv)
                                                               {Proton, Pi_Minus, Pi_Zero}
         );
         auto channel_decay_N1440n_D1232_pi_2 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1_cross, VMP,
-                                                              {P.get("N1440p")},
+                                                              {P.get("N1440n")},
                                                               {P.get("D1232p")},
                                                               {Proton, Pi_Minus, Pi_Zero}
         );
 
         auto channel_decay_N1440n_D1232_pi_3 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1, VMP,
                                                          {P.get("N1440n")},
-                                                         {P.get("D1232n")},
-                                                         {Neutron, Pi_Minus, Pi_Plus}
+                                                         {P.get("D1232p")},
+                                                         {Neutron, Pi_Plus, Pi_Minus}
         );
         auto channel_decay_N1440n_D1232_pi_4 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1_cross, VMP,
-                                                         {P.get("N1440p")},
-                                                         {P.get("D1232p")},
-                                                         {Neutron, Pi_Minus, Pi_Plus}
+                                                         {P.get("N1440n")},
+                                                         {P.get("D1232m")},
+                                                         {Neutron, Pi_Plus, Pi_Minus}
         );
 
         auto channel_decay_N1440n_D1232_pi_5 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1, VMP,
                                                               {P.get("N1440n")},
-                                                              {P.get("D1232p")},
+                                                              {P.get("D1232n")},
                                                               {Neutron, Pi_Zero, Pi_Zero}
         );
         auto channel_decay_N1440n_D1232_pi_6 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1_cross, VMP,
-                                                              {P.get("N1440p")},
+                                                              {P.get("N1440n")},
                                                               {P.get("D1232n")},
                                                               {Neutron, Pi_Zero, Pi_Zero}
         );
@@ -142,12 +149,13 @@ int main(int argc, char** argv)
         auto w2 = decay_Np2.decay_width();
         auto w3 = decay_Np3.decay_width();
         auto w4 = decay_Nn1.decay_width();
-        auto w5 = decay_Np2.decay_width();
+        auto w5 = decay_Nn2.decay_width();
         auto w6 = decay_Nn3.decay_width();
 
-        double const literature_value = P.get("N1440")->width() * ( P.get("N1440")->user_data<double>("branching_N_pi_upper") + P.get("N1440")->user_data<double>("branching_N_pi_lower")) / 2.;
+        double const literature_value = P.get("N1440")->width() * ( P.get("N1440")->user_data<double>("branching_N_pipi_D1232_upper") + P.get("N1440")->user_data<double>("branching_N_pipi_D1232_lower")) / 2.;
 
-        std::cout << FORMAT("g(N1440 -> D1232): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w1 + w2 + w3 + w4 + w5 + w6 )) << "\n";
+        std::cout << FORMAT("g(N1440+ -> D1232): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w1 + w2 + w3 )) << "\n";
+        std::cout << FORMAT("g(N1440n -> D1232): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w4 + w5 + w6 )) << "\n";
     }
 
 

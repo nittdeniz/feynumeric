@@ -574,19 +574,24 @@ namespace Feynumeric
 	}
 
 	std::vector<Particle_Ptr> Feynman_Diagram::incoming_particles() const{
+	    /*
 		std::vector<Particle_Ptr> result(_graph._incoming.size());
 		for( std::size_t i = 0; i < result.size(); ++i ){
 			result[i] = _graph._incoming.at(i)->particle();
 		}
 		return result;
+	     */
+	    return _incoming_particles;
 	}
 
 	std::vector<Particle_Ptr> Feynman_Diagram::outgoing_particles() const{
-		std::vector<Particle_Ptr> result(_graph._outgoing.size());
+		/*std::vector<Particle_Ptr> result(_graph._outgoing.size());
 		for( std::size_t i = 0; i < result.size(); ++i ){
 			result[i] = _graph._outgoing.at(i)->particle();
 		}
 		return result;
+		 */
+		return _outgoing_particles;
 	}
 
 	void Feynman_Diagram::validate(){

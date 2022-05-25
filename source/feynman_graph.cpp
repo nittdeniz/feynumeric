@@ -42,6 +42,12 @@ namespace Feynumeric
 	}
 
 	void Feynman_Graph::create_graph(std::vector<Particle_Ptr> const& incoming_list, std::vector<Particle_Ptr> const& virtual_list, std::vector<Particle_Ptr> const& outgoing_list){
+	    _incoming.clear();
+        _outgoing.clear();
+//        _virtual.clear();
+	    _incoming.resize(incoming_list.size());
+	    _outgoing.resize(outgoing_list.size());
+//	    _virtual.resize(virtual_list.size());
         auto get_particle_ptr = [&](std::size_t edge_id)
         {
             auto& edge = _topology._edges[edge_id];
@@ -77,13 +83,16 @@ namespace Feynumeric
                     Edge_Ptr ptr = std::make_shared<Graph_Edge>(edge_id, _diagram, get_particle_ptr(edge_id), edge);
                     switch( edge.type() ){
                         case Type::INCOMING:
-                            _incoming.push_back(ptr);
+                            //_incoming.push_back(ptr);
+                            _incoming[edge.from().num()] = ptr;
                             break;
                         case Type::OUTGOING:
-                            _outgoing.push_back(ptr);
+                            //_outgoing.push_back(ptr);
+                            _outgoing[edge.to().num()] = ptr;
                             break;
                         case Type::VIRTUAL:
                             _virtual.push_back(ptr);
+//                            _virtual[edge_id] = ptr;
                     }
                     if( edge.to().id() == vertex_a ){
                         if( edge.type() != Type::OUTGOING ){

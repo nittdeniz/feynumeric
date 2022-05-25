@@ -171,6 +171,32 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 			}
 	));
 
+    VMP->add(Feynumeric::Vertex(
+            {
+                    {P["R32"]},
+                    {P["R12"]},
+                    {P["Pion"]}
+            },
+            [](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                static auto const Identity = Matrix(4, 4, 1);
+                auto const& R = edges[0];
+                auto const& N = edges[1];
+                auto const& pi = edges[2];
+                auto mu = R->lorentz_indices()[0];
+                auto const& pR = R->four_momentum(kin);
+                auto const& pPi = pi->four_momentum(kin);
+                auto const g = R->particle()->user_data<double>("gRNpi");
+                auto const m_pi = pi->particle()->mass();
+                //auto const isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
+                auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), pi->particle(), pR.E().real());
+                int l = 1;
+                Complex phase = std::exp(2.i * M_PI/360. * R->particle()->user_data<double>("phase"));
+                return -1.i * phase * form_factor * iso * g/(m_pi*m_pi) * O32c(pR, pPi, mu) * gamma5(l, R->particle()->parity());
+            }
+    ));
+
 	VMP->add(Feynumeric::Vertex(
 			{
 					{P["R32"], Edge_Direction::IN},

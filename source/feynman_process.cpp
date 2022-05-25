@@ -13,6 +13,8 @@
 #include "phase_space.hpp"
 #include "units.hpp"
 
+void nothing(){}
+
 namespace Feynumeric
 {
 	Feynman_Process::Feynman_Process(std::initializer_list<Feynman_Diagram_Ptr> list)
@@ -321,10 +323,10 @@ namespace Feynumeric
 
 		Kinematics kin(incoming[0]->mass(), 1, 3);
 
-		auto const q12 = momentum(invariant_mass, outgoing[0]->mass(), outgoing[1]->mass());
-		auto const q3 = momentum(incoming[0]->mass(), invariant_mass, outgoing[2]->mass());
+		auto const q12 = momentum(invariant_mass + 1.e-6, outgoing[0]->mass(), outgoing[1]->mass());
+		auto const q3 = momentum(incoming[0]->mass(), invariant_mass - 1.e-6, outgoing[2]->mass());
 
-		auto const p_out = four_momentum(q3, outgoing[3]->mass(), cos_theta);
+		auto const p_out = four_momentum(q3, outgoing[2]->mass(), cos_theta);
 
 		kin.incoming(0, four_momentum(0, incoming[0]->mass()));
 		kin.outgoing(0, four_momentum(q12, outgoing[0]->mass()).boost(p_out));
@@ -349,7 +351,12 @@ namespace Feynumeric
 		}
 
 		auto phase_space = 1. / N_polarisations * std::pow(2 * M_PI, -5) * 1./(16 *  incoming[0]->mass() * incoming[0]->mass()) * q12 * q3 * 8 * M_PI * M_PI;
-
+        if( std::isnan(phase_space) ){
+            nothing();
+        }
+        if( std::isnan(Ms_squared) ){
+            nothing();
+        }
 		return Ms_squared * phase_space;
 	}
 
@@ -361,9 +368,11 @@ namespace Feynumeric
 		auto const M_max = _diagrams[0]->_graph._incoming[0]->particle()->mass() - _diagrams[0]->_graph._outgoing[2]->particle()->mass();
 		auto partial = [&](double M){
 			auto f = std::bind(&Feynman_Process::partial_decay_1_3, this, M, _1, _n_spins, _n_polarisations);
-			return integrate(f, -1., 1., 1.e-2);
+			auto r = integrate(f, -1., 1., 1.e-2);
+			return r;
 		};
-		return integrate(partial, M_min, M_max, 1.e-2);
+		auto r = integrate(partial, M_min, M_max, 1.e-2);
+		return r;
 	}
 
 	double Feynman_Process::decay_width(){
