@@ -7,14 +7,11 @@
 #include <feynumeric/particle_manager.hpp>
 #include <feynumeric/qed.hpp>
 #include <feynumeric/constexpr_math.hpp>
-#include <feynumeric/units.hpp>
 
 
 #include "effective_lagrangian_model.hpp"
 #include "form_factors.hpp"
-#include <iostream>
 
-using namespace Feynumeric::Units;
 using Feynumeric::Particle;
 using Feynumeric::Matrix;
 
@@ -27,7 +24,6 @@ Feynumeric::Matrix gamma5(int lorentz_parity, int particle_parity){
 void init_vertices(Feynumeric::Particle_Manager const& P)
 {
 	using Feynumeric::Edge_Direction;
-	using namespace Feynumeric::Units;
 
 	Feynumeric::QED::init_vertices();
 	VMP->import(*Feynumeric::QED::VMP);
@@ -125,6 +121,25 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				int const particle_parity = R->particle()->parity() * N->particle()->parity() * pi->particle()->parity();
 				//auto isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
 				return -g / m_pi * iso * gamma5(lorentz_parity, particle_parity) * GS(pi->four_momentum(kin));
+			}
+	));
+
+	VMP->add(Feynumeric::Vertex(
+			{
+					{P.get("R12")},
+					{P.get("N")},
+					{P.get("f0_500")}
+			},
+			[&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+				using namespace Feynumeric;
+				auto const& R = edges[0];
+				auto const& N = edges[1];
+				auto const& f0 = edges[2];
+				auto const g = R->particle()->user_data<double>("gRNf0_500");
+				auto const m_pi = P.get("pi0")->mass();
+				int const lorentz_parity = 1;
+				int const particle_parity = R->particle()->parity() * N->particle()->parity() * f0->particle()->parity();
+				return g/m_pi * GA5 * gamma5(lorentz_parity, particle_parity) * GS(f0->four_momentum(kin));
 			}
 	));
 

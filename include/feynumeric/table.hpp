@@ -1,30 +1,21 @@
 #ifndef Feynumeric_TABLE_HPP
 #define Feynumeric_TABLE_HPP
-/*
-#include <functional>
-#include <string>
-#include <vector>
-#include "format.hpp"
 
+#include <fstream>
+#include <map>
 
-namespace Feynumeric
-{
-	template<typename T>
-    void table(std::ostream& out, std::vector<std::string> const& table_header, std::vector<std::function<std::vector<T>(int)>> const& data, int const start, int const end, int const step_size = 1)
-	{
-    	for( auto const& header : table_header )
-	    {
-		    out << FORMAT("|{:^10}", header);
-	    }
-    	out << "|\n";
-    	for( int a = start, i = 0; a <= end && i < data.size(); a += step_size, i++ )
-	    {
-    		for( auto const& item : data )
-		    {
-    			out << FORMAT("|{:^10}",
-		    }
-	    }
-	}
+namespace Feynumeric{
+	class Table{
+		std::map<double, double> _values;
+	public:
+		Table(std::map<double, double> const& values);
+		double interpolate(double value) const;
+		friend std::ifstream& operator>>(std::ifstream& in, Table& table);
+		friend std::ofstream& operator<<(std::ofstream& out, Table const& table);
+
+		void write(std::string file_out);
+		void read(std::string file_in);
+	};
 }
-*/
+
 #endif // Feynumeric_TABLE_HPP

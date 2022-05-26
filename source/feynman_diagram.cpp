@@ -616,16 +616,16 @@ namespace Feynumeric
 		}
 
 		if( charge != 0 ){
-			warning("Charge is not conserved between incoming and outgoing particles.");
+			warning(FORMAT("Charge is not conserved between incoming and outgoing particles in diagram {}", _name));
 		}
 		if( isospin != 0 ){
-			warning("Isospin is not conserved between incoming and outgoing particles.");
+			warning(FORMAT("Isospin is not conserved between incoming and outgoing particles in diagram {}", _name));
 		}
 		if( baryon_number != 0 ){
-			warning("Baryon number is not conserved between incoming and outgoing particles.");
+			warning(FORMAT("Baryon number is not conserved between incoming and outgoing particles in diagram {}", _name));
 		}
 		if( lepton_number != 0 ){
-			warning("Lepton number is not conserved between incoming and outgoing particles.");
+			warning(FORMAT("Lepton number is not conserved between incoming and outgoing particles in diagram {}", _name));
 		}
 
 		for( auto const&[id, v] : _graph._vertices ){
@@ -649,16 +649,16 @@ namespace Feynumeric
 			std::string particles = v->particles_to_string();
 
 			if( charge != 0 ){
-				warning(FORMAT("Charge is not conserved at vertex: {}", particles));
+				warning(FORMAT("Charge is not conserved at vertex: {} in diagram {}", particles, _name));
 			}
 			if( isospin != 0 ){
-				warning(FORMAT("Isospin is not conserved at vertex: {}", particles));
+				warning(FORMAT("Isospin is not conserved at vertex: {} in diagram {}", particles, _name));
 			}
 			if( baryon_number != 0 ){
-				warning(FORMAT("Baryon number is not conserved at vertex: {}", particles));
+				warning(FORMAT("Baryon number is not conserved at vertex: {} in diagram {}", particles, _name));
 			}
 			if( lepton_number != 0 ){
-				warning(FORMAT("Lepton number is not conserved at vertex: {}", particles));
+				warning(FORMAT("Lepton number is not conserved at vertex: {} in diagram {}", particles, _name));
 			}
 		}
 	}

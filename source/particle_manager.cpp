@@ -234,4 +234,20 @@ namespace Feynumeric
 	{
 		return _particles[key];
 	}
+
+	std::map<std::string, Particle_Ptr>::iterator Particle_Manager::begin(){
+		return _particles.begin();
+	}
+
+	std::map<std::string, Particle_Ptr>::iterator Particle_Manager::end(){
+		return _particles.end();
+	}
+
+	std::map<std::string, Particle_Ptr>::const_iterator Particle_Manager::cbegin() const{
+		return _particles.cbegin();
+	}
+
+	std::map<std::string, Particle_Ptr>::const_iterator Particle_Manager::cend() const{
+		return _particles.cend();
+	}
 }

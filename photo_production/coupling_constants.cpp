@@ -19,12 +19,18 @@ int main(int argc, char** argv)
 		critical_error("Program expects filename as a single and only argument.");
 	}
 	Particle_Manager P((std::string(argv[1])));
-	auto const& Proton = P["proton"];
-	auto const& Neutron = P["neutron"];
-	auto const& Photon = P["photon"];
-	auto const& Pi_Zero = P["pi0"];
-	auto const& Pi_Minus = P["pi-"];
-	auto const& Pi_Plus = P["pi+"];
+	auto const& Proton = P.get("proton");
+	auto const& Neutron = P.get("neutron");
+	//auto const& Photon = P.get("photon");
+	auto const& Pi_Zero = P.get("pi0");
+	auto const& Pi_Minus = P.get("pi-");
+	auto const& Pi_Plus = P.get("pi+");
+
+	for( auto& [key, particle] : P ){
+		auto k = key;
+		auto p = particle;
+		particle->user_data("form_factor", identity);
+	}
 
 	init_vertices(P);
 
@@ -34,6 +40,7 @@ int main(int argc, char** argv)
 	std::vector<Particle_Ptr> particles_Nn;
 	std::vector<Particle_Ptr> particles_Dpp;
 	std::vector<Particle_Ptr> particles_Dm;
+
 
 	for( auto const& str : particle_strings ){
 		if( str[0] == 'D' ){
@@ -45,7 +52,7 @@ int main(int argc, char** argv)
 	}
 
 	/* Other */
-    {
+    {   /// f0(500) to pi pi
         auto particle = P.get("f0_500");
         auto channel_decay_f0_1 = create_diagram(FORMAT("decay {} to pi+ pi-", particle->name()), Decay_1_to_2, VMP,
                                                  {particle},
@@ -63,9 +70,11 @@ int main(int argc, char** argv)
         auto g = std::sqrt(particle->width() / (decay1.decay_width() + decay2.decay_width()));
         std::cout << FORMAT("{} -> {} {} g: {}\n", particle->name(), Pi_Plus->name(), Pi_Minus->name(), g);
     }
-    {
+    {   /// N1440 to D1232
         P.get("N1440p")->user_data("form_factor", identity);
+        P.get("N1440p")->user_data("gD1232", 1.0);
         P.get("N1440n")->user_data("form_factor", identity);
+	    P.get("N1440n")->user_data("gD1232", 1.0);
         P.get("D1232pp")->user_data("form_factor", identity);
         P.get("D1232p")->user_data("form_factor", identity);
         P.get("D1232n")->user_data("form_factor", identity);
@@ -157,7 +166,45 @@ int main(int argc, char** argv)
         std::cout << FORMAT("g(N1440+ -> D1232): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w1 + w2 + w3 )) << "\n";
         std::cout << FORMAT("g(N1440n -> D1232): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w4 + w5 + w6 )) << "\n";
     }
+	{   /// N1440 to f0(500)
+		P.get("N1440p")->user_data("gRNf0_500", 1.0);
+		P.get("N1440n")->user_data("gRNf0_500", 1.0);
+		auto channel_decay_N1440p_f500_1 = create_diagram(FORMAT("decay N1440 to f_0(500) pi+pi-"), Decay_1_to_M2_1, VMP,
+		                                                      {P.get("N1440p")},
+		                                                      {P.get("f0_500")},
+		                                                      {Pi_Plus, Pi_Minus, Proton}
+		);
+		auto channel_decay_N1440p_f500_2 = create_diagram(FORMAT("decay N1440 to f_0(500) pi0pi0"), Decay_1_to_M2_1, VMP,
+		                                                  {P.get("N1440p")},
+		                                                  {P.get("f0_500")},
+		                                                  {Pi_Zero, Pi_Zero, Proton}
+		);
 
+		auto channel_decay_N1440n_f500_1 = create_diagram(FORMAT("decay N1440 to f_0(500) pi+pi-"), Decay_1_to_M2_1, VMP,
+		                                                  {P.get("N1440n")},
+		                                                  {P.get("f0_500")},
+		                                                  {Pi_Plus, Pi_Minus, Neutron}
+		);
+		auto channel_decay_N1440n_f500_2 = create_diagram(FORMAT("decay N1440 to f_0(500) pi0pi0"), Decay_1_to_M2_1, VMP,
+		                                                  {P.get("N1440n")},
+		                                                  {P.get("f0_500")},
+		                                                  {Pi_Zero, Pi_Zero, Neutron}
+		);
+
+		double const literature_value = P.get("N1440")->width() * ( P.get("N1440")->user_data<double>("branching_N_pipi_D1232_upper") + P.get("N1440")->user_data<double>("branching_N_pipi_D1232_lower")) / 2.;
+
+		Feynman_Process decay_Np1({channel_decay_N1440p_f500_1});
+		Feynman_Process decay_Np2({channel_decay_N1440p_f500_2});
+		Feynman_Process decay_Nn1({channel_decay_N1440n_f500_1});
+		Feynman_Process decay_Nn2({channel_decay_N1440n_f500_2});
+		auto w1 = decay_Np1.decay_width();
+		auto w2 = decay_Np2.decay_width();
+		auto w3 = decay_Nn1.decay_width();
+		auto w4 = decay_Nn2.decay_width();
+
+		std::cout << FORMAT("g(N1440+ -> f_0(500): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w1 + w2 )) << "\n";
+		std::cout << FORMAT("g(N1440n -> f_0(500): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w3 + w4 )) << "\n";
+	}
 
 	for( std::size_t i = 0; i < particles_Np.size(); ++i )
 	{
