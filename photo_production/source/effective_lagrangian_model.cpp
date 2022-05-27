@@ -66,9 +66,9 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{P["pi+"], Edge_Direction::IN},
-					{P["pi+"], Edge_Direction::OUT},
-					{P["rho0"]}
+					{P["Pion"]},
+					{P["Pion"]},
+					{P["Rho"]}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
 				using namespace Feynumeric;
@@ -214,6 +214,36 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 
 	VMP->add(Feynumeric::Vertex(
 			{
+					{P.get("R32"), Edge_Direction::OUT},
+					{P.get("R32"), Edge_Direction::IN},
+					{P.get("Pion")}
+			},
+			[](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+				using namespace Feynumeric;
+				static auto const Identity = Matrix(4, 4, 1);
+				auto const& Rout = edges[0];
+				auto const& Rin = edges[1];
+				auto const& pi = edges[2];
+				auto mu = Rout->lorentz_indices()[0];
+				auto nu = Rin->lorentz_indices()[0];
+				auto const& pRout = Rout->four_momentum(kin);
+				auto const& pRin = Rin->four_momentum(kin);
+				auto const& pPi = pi->four_momentum(kin);
+
+				auto const g = Rout->particle()->user_data<double>("gD1232N1520pi");
+				auto const m_pi = pi->particle()->mass();
+				//auto const isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
+				auto const iso = isospin(Rout, Rin, pi);
+				//auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), pi->particle(), pR.E().real());
+				int const lorentz_parity = 1;
+				//Complex phase = std::exp(2.i * M_PI/360. * R->particle()->user_data<double>("phase"));
+				int const particle_parity = Rout->particle()->parity() * Rin->particle()->parity() * pi->particle()->parity();
+				return -1.i * iso * g/(m_pi*m_pi*m_pi*m_pi ) * O32c(pRout, pPi, mu) * gamma5(lorentz_parity, particle_parity) * O32c(pRin, pPi, nu);
+			}
+	));
+
+	VMP->add(Feynumeric::Vertex(
+			{
 					{P["R32"], Edge_Direction::IN},
 					{P["N"], Edge_Direction::OUT},
 					{Feynumeric::QED::Photon}
@@ -256,4 +286,51 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				return result;
 			}
 	));
+
+
+	VMP->add(Feynumeric::Vertex(
+			{
+					{P.get("R32"), Edge_Direction::IN},
+					{P.get("N"), Edge_Direction::OUT},
+					{P.get("Rho")}
+			},
+			[&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+				using namespace Feynumeric;
+				auto const& R = edges[0];
+				auto const& N = edges[1];
+				auto const& rho = edges[2];
+				auto kappa = rho->lorentz_indices()[0];
+				auto lambda = R->lorentz_indices()[0];
+				auto const& pR = R->four_momentum(kin);
+				auto const& pRho = rho->four_momentum(kin);
+				auto const g = R->particle()->user_data<double>("gRNphoton");
+				auto const m_rho = rho->particle()->mass();
+				auto result = 1.i * g/(4*m_rho*m_rho) * CONTRACT_MATRIX(O32c(pRho, mu, kappa) * O32c(pR, mu, lambda) * MT[*mu][*mu], mu);
+				return result;
+			}
+	));
+
+	VMP->add(Feynumeric::Vertex(
+			{
+					{P["R32"], Edge_Direction::OUT},
+					{P["N"], Edge_Direction::IN},
+					{P.get("Rho")}
+			},
+			[&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+				using namespace Feynumeric;
+				using namespace Feynumeric;
+				auto const& R = edges[0];
+				auto const& N = edges[1];
+				auto const& Rho = edges[2];
+				auto kappa = Rho->lorentz_indices()[0];
+				auto lambda = R->lorentz_indices()[0];
+				auto const& pR = R->four_momentum(kin);
+				auto const& pRho = Rho->four_momentum(kin);
+				auto const g = R->particle()->user_data<double>("gRNphoton");
+				auto const m_rho = Rho->particle()->mass();
+				auto result = 1.i * g/(4*m_rho*m_rho) *  CONTRACT_MATRIX(O32c(pR, mu, lambda) * O32c(pRho, mu, kappa) * MT[*mu][*mu], mu);
+				return result;
+			}
+	));
+
 }

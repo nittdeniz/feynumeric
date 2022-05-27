@@ -83,4 +83,41 @@ int main(int argc, char** argv)
         }
         Table(dyson_factor).write("data/dyson_factors/N1440.txt");
     }
+	{/// N1520 -> Npi and N1520 -> Npipi
+		auto dummy = std::make_shared<Particle>(*P.get("N1520p"));
+		dummy->user_data("form_factor", identity);
+		auto diagram_pi = create_diagram(FORMAT("decay {} to proton pi0 pi0", dummy->name()), Decay_1_to_2, VMP,
+		                                 {dummy},
+		                                 {},
+		                                 {Proton, Pi_Zero}
+		);
+		auto diagram_pipi_1 = create_diagram(FORMAT("decay {} to proton pi+ pi-", dummy->name()), Decay_1_to_M2_1, VMP,
+		                                     {dummy},
+		                                     {P.get("D1232pp")},
+		                                     {Proton, Pi_Plus, Pi_Minus}
+		);
+		auto diagram_pipi_2 = create_diagram(FORMAT("decay {} to proton pi+ pi-", dummy->name()), Decay_1_to_M2_1_cross, VMP,
+		                                     {dummy},
+		                                     {P.get("D1232n")},
+		                                     {Proton, Pi_Plus, Pi_Minus}
+		);
+		auto diagram_pipi_3 = create_diagram(FORMAT("decay {} to proton rho", dummy->name()), Decay_1_to_1_M2, VMP,
+		                                     {dummy},
+		                                     {P.get("rho0")},
+		                                     {Proton, Pi_Plus, Pi_Minus}
+		);
+
+
+		Feynman_Process decay_pi({diagram_pi});
+		Feynman_Process decay_pipi({diagram_pipi_1, diagram_pipi_2, diagram_pipi_3});
+
+		double Gamma0_1 = decay_pi.decay_width();
+		std::map<double, double> dyson_factor;
+		for( int i = 0; i <= steps; ++i ){
+			double value = start + (end - start) / steps * i;
+			dummy->mass(value);
+			dyson_factor[value] = decay_pi.decay_width() / Gamma0_1;
+		}
+		Table(dyson_factor).write("data/dyson_factors/N1520.txt");
+	}
 }
