@@ -122,6 +122,8 @@ branching_N_pi_upper 52%
 branching_N_pi_lower 32%
 branching_N_rho_upper 0%
 branching_N_rho_lower 0%
+branching_N_eta_upper 55%
+branching_N_eta_lower 30%
 branching_proton_photon_upper 0.30%
 branching_proton_photon_lower 0.15%
 branching_neutron_photon_upper 0.25%
@@ -134,6 +136,7 @@ charge 1
 isospin 1/2 1/2
 gRNpi 0.1547611753
 gRNphoton 0.0765541439
+gRNeta 0.4377155034
 
 @particle N1535n
 group N1535
@@ -141,6 +144,7 @@ charge 0
 isospin 1/2 -1/2
 gRNpi 0.1546413164
 gRNphoton 0.05833554672
+gRNeta 0.4417287942
 
 @group N1650
 group R12
@@ -1173,8 +1177,17 @@ spin 0
 mass 513MeV
 width 335MeV
 parity 1
+charge 0
 isospin 0 0
 branching_ratio_pipi 100%
-g_pipi 1
+g_pipi 1.1789032192182285
 
 
+@particle eta
+type TrueMeson
+spin 0
+mass 547.86MeV
+width 1.31keV
+parity -1
+isospin 0 0
+charge 0

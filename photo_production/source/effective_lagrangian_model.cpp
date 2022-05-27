@@ -139,9 +139,28 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const m_pi = P.get("pi0")->mass();
 				int const lorentz_parity = 1;
 				int const particle_parity = R->particle()->parity() * N->particle()->parity() * f0->particle()->parity();
-				return g/m_pi * GA5 * gamma5(lorentz_parity, particle_parity) * GS(f0->four_momentum(kin));
+				return g/m_pi * gamma5(lorentz_parity, particle_parity) * GS(f0->four_momentum(kin));
 			}
 	));
+
+    VMP->add(Feynumeric::Vertex(
+            {
+                    {P.get("R12")},
+                    {P.get("N")},
+                    {P.get("eta")}
+            },
+            [&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                auto const& R = edges[0];
+                auto const& N = edges[1];
+                auto const& eta = edges[2];
+                auto const g = R->particle()->user_data<double>("gRNeta");
+                auto const m_pi = P.get("pi0")->mass();
+                int const lorentz_parity = 1;
+                int const particle_parity = R->particle()->parity() * N->particle()->parity() * eta->particle()->parity();
+                return g/m_pi * gamma5(lorentz_parity, particle_parity) * GS(eta->four_momentum(kin));
+            }
+    ));
 
 	VMP->add(Feynumeric::Vertex(
 			{
@@ -185,6 +204,32 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				return -1.i * phase * form_factor * iso * g/(m_pi*m_pi) * O32c(pR, pPi, mu) * gamma5(l, R->particle()->parity());
 			}
 	));
+
+    VMP->add(Feynumeric::Vertex(
+            {
+                    {P["R32"]},
+                    {P["N"]},
+                    {P["eta"]}
+            },
+            [](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                static auto const Identity = Matrix(4, 4, 1);
+                auto const& R = edges[0];
+                auto const& N = edges[1];
+                auto const& eta = edges[2];
+                auto mu = R->lorentz_indices()[0];
+                auto const& pR = R->four_momentum(kin);
+                auto const& pPi = eta->four_momentum(kin);
+                auto const g = R->particle()->user_data<double>("gRNeta");
+                auto const m_pi = eta->particle()->mass();
+                //auto const isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
+                //auto const iso = (R->back() == N->front()) ? isospin(R, N, eta) : isospin(N, R, eta);
+                //auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), eta->particle(), pR.E().real());
+                int l = static_cast<int>(R->particle()->user_data<double>("l"));
+                Complex phase = std::exp(2.i * M_PI/360. * R->particle()->user_data<double>("phase"));
+                return -1.i * phase * g/(m_pi*m_pi) * O32c(pR, pPi, mu) * gamma5(l, R->particle()->parity());
+            }
+    ));
 
     VMP->add(Feynumeric::Vertex(
             {

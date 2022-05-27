@@ -9,6 +9,11 @@
 #include <iomanip>
 
 
+#define N1440 0
+#define N1520 0
+#define N1535 1
+
+
 int main(int argc, char** argv)
 {
 	using namespace Feynumeric;
@@ -70,6 +75,7 @@ int main(int argc, char** argv)
         auto g = std::sqrt(particle->width() / (decay1.decay_width() + decay2.decay_width()));
         std::cout << FORMAT("{} -> {} {} g: {}\n", particle->name(), Pi_Plus->name(), Pi_Minus->name(), g);
     }
+    #if N1440
     {   /// N1440 to D1232
         P.get("N1440p")->user_data("form_factor", identity);
         P.get("N1440p")->user_data("gD1232", 1.0);
@@ -205,6 +211,8 @@ int main(int argc, char** argv)
 		std::cout << FORMAT("g(N1440+ -> f_0(500): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w1 + w2 )) << "\n";
 		std::cout << FORMAT("g(N1440n -> f_0(500): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w3 + w4 )) << "\n";
 	}
+    #endif
+    #if N1520
 	{   /// N1520 to rho
 		P.get("N1520p")->user_data("gRNrho", 1.0);
 		P.get("N1520n")->user_data("gRNrho", 1.0);
@@ -340,7 +348,34 @@ int main(int argc, char** argv)
 		std::cout << FORMAT("g(N1520+ -> D1232): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w1 + w2 + w3 )) << "\n";
 		std::cout << FORMAT("g(N1520n -> D1232): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w4 + w5 + w6 )) << "\n";
 	}
+    #endif
+    #if N1535
+    {   /// N1535 to eta
+        P.get("N1535p")->user_data("gRNeta", 1.0);
+        P.get("N1535n")->user_data("gRNeta", 1.0);
+        auto channel_decay_N1535p_eta = create_diagram(FORMAT("decay N1535p to eta"), Decay_1_to_2, VMP,
+                                                         {P.get("N1535p")},
+                                                         {},
+                                                         {Proton, P.get("eta")}
+        );
+        auto channel_decay_N1535n_eta = create_diagram(FORMAT("decay N1535n to eta"), Decay_1_to_2, VMP,
+                                                       {P.get("N1535n")},
+                                                       {},
+                                                       {Neutron, P.get("eta")}
+        );
 
+
+        double const literature_value = P.get("N1535")->width() * ( P.get("N1535")->user_data<double>("branching_N_eta_upper") + P.get("N1535")->user_data<double>("branching_N_eta_lower")) / 2.;
+
+        Feynman_Process decay_Np({channel_decay_N1535p_eta});
+        Feynman_Process decay_Nn({channel_decay_N1535n_eta});
+        auto w1 = decay_Np.decay_width();
+        auto w2 = decay_Nn.decay_width();
+
+        std::cout << FORMAT("g(N1535+ -> N eta: " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w1)) << "\n";
+        std::cout << FORMAT("g(N1535n -> N eta: " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w2 )) << "\n";
+    }
+    #endif
 	for( std::size_t i = 0; i < particles_Np.size(); ++i )
 	{
 		auto& Np = particles_Np[i];
