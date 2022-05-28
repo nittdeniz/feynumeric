@@ -4,11 +4,11 @@
 namespace Feynumeric
 {
     const Topology s_channel = {{
-                    {"i0", "v0"},
-                    {"v0", "v1"},
-                    {"i1", "v0"},
-                    {"v1", "o0"},
-                    {"v1", "o1"}
+                                        {"i0", "v0"},
+                                        {"v0", "v1"},
+                                        {"i1", "v0"},
+                                        {"v1", "o0"},
+                                        {"v1", "o1"}
     }};
 
     const Topology t_channel = {{

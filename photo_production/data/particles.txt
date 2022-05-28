@@ -164,6 +164,7 @@ branching_N_rho_upper 0%
 branching_N_rho_lower 0%
 branching_proton_photon_upper 0.20%
 branching_proton_photon_lower 0.04%
+branching_proton_photon_lower 0.04%
 branching_neutron_photon_upper 0.17%
 branching_neutron_photon_lower 0.003%
 l 0

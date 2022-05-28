@@ -390,7 +390,7 @@ namespace Feynumeric
 		critical_error("Only single particle decays into a two or three particle final state are implemented.");
 	}
 
-	std::map<double, double> Feynman_Process::sigma_table(std::vector<double> const& values, double epsilon){
+	std::map<double, double> Feynman_Process::sigma_table(std::vector<double> const& values, double){
 		using namespace Feynumeric::Units;
 		using namespace std::placeholders;
 		std::vector<Feynman_Process> copies;
@@ -401,12 +401,25 @@ namespace Feynumeric
 
 		std::map<double, double> result;
 
+		std::size_t completed{0};
+		std::size_t modulo = static_cast<std::size_t>(0.1 * copies.size());
+        modulo = modulo == 0? 1 : modulo;
+
 		#pragma omp parallel for
 		for( std::size_t i = 0; i < copies.size(); ++i ){
+//            std::cout << FORMAT("start {}/{} core: {} {}\n", i, copies.size(), omp_get_thread_num(), values[i]) << std::flush;
 			double const sqrt_s = values[i];
 			auto f = std::bind(&Feynman_Process::no_check_dsigma_dcos, &copies[i], sqrt_s, _1);
-			result[sqrt_s] = integrate(f, -1., 1., epsilon);
+			auto temp = integrate(f, -1., 1., 1.0);
+			result[sqrt_s] = std::isnan(temp)? 0 : temp;
+//			std::cout << FORMAT("end {}/{} core: {} {}\n", i, copies.size(), omp_get_thread_num(), sqrt_s) << std::flush;
+            completed++;
+            if( completed%modulo == 0 ){
+                std::cout << "#" << std::flush;
+            }
 		}
+		std::cout << "\n";
+//		std::cout << "End loop\n" << std::flush;
 		return result;
 	}
 

@@ -1,6 +1,7 @@
 #include <feynumeric/feynumeric.hpp>
 #include "effective_lagrangian_model.hpp"
 #include "form_factors.hpp"
+#include <omp.h>
 
 int main(int argc, char** argv)
 {
@@ -47,7 +48,8 @@ int main(int argc, char** argv)
         for( int i = 0; i <= steps; ++i ){
             double value = start + (end - start) / steps * i;
             dummy->mass(value);
-            dyson_factor[value] = decay.decay_width()/Gamma0;
+            auto temp = decay.decay_width()/Gamma0;
+            dyson_factor[value] = std::isnan(temp)? 0 : temp;
         }
 		Table(dyson_factor).write("data/dyson_factors/D1232.txt");
         //write_map(dyson_factor, "data/dyson_factors/D1232.txt");
@@ -105,7 +107,7 @@ int main(int argc, char** argv)
                 std::cout << FORMAT("{} N1440 {} / {}\n", std::ctime(&time), i, steps) << std::flush;
             }
         }
-        Table(dyson_factor).write("data/dyson_factors/N1440.txt");
+//        Table(dyson_factor).write("data/dyson_factors/N1440.txt");
     }
 	{/// N1520 -> Npi and N1520 -> Npipi
 		auto dummy = std::make_shared<Particle>(*P.get("N1520p"));
@@ -148,7 +150,7 @@ int main(int argc, char** argv)
         double Gamma0_2 = decay_pipi.decay_width();
         std::map<double, double> dyson_factor;
 
-        #pragma omp parallel for
+        #pragma omp parallel for shared(dyson_factor)
         for( int i = 0; i <= steps; ++i ){
             double value = start + (end - start) / steps * i;
             dummy->mass(value);
@@ -159,10 +161,10 @@ int main(int argc, char** argv)
             dyson_factor[value] = temp1 + temp2;
             if( i%20 == 0 ){
                 std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                std::cout << FORMAT("{} N1520 {} / {}\n", std::ctime(&time), i, steps) << std::flush;
+                std::cout << FORMAT("{} N1520 {} / {} core: {}\n", std::ctime(&time), i, steps, omp_get_thread_num()) << std::flush;
             }
         }
-		Table(dyson_factor).write("data/dyson_factors/N1520.txt");
+//		Table(dyson_factor).write("data/dyson_factors/N1520.txt");
 	}
     {/// N1535 -> Npi and N1535 -> Neta
         auto dummy = std::make_shared<Particle>(*P.get("N1535p"));
@@ -208,6 +210,6 @@ int main(int argc, char** argv)
                 std::cout << FORMAT("{} N1535 {} / {}\n", std::ctime(&time), i, steps) << std::flush;
             }
         }
-        Table(dyson_factor).write("data/dyson_factors/N1535.txt");
+//        Table(dyson_factor).write("data/dyson_factors/N1535.txt");
     }
 }

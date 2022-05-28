@@ -6,8 +6,11 @@
 
 #include "effective_lagrangian_model.hpp"
 #include "form_factors.hpp"
+#include <omp.h>
+
 
 #include <iostream>
+#include <iomanip>
 
 std::string const CMD_PROCESS_ELASTIC_SCATTERING = "elasticscattering";
 std::string const CMD_PROCESS_PHOTO_PRODUCTION   = "photoproduction";
@@ -46,20 +49,20 @@ int main(int argc, char** argv)
 	cmd.crash_on_missing_mandatory_command();
 
 	auto const& channel = cmd.as_string("channel");
-	bool const s_channel = channel.find('s') != std::string::npos;
-	bool const u_channel = channel.find('u') != std::string::npos;
-	bool const t_channel = channel.find('t') != std::string::npos;
-	bool const c_channel = channel.find('c') != std::string::npos;
+	bool const s_channel_enabled = channel.find('s') != std::string::npos;
+	bool const u_channel_enabled = channel.find('u') != std::string::npos;
+	bool const t_channel_enabled = channel.find('t') != std::string::npos;
+	bool const c_channel_enabled = channel.find('c') != std::string::npos;
 
 
 
 
 	Particle_Manager P(cmd.as_string("particle_file"));
-	Particle_Ptr const& Proton   = P["proton"];
-	Particle_Ptr const& Neutron  = P["neutron"];
-	Particle_Ptr const& Pi_Plus  = P["pi+"];
-	Particle_Ptr const& Pi_Minus = P["pi-"];
-	Particle_Ptr const& Pi_Zero  = P["pi0"];
+	Particle_Ptr const& Proton   = P.get("proton");
+	Particle_Ptr const& Neutron  = P.get("neutron");
+	Particle_Ptr const& Pi_Plus  = P.get("pi+");
+	Particle_Ptr const& Pi_Minus = P.get("pi-");
+	Particle_Ptr const& Pi_Zero  = P.get("pi0");
 
 
 	std::string const& form_factor = cmd.as_string("form_factor");
@@ -163,17 +166,17 @@ int main(int argc, char** argv)
 					return particle->width() * ff * ff * dyson_factor_32(particle, Proton, Pi_Plus, m);
 				});
 			}
-			if( s_channel && particle->charge() == 2){
+			if( s_channel_enabled && particle->charge() == 2){
 				diagrams_proton_pi_plus.push_back(
-						create_diagram(FORMAT("{} s", particle->name()), Scattering_Horizontal_2_to_2, VMP,
+						create_diagram(FORMAT("{} s", particle->name()), s_channel, VMP,
 						               {Proton, Pi_Plus},
 						               {particle},
 						               {Pi_Plus, Proton}
 						));
 			}
-			if( u_channel && particle->charge() == 0){
+			if( u_channel_enabled && particle->charge() == 0){
 				diagrams_proton_pi_plus.push_back(
-						create_diagram(FORMAT("{} u", particle->name()), Scattering_Vertical_2_to_2, VMP,
+						create_diagram(FORMAT("{} u", particle->name()), t_channel, VMP,
 						               {Proton, Pi_Plus},
 						               {particle},
 						               {Pi_Plus, Proton}
@@ -183,9 +186,9 @@ int main(int argc, char** argv)
 		}
 
 
-		if( u_channel && cmd.exists("Nucleon") ){
+		if( u_channel_enabled && cmd.exists("Nucleon") ){
 			diagrams_proton_pi_plus.push_back(
-					create_diagram(FORMAT("{} u", Neutron->name()), Scattering_Vertical_2_to_2, VMP,
+					create_diagram(FORMAT("{} u", Neutron->name()), t_channel, VMP,
 					               {Proton, Pi_Plus},
 					               {Neutron},
 					               {Pi_Plus, Proton}
@@ -199,6 +202,7 @@ int main(int argc, char** argv)
 		status("Scattering proton pi_plus -> proton pi_plus");
 		double start = cmd.exists("start") ? cmd.as_double("start") : 1.1;
 		double end = cmd.exists("end") ? cmd.as_double("end") : 2.0;
+		std::cout << std::flush;
 		std::size_t steps = cmd.exists("steps") ? static_cast<std::size_t>(cmd.as_int("steps")) : 100ULL;
 		scattering_proton_pi_plus.print_sigma_table(std::cout, start, end, steps);
 		std::cout << "\n\n";
@@ -217,41 +221,41 @@ int main(int argc, char** argv)
 			if( cmd.is_enabled(particle) ){
 				auto const& Rp = P[p_string(particle)];
 				auto const& Rn = P[n_string(particle)];
-				if( s_channel ){
+				if( s_channel_enabled ){
 					diagrams_proton_pi_zero.push_back(
-							create_diagram(FORMAT("{} s", particle), Scattering_Horizontal_2_to_2, VMP,
+							create_diagram(FORMAT("{} s", particle), s_channel, VMP,
 							               {Proton, QED::Photon},
 							               {Rp},
 							               {Pi_Zero, Proton}
 							));
 					diagrams_proton_pi_minus.push_back(
-							create_diagram(FORMAT("{} s", particle), Scattering_Horizontal_2_to_2, VMP,
+							create_diagram(FORMAT("{} s", particle), s_channel, VMP,
 							               {Neutron, QED::Photon},
 							               {Rn},
 							               {Pi_Minus, Proton}
 							));
 					diagrams_neutron_pi_plus.push_back(
-							create_diagram(FORMAT("{} s", particle), Scattering_Horizontal_2_to_2, VMP,
+							create_diagram(FORMAT("{} s", particle), s_channel, VMP,
 							               {Proton, QED::Photon},
 							               {Rp},
 							               {Pi_Plus, Neutron}
 							));
 				}
-				if( u_channel ){
+				if( u_channel_enabled ){
 					diagrams_proton_pi_zero.push_back(
-							create_diagram(FORMAT("{} u", particle), Scattering_Vertical_2_to_2, VMP,
+							create_diagram(FORMAT("{} u", particle), s_channel, VMP,
 							               {Proton, QED::Photon},
 							               {Rp},
 							               {Pi_Zero, Proton}
 							));
 					diagrams_proton_pi_minus.push_back(
-							create_diagram(FORMAT("{} u", particle), Scattering_Vertical_2_to_2, VMP,
+							create_diagram(FORMAT("{} u", particle), s_channel, VMP,
 							               {Neutron, QED::Photon},
 							               {Rp},
 							               {Pi_Minus, Proton}
 							));
 					diagrams_neutron_pi_plus.push_back(
-							create_diagram(FORMAT("{} u", particle), Scattering_Vertical_2_to_2, VMP,
+							create_diagram(FORMAT("{} u", particle), s_channel, VMP,
 							               {Proton, QED::Photon},
 							               {Rn},
 							               {Pi_Plus, Neutron}
@@ -283,6 +287,6 @@ int main(int argc, char** argv)
 		scattering_neutron_pi_plus.print_sigma_table(std::cout, values);
 	}
 	stopwatch.stop();
-	std::cout << "Time: " << stopwatch.time<std::chrono::seconds>() << "\n";
+	std::cout << "Time: " << std::setw(5) <<  stopwatch.time<std::chrono::milliseconds>()/1000. << "s\n";
 	return EXIT_SUCCESS;
 }
