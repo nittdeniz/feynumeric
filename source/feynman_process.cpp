@@ -259,7 +259,7 @@ namespace Feynumeric
 			}
 			result[cos_theta] = Ms_squared;
 
-		auto check = dsigma_dcos_table(sqrt_s, 0.1);
+		//auto check = dsigma_dcos_table(sqrt_s, 0.1);
 
 		return result[cos_theta].back();
 	}
@@ -351,12 +351,6 @@ namespace Feynumeric
 		}
 
 		auto phase_space = 1. / N_polarisations * std::pow(2 * M_PI, -5) * 1./(16 *  incoming[0]->mass() * incoming[0]->mass()) * q12 * q3 * 8 * M_PI * M_PI;
-        if( std::isnan(phase_space) ){
-            nothing();
-        }
-        if( std::isnan(Ms_squared) ){
-            nothing();
-        }
 		return Ms_squared * phase_space;
 	}
 
@@ -405,12 +399,12 @@ namespace Feynumeric
 		std::size_t modulo = static_cast<std::size_t>(0.1 * copies.size());
         modulo = modulo == 0? 1 : modulo;
 
-		#pragma omp parallel for
+		//#pragma omp parallel for
 		for( std::size_t i = 0; i < copies.size(); ++i ){
 //            std::cout << FORMAT("start {}/{} core: {} {}\n", i, copies.size(), omp_get_thread_num(), values[i]) << std::flush;
 			double const sqrt_s = values[i];
 			auto f = std::bind(&Feynman_Process::no_check_dsigma_dcos, &copies[i], sqrt_s, _1);
-			auto temp = integrate(f, -1., 1., 1.0);
+			auto temp = integrate(f, -1., 1., 0.1);
 			result[sqrt_s] = std::isnan(temp)? 0 : temp;
 //			std::cout << FORMAT("end {}/{} core: {} {}\n", i, copies.size(), omp_get_thread_num(), sqrt_s) << std::flush;
             completed++;
