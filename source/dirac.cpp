@@ -166,7 +166,8 @@ namespace Feynumeric
 
 	Matrix ubar(Particle_Ptr const& P, const Four_Vector& p, Angular_Momentum_Ptr s,
 	            const std::vector<Lorentz_Index_Ptr>& lorentz_indices){
-		return u(P, p, s, lorentz_indices).T().apply([](Complex const& z){ return std::conj(z); }) * GA[0];
+	    auto result = u(P, p, s, lorentz_indices).T().apply([](Complex const& z){ return std::conj(z); }) * GA[0];
+		return result;
 	}
 
 	Matrix epsilon(std::shared_ptr<Graph_Edge> edge_ptr, Kinematics const& kin){
@@ -427,7 +428,7 @@ namespace Feynumeric
 			auto pnu = p.contra(nu);
 			auto denominator = p.squared();
 			auto numerator = pmu * pnu;
-			auto momentum_contribution = ( numerator.real() == 0 && numerator.imag() == 0 && denominator == 0 ) ? 1 :
+			auto momentum_contribution = ( almost_identical(numerator.real(), 0.) && almost_identical(numerator.imag(), 0) && almost_identical(denominator, 0) ) ? 1 :
 			                             numerator / denominator;
 			auto result = -mt + momentum_contribution;
 			return result;

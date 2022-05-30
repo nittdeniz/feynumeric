@@ -12,6 +12,7 @@
 #include "integrate.hpp"
 #include "phase_space.hpp"
 #include "units.hpp"
+#include "utility.hpp"
 
 void nothing(){}
 
@@ -326,12 +327,27 @@ namespace Feynumeric
 		auto const q12 = momentum(invariant_mass + 1.e-6, outgoing[0]->mass(), outgoing[1]->mass());
 		auto const q3 = momentum(incoming[0]->mass(), invariant_mass - 1.e-6, outgoing[2]->mass());
 
-		auto const p_out = four_momentum(q3, outgoing[2]->mass(), cos_theta);
+		auto const p_out = four_momentum(q3, invariant_mass, cos_theta);
 
 		kin.incoming(0, four_momentum(0, incoming[0]->mass()));
 		kin.outgoing(0, four_momentum(q12, outgoing[0]->mass()).boost(p_out));
 		kin.outgoing(1, four_momentum(-q12, outgoing[1]->mass()).boost(p_out));
 		kin.outgoing(2, four_momentum(-q3, outgoing[2]->mass(), cos_theta));
+
+		// sanity check
+		auto p_i0 = kin.incoming(0);
+		auto p_f0 = kin.outgoing(0);
+		auto p_f1 = kin.outgoing(1);
+		auto p_f2 = kin.outgoing(2);
+		auto p_ftotal = p_f0 + p_f1 + p_f2;
+		auto x1 = p_i0.squared();
+		auto x2 = p_ftotal.squared();
+		if( !almost_identical(x1, x2, 1.e-3) ){
+		    warning(FORMAT("NOT EQUAL {} {}\n", x1, x2));
+		}
+		if( std::isnan(x1) || std::isnan(x2) ){
+		    return 0;
+		}
 
 		double Ms_squared{0.};
 
@@ -399,7 +415,7 @@ namespace Feynumeric
 		std::size_t modulo = static_cast<std::size_t>(0.1 * copies.size());
         modulo = modulo == 0? 1 : modulo;
 
-		//#pragma omp parallel for
+		#pragma omp parallel for
 		for( std::size_t i = 0; i < copies.size(); ++i ){
 //            std::cout << FORMAT("start {}/{} core: {} {}\n", i, copies.size(), omp_get_thread_num(), values[i]) << std::flush;
 			double const sqrt_s = values[i];
@@ -461,7 +477,7 @@ namespace Feynumeric
 	Feynman_Process::print_sigma_table(std::ostream& out, double start, double end, std::size_t steps, double epsilon){
 		auto result = sigma_table(start, end, steps, epsilon);
 		for( auto const& [key, value] : result ){
-			out << std::setw(10) << std::fixed <<  std::setprecision(10) << key << "\t" << value << "\n";
+			out << std::setw(5) << std::fixed <<  std::setprecision(5) << FORMAT("{{{}, {}}},", key, value) << "\n";
 		}
 	}
 

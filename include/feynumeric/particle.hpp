@@ -123,6 +123,8 @@ namespace Feynumeric
         bool is_true_boson() const;
         bool is_anti_boson() const;
 
+        bool exists_user_data(std::string const& key) const;
+
         std::function<Matrix(Edge_Ptr e, Kinematics const&)> feynman_outgoing;
         std::function<Matrix(Edge_Ptr e, Kinematics const&)> feynman_incoming;
         std::function<Matrix(Edge_Ptr e, Kinematics const&)> feynman_virtual;

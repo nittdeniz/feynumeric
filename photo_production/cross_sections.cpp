@@ -1,8 +1,11 @@
 #include <feynumeric/command_line_manager.hpp>
 #include <feynumeric/core.hpp>
+#include <feynumeric/table.hpp>
 #include <feynumeric/qed.hpp>
 #include <feynumeric/messages.hpp>
 #include <feynumeric/timer.hpp>
+
+#include <filesystem>
 
 #include "effective_lagrangian_model.hpp"
 #include "form_factors.hpp"
@@ -20,12 +23,6 @@ std::string const CMD_CHANNEL_U                  = "u";
 std::string const CMD_CHANNEL_C                  = "c";
 std::string const CMD_CROSS_SECTION_TOTAL        = "total";
 std::string const CMD_CROSS_SECTION_DIFFERENTIAL = "differential";
-std::string const CMD_FORM_FACTOR_NONE           = "none";
-std::string const CMD_FORM_FACTOR_CASSING        = "cassing";
-std::string const CMD_FORM_FACTOR_CUTKOSKY       = "cutkosky";
-std::string const CMD_FORM_FACTOR_MANLEY         = "manley";
-std::string const CMD_FORM_FACTOR_MONIZ          = "moniz";
-std::string const CMD_FORM_FACTOR_BREIT_WIGNER   = "breit_wigner";
 
 int main(int argc, char** argv)
 {
@@ -50,12 +47,9 @@ int main(int argc, char** argv)
 
 	auto const& channel = cmd.as_string("channel");
 	bool const s_channel_enabled = channel.find('s') != std::string::npos;
-	bool const u_channel_enabled = channel.find('u') != std::string::npos;
 	bool const t_channel_enabled = channel.find('t') != std::string::npos;
+	bool const u_channel_enabled = channel.find('u') != std::string::npos;
 	bool const c_channel_enabled = channel.find('c') != std::string::npos;
-
-
-
 
 	Particle_Manager P(cmd.as_string("particle_file"));
 	Particle_Ptr const& Proton   = P.get("proton");
@@ -68,24 +62,8 @@ int main(int argc, char** argv)
 	std::string const& form_factor = cmd.as_string("form_factor");
 
 	FORM_FACTOR_FUNCTION ff;
-
-	if( form_factor == "none" ){
-		ff = identity;
-	}
-	else if( form_factor == "moniz" ){
-		ff = moniz;
-	}
-	else if( form_factor == "manley" ){
-		ff = manley;
-	}
-	else if( form_factor == "cutkosky" ){
-		ff = cutkosky;
-	}
-	else if( form_factor == "cassing" ){
-		ff = cassing;
-	}
-	else if( form_factor == "breit_wigner" ){
-		ff = breit_wigner;
+	if( ff_dict.contains(form_factor) ){
+	    ff = ff_dict[form_factor];
 	}
 	else{
 		critical_error("Unknown form factor");
@@ -106,31 +84,66 @@ int main(int argc, char** argv)
 	auto m_string  = [](std::string const& p){ return FORMAT("{}m", p);};
 
 	for( auto const& nucleon_resonance : nucleon_resonances ){
+        std::ifstream ifs(FORMAT("./data/dyson_factors/{}.txt", nucleon_resonance));
+        std::cout << FORMAT("./data/dyson_factors/{}.txt", nucleon_resonance) << "\n";
 		auto const& Np = p_string(nucleon_resonance);
 		auto const& Nn = n_string(nucleon_resonance);
 		if( P.exists(Np) ){
 			P[Np]->user_data("form_factor", ff);
+			if( ifs ){
+                Table dyson({});
+                ifs >> dyson;
+                P[Np]->user_data("dyson_factors", dyson);
+			}
 		}
 		if( P.exists(Nn) ){
 			P[Nn]->user_data("form_factor", ff);
+            if( ifs ){
+                Table dyson({});
+                ifs >> dyson;
+                P[Np]->user_data("dyson_factors", dyson);
+            }
 		}
 	}
 	for( auto const& delta_resonance : delta_resonances ){
+        std::ifstream ifs(FORMAT("./data/dyson_factors/{}.txt", delta_resonance));
+        std::cout << FORMAT("./data/dyson_factors/{}.txt", delta_resonance) << "\n";
 		auto const& Dpp = pp_string(delta_resonance);
 		auto const& Dp  = p_string(delta_resonance);
 		auto const& Dn  = n_string(delta_resonance);
 		auto const& Dm  = m_string(delta_resonance);
 		if( P.exists(Dpp) ){
 			P[Dpp]->user_data("form_factor", ff);
+            if( ifs ){
+                std::cout << "yes\n";
+                Table dyson({});
+                ifs >> dyson;
+                P[Dpp]->user_data("dyson_factors", dyson);
+            }
 		}
 		if( P.exists(Dp) ){
 			P[Dp]->user_data("form_factor", ff);
+            if( ifs ){
+                Table dyson({});
+                ifs >> dyson;
+                P[Dp]->user_data("dyson_factors", dyson);
+            }
 		}
 		if( P.exists(Dn) ){
 			P[Dn]->user_data("form_factor", ff);
+            if( ifs ){
+                Table dyson({});
+                ifs >> dyson;
+                P[Dn]->user_data("dyson_factors", dyson);
+            }
 		}
 		if( P.exists(Dm) ){
 			P[Dm]->user_data("form_factor", ff);
+            if( ifs ){
+                Table dyson({});
+                ifs >> dyson;
+                P[Dm]->user_data("dyson_factors", dyson);
+            }
 		}
 	}
 
@@ -152,18 +165,14 @@ int main(int argc, char** argv)
 		}
 
 		for( auto const& particle : particles ){
-			if( particle->spin().j() == 0.5 ){
+		    if( particle->exists_user_data("dyson_factor") ){
+                particle->width([&](double p2){
+                    return particle->user_data<Table>("dyson_factor").interpolate(std::sqrt(p2));
+                });
+		    }
+			else{
 				particle->width([&](double p2){
-					auto const m = std::sqrt(p2);
-					auto const ff = particle->user_data<FORM_FACTOR_FUNCTION>("form_factor")(particle, Proton, Pi_Plus, m);
-					return particle->width() * ff * ff * dyson_factor_12(particle, Proton, Pi_Plus, m);
-				});
-			}
-			if( particle->spin().j() == 1.5 ){
-				particle->width([&](double p2){
-					auto const m = std::sqrt(p2);
-					auto const ff = particle->user_data<FORM_FACTOR_FUNCTION>("form_factor")(particle, Proton, Pi_Plus, m);
-					return particle->width() * ff * ff * dyson_factor_32(particle, Proton, Pi_Plus, m);
+					return particle->width();
 				});
 			}
 			if( s_channel_enabled && particle->charge() == 2){
@@ -174,9 +183,9 @@ int main(int argc, char** argv)
 						               {Pi_Plus, Proton}
 						));
 			}
-			if( u_channel_enabled && particle->charge() == 0){
+			if( t_channel_enabled && particle->charge() == 0){
 				diagrams_proton_pi_plus.push_back(
-						create_diagram(FORMAT("{} u", particle->name()), t_channel, VMP,
+						create_diagram(FORMAT("{} t", particle->name()), t_channel, VMP,
 						               {Proton, Pi_Plus},
 						               {particle},
 						               {Pi_Plus, Proton}
@@ -186,7 +195,7 @@ int main(int argc, char** argv)
 		}
 
 
-		if( u_channel_enabled && cmd.exists("Nucleon") ){
+		if( t_channel_enabled && cmd.exists("Nucleon") ){
 			diagrams_proton_pi_plus.push_back(
 					create_diagram(FORMAT("{} u", Neutron->name()), t_channel, VMP,
 					               {Proton, Pi_Plus},
@@ -195,6 +204,15 @@ int main(int argc, char** argv)
 					)
 			);
 		}
+        if( u_channel_enabled ){
+            diagrams_proton_pi_plus.push_back(
+                    create_diagram(FORMAT("{} u", "rho0"), u_channel, VMP,
+                                   {Proton, Pi_Plus},
+                                   {P.get("rho0")},
+                                   {Pi_Plus, Proton}
+                                   )
+            );
+        }
 
 		Feynman_Process scattering_proton_pi_plus(diagrams_proton_pi_plus);
 		scattering_proton_pi_plus.conversion_factor(1._2mbarn);
@@ -241,7 +259,7 @@ int main(int argc, char** argv)
 							               {Pi_Plus, Neutron}
 							));
 				}
-				if( u_channel_enabled ){
+				if( t_channel_enabled ){
 					diagrams_proton_pi_zero.push_back(
 							create_diagram(FORMAT("{} u", particle), s_channel, VMP,
 							               {Proton, QED::Photon},

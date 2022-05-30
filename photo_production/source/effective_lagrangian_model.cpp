@@ -7,6 +7,7 @@
 #include <feynumeric/particle_manager.hpp>
 #include <feynumeric/qed.hpp>
 #include <feynumeric/constexpr_math.hpp>
+#include <iostream>
 
 
 #include "effective_lagrangian_model.hpp"
@@ -75,10 +76,10 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& piP = edges[0];
 				auto const& piM = edges[1];
 				auto const& rho = edges[2];
-				auto const& p = piP->four_momentum(kin);
-				auto const& q = piM->four_momentum(kin);
+				auto const& p = piP->particle()->charge() >= 0? piP->four_momentum(kin) : piM->four_momentum(kin);
+				auto const& q = piP->particle()->charge() >= 0? piM->four_momentum(kin) : piP->four_momentum(kin);
 				auto mu = rho->lorentz_indices()[0];
-				auto const g = 5.96;
+				auto const g = rho->particle()->user_data<double>("g_pipi");
 				//int l = static_cast<int>(R->particle()->user_data<double>("l"));
 				//auto isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
 				return g * (p-q).co(mu);

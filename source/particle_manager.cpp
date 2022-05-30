@@ -36,17 +36,24 @@ namespace Feynumeric
 					break;
 				}
 			}
-			double value = std::stod(std::string(str.begin(), str.begin()+pos));
-			std::string unit  = std::string(str.begin()+pos, str.end());
-			std::transform(unit.begin(), unit.end(), unit.begin(), [](unsigned char c){ return std::tolower(c);});
-			if( unit == "ev"  ) return static_cast<double>(value * 1._eV);
-			if( unit == "kev" ) return static_cast<double>(value * 1._keV);
-			if( unit == "mev" ) return static_cast<double>(value * 1._MeV);
-			if( unit == "gev" ) return static_cast<double>(value * 1._GeV);
-			if( unit == "tev" ) return static_cast<double>(value * 1._TeV);
-			if( unit == "%" ) return static_cast<double>(value * 1._percent);
-			if( unit == "" )  return static_cast<double>(value);
-			critical_error(FORMAT("Could not read unit. Supported: eV, keV, MeV, GeV, TeV, %. Found: {}", unit));
+			try
+            {
+                double value = std::stod(std::string(str.begin(), str.begin() + pos));
+                std::string unit = std::string(str.begin() + pos, str.end());
+                std::transform(unit.begin(), unit.end(), unit.begin(), [](unsigned char c)
+                { return std::tolower(c); });
+                if( unit == "ev" ) return static_cast<double>(value * 1._eV);
+                if( unit == "kev" ) return static_cast<double>(value * 1._keV);
+                if( unit == "mev" ) return static_cast<double>(value * 1._MeV);
+                if( unit == "gev" ) return static_cast<double>(value * 1._GeV);
+                if( unit == "tev" ) return static_cast<double>(value * 1._TeV);
+                if( unit == "%" ) return static_cast<double>(value * 1._percent);
+                if( unit == "" ) return static_cast<double>(value);
+                critical_error(FORMAT("Could not read unit. Supported: eV, keV, MeV, GeV, TeV, %. Found: {}", unit));
+            }
+			catch( std::invalid_argument& e){
+                critical_error(FORMAT("Could not parse number: {}", str));
+			}
 		};
 
 		enum class STATE{

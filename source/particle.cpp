@@ -237,6 +237,11 @@ namespace Feynumeric
         return (_type & Type::TrueFermion) == static_cast<uint64_t>(Type::TrueFermion);
     }
 
+    bool Particle::exists_user_data(const std::string &key) const
+    {
+        return _user_data.contains(key);
+    }
+
     bool Particle::is_anti_fermion() const
     {
         return (_type & Type::AntiFermion) == static_cast<uint64_t>(Type::AntiFermion);
