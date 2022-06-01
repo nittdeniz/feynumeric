@@ -49,10 +49,10 @@ branching_N_pipi_lower 17%
 branching_N_pipi 35%
 branching_N_pipi_D1232_upper 27%
 branching_N_pipi_D1232_lower 6%
-branching_N_pipi_D1232 18%
+branching_N_pipi_D1232 15%
 branching_N_pipi_f500_upper 23%
 branching_N_pipi_f500_upper 11%
-branching_N_pipi_f500 17%
+branching_N_pipi_f500 20%
 branching_proton_photon_upper 0.048%
 branching_proton_photon_lower 0.035%
 branching_proton_photon 0.0415%
@@ -60,8 +60,8 @@ branching_neutron_photon_upper 0.04%
 branching_neutron_photon_lower 0.02%
 branching_neutron_photon 0.03%
 gRNpi 0.3799733804
-gD1232 0.6793652797
-gRNf0_500 1.667632394
+gD1232N1440pi 0.6172307537
+gRNf0_500 1.524102402
 
 @particle N1440p
 group N1440
@@ -185,9 +185,10 @@ branching_N_rho_upper 0%
 branching_N_rho_lower 0%
 branching_proton_photon_upper 0.20%
 branching_proton_photon_lower 0.04%
-branching_proton_photon_lower 0.04%
+branching_proton_photon 0.12%
 branching_neutron_photon_upper 0.17%
 branching_neutron_photon_lower 0.003%
+branching_neutron_photon 0.08%
 l 0
 
 @particle N1650p
@@ -298,8 +299,10 @@ branching_N_rho_upper 0%
 branching_N_rho_lower 0%
 branching_proton_photon_upper 0.05%
 branching_proton_photon_lower 0.01%
+branching_proton_photon 0.03%
 branching_neutron_photon_upper 0.13%
 branching_neutron_photon_lower 0.01%
+branching_neutron_photon 0.07%
 l 2
 
 @particle N1700p
@@ -339,8 +342,10 @@ branching_N_rho_upper 0%
 branching_N_rho_lower 0%
 branching_proton_photon_upper 0.08%
 branching_proton_photon_lower 0.002%
+branching_proton_photon 0.04%
 branching_neutron_photon_upper 0.02%
 branching_neutron_photon_lower 0.0%
+branching_neutron_photon 0.01%
 l 2
 
 @particle N1710p
@@ -382,8 +387,10 @@ branching_N_rho_upper 0%
 branching_N_rho_lower 0%
 branching_proton_photon_upper 0.25%
 branching_proton_photon_lower 0.05%
+branching_proton_photon 0.15%
 branching_neutron_photon_upper 0.016%
 branching_neutron_photon_lower 0.0%
+branching_neutron_photon 0.008%
 l 1
 
 @particle N1720p
@@ -427,8 +434,10 @@ branching_N_rho_upper 0%
 branching_N_rho_lower 0%
 branching_proton_photon_upper 0.025%
 branching_proton_photon_lower 0.001%
+branching_proton_photon 0.012%
 branching_neutron_photon_upper 0.04%
 branching_neutron_photon_lower 0.0%
+branching_neutron_photon 0.02%
 l 1
 
 @particle N1875p
@@ -471,8 +480,10 @@ branching_N_a0_upper 5%
 branching_N_a0_lower 1%
 branching_proton_photon_upper 0.0%
 branching_proton_photon_lower 0.0%
+branching_proton_photon 0%
 branching_neutron_photon_upper 0.63%
 branching_neutron_photon_lower 0.002%
+branching_neutron_photon 0.31%
 l 1
 
 @particle N1880p
@@ -511,8 +522,10 @@ branching_N_rho_upper 0%
 branching_N_rho_lower 0%
 branching_proton_photon_upper 0.06%
 branching_proton_photon_lower 0.01%
+branching_proton_photon 0.035%
 branching_neutron_photon_upper 0.05%
 branching_neutron_photon_lower 0.003%
+branching_neutron_photon 0.025%
 l 0
 
 @particle N1895p
@@ -555,8 +568,10 @@ branching_N_rho_upper 0%
 branching_N_rho_lower 0%
 branching_proton_photon_upper 0.025%
 branching_proton_photon_lower 0.001%
+branching_proton_photon 0.013%
 branching_neutron_photon_upper 0.021%
 branching_neutron_photon_lower 0.001%
+branching_neutron_photon 0.010%
 l 1
 
 @particle N1900p
@@ -599,8 +614,10 @@ branching_N_rho_upper 0%
 branching_N_rho_lower 0%
 branching_proton_photon_upper 0.19%
 branching_proton_photon_lower 0.03%
+branching_proton_photon 0.11%
 branching_neutron_photon_upper 0.07%
 branching_neutron_photon_lower 0.003%
+branching_neutron_photon 0.035%
 l 2
 
 @particle N2060p
@@ -639,8 +656,10 @@ branching_N_rho_upper 0%
 branching_N_rho_lower 0%
 branching_proton_photon_upper 0.012%
 branching_proton_photon_lower 0.001%
+branching_proton_photon 0.006%
 branching_neutron_photon_upper 0.012%
 branching_neutron_photon_lower 0.001%
+branching_neutron_photon 0.006%
 l 1
 
 @particle N2100p
@@ -679,8 +698,10 @@ branching_N_rho_upper 0%
 branching_N_rho_lower 0%
 branching_proton_photon_upper 0.21%
 branching_proton_photon_lower 0.16%
+branching_proton_photon 0.18%
 branching_neutron_photon_upper 0.722%
 branching_neutron_photon_lower 0.04%
+branching_neutron_photon 0.36%
 l 2
 
 @particle N2120p
@@ -708,11 +729,12 @@ branching_N_pi_lower 99.4%
 branching_N_pi 100%
 branching_proton_photon_upper 0.65%
 branching_proton_photon_lower 0.55%
-branching_proton 0.6%
+branching_proton_photon 0.6%
 branching_neutron_photon_upper 0.65%
 branching_neutron_photon_lower 0.55%
-branching_neutron 0.6%
-gRNpi 0.24029063
+branching_neutron_photon 0.6%
+gRNpi 0.2410147622
+gD1232N1440pi 0.6172307537
 gD1232N1520pi 1.0
 l 1
 
@@ -749,6 +771,7 @@ mass 1570MeV
 width 250MeV
 branching_N_pi_upper 24%
 branching_N_pi_lower 8%
+branching_N_pi 16%
 branching_N_pi_pi_upper 90%
 branching_N_pi_pi_lower 75%
 branching_N_D1232_pi_upper 83%
@@ -757,8 +780,10 @@ branching_N_N1440_pi_upper 25%
 branching_N_N1440_pi_lower 15%
 branching_proton_photon_upper 0.035%
 branching_proton_photon_lower 0.001%
+branching_proton_photon 0.018%
 branching_neutron_photon_upper 0.035%
 branching_neutron_photon_lower 0.001%
+branching_neutron_photon 0.018%
 l 1
 
 @particle D1600pp
@@ -797,6 +822,7 @@ mass 1610MeV
 width 130MeV
 branching_N_pi_upper 35%
 branching_N_pi_lower 25%
+branching_N_pi 20%
 branching_N_pi_pi_upper 80%
 branching_N_pi_pi_lower 55%
 branching_N_D1232_pi_upper 72%
@@ -805,8 +831,10 @@ branching_N1440_pi_upper 9%
 branching_N1440_pi_upper 3%
 branching_proton_photon_upper 0.1%
 branching_proton_photon_lower 0.03%
+branching_proton_photon 0.07%
 branching_neutron_photon_upper 0.1%
 branching_neutron_photon_lower 0.03%
+branching_neutron_photon 0.07%
 l 0
 
 @particle D1620pp
@@ -846,6 +874,7 @@ width 300MeV
 branching_N_pi_upper 20%
 branching_N_pi_lower 10%
 branching_N_pi 15%
+branching_N_pi 15%
 branching_N_pi_pi_upper 55%
 branching_N_pi_pi_lower 10%
 branching_N_pi_pi 32.5%
@@ -860,8 +889,10 @@ branching_D1232_eta_upper 7%
 branching_D1232_eta_lower 3%
 branching_proton_photon_upper 0.6%
 branching_proton_photon_lower 0.22%
+branching_proton_photon 0.43%
 branching_neutron_photon_upper 0.6%
 branching_neutron_photon_lower 0.22%
+branching_neutron_photon 0.43%
 l 2
 
 @particle D1700pp
@@ -900,6 +931,7 @@ mass 1860MeV
 width 250MeV
 branching_N_pi_upper 12%
 branching_N_pi_lower 4%
+branching_N_pi 8%
 branching_N_pi_pi_upper 85%
 branching_N_pi_pi_lower 45%
 branching_N_D1232_pi_upper 70%
@@ -914,8 +946,10 @@ branching_D1232_eta_upper 2%
 branching_D1232_eta_lower 0%
 branching_proton_photon_upper 0.43%
 branching_proton_photon_lower 0.06%
+branching_proton_photon 0.25%
 branching_neutron_photon_upper 0.43%
 branching_neutron_photon_lower 0.06%
+branching_neutron_photon 0.25%
 l 0
 
 @particle D1900pp
@@ -954,6 +988,7 @@ mass 1880MeV
 width 330MeV
 branching_N_pi_upper 15%
 branching_N_pi_lower 9%
+branching_N_pi 12%
 branching_N_pi_pi_upper 100%
 branching_N_pi_pi_lower 80%
 branching_N1680_pi_upper 15%
@@ -962,8 +997,10 @@ branching_D1232_eta_upper 6%
 branching_D1232_eta_lower 2%
 branching_proton_photon_upper 0.036%
 branching_proton_photon_lower 0.012%
+branching_proton_photon 0.024%
 branching_neutron_photon_upper 0.036%
 branching_neutron_photon_lower 0.012%
+branching_neutron_photon 0.024%
 l 3
 
 @particle D1905pp
@@ -1002,6 +1039,7 @@ mass 1900MeV
 width 300MeV
 branching_N_pi_upper 30%
 branching_N_pi_lower 15%
+branching_N_pi 22.5%
 branching_N_pi_pi_upper 66%
 branching_N_pi_pi_lower 34%
 branching_N_D1232_pi_lower 66%
@@ -1012,8 +1050,10 @@ branching_D1232_eta_upper 13%
 branching_D1232_eta_lower 5%
 branching_proton_photon_upper 0.02%
 branching_proton_photon_lower 0.0%
+branching_proton_photon 0.01%
 branching_neutron_photon_upper 0.02%
 branching_neutron_photon_lower 0.0%
+branching_neutron_photon 0.01%
 l 1
 
 @particle D1910pp
@@ -1052,6 +1092,7 @@ mass 1920MeV
 width 300MeV
 branching_N_pi_upper 20%
 branching_N_pi_lower 5%
+branching_N_pi 12.5%
 branching_N_pi_pi_upper 90%
 branching_N_pi_pi_lower 50%
 branching_N_D1232_pi_upper 90%
@@ -1064,8 +1105,10 @@ branching_N_N1535_upper 2%
 branching_N_N1535_lower 0%
 branching_proton_photon_upper 0.0%
 branching_proton_photon_lower 0.0%
+branching_proton_photon 0%
 branching_neutron_photon_upper 0.0%
 branching_neutron_photon_lower 0.0%
+branching_neutron_photon 0%
 l 1
 
 @particle D1920pp
@@ -1104,6 +1147,7 @@ mass 1930MeV
 width 285MeV
 branching_N_pi_upper 45%
 branching_N_pi_lower 35%
+branching_N_pi 40%
 branching_N_pi_pi_upper 9%
 branching_N_pi_pi_lower 1%
 branching_N_D1232_pi_upper 9%
@@ -1112,8 +1156,10 @@ branching_N_N1680_upper 9%
 branching_N_N1680_lower 3%
 branching_proton_photon_upper 0.0%
 branching_proton_photon_lower 0.0%
+branching_proton_photon 0.0%
 branching_neutron_photon_upper 0.0%
 branching_neutron_photon_lower 0.0%
+branching_neutron_photon 0.0%
 l 3
 
 @particle D1950pp

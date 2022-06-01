@@ -38,6 +38,8 @@ namespace Feynumeric
 
     Feynman_Process::Feynman_Process(const Feynman_Process &other)
     : _conversion_factor(other._conversion_factor)
+    , _n_spins(other._n_spins)
+    , _n_polarisations(other._n_polarisations)
     {
         _diagrams.reserve(other._diagrams.size());
         for( auto const& diagram : other._diagrams ){
@@ -324,15 +326,23 @@ namespace Feynumeric
 
 		Kinematics kin(incoming[0]->mass(), 1, 3);
 
-		auto const q12 = momentum(invariant_mass + 1.e-6, outgoing[0]->mass(), outgoing[1]->mass());
-		auto const q3 = momentum(incoming[0]->mass(), invariant_mass - 1.e-6, outgoing[2]->mass());
+		auto const q01 = momentum(invariant_mass, outgoing[0]->mass(), outgoing[1]->mass());
+		auto const q2 = momentum(incoming[0]->mass(), invariant_mass, outgoing[2]->mass());
 
-		auto const p_out = four_momentum(q3, invariant_mass, cos_theta);
+		//auto const p_out = four_momentum(q2, invariant_mass);
 
-		kin.incoming(0, four_momentum(0, incoming[0]->mass()));
-		kin.outgoing(0, four_momentum(q12, outgoing[0]->mass()).boost(p_out));
-		kin.outgoing(1, four_momentum(-q12, outgoing[1]->mass()).boost(p_out));
-		kin.outgoing(2, four_momentum(-q3, outgoing[2]->mass(), cos_theta));
+		auto const p_in    = four_momentum(0, incoming[0]->mass());
+		auto const p0_rest = four_momentum(q01, outgoing[0]->mass(), cos_theta);
+        auto const p1_rest = four_momentum(-q01, outgoing[1]->mass(), cos_theta);
+        auto const p01     = four_momentum(q2, invariant_mass);
+        auto const p2      = four_momentum(-q2, outgoing[2]->mass());
+        auto const p0      = p0_rest.boost(p01);
+        auto const p1      = p1_rest.boost(p01);
+
+		kin.incoming(0, p_in);
+		kin.outgoing(0, p0);
+		kin.outgoing(1, p1);
+		kin.outgoing(2, p2);
 
 		// sanity check
 		auto p_i0 = kin.incoming(0);
@@ -366,7 +376,7 @@ namespace Feynumeric
 			Ms_squared += ( M * std::conj(M)).real();
 		}
 
-		auto phase_space = 1. / N_polarisations * std::pow(2 * M_PI, -5) * 1./(16 *  incoming[0]->mass() * incoming[0]->mass()) * q12 * q3 * 8 * M_PI * M_PI;
+		auto phase_space = 1. / N_polarisations * std::pow(2 * M_PI, -5) * 1. / (16 *  incoming[0]->mass() * incoming[0]->mass()) * q01 * q2 * 8 * M_PI * M_PI;
 		return Ms_squared * phase_space;
 	}
 
@@ -378,10 +388,10 @@ namespace Feynumeric
 		auto const M_max = _diagrams[0]->_graph._incoming[0]->particle()->mass() - _diagrams[0]->_graph._outgoing[2]->particle()->mass();
 		auto partial = [&](double M){
 			auto f = std::bind(&Feynman_Process::partial_decay_1_3, this, M, _1, _n_spins, _n_polarisations);
-			auto r = integrate(f, -1., 1., 1.e-2);
+			auto r = integrate(f, -0.999, 0.999, 1.e-2);
 			return r;
 		};
-		auto r = integrate(partial, M_min, M_max, 1.e-2);
+		auto r = integrate(partial, M_min + 1.e-6, M_max-1.e-6, 1.e-2);
 		return r;
 	}
 

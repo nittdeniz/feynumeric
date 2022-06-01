@@ -27,9 +27,13 @@ int main(int argc, char** argv){
 
 
     P.get("N1440p")->user_data("form_factor", identity);
-    P.get("N1440p")->user_data("gD1232", 1.0);
+    P.get("N1440p")->user_data("gD1232N1440pi", 1.0);
+    P.get("D1232pp")->user_data("gD1232N1440pi", 1.0);
+    P.get("D1232p")->user_data("gD1232N1440pi", 1.0);
+    P.get("D1232n")->user_data("gD1232N1440pi", 1.0);
+    P.get("D1232m`")->user_data("gD1232N1440pi", 1.0);
     P.get("N1440n")->user_data("form_factor", identity);
-    P.get("N1440n")->user_data("gD1232", 1.0);
+    P.get("N1440n")->user_data("gD1232N1440pi", 1.0);
     P.get("D1232pp")->user_data("form_factor", identity);
     P.get("D1232p")->user_data("form_factor", identity);
     P.get("D1232n")->user_data("form_factor", identity);
@@ -45,61 +49,84 @@ int main(int argc, char** argv){
                                                           {P.get("D1232n")},
                                                           {Proton, Pi_Plus, Pi_Minus}
     );
+
     auto channel_decay_N1440p_D1232_pi_3 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1, VMP,
                                                           {P.get("N1440p")},
-                                                          {P.get("D1232n")},
-                                                          {Proton, Pi_Minus, Pi_Plus}
+                                                          {P.get("D1232p")},
+                                                          {Proton, Pi_Zero, Pi_Zero}
     );
     auto channel_decay_N1440p_D1232_pi_4 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1_cross, VMP,
                                                           {P.get("N1440p")},
-                                                          {P.get("D1232pp")},
-                                                          {Proton, Pi_Minus, Pi_Plus}
+                                                          {P.get("D1232p")},
+                                                          {Proton, Pi_Zero, Pi_Zero}
+    );
+
+    auto channel_decay_N1440p_D1232_pi_5 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1, VMP,
+                                                          {P.get("N1440p")},
+                                                          {P.get("D1232p")},
+                                                          {Neutron, Pi_Plus, Pi_Zero}
+    );
+    auto channel_decay_N1440p_D1232_pi_6 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1_cross, VMP,
+                                                          {P.get("N1440p")},
+                                                          {P.get("D1232n")},
+                                                          {Neutron, Pi_Plus, Pi_Zero}
     );
 
     auto channel_decay_N1440n_D1232_pi_1 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1, VMP,
                                                           {P.get("N1440n")},
-                                                          {P.get("D1232m")},
-                                                          {Neutron, Pi_Minus, Pi_Plus}
+                                                          {P.get("D1232n")},
+                                                          {Proton, Pi_Minus, Pi_Zero}
     );
     auto channel_decay_N1440n_D1232_pi_2 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1_cross, VMP,
                                                           {P.get("N1440n")},
                                                           {P.get("D1232p")},
-                                                          {Neutron, Pi_Minus, Pi_Plus}
+                                                          {Proton, Pi_Minus, Pi_Zero}
     );
+
     auto channel_decay_N1440n_D1232_pi_3 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1, VMP,
                                                           {P.get("N1440n")},
-                                                          {P.get("D1232p")},
-                                                          {Neutron, Pi_Plus, Pi_Minus}
+                                                          {P.get("D1232m")},
+                                                          {Neutron, Pi_Minus, Pi_Plus}
     );
     auto channel_decay_N1440n_D1232_pi_4 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1_cross, VMP,
                                                           {P.get("N1440n")},
-                                                          {P.get("D1232m")},
-                                                          {Neutron, Pi_Plus, Pi_Minus}
+                                                          {P.get("D1232p")},
+                                                          {Neutron, Pi_Minus, Pi_Plus}
     );
 
-    Feynman_Process a1({channel_decay_N1440p_D1232_pi_1});
-    Feynman_Process a2({channel_decay_N1440p_D1232_pi_2});
-    Feynman_Process a3({channel_decay_N1440p_D1232_pi_3});
-    Feynman_Process a4({channel_decay_N1440p_D1232_pi_4});
-    Feynman_Process b1({channel_decay_N1440n_D1232_pi_1});
-    Feynman_Process b2({channel_decay_N1440n_D1232_pi_2});
-    Feynman_Process b3({channel_decay_N1440n_D1232_pi_3});
-    Feynman_Process b4({channel_decay_N1440n_D1232_pi_4});
+    auto channel_decay_N1440n_D1232_pi_5 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1, VMP,
+                                                          {P.get("N1440n")},
+                                                          {P.get("D1232n")},
+                                                          {Neutron, Pi_Zero, Pi_Zero}
+    );
+    auto channel_decay_N1440n_D1232_pi_6 = create_diagram(FORMAT("decay N1440 to Delta pi 1"), Decay_1_to_M2_1_cross, VMP,
+                                                          {P.get("N1440n")},
+                                                          {P.get("D1232n")},
+                                                          {Neutron, Pi_Zero, Pi_Zero}
+    );
 
     Feynman_Process decay_Np1({channel_decay_N1440p_D1232_pi_1, channel_decay_N1440p_D1232_pi_2});
-    Feynman_Process decay_Nn2({channel_decay_N1440n_D1232_pi_3, channel_decay_N1440n_D1232_pi_4});
+    Feynman_Process decay_Np2({channel_decay_N1440p_D1232_pi_3, channel_decay_N1440p_D1232_pi_4});
+    Feynman_Process decay_Np3({channel_decay_N1440p_D1232_pi_5, channel_decay_N1440p_D1232_pi_6});
 
-    std::cout << FORMAT("a1: {}, a2: {}\n", a1.decay_width(), a2.decay_width());
-    std::cout << FORMAT("a3: {}, a4: {}\n", a3.decay_width(), a4.decay_width());
-    std::cout << FORMAT("b1: {}, b2: {}\n", b1.decay_width(), b2.decay_width());
-    std::cout << FORMAT("b3: {}, b4: {}\n", b3.decay_width(), b4.decay_width());
+    Feynman_Process decay_Nn1({channel_decay_N1440n_D1232_pi_1, channel_decay_N1440n_D1232_pi_2});
+    Feynman_Process decay_Nn2({channel_decay_N1440n_D1232_pi_3, channel_decay_N1440n_D1232_pi_4});
+    Feynman_Process decay_Nn3({channel_decay_N1440n_D1232_pi_5, channel_decay_N1440n_D1232_pi_6});
 
     auto w1 = decay_Np1.decay_width();
-//    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
-//    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
-//    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
-//    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+    auto w2 = decay_Np2.decay_width();
+    auto w3 = decay_Np3.decay_width();
+    auto w4 = decay_Nn1.decay_width();
     auto w5 = decay_Nn2.decay_width();
+    auto w6 = decay_Nn3.decay_width();
 
-    std::cout << FORMAT("w1: {}\nw5: {}\n", w1, w5);
+    double const literature_value = P.get("N1440")->width() * P.get("N1440")->user_data<double>("branching_N_pipi_D1232");
+    std::cout << FORMAT("g: {}\n", P.get("D1232pp")->user_data<double>("gRNpi"));
+    std::cout << FORMAT("g: {}\n", P.get("D1232pp")->user_data<double>("gD1232N1440pi"));
+    std::cout << FORMAT("literature_value: {}\n", literature_value);
+    std::cout << FORMAT("w1: {} w2: {} w3: {}\n", w1, w2, w3);
+    std::cout << FORMAT("w4: {} w5: {} w6: {}\n", w4, w5, w6);
+
+    std::cout << FORMAT("g(N1440+ -> D1232): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w1 + w2 + w3 )) << "\n";
+    std::cout << FORMAT("g(N1440n -> D1232): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w4 + w5 + w6 )) << "\n";
 }

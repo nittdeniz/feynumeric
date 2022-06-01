@@ -5,16 +5,22 @@
 #include "effective_lagrangian_model.hpp"
 #include "form_factors.hpp"
 
+#include <fstream>
 #include <iostream>
 #include <iomanip>
 
-#define Mesons 0
+#define Mesons 1
 #define Npi 1
-#define Nphoton 0
+#define Nphoton 1
 #define N1440 1
-#define N1520 1
-#define N1535 1
+#define N1520 0
+#define N1535 0
 
+std::array<std::string, 3> sort(std::string a, std::string b, std::string c){
+    std::array<std::string, 3> arr{a,b,c};
+    std::sort(arr.begin(), arr.end());
+    return arr;
+}
 
 int main(int argc, char** argv)
 {
@@ -25,6 +31,9 @@ int main(int argc, char** argv)
 	{
 		critical_error("Program expects filename as a single and only argument.");
 	}
+
+	std::ofstream coupling_constants_out("./data/coupling_constants_isospin_symmetry.txt");
+
 	Particle_Manager P((std::string(argv[1])));
 	auto const& Proton = P.get("proton");
 	auto const& Neutron = P.get("neutron");
@@ -77,7 +86,8 @@ int main(int argc, char** argv)
         Feynman_Process decay1({channel_decay_f0_1});
         Feynman_Process decay2({channel_decay_f0_2});
         auto g = std::sqrt(particle->width() / (decay1.decay_width() + decay2.decay_width()));
-        std::cout << FORMAT("{} -> {} {} g: {}\n", particle->name(), Pi_Plus->name(), Pi_Minus->name(), g);
+        auto sorted = sort(particle->name(), Pi_Plus->name(), Pi_Minus->name());
+        coupling_constants_out << FORMAT("g{}{}{} {}\n", sorted[0], sorted[1], sorted[2], g);
     }
     {   /// rho to pi pi
         auto particle = P.get("rho0");
@@ -109,15 +119,17 @@ int main(int argc, char** argv)
         );
         Feynman_Process decay3({channel_decay_rho_3});
         g = std::sqrt(particle->width() / (decay3.decay_width() ));
+        auto sorted = sort<particle->name(), Pi_Plus->name(), Pi_Mins->name());
+        coupling_constants_out << FORMAT("g{}{}{}\n", sorted[0], sorted[1], sorted[2], g);
         std::cout << FORMAT("{} -> {} {} g: {}\n", particle->name(), Pi_Minus->name(), Pi_Zero->name(), g);
     }
     #endif
     #if N1440
     {   /// N1440 to D1232
         P.get("N1440p")->user_data("form_factor", identity);
-        P.get("N1440p")->user_data("gD1232", 1.0);
+        P.get("N1440p")->user_data("gD1232N1440pi", 1.0);
         P.get("N1440n")->user_data("form_factor", identity);
-	    P.get("N1440n")->user_data("gD1232", 1.0);
+	    P.get("N1440n")->user_data("gD1232N1440pi", 1.0);
         P.get("D1232pp")->user_data("form_factor", identity);
         P.get("D1232p")->user_data("form_factor", identity);
         P.get("D1232n")->user_data("form_factor", identity);
@@ -205,6 +217,11 @@ int main(int argc, char** argv)
         auto w6 = decay_Nn3.decay_width();
 
         double const literature_value = P.get("N1440")->width() * P.get("N1440")->user_data<double>("branching_N_pipi_D1232");
+        std::cout << FORMAT("g: {}\n", P.get("D1232pp")->user_data<double>("gRNpi"));
+        std::cout << FORMAT("g: {}\n", P.get("D1232pp")->user_data<double>("gD1232N1440pi"));
+        std::cout << FORMAT("literature_value: {}\n", literature_value);
+        std::cout << FORMAT("w1: {} w2: {} w3: {}\n", w1, w2, w3);
+        std::cout << FORMAT("w4: {} w5: {} w6: {}\n", w4, w5, w6);
 
         std::cout << FORMAT("g(N1440+ -> D1232): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w1 + w2 + w3 )) << "\n";
         std::cout << FORMAT("g(N1440n -> D1232): " ) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value / ( w4 + w5 + w6 )) << "\n";
@@ -433,6 +450,10 @@ int main(int argc, char** argv)
 		Np->user_data("form_factor", identity);
 		Nn->user_data("gRNpi", 1.);
 		Nn->user_data("form_factor", identity);
+		if( !Np->exists_user_data("branching_N_pi") ){
+		    Np->user_data("branching_N_pi", 1.);
+            Nn->user_data("branching_N_pi", 1.);
+		}
 		auto channel_decay_Np1 = create_diagram(FORMAT("decay {} to proton pi0", Np->name()), Decay_1_to_2, VMP,
 		                                        {Np},
 		                                        {},
@@ -472,8 +493,12 @@ int main(int argc, char** argv)
 		double const literature_value1 = Np->width() * Np->user_data<double>("branching_N_pi");
 		double const literature_value2 = Nn->width() * Nn->user_data<double>("branching_N_pi");
 
-		std::cout << FORMAT("g({} -> N + pi): ", Np->name()) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
-		std::cout << FORMAT("g({} -> N + pi): ", Nn->name()) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
+        std::cout << FORMAT("w1: {} w2: {}", w1, w2) << "\n";
+        std::cout << FORMAT("w3: {} w4: {}", w3, w4) << "\n";
+        std::array<std::string, 2> names_p{Np->name(), Proton->name()};
+
+		coupling_constants_out << FORMAT("g{}Npi ", Np->name()) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
+        coupling_constants_out << FORMAT("g{}Npi ", Nn->name()) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
 	}
     #endif
     #if Nphoton
@@ -508,8 +533,8 @@ int main(int argc, char** argv)
 
 		double const literature_value1 = Np->width() * Np->user_data<double>("branching_proton_photon");
 		double const literature_value2 = Nn->width() * Nn->user_data<double>("branching_proton_photon");
-		std::cout << FORMAT("g({} -> proton + photon): ", Np->name()) << std::setw(10) << std::setprecision(10)  << std::sqrt(literature_value1 / w1) << "\n";
-		std::cout << FORMAT("g({} -> neutron + photon): ", Nn->name()) << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value2 / w2) << "\n";
+		coupling_constants_out << FORMAT("g{}{}{}", Np->name(), Proton->name(), QED::Photon->name()) << std::setw(10) << std::setprecision(10)  << std::sqrt(literature_value1 / w1) << "\n";
+        coupling_constants_out << FORMAT("g{}{}{} ", Nn->name(), Neutron->name(), QED::Photon->name()) << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value2 / w2) << "\n";
 	}
     #endif
 
@@ -546,8 +571,8 @@ int main(int argc, char** argv)
 		double const literature_value1 = Dpp->width() *  Dpp->user_data<double>("branching_N_pi");
 		double const literature_value4 = Dm->width() *   Dm->user_data<double>("branching_N_pi");
 
-		std::cout << FORMAT("g({} -> N + pi): ", Dpp->name()) << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value1 / ( w1 )) << "\n";
-		std::cout << FORMAT("g({} -> N + pi): ", Dm->name())  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value4 / ( w6 )) << "\n";
+		coupling_constants_out << FORMAT("g{}Npi: ", Dpp->name()) << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value1 / ( w1 )) << "\n";
+        coupling_constants_out << FORMAT("g{}Npi: ", Dm->name())  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value4 / ( w6 )) << "\n";
 	}
     #endif
 	return EXIT_SUCCESS;
