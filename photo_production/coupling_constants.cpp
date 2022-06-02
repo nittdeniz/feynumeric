@@ -2,12 +2,14 @@
 #include <feynumeric/qed.hpp>
 #include <feynumeric/particle_manager.hpp>
 
+#include "coupling_constants.hpp"
 #include "effective_lagrangian_model.hpp"
 #include "form_factors.hpp"
 
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 
 #define Mesons 1
 #define Npi 1
@@ -16,11 +18,6 @@
 #define N1520 0
 #define N1535 0
 
-std::array<std::string, 3> sort(std::string a, std::string b, std::string c){
-    std::array<std::string, 3> arr{a,b,c};
-    std::sort(arr.begin(), arr.end());
-    return arr;
-}
 
 int main(int argc, char** argv)
 {
@@ -32,7 +29,7 @@ int main(int argc, char** argv)
 		critical_error("Program expects filename as a single and only argument.");
 	}
 
-	std::ofstream coupling_constants_out("./data/coupling_constants_isospin_symmetry.txt");
+	std::stringstream buffer;
 
 	Particle_Manager P((std::string(argv[1])));
 	auto const& Proton = P.get("proton");
@@ -66,7 +63,6 @@ int main(int argc, char** argv)
 		particles_Np.push_back(P.get(str + "p"));
 		particles_Nn.push_back(P.get(str + "n"));
 	}
-
 	/* Other */
     #if Mesons
     {   /// f0(500) to pi pi
@@ -87,11 +83,11 @@ int main(int argc, char** argv)
         Feynman_Process decay2({channel_decay_f0_2});
         auto g = std::sqrt(particle->width() / (decay1.decay_width() + decay2.decay_width()));
         auto sorted = sort(particle->name(), Pi_Plus->name(), Pi_Minus->name());
-        coupling_constants_out << FORMAT("g{}{}{} {}\n", sorted[0], sorted[1], sorted[2], g);
+        buffer <<  FORMAT("g{}{}{} {}\n", sorted[0], sorted[1], sorted[2], g);
     }
     {   /// rho to pi pi
         auto particle = P.get("rho0");
-        particle->user_data("g_pipi", 1.);
+        coupling_constants["grhopipi"] = 1.;
         auto channel_decay_rho_1 = create_diagram(FORMAT("decay {} to pi+ pi-", particle->name()), Decay_1_to_2, VMP,
                                                   {particle},
                                                   {},
@@ -119,9 +115,9 @@ int main(int argc, char** argv)
         );
         Feynman_Process decay3({channel_decay_rho_3});
         g = std::sqrt(particle->width() / (decay3.decay_width() ));
-        auto sorted = sort<particle->name(), Pi_Plus->name(), Pi_Mins->name());
-        coupling_constants_out << FORMAT("g{}{}{}\n", sorted[0], sorted[1], sorted[2], g);
-        std::cout << FORMAT("{} -> {} {} g: {}\n", particle->name(), Pi_Minus->name(), Pi_Zero->name(), g);
+        auto sorted = coupling_string(particle->name(), Pi_Plus->name(), Pi_Minus->name());
+        buffer <<  FORMAT("{} {}\n", sorted, g);
+        //std::cout << FORMAT("{} -> {} {} g: {}\n", particle->name(), Pi_Minus->name(), Pi_Zero->name(), g);
     }
     #endif
     #if N1440
@@ -497,8 +493,8 @@ int main(int argc, char** argv)
         std::cout << FORMAT("w3: {} w4: {}", w3, w4) << "\n";
         std::array<std::string, 2> names_p{Np->name(), Proton->name()};
 
-		coupling_constants_out << FORMAT("g{}Npi ", Np->name()) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
-        coupling_constants_out << FORMAT("g{}Npi ", Nn->name()) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
+		buffer <<  FORMAT("g{}Npi ", Np->name()) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value1 / ( w1 + w2 )) << "\n";
+        buffer <<  FORMAT("g{}Npi ", Nn->name()) << std::setw(10) << std::setprecision(10)<< std::sqrt(literature_value2 / ( w3 + w4 )) << "\n";
 	}
     #endif
     #if Nphoton
@@ -533,8 +529,12 @@ int main(int argc, char** argv)
 
 		double const literature_value1 = Np->width() * Np->user_data<double>("branching_proton_photon");
 		double const literature_value2 = Nn->width() * Nn->user_data<double>("branching_proton_photon");
-		coupling_constants_out << FORMAT("g{}{}{}", Np->name(), Proton->name(), QED::Photon->name()) << std::setw(10) << std::setprecision(10)  << std::sqrt(literature_value1 / w1) << "\n";
-        coupling_constants_out << FORMAT("g{}{}{} ", Nn->name(), Neutron->name(), QED::Photon->name()) << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value2 / w2) << "\n";
+		auto g1 = std::sqrt(literature_value1 / w1);
+        auto g2 = std::sqrt(literature_value2 / w2);
+		auto str1 = coupling_string(Np->name(), Proton->name(), QED::Photon->name());
+        auto str2 = coupling_string(Nn->name(), Neutron->name(), QED::Photon->name());
+		buffer <<  FORMAT("{} {}\n", str1, g1);
+        buffer <<  FORMAT("{} {}\n", str2, g2);
 	}
     #endif
 
@@ -571,9 +571,11 @@ int main(int argc, char** argv)
 		double const literature_value1 = Dpp->width() *  Dpp->user_data<double>("branching_N_pi");
 		double const literature_value4 = Dm->width() *   Dm->user_data<double>("branching_N_pi");
 
-		coupling_constants_out << FORMAT("g{}Npi: ", Dpp->name()) << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value1 / ( w1 )) << "\n";
-        coupling_constants_out << FORMAT("g{}Npi: ", Dm->name())  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value4 / ( w6 )) << "\n";
+		buffer <<  FORMAT("g{}Npi ", Dpp->name()) << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value1 / ( w1 )) << "\n";
+        buffer <<  FORMAT("g{}Npi ", Dm->name())  << std::setw(10) << std::setprecision(10) << std::sqrt(literature_value4 / ( w6 )) << "\n";
 	}
     #endif
+    std::ofstream coupling_constants_out("./data/coupling_constants_isospin_symmetry.txt");
+    coupling_constants_out << buffer.str();
 	return EXIT_SUCCESS;
 }

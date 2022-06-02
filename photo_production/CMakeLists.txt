@@ -2,7 +2,7 @@ add_executable(coupling_constants
         coupling_constants.cpp
         source/effective_lagrangian_model.cpp include/particles.hpp
 
-        ../electron_muon/include/vertices.hpp ../electron_muon/source/vertices.cpp include/effective_lagrangian_model.hpp include/form_factors.hpp source/form_factors.cpp include/write_map.hpp source/write_map.cpp)
+        ../electron_muon/include/vertices.hpp ../electron_muon/source/vertices.cpp include/effective_lagrangian_model.hpp include/form_factors.hpp source/form_factors.cpp include/write_map.hpp source/write_map.cpp include/coupling_constants.hpp)
 
 add_executable(playground playground.cpp source/effective_lagrangian_model.cpp source/form_factors.cpp)
 

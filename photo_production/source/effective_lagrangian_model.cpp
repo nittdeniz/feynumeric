@@ -4,14 +4,19 @@
 #include <feynumeric/graph_edge.hpp>
 #include <feynumeric/graph_vertex.hpp>
 #include <feynumeric/isospin.hpp>
+#include <feynumeric/messages.hpp>
 #include <feynumeric/particle_manager.hpp>
 #include <feynumeric/qed.hpp>
 #include <feynumeric/constexpr_math.hpp>
+
+#include <fstream>
 #include <iostream>
+#include <sstream>
 
 
 #include "effective_lagrangian_model.hpp"
 #include "form_factors.hpp"
+#include "coupling_constants.hpp"
 
 using Feynumeric::Particle;
 using Feynumeric::Matrix;
@@ -28,6 +33,25 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 
 	Feynumeric::QED::init_vertices();
 	VMP->import(*Feynumeric::QED::VMP);
+
+	std::map<std::string, double> coupling_constants;
+	std::string const file_name = "data/coupling_constants_isospin_symmetry.txt";
+	std::ifstream ifs(file_name);
+	if( !ifs ){
+	    Feynumeric::critical_error(FORMAT("Could not open {}.", file_name));
+	}
+
+	std::string buffer;
+	while( std::getline(ifs, buffer) ){
+        std::string key;
+        double value;
+        std::stringstream sstream(buffer);
+        sstream >> key >> value;
+        coupling_constants[key] = value;
+        std::cout << key << "/" << value << "\n";
+	}
+
+	std::cout << coupling_constants.size() << "\n";
 
 	VMP->add(Feynumeric::Vertex(
 			{
@@ -71,7 +95,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 					{P["Pion"]},
 					{P["Rho"]}
 			},
-			[](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+			[coupling_constants](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
 				using namespace Feynumeric;
 				auto const& piP = edges[0];
 				auto const& piM = edges[1];
@@ -79,7 +103,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& p = piP->particle()->charge() >= 0? piP->four_momentum(kin) : piM->four_momentum(kin);
 				auto const& q = piP->particle()->charge() >= 0? piM->four_momentum(kin) : piP->four_momentum(kin);
 				auto mu = rho->lorentz_indices()[0];
-				auto const g = rho->particle()->user_data<double>("g_pipi");
+				//auto const g = rho->particle()->user_data<double>("g_pipi");
+				auto const g = coupling_constants.at("grhopipi");
 				//int l = static_cast<int>(R->particle()->user_data<double>("l"));
 				//auto isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
 				return g * (p-q).co(mu);
