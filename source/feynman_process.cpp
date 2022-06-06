@@ -240,27 +240,27 @@ namespace Feynumeric
 		std::map<double, std::vector<double>> result;
 
 
-			kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
-			kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta));
+        kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
+        kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta));
 
-			std::vector<double> Ms_squared(_diagrams.size() + 1);
+        std::vector<double> Ms_squared(_diagrams.size() + 1);
 
-			for( std::size_t i = 0; i < N_spins; ++i ){
-				Complex M{0, 0};
-				for( std::size_t j = 0; j < _diagrams.size(); ++j ){
-					auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
-					M += temp;
-					Ms_squared[j] += ( temp * std::conj(temp)).real();
-					_diagrams[j]->iterate_spins();
-				}
-				auto M2 = ( M * std::conj(M)).real();
-				Ms_squared[_diagrams.size()] += M2;
-			}
+        for( std::size_t i = 0; i < N_spins; ++i ){
+            Complex M{0, 0};
+            for( std::size_t j = 0; j < _diagrams.size(); ++j ){
+                auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
+                M += temp;
+                Ms_squared[j] += ( temp * std::conj(temp)).real();
+                _diagrams[j]->iterate_spins();
+            }
+            auto M2 = ( M * std::conj(M)).real();
+            Ms_squared[_diagrams.size()] += M2;
+        }
 
-			for( auto& value : Ms_squared ){
-				value *= phase_space_factor * _conversion_factor;
-			}
-			result[cos_theta] = Ms_squared;
+        for( auto& value : Ms_squared ){
+            value *= phase_space_factor * _conversion_factor;
+        }
+        result[cos_theta] = Ms_squared;
 
 		//auto check = dsigma_dcos_table(sqrt_s, 0.1);
 
@@ -430,7 +430,7 @@ namespace Feynumeric
 //            std::cout << FORMAT("start {}/{} core: {} {}\n", i, copies.size(), omp_get_thread_num(), values[i]) << std::flush;
 			double const sqrt_s = values[i];
 			auto f = std::bind(&Feynman_Process::no_check_dsigma_dcos, &copies[i], sqrt_s, _1);
-			auto temp = integrate(f, -1., 1., 0.1);
+			auto temp = integrate(f, -.999, .999, 0.1);
 			result[sqrt_s] = std::isnan(temp)? 0 : temp;
 //			std::cout << FORMAT("end {}/{} core: {} {}\n", i, copies.size(), omp_get_thread_num(), sqrt_s) << std::flush;
             completed++;

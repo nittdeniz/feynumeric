@@ -27,13 +27,7 @@ int main(int argc, char** argv){
 
 
     P.get("N1440p")->user_data("form_factor", identity);
-    P.get("N1440p")->user_data("gD1232N1440pi", 1.0);
-    P.get("D1232pp")->user_data("gD1232N1440pi", 1.0);
-    P.get("D1232p")->user_data("gD1232N1440pi", 1.0);
-    P.get("D1232n")->user_data("gD1232N1440pi", 1.0);
-    P.get("D1232m`")->user_data("gD1232N1440pi", 1.0);
     P.get("N1440n")->user_data("form_factor", identity);
-    P.get("N1440n")->user_data("gD1232N1440pi", 1.0);
     P.get("D1232pp")->user_data("form_factor", identity);
     P.get("D1232p")->user_data("form_factor", identity);
     P.get("D1232n")->user_data("form_factor", identity);
@@ -121,8 +115,6 @@ int main(int argc, char** argv){
     auto w6 = decay_Nn3.decay_width();
 
     double const literature_value = P.get("N1440")->width() * P.get("N1440")->user_data<double>("branching_N_pipi_D1232");
-    std::cout << FORMAT("g: {}\n", P.get("D1232pp")->user_data<double>("gRNpi"));
-    std::cout << FORMAT("g: {}\n", P.get("D1232pp")->user_data<double>("gD1232N1440pi"));
     std::cout << FORMAT("literature_value: {}\n", literature_value);
     std::cout << FORMAT("w1: {} w2: {} w3: {}\n", w1, w2, w3);
     std::cout << FORMAT("w4: {} w5: {} w6: {}\n", w4, w5, w6);

@@ -84,8 +84,8 @@ int main(int argc, char** argv)
 	auto m_string  = [](std::string const& p){ return FORMAT("{}m", p);};
 
 	for( auto const& nucleon_resonance : nucleon_resonances ){
-        std::ifstream ifs(FORMAT("./data/dyson_factors/{}.txt", nucleon_resonance));
-        std::cout << FORMAT("./data/dyson_factors/{}.txt", nucleon_resonance) << "\n";
+        std::ifstream ifs(FORMAT("./data/dyson_factors/{}_breit_wigner.txt", nucleon_resonance));
+        std::cout << FORMAT("./data/dyson_factors/{}_breit_wigner.txt", nucleon_resonance) << "\n";
 		auto const& Np = p_string(nucleon_resonance);
 		auto const& Nn = n_string(nucleon_resonance);
 		if( P.exists(Np) ){
@@ -106,8 +106,8 @@ int main(int argc, char** argv)
 		}
 	}
 	for( auto const& delta_resonance : delta_resonances ){
-        std::ifstream ifs(FORMAT("./data/dyson_factors/{}.txt", delta_resonance));
-        std::cout << FORMAT("./data/dyson_factors/{}.txt", delta_resonance) << "\n";
+        std::ifstream ifs(FORMAT("./data/dyson_factors/{}_breit_wigner.txt", delta_resonance.substr(0, 5)));
+        std::cout << FORMAT("./data/dyson_factors/{}_breit_wigner.txt", delta_resonance.substr(0, 5)) << "\n";
 		auto const& Dpp = pp_string(delta_resonance);
 		auto const& Dp  = p_string(delta_resonance);
 		auto const& Dn  = n_string(delta_resonance);
@@ -165,9 +165,10 @@ int main(int argc, char** argv)
 		}
 
 		for( auto const& particle : particles ){
-		    if( particle->exists_user_data("dyson_factor") ){
+		    if( particle->exists_user_data("dyson_factors") ){
                 particle->width([&](double p2){
-                    return particle->user_data<Table>("dyson_factor").interpolate(std::sqrt(p2));
+                    auto result = particle->user_data<Table>("dyson_factors").interpolate(std::sqrt(p2));
+                    return result;
                 });
 		    }
 			else{

@@ -16,12 +16,13 @@
 
 #include "effective_lagrangian_model.hpp"
 #include "form_factors.hpp"
-#include "coupling_constants.hpp"
 
 using Feynumeric::Particle;
 using Feynumeric::Matrix;
 
 Feynumeric::Vertex_Manager_Ptr VMP = std::make_shared<Feynumeric::Vertex_Manager>();
+
+Couplings couplings("data/coupling_constants_isospin_symmetry.txt");
 
 Feynumeric::Matrix gamma5(int lorentz_parity, int particle_parity){
 	return lorentz_parity == particle_parity ? Matrix(1,1,1) : Feynumeric::GA5;
@@ -33,25 +34,6 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 
 	Feynumeric::QED::init_vertices();
 	VMP->import(*Feynumeric::QED::VMP);
-
-	std::map<std::string, double> coupling_constants;
-	std::string const file_name = "data/coupling_constants_isospin_symmetry.txt";
-	std::ifstream ifs(file_name);
-	if( !ifs ){
-	    Feynumeric::critical_error(FORMAT("Could not open {}.", file_name));
-	}
-
-	std::string buffer;
-	while( std::getline(ifs, buffer) ){
-        std::string key;
-        double value;
-        std::stringstream sstream(buffer);
-        sstream >> key >> value;
-        coupling_constants[key] = value;
-        std::cout << key << "/" << value << "\n";
-	}
-
-	std::cout << coupling_constants.size() << "\n";
 
 	VMP->add(Feynumeric::Vertex(
 			{
@@ -95,7 +77,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 					{P["Pion"]},
 					{P["Rho"]}
 			},
-			[coupling_constants](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+			[](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
 				using namespace Feynumeric;
 				auto const& piP = edges[0];
 				auto const& piM = edges[1];
@@ -104,7 +86,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& q = piP->particle()->charge() >= 0? piM->four_momentum(kin) : piP->four_momentum(kin);
 				auto mu = rho->lorentz_indices()[0];
 				//auto const g = rho->particle()->user_data<double>("g_pipi");
-				auto const g = coupling_constants.at("grhopipi");
+                auto const coupl_str = coupling_string("Rho", "Pion", "Pion");
+                auto const g = couplings.get(coupl_str);
 				//int l = static_cast<int>(R->particle()->user_data<double>("l"));
 				//auto isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
 				return g * (p-q).co(mu);
@@ -124,7 +107,9 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
                 auto const& f0  = edges[2];
                 auto const& p = f0->four_momentum(kin);
                 auto const m = piP->particle()->mass();
-                auto const g = f0->particle()->user_data<double>("g_pipi");
+                //auto const g = f0->particle()->user_data<double>("g_pipi");
+                auto const coupl_str = coupling_string("f0_500", "Pion", "Pion");
+                auto const g = couplings.get(coupl_str);
                 return Matrix(1, 1, g/m * p.squared());
             }
     ));
@@ -140,7 +125,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& R = edges[0];
 				auto const& N = edges[1];
 				auto const& pi = edges[2];
-				auto const g = R->particle()->user_data<double>("gRNpi");
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), "N", "Pion");
+				auto const g = couplings.get(coupl_str);
 				auto const m_pi = pi->particle()->mass();
 				auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
 				int const lorentz_parity = 1;
@@ -149,6 +135,32 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				return -g / m_pi * iso * gamma5(lorentz_parity, particle_parity) * GS(pi->four_momentum(kin));
 			}
 	));
+
+    VMP->add(Feynumeric::Vertex(
+            {
+                    {P["R12"]},
+                    {P["R12"]},
+                    {P["Pion"]}
+            },
+            [](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                auto const& R = edges[0];
+                auto const& N = edges[1];
+                auto const& pi = edges[2];
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), "N", "Pion");
+                auto const g = couplings.get(coupl_str);
+                auto const m_pi = pi->particle()->mass();
+                auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
+                int const lorentz_parity = 1;
+                auto const& pR = R->four_momentum(kin);
+                auto const& pN = N->four_momentum(kin);
+                auto form_factor1 = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), pi->particle(), pR.E().real());
+                auto form_factor2 = N->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(N->particle(), R->particle(), pi->particle(), pN.E().real());
+                int const particle_parity = R->particle()->parity() * N->particle()->parity() * pi->particle()->parity();
+                //auto isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
+                return -g / m_pi * form_factor1 * form_factor2 * iso * gamma5(lorentz_parity, particle_parity) * GS(pi->four_momentum(kin));
+            }
+    ));
 
 	VMP->add(Feynumeric::Vertex(
 			{
@@ -161,7 +173,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& R = edges[0];
 				auto const& N = edges[1];
 				auto const& f0 = edges[2];
-				auto const g = R->particle()->user_data<double>("gRNf0_500");
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), "N", "f0_500");
+                auto const g = couplings.get(coupl_str);
 				auto const m_pi = P.get("pi0")->mass();
 				int const lorentz_parity = 1;
 				int const particle_parity = R->particle()->parity() * N->particle()->parity() * f0->particle()->parity();
@@ -180,7 +193,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
                 auto const& R = edges[0];
                 auto const& N = edges[1];
                 auto const& eta = edges[2];
-                auto const g = R->particle()->user_data<double>("gRNeta");
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), "N", "eta");
+                auto const g = couplings.get(coupl_str);
                 auto const m_pi = P.get("pi0")->mass();
                 int const lorentz_parity = 1;
                 int const particle_parity = R->particle()->parity() * N->particle()->parity() * eta->particle()->parity();
@@ -199,7 +213,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& R = edges[0];
 				auto const& N = edges[1];
 				auto const& gamma = edges[2];
-				auto const g = R->particle()->user_data<double>("gRNphoton");
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), N->particle()->name(), gamma->particle()->name());
+                auto const g = couplings.get(coupl_str);
 				auto const m_rho = P["rho0"]->mass();
 				return -g/m_rho * dirac_sigmac(gamma->four_momentum(kin), gamma->lorentz_indices()[0]);
 			}
@@ -220,7 +235,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto mu = R->lorentz_indices()[0];
 				auto const& pR = R->four_momentum(kin);
 				auto const& pPi = pi->four_momentum(kin);
-				auto const g = R->particle()->user_data<double>("gRNpi");
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), "N", "Pion");
+                auto const g = couplings.get(coupl_str);
 				auto const m_pi = pi->particle()->mass();
 				//auto const isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
 				auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
@@ -237,7 +253,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
                     {P["N"]},
                     {P["eta"]}
             },
-            [](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+            [&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
                 using namespace Feynumeric;
                 static auto const Identity = Matrix(4, 4, 1);
                 auto const& R = edges[0];
@@ -246,14 +262,13 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
                 auto mu = R->lorentz_indices()[0];
                 auto const& pR = R->four_momentum(kin);
                 auto const& pPi = eta->four_momentum(kin);
-                auto const g = R->particle()->user_data<double>("gRNeta");
-                auto const m_pi = eta->particle()->mass();
-                //auto const isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
-                //auto const iso = (R->back() == N->front()) ? isospin(R, N, eta) : isospin(N, R, eta);
-                //auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), eta->particle(), pR.E().real());
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), "N", "eta");
+                auto const g = couplings.get(coupl_str);
+                auto const m_pi = P.get("pi0")->mass();
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), eta->particle(), pR.E().real());
                 int l = static_cast<int>(R->particle()->user_data<double>("l"));
                 Complex phase = std::exp(2.i * M_PI/360. * R->particle()->user_data<double>("phase"));
-                return -1.i * phase * g/(m_pi*m_pi) * O32c(pR, pPi, mu) * gamma5(l, R->particle()->parity());
+                return -1.i * phase * form_factor * g / (m_pi * m_pi) * O32c(pR, pPi, mu) * gamma5(l, R->particle()->parity());
             }
     ));
 
@@ -273,9 +288,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
                 auto const& pR = R->four_momentum(kin);
                 auto const& pN = N->four_momentum(kin);
                 auto const& pPi = pi->four_momentum(kin);
-                std::array<std::string, 2> names{R->particle()->name().substr(0, 5), N->particle()->name().substr(0, 5)};
-                std::sort(names.begin(), names.end());
-                auto const g = R->particle()->user_data<double>(FORMAT("g{}{}pi", names[0], names[1]));
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), N->particle()->name().substr(0, 5), "Pion");
+                auto const g = couplings.get(coupl_str);
                 auto const m_pi = pi->particle()->mass();
                 //auto const isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
                 auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
@@ -305,7 +319,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& pRin = Rin->four_momentum(kin);
 				auto const& pPi = pi->four_momentum(kin);
 
-				auto const g = Rout->particle()->user_data<double>("gD1232N1520pi");
+                auto const coupl_str = coupling_string(Rout->particle()->name().substr(0, 5), Rin->particle()->name().substr(0, 5), "Pion");
+                auto const g = couplings.get(coupl_str);
 				auto const m_pi = pi->particle()->mass();
 				//auto const isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
 				auto const iso = isospin(Rout, Rin, pi);
@@ -332,7 +347,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto lambda = R->lorentz_indices()[0];
 				auto const& pR = R->four_momentum(kin);
 				auto const& pPhoton = photon->four_momentum(kin);
-				auto const g = R->particle()->user_data<double>("gRNphoton");
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), N->particle()->name(), photon->particle()->name());
+                auto const g = couplings.get(coupl_str);
 				auto const m_rho = P["rho0"]->mass();
 				auto result = 1.i * g/(4*m_rho*m_rho) * CONTRACT_MATRIX(O32c(pPhoton, mu, kappa) * O32c(pR, mu, lambda) * MT[*mu][*mu], mu);
 				return result;
@@ -355,7 +371,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto lambda = R->lorentz_indices()[0];
 				auto const& pR = R->four_momentum(kin);
 				auto const& pPhoton = photon->four_momentum(kin);
-				auto const g = R->particle()->user_data<double>("gRNphoton");
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), N->particle()->name(), photon->particle()->name());
+                auto const g = couplings.get(coupl_str);
 				auto const m_rho = P["rho0"]->mass();
 				auto result = 1.i * g/(4*m_rho*m_rho) *  CONTRACT_MATRIX(O32c(pR, mu, lambda) * O32c(pPhoton, mu, kappa) * MT[*mu][*mu], mu);
 				return result;
@@ -378,7 +395,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto lambda = R->lorentz_indices()[0];
 				auto const& pR = R->four_momentum(kin);
 				auto const& pRho = rho->four_momentum(kin);
-				auto const g = R->particle()->user_data<double>("gRNphoton");
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), "N", "Rho");
+                auto const g = couplings.get(coupl_str);
 				auto const m_rho = rho->particle()->mass();
 				auto result = 1.i * g/(4*m_rho*m_rho) * CONTRACT_MATRIX(O32c(pRho, mu, kappa) * O32c(pR, mu, lambda) * MT[*mu][*mu], mu);
 				return result;
@@ -401,7 +419,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto lambda = R->lorentz_indices()[0];
 				auto const& pR = R->four_momentum(kin);
 				auto const& pRho = Rho->four_momentum(kin);
-				auto const g = R->particle()->user_data<double>("gRNphoton");
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), "N", "Rho");
+                auto const g = couplings.get(coupl_str);
 				auto const m_rho = Rho->particle()->mass();
 				auto result = 1.i * g/(4*m_rho*m_rho) *  CONTRACT_MATRIX(O32c(pR, mu, lambda) * O32c(pRho, mu, kappa) * MT[*mu][*mu], mu);
 				return result;

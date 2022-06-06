@@ -31,7 +31,7 @@ namespace Feynumeric{
 
 	std::ofstream& operator<<(std::ofstream& out, Table const& table){
 		for( auto const& [key, value] : table._values ){
-			out << FORMAT("{}, {}\n", key, value);
+			out << FORMAT("{} {}\n", key, value);
 		}
 		return out;
 	}

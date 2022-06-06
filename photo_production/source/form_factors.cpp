@@ -13,6 +13,8 @@ std::string const CMD_FORM_FACTOR_MONIZ          = "moniz";
 std::string const CMD_FORM_FACTOR_BREIT_WIGNER   = "breit_wigner";
 std::string const CMD_FORM_FACTOR_GAUSSIAN       = "gaussian";
 std::string const CMD_FORM_FACTOR_MULTIPOL_GAUSS = "multipolgauss";
+std::string const CMD_FORM_FACTOR_RAYLEIGH       = "rayleigh";
+std::string const CMD_FORM_FACTOR_INVERSE_GAUSS  = "inverse_gaussian";
 
 FORM_FACTOR_FUNCTION identity = [](Feynumeric::Particle_Ptr const&, Feynumeric::Particle_Ptr const&, Feynumeric::Particle_Ptr const&, double){
 	return 1.;
@@ -70,7 +72,7 @@ FORM_FACTOR_FUNCTION cutkosky = [](Feynumeric::Particle_Ptr const& R, Feynumeric
 };
 
 FORM_FACTOR_FUNCTION breit_wigner = [](Feynumeric::Particle_Ptr const& R, Feynumeric::Particle_Ptr const& N, Feynumeric::Particle_Ptr const& pi, double E){
-	double const l = 0.8;//4*R->spin().j()*R->width();
+	double const l = 0.7;//4*R->spin().j()*R->width();
 	double const l4 = std::pow(l, 4);
 	double const b = E - R->mass();
 	double const c = 1.;
@@ -109,6 +111,20 @@ FORM_FACTOR_FUNCTION gaussian = [](Feynumeric::Particle_Ptr const& R, Feynumeric
     return std::exp(-std::pow(E*E - R->mass() * R->mass(), 2)/(std::pow(0.7, 4)));
 };
 
+FORM_FACTOR_FUNCTION rayleigh = [](Feynumeric::Particle_Ptr const& R, Feynumeric::Particle_Ptr const& N, Feynumeric::Particle_Ptr const& pi, double E)
+{
+    auto l = 0.61;
+    auto l4 = std::pow(l, 4);
+    auto kin_limit = 0.95*(N->mass() + pi->mass());
+    return (R->mass() - kin_limit)/(E - kin_limit) * std::exp(-std::pow(E*E - R->mass() * R->mass(), 2)/l4);
+};
+
+FORM_FACTOR_FUNCTION inverse_gaussian = [](Feynumeric::Particle_Ptr const& R, Feynumeric::Particle_Ptr const& N, Feynumeric::Particle_Ptr const& pi, double E)
+{
+    auto l = 10.;
+    return std::pow(E/R->mass(), -1.5) * std::exp(-l * std::pow(E-R->mass(), 2) / (R->mass() * E));
+};
+
 FORM_FACTOR_FUNCTION multipol_gauss = [](Feynumeric::Particle_Ptr const& R, Feynumeric::Particle_Ptr const& N, Feynumeric::Particle_Ptr const& pi, double E){
     auto Gamma_tilde = R->width() / std::sqrt(std::pow(2, 1./(2*R->spin().j()*2)-1));
     auto M2 = R->mass() * R->mass();
@@ -128,5 +144,7 @@ std::map<std::string, FORM_FACTOR_FUNCTION> ff_dict = {
         {CMD_FORM_FACTOR_CASSING, cassing},
         {CMD_FORM_FACTOR_BREIT_WIGNER, breit_wigner},
         {CMD_FORM_FACTOR_GAUSSIAN, gaussian},
-        {CMD_FORM_FACTOR_MANLEY, manley}
+        {CMD_FORM_FACTOR_MANLEY, manley},
+        {CMD_FORM_FACTOR_RAYLEIGH, rayleigh},
+        {CMD_FORM_FACTOR_INVERSE_GAUSS, inverse_gaussian}
 };

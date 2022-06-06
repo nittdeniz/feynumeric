@@ -135,12 +135,12 @@ branching_N_pi_pi 10%
 branching_N_D1232_pi_upper 4%
 branching_N_D1232_pi_lower 1%
 branching_N_D1232_pi 1%
-branching_N_sigma_upper 10%
-branching_N_sigma_lower 2%
-branching_N_sigma 5%
-branching_N1440_pi_upper 12%
-branching_N1440_pi_lower 5%
-branching_N1440_pi 6%
+branching_N_pipi_f500_upper 10%
+branching_N_pipi_f500_lower 2%
+branching_N_pipi_f500 5%
+branching_N1440_pipi_upper 12%
+branching_N1440_pipi_lower 5%
+branching_N_pipi_N1440 6%
 branching_N_rho_upper 0%
 branching_N_rho_lower 0%
 branching_N_eta_upper 55%
@@ -771,13 +771,15 @@ mass 1570MeV
 width 250MeV
 branching_N_pi_upper 24%
 branching_N_pi_lower 8%
-branching_N_pi 16%
+branching_N_pi 12%
 branching_N_pi_pi_upper 90%
 branching_N_pi_pi_lower 75%
-branching_N_D1232_pi_upper 83%
-branching_N_D1232_pi_lower 73%
-branching_N_N1440_pi_upper 25%
-branching_N_N1440_pi_lower 15%
+branching_D1232_pi_upper 83%
+branching_D1232_pi_lower 73%
+branching_D1232_pi_pi 73%
+branching_N1440_pi_upper 25%
+branching_N1440_pi_lower 15%
+branching_N1440_pi 15%
 branching_proton_photon_upper 0.035%
 branching_proton_photon_lower 0.001%
 branching_proton_photon 0.018%
@@ -1193,27 +1195,26 @@ gRNphoton 0
 @group Pion
 type Meson
 spin 0
+mass 138.03919MeV
 
 @particle pi+
 group Pion
 type AntiMeson
 charge 1
 isospin 1 1
-mass 138.03919MeV
+
 
 @particle pi-
 group Pion
 type TrueMeson
 charge -1
 isospin 1 -1
-mass 138.03919MeV
 
 @particle pi0
 group Pion
 type NeutralMeson
 charge 0
 isospin 1 0
-mass 138.03919MeV
 
 @group Rho
 type Meson
