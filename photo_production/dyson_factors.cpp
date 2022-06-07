@@ -3,9 +3,9 @@
 #include "form_factors.hpp"
 #include <omp.h>
 
-#define D1232 1
-#define N1440 1
-#define N1520 1
+#define D1232 0
+#define N1440 0
+#define N1520 0
 #define N1535 1
 #define D1600 1
 
@@ -78,6 +78,13 @@ int main(int argc, char** argv)
     double const start = cmd.as_double("start");
     double const end   = cmd.as_double("end");
     int    const steps = cmd.as_int("steps");
+
+    std::vector<double> values;
+    values.reserve(steps+1);
+    for( int i = 0; i <= steps; ++i ){
+        values.push_back(start + (end - start) / steps * i);
+    }
+
     std::cout << FORMAT("start: {} end: {} steps: {}\n", start, end, steps);
     #if D1232
     {/// D1232 -> Npi
@@ -92,8 +99,8 @@ int main(int argc, char** argv)
         );
         Feynman_Process decay({decay_1});
         std::map<double, double> dyson_factor;
-        for( int i = 0; i <= steps; ++i ){
-            double value = start + ((end - start) / steps) * i;
+        values.back() = dummypp->mass();
+        for( auto const& value : values ){
             dummypp->mass(value);
             auto temp = decay.decay_width();// /Gamma0;
             dyson_factor[value] = std::isnan(temp)? 0 : temp;
@@ -167,8 +174,9 @@ int main(int argc, char** argv)
         Feynman_Process decay_pipi3({diagram_pipi_7, diagram_pipi_8});
 
         std::map<double, double> dyson_factor;
-        for( int i = 0; i <= steps; ++i ){
-            double value = start + (end - start) / steps * i;
+        values.back() = dummy->mass();
+        std::size_t i{0};
+        for( auto const& value : values ){
             dummy->mass(value);
             auto temp1 = decay_pi1.decay_width();
             auto temp2 = decay_pi2.decay_width();
@@ -183,10 +191,8 @@ int main(int argc, char** argv)
             temp5 = std::isnan(temp5) ? 0  : temp5;
 
             dyson_factor[value] = temp1 + temp2 + temp3 + temp4 + temp5;
-            if( i%20 == 0 ){
-                std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                std::cout << FORMAT("{} N1440 {} / {}\n", std::ctime(&time), i, steps) << std::flush;
-            }
+            std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            std::cout << FORMAT("{} {} {} / {}: {} - {}\n", std::ctime(&time), dummy->name(), i++, steps+1, value, dyson_factor[value]) << std::flush;
         }
         Table(dyson_factor).write(FORMAT("data/dyson_factors/N1440_{}.txt", ff_str));
     }
@@ -232,18 +238,17 @@ int main(int argc, char** argv)
 
         std::map<double, double> dyson_factor;
 
-        for( int i = 0; i <= steps; ++i ){
-            double value = start + (end - start) / steps * i;
+        values.back() = dummy->mass();
+        std::size_t i{0};
+        for( auto const& value : values ){
             dummy->mass(value);
             auto temp1 = copies_pi[i].decay_width();// / Gamma0_1;
             temp1 = std::isnan(temp1) ? 0  : temp1;
             auto temp2 = copies_pipi[i].decay_width();// / Gamma0_2;
             temp2 = std::isnan(temp2) ? 0  : temp2;
             dyson_factor[value] = temp1 + temp2;
-            if( i%20 == 0 ){
-                std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                std::cout << FORMAT("{} N1520 {} / {} core: {}\n", std::ctime(&time), i, steps, omp_get_thread_num()) << std::flush;
-            }
+            std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            std::cout << FORMAT("{} {} {} / {}: {} - {}\n", std::ctime(&time), dummy->name(), i++, steps+1, value, dyson_factor[value]) << std::flush;
         }
 		Table(dyson_factor).write(FORMAT("data/dyson_factors/N1520_{}.txt", ff_str));
 	}
@@ -255,26 +260,26 @@ int main(int argc, char** argv)
         dummy->user_data("form_factor", identity);
         /** N1535 -> Npi **/
         auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi0", dummy->name()), Decay_1_to_2, VMP,
-                                         {dummy},
-                                         {},
-                                         {Proton, Pi_Zero}
+                                          {dummy},
+                                          {},
+                                          {Proton, Pi_Zero}
         );
         auto diagram_pi2 = create_diagram(FORMAT("decay {} to neutron pi+", dummy->name()), Decay_1_to_2, VMP,
-                                         {dummy},
-                                         {},
-                                         {Neutron, Pi_Plus}
+                                          {dummy},
+                                          {},
+                                          {Neutron, Pi_Plus}
         );
         /** N1535 -> Neta **/
         auto diagram_eta = create_diagram(FORMAT("decay {} to proton eta", dummy->name()), Decay_1_to_2, VMP,
-                                         {dummy},
-                                         {},
-                                         {Proton, P.get("eta")}
+                                          {dummy},
+                                          {},
+                                          {Proton, P.get("eta")}
         );
         /** N1535 -> Npipi **/
         auto diagram_pip_pim_1 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi-", dummy->name()), Decay_1_to_M2_1, VMP,
-                                            {dummy},
-                                            {P.get("D1232pp")},
-                                            {Proton, Pi_Plus, Pi_Minus}
+                                                {dummy},
+                                                {P.get("D1232pp")},
+                                                {Proton, Pi_Plus, Pi_Minus}
         );
         auto diagram_pip_pim_2 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi-", dummy->name()), Decay_1_to_M2_1_cross, VMP,
                                                 {dummy},
@@ -304,12 +309,12 @@ int main(int argc, char** argv)
                                                 {P.get("D1232n")},
                                                 {Neutron, Pi_Plus, Pi_Zero}
         );
-        auto diagram_pip_pi0_3 = create_diagram(FORMAT("decay {} -> N1440p -> p pi+pi-", dummy->name()), Decay_1_to_M2_1, VMP,
+        auto diagram_pip_pi0_3 = create_diagram(FORMAT("decay {} -> N1440p -> n pi+pi0", dummy->name()), Decay_1_to_M2_1, VMP,
                                                 {dummy},
                                                 {P.get("N1440p")},
-                                                {Neutron, Pi_Plus, Pi_Minus}
+                                                {Neutron, Pi_Plus, Pi_Zero}
         );
-        auto diagram_pip_pi0_4 = create_diagram(FORMAT("decay {} -> N1440n -> p pi+pi-", dummy->name()), Decay_1_to_M2_1_cross, VMP,
+        auto diagram_pip_pi0_4 = create_diagram(FORMAT("decay {} -> N1440n -> p pi+pi0", dummy->name()), Decay_1_to_M2_1_cross, VMP,
                                                 {dummy},
                                                 {P.get("N1440n")},
                                                 {Neutron, Pi_Plus, Pi_Zero}
@@ -318,9 +323,9 @@ int main(int argc, char** argv)
 
 
         auto diagram_pi0_pi0_1 = create_diagram(FORMAT("decay {} -> D1232 -> p pi0pi0", dummy->name()), Decay_1_to_M2_1, VMP,
-                                            {dummy},
-                                            {P.get("D1232p")},
-                                            {Proton, Pi_Zero, Pi_Zero}
+                                                {dummy},
+                                                {P.get("D1232p")},
+                                                {Proton, Pi_Zero, Pi_Zero}
         );
         auto diagram_pi0_pi0_2 = create_diagram(FORMAT("decay {} -> D1232 -> p pi0pi0", dummy->name()), Decay_1_to_M2_1_cross, VMP,
                                                 {dummy},
@@ -353,22 +358,90 @@ int main(int argc, char** argv)
         processes.push_back(Feynman_Process({diagram_pip_pi0_1, diagram_pip_pi0_2, diagram_pip_pi0_3, diagram_pip_pi0_4}));
 
         std::map<double, double> dyson_factor;
-        for( int i = 0; i <= steps; ++i ){
-            double value = start + (end - start) / steps * i;
+        values.back() = dummy->mass();
+        std::size_t i{0};
+        for( auto const& value : values ){
             dummy->mass(value);
             for( auto& process : processes ){
                 auto temp = process.decay_width();
                 dyson_factor[value] += std::isnan(temp)? 0 : temp;
             }
-            if( i%20 == 0 ){
-                std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                std::cout << FORMAT("{} N1535 {} / {}\n", std::ctime(&time), i, steps) << std::flush;
-            }
+            std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            std::cout << FORMAT("{} {} {} / {}: {} - {}\n", std::ctime(&time), dummy->name(), i++, steps+1, value, dyson_factor[value]) << std::flush;
         }
         Table(dyson_factor).write(FORMAT("data/dyson_factors/N1535_{}.txt", ff_str));
     }
+#if D1600
+    {
+        std::cout << "D1600\n";
+        auto dummy = std::make_shared<Particle>(*P.get("D1600pp"));
+        dummy->user_data("form_factor", identity);
+        /** D1600 -> Npi **/
+        auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi+", dummy->name()), Decay_1_to_2, VMP,
+                                         {dummy},
+                                         {},
+                                         {Proton, Pi_Plus}
+        );
+        /** D1600 -> Npipi **/
+        auto diagram_pip_pin_1 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi0 1", dummy->name()), Decay_1_to_M2_1, VMP,
+                                            {dummy},
+                                            {P.get("D1232pp")},
+                                            {Proton, Pi_Plus, Pi_Zero}
+        );
+        auto diagram_pip_pin_2 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi0 2", dummy->name()), Decay_1_to_M2_1_cross, VMP,
+                                                {dummy},
+                                                {P.get("D1232p")},
+                                                {Proton, Pi_Plus, Pi_Zero}
+        );
+        auto diagram_pip_pin_3 = create_diagram(FORMAT("decay {} -> N1440 -> p pi+pi0 3", dummy->name()), Decay_1_to_M2_1_cross, VMP,
+                                                {dummy},
+                                                {P.get("N1440p")},
+                                                {Proton, Pi_Plus, Pi_Zero}
+        );
 
-    #endif
-    #if D1600
+        auto diagram_pip_pip_1 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi+ 1", dummy->name()), Decay_1_to_M2_1, VMP,
+                                                {dummy},
+                                                {P.get("D1232p")},
+                                                {Neutron, Pi_Plus, Pi_Plus}
+        );
+        auto diagram_pip_pip_2 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi+ 2", dummy->name()), Decay_1_to_M2_1_cross, VMP,
+                                                {dummy},
+                                                {P.get("D1232p")},
+                                                {Neutron, Pi_Plus, Pi_Plus}
+        );
+        auto diagram_pip_pip_3 = create_diagram(FORMAT("decay {} -> N1440 -> p pi+pi+ 3", dummy->name()), Decay_1_to_M2_1, VMP,
+                                                {dummy},
+                                                {P.get("N1440p")},
+                                                {Neutron, Pi_Plus, Pi_Plus}
+        );
+        auto diagram_pip_pip_4 = create_diagram(FORMAT("decay {} -> N1440 -> p pi+pi+ 4", dummy->name()), Decay_1_to_M2_1_cross, VMP,
+                                                {dummy},
+                                                {P.get("N1440p")},
+                                                {Neutron, Pi_Plus, Pi_Plus}
+        );
+
+
+
+        std::vector<Feynman_Process> processes;
+        processes.push_back(Feynman_Process({diagram_pi1}));
+        processes.push_back(Feynman_Process({diagram_pip_pin_1, diagram_pip_pin_2, diagram_pip_pin_3}));
+        processes.push_back(Feynman_Process({diagram_pip_pip_1, diagram_pip_pip_2, diagram_pip_pip_3, diagram_pip_pip_4}));
+
+        std::map<double, double> dyson_factor;
+        values.back() = dummy->mass();
+        std::size_t i{0};
+        for( auto const& value : values ){
+            dummy->mass(value);
+            for( auto& process : processes ){
+                auto temp = process.decay_width();
+                dyson_factor[value] += std::isnan(temp)? 0 : temp;
+            }
+            std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            std::cout << FORMAT("{} {} {} / {}: {} - {}\n", std::ctime(&time), dummy->name(), i++, steps+1, value, dyson_factor[value]) << std::flush;
+        }
+        Table(dyson_factor).write(FORMAT("data/dyson_factors/D1600_{}.txt", ff_str));
+    }
+
+#endif
     #endif
 }
