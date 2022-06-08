@@ -75,7 +75,7 @@ int main(int argc, char** argv)
     int    const steps = cmd.as_int("steps");
 
     std::vector<double> values;
-    values.resize(steps+1);
+    values.resize(steps+2);
     for( int i = 0; i <= steps; ++i ){
         values[i] = (start + (end - start) / steps * i);
     }

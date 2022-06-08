@@ -618,21 +618,26 @@ l 3
 group D1950
 isospin 3/2 3/2
 charge 2
+
 @particle D1950p
 group D1950
 isospin 3/2 1/2
 charge 1
+
 @particle D1950n
 group D1950
 isospin 3/2 -1/2
 charge 0
+
 @particle D1950m
 group D1950
 isospin 3/2 -3/2
 charge -1
+
 @group Pion
 type Meson
 spin 0
+parity -1
 mass 138.03919MeV
 
 @particle pi+
