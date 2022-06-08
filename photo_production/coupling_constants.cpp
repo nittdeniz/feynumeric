@@ -681,7 +681,7 @@ int main(int argc, char** argv)
         auto w1 = decay_Np1.decay_width();
         auto w2 = decay_Np2.decay_width();
         auto w3 = decay_Np3.decay_width();
-        double const literature_value = P.get("D1620")->width() * P.get("D1620")->user_data<double>("branching_N1440_pi");
+        double const literature_value = P.get("D1620")->width() * P.get("D1620")->user_data<double>("branching_N1440_pi_pi");
 
         auto const g = std::sqrt(literature_value / ( w1 + w2 + w3 ));
         couplings.set(coupl_str, g);

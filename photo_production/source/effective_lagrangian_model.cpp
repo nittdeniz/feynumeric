@@ -226,6 +226,26 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 			}
 	));
 
+    VMP->add(Feynumeric::Vertex(
+            {
+                    {P["R12"]},
+                    {P["N"]},
+                    {P.get("Rho")}
+            },
+            [&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                auto const& R = edges[0];
+                auto const& N = edges[1];
+                auto const& Rho = edges[2];
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), N->particle()->name(), Rho->particle()->name());
+                auto const g = couplings.get(coupl_str);
+                auto const m_rho = Rho->particle()->mass();
+                auto const pR = R->four_momentum(kin);
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), Rho->particle(), pR.E().real());
+                return -g/m_rho * form_factor * dirac_sigmac(Rho->four_momentum(kin), Rho->lorentz_indices()[0]);
+            }
+    ));
+
 	VMP->add(Feynumeric::Vertex(
 			{
 					{P["R32"]},

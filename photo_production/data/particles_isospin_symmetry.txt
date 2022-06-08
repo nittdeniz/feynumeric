@@ -813,8 +813,6 @@ gRNphoton 0.09623079036
 group D1600
 isospin 3/2 -3/2
 charge -1
-gRNpi 0.03929034772
-gRNphoton 0
 
 @group D1620
 group R12
@@ -822,20 +820,12 @@ parity -1
 phase 0
 mass 1610MeV
 width 130MeV
-branching_N_pi_upper 35%
-branching_N_pi_lower 25%
-branching_N_pi 20%
-branching_N_pi_pi_upper 80%
-branching_N_pi_pi_lower 55%
-branching_N_D1232_pi_upper 72%
-branching_N_D1232_pi_lower 52%
-branching_N1440_pi_upper 9%
-branching_N1440_pi_upper 3%
-branching_proton_photon_upper 0.1%
-branching_proton_photon_lower 0.03%
+branching_N_pi 30%
+branching_N_pi_pi 70%
+branching_N_D1232_pi_pi 44%
+branching_N_Rho_pi_pi 22%
+branching_N1440_pi_pi 0%
 branching_proton_photon 0.07%
-branching_neutron_photon_upper 0.1%
-branching_neutron_photon_lower 0.03%
 branching_neutron_photon 0.07%
 l 0
 
