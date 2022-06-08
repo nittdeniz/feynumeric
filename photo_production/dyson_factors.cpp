@@ -3,12 +3,6 @@
 #include "form_factors.hpp"
 #include <omp.h>
 
-#define D1232 0
-#define N1440 0
-#define N1520 0
-#define N1535 0
-#define D1600 0
-#define D1620 1
 
 int main(int argc, char** argv)
 {
@@ -81,13 +75,21 @@ int main(int argc, char** argv)
     int    const steps = cmd.as_int("steps");
 
     std::vector<double> values;
-    values.reserve(steps+1);
+    values.resize(steps+1);
     for( int i = 0; i <= steps; ++i ){
-        values.push_back(start + (end - start) / steps * i);
+        values[i] = (start + (end - start) / steps * i);
     }
 
+	bool D1232 = cmd.is_enabled("D1232");
+    bool D1600 = cmd.is_enabled("D1600");
+    bool D1620 = cmd.is_enabled("D1620");
+    bool D1700 = cmd.is_enabled("D1700");
+    bool N1440 = cmd.is_enabled("N1440");
+    bool N1520 = cmd.is_enabled("N1520");
+    bool N1535 = cmd.is_enabled("N1535");
+
     std::cout << FORMAT("start: {} end: {} steps: {}\n", start, end, steps);
-    #if D1232
+    if( D1232 )
     {/// D1232 -> Npi
         std::cout << "D1232\n";
         auto dummypp = std::make_shared<Particle>(*P.get("D1232pp"));
@@ -108,8 +110,7 @@ int main(int argc, char** argv)
         }
 		Table(dyson_factor).write(FORMAT("data/dyson_factors/D1232_{}.txt", ff_str));
     }
-    #endif
-    #if N1440
+    if( N1440 )
     {   /// N1440 -> Npi and N1440 -> Npipi
         std::cout << "N1440\n";
         auto dummy = std::make_shared<Particle>(*P.get("N1440p"));
@@ -197,8 +198,7 @@ int main(int argc, char** argv)
         }
         Table(dyson_factor).write(FORMAT("data/dyson_factors/N1440_{}.txt", ff_str));
     }
-    #endif
-    #if N1520
+    if( N1520 )
 	{/// N1520 -> Npi and N1520 -> Npipi
 	    std::cout << "N1520\n";
 		auto dummy = std::make_shared<Particle>(*P.get("N1520p"));
@@ -253,8 +253,7 @@ int main(int argc, char** argv)
         }
 		Table(dyson_factor).write(FORMAT("data/dyson_factors/N1520_{}.txt", ff_str));
 	}
-    #endif
-    #if N1535
+    if( N1535 )
     {
         std::cout << "N1535\n";
         auto dummy = std::make_shared<Particle>(*P.get("N1535p"));
@@ -372,8 +371,7 @@ int main(int argc, char** argv)
         }
         Table(dyson_factor).write(FORMAT("data/dyson_factors/N1535_{}.txt", ff_str));
     }
-    #endif
-    #if D1600
+    if( D1600 )
     {
         std::cout << "D1600\n";
         auto dummy = std::make_shared<Particle>(*P.get("D1600pp"));
@@ -443,8 +441,7 @@ int main(int argc, char** argv)
         }
         Table(dyson_factor).write(FORMAT("data/dyson_factors/D1600_{}.txt", ff_str));
     }
-    #endif
-    #if D1620
+    if( D1620 )
     {
         std::cout << "D1620\n";
         auto dummy = std::make_shared<Particle>(*P.get("D1620pp"));
@@ -466,12 +463,8 @@ int main(int argc, char** argv)
                                                 {P.get("D1232p")},
                                                 {Proton, Pi_Plus, Pi_Zero}
         );
-        auto diagram_pip_pin_3 = create_diagram(FORMAT("decay {} -> N1440 -> p pi+pi0 3", dummy->name()), Decay_1_to_M2_1_cross, VMP,
-                                                {dummy},
-                                                {P.get("N1440p")},
-                                                {Proton, Pi_Plus, Pi_Zero}
-        );
-        auto diagram_pip_pin_4 = create_diagram(FORMAT("decay {} -> Rho -> p pi+pi0 4", dummy->name()), Decay_1_to_1_M2, VMP,
+
+        auto diagram_pip_pin_3 = create_diagram(FORMAT("decay {} -> Rho -> p pi+pi0 4", dummy->name()), Decay_1_to_1_M2, VMP,
                                                 {dummy},
                                                 {P.get("rho+")},
                                                 {Proton, Pi_Plus, Pi_Zero}
@@ -487,23 +480,13 @@ int main(int argc, char** argv)
                                                 {P.get("D1232p")},
                                                 {Neutron, Pi_Plus, Pi_Plus}
         );
-        auto diagram_pip_pip_3 = create_diagram(FORMAT("decay {} -> N1440 -> p pi+pi+ 3", dummy->name()), Decay_1_to_M2_1, VMP,
-                                                {dummy},
-                                                {P.get("N1440p")},
-                                                {Neutron, Pi_Plus, Pi_Plus}
-        );
-        auto diagram_pip_pip_4 = create_diagram(FORMAT("decay {} -> N1440 -> p pi+pi+ 4", dummy->name()), Decay_1_to_M2_1_cross, VMP,
-                                                {dummy},
-                                                {P.get("N1440p")},
-                                                {Neutron, Pi_Plus, Pi_Plus}
-        );
 
 
 
         std::vector<Feynman_Process> processes;
         processes.push_back(Feynman_Process({diagram_pi1}));
-        processes.push_back(Feynman_Process({diagram_pip_pin_1, diagram_pip_pin_2, diagram_pip_pin_3, diagram_pip_pin_4}));
-        processes.push_back(Feynman_Process({diagram_pip_pip_1, diagram_pip_pip_2, diagram_pip_pip_3, diagram_pip_pip_4}));
+        processes.push_back(Feynman_Process({diagram_pip_pin_1, diagram_pip_pin_2, diagram_pip_pin_3}));
+        processes.push_back(Feynman_Process({diagram_pip_pip_1, diagram_pip_pip_2}));
 
         std::map<double, double> dyson_factor;
         values.back() = dummy->mass();
@@ -519,5 +502,65 @@ int main(int argc, char** argv)
         }
         Table(dyson_factor).write(FORMAT("data/dyson_factors/D1620_{}.txt", ff_str));
     }
-    #endif
+	if( D1700 )
+	{
+		std::cout << "D1700\n";
+		auto dummy = std::make_shared<Particle>(*P.get("D1700pp"));
+		dummy->user_data("form_factor", identity);
+		/** D1700 -> Npi **/
+		auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi+", dummy->name()), Decay_1_to_2, VMP,
+		                                  {dummy},
+		                                  {},
+		                                  {Proton, Pi_Plus}
+		);
+		/** D1700 -> Npipi **/
+		auto diagram_pip_pin_1 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi0 1", dummy->name()), Decay_1_to_M2_1, VMP,
+		                                        {dummy},
+		                                        {P.get("D1232pp")},
+		                                        {Proton, Pi_Plus, Pi_Zero}
+		);
+		auto diagram_pip_pin_2 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi0 2", dummy->name()), Decay_1_to_M2_1_cross, VMP,
+		                                        {dummy},
+		                                        {P.get("D1232p")},
+		                                        {Proton, Pi_Plus, Pi_Zero}
+		);
+
+		auto diagram_pip_pin_3 = create_diagram(FORMAT("decay {} -> Rho -> p pi+pi0 4", dummy->name()), Decay_1_to_1_M2, VMP,
+		                                        {dummy},
+		                                        {P.get("rho+")},
+		                                        {Proton, Pi_Plus, Pi_Zero}
+		);
+
+		auto diagram_pip_pip_1 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi+ 1", dummy->name()), Decay_1_to_M2_1, VMP,
+		                                        {dummy},
+		                                        {P.get("D1232p")},
+		                                        {Neutron, Pi_Plus, Pi_Plus}
+		);
+		auto diagram_pip_pip_2 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi+ 2", dummy->name()), Decay_1_to_M2_1_cross, VMP,
+		                                        {dummy},
+		                                        {P.get("D1232p")},
+		                                        {Neutron, Pi_Plus, Pi_Plus}
+		);
+
+
+
+		std::vector<Feynman_Process> processes;
+		processes.push_back(Feynman_Process({diagram_pi1}));
+		processes.push_back(Feynman_Process({diagram_pip_pin_1, diagram_pip_pin_2, diagram_pip_pin_3}));
+		processes.push_back(Feynman_Process({diagram_pip_pip_1, diagram_pip_pip_2}));
+
+		std::map<double, double> dyson_factor;
+		values.back() = dummy->mass();
+		std::size_t i{0};
+		for( auto const& value : values ){
+			dummy->mass(value);
+			for( auto& process : processes ){
+				auto temp = process.decay_width();
+				dyson_factor[value] += std::isnan(temp)? 0 : temp;
+			}
+			std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+			std::cout << FORMAT("{} {} {} / {}: {} - {}\n", std::ctime(&time), dummy->name(), i++, steps+1, value, dyson_factor[value]) << std::flush;
+		}
+		Table(dyson_factor).write(FORMAT("data/dyson_factors/D1700_{}.txt", ff_str));
+	}
 }

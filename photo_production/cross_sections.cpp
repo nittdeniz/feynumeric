@@ -106,8 +106,8 @@ int main(int argc, char** argv)
 		}
 	}
 	for( auto const& delta_resonance : delta_resonances ){
-        std::ifstream ifs(FORMAT("./data/dyson_factors/{}_breit_wigner.txt", delta_resonance.substr(0, 5)));
-        std::cout << FORMAT("./data/dyson_factors/{}_breit_wigner.txt", delta_resonance.substr(0, 5)) << "\n";
+        std::ifstream ifs(FORMAT("./data/dyson_factors/{}_none.txt", delta_resonance.substr(0, 5)));
+        std::cout << FORMAT("./data/dyson_factors/{}_none.txt", delta_resonance.substr(0, 5)) << "\n";
 		auto const& Dpp = pp_string(delta_resonance);
 		auto const& Dp  = p_string(delta_resonance);
 		auto const& Dn  = n_string(delta_resonance);

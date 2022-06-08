@@ -237,7 +237,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
                 auto const& R = edges[0];
                 auto const& N = edges[1];
                 auto const& Rho = edges[2];
-                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), N->particle()->name(), Rho->particle()->name());
+                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), "N", "Rho");
                 auto const g = couplings.get(coupl_str);
                 auto const m_rho = Rho->particle()->mass();
                 auto const pR = R->four_momentum(kin);
@@ -374,7 +374,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto lambda = R->lorentz_indices()[0];
 				auto const& pR = R->four_momentum(kin);
 				auto const& pPhoton = photon->four_momentum(kin);
-                auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), N->particle()->name(), photon->particle()->name());
+                auto const coupl_str = coupling_string(R->particle()->name(), N->particle()->name(), photon->particle()->name());
                 auto const g = couplings.get(coupl_str);
 				auto const m_rho = P["rho0"]->mass();
                 auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), photon->particle(), pR.E().real());
