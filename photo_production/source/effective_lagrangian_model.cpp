@@ -131,8 +131,10 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
 				int const lorentz_parity = 1;
 				int const particle_parity = R->particle()->parity() * N->particle()->parity() * pi->particle()->parity();
+				auto const pR = R->four_momentum(kin);
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), pi->particle(), pR.E().real());
 				//auto isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
-				return -g / m_pi * iso * gamma5(lorentz_parity, particle_parity) * GS(pi->four_momentum(kin));
+				return -g / m_pi * iso * form_factor * gamma5(lorentz_parity, particle_parity) * GS(pi->four_momentum(kin));
 			}
 	));
 
@@ -177,8 +179,10 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
                 auto const g = couplings.get(coupl_str);
 				auto const m_pi = P.get("pi0")->mass();
 				int const lorentz_parity = 1;
+				auto const pR = R->four_momentum(kin);
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), f0->particle(), pR.E().real());
 				int const particle_parity = R->particle()->parity() * N->particle()->parity() * f0->particle()->parity();
-				return g/m_pi * gamma5(lorentz_parity, particle_parity) * GS(f0->four_momentum(kin));
+				return g/m_pi * form_factor * gamma5(lorentz_parity, particle_parity) * GS(f0->four_momentum(kin));
 			}
 	));
 
@@ -216,7 +220,9 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
                 auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), N->particle()->name(), gamma->particle()->name());
                 auto const g = couplings.get(coupl_str);
 				auto const m_rho = P["rho0"]->mass();
-				return -g/m_rho * dirac_sigmac(gamma->four_momentum(kin), gamma->lorentz_indices()[0]);
+				auto const pR = R->four_momentum(kin);
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), gamma->particle(), pR.E().real());
+				return -g/m_rho * form_factor * dirac_sigmac(gamma->four_momentum(kin), gamma->lorentz_indices()[0]);
 			}
 	));
 
@@ -324,11 +330,12 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const m_pi = pi->particle()->mass();
 				//auto const isospin = R->particle()->isospin().j() == 1.5 ? isospin_T(R, N) : isospin_tau(R, N);
 				auto const iso = isospin(Rout, Rin, pi);
-				//auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), pi->particle(), pR.E().real());
+                auto form_factor1 = Rout->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(Rout->particle(), Rin->particle(), pi->particle(), pRout.E().real());
+                auto form_factor2 = Rin->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(Rin->particle(), Rout->particle(), pi->particle(), pRin.E().real());
 				int const lorentz_parity = 1;
 				//Complex phase = std::exp(2.i * M_PI/360. * R->particle()->user_data<double>("phase"));
 				int const particle_parity = Rout->particle()->parity() * Rin->particle()->parity() * pi->particle()->parity();
-				return -1.i * iso * g/(m_pi*m_pi*m_pi*m_pi ) * O32c(pRout, pPi, mu) * gamma5(lorentz_parity, particle_parity) * O32c(pRin, pPi, nu);
+				return -1.i * iso * form_factor1 * form_factor2 * g/(m_pi*m_pi*m_pi*m_pi ) * O32c(pRout, pPi, mu) * gamma5(lorentz_parity, particle_parity) * O32c(pRin, pPi, nu);
 			}
 	));
 
@@ -350,7 +357,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
                 auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), N->particle()->name(), photon->particle()->name());
                 auto const g = couplings.get(coupl_str);
 				auto const m_rho = P["rho0"]->mass();
-				auto result = 1.i * g/(4*m_rho*m_rho) * CONTRACT_MATRIX(O32c(pPhoton, mu, kappa) * O32c(pR, mu, lambda) * MT[*mu][*mu], mu);
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), photon->particle(), pR.E().real());
+				auto result = 1.i * g/(4*m_rho*m_rho) * form_factor * CONTRACT_MATRIX(O32c(pPhoton, mu, kappa) * O32c(pR, mu, lambda) * MT[*mu][*mu], mu);
 				return result;
 			}
 	));
@@ -374,7 +382,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
                 auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), N->particle()->name(), photon->particle()->name());
                 auto const g = couplings.get(coupl_str);
 				auto const m_rho = P["rho0"]->mass();
-				auto result = 1.i * g/(4*m_rho*m_rho) *  CONTRACT_MATRIX(O32c(pR, mu, lambda) * O32c(pPhoton, mu, kappa) * MT[*mu][*mu], mu);
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), photon->particle(), pR.E().real());
+				auto result = 1.i * g/(4*m_rho*m_rho) * form_factor * CONTRACT_MATRIX(O32c(pR, mu, lambda) * O32c(pPhoton, mu, kappa) * MT[*mu][*mu], mu);
 				return result;
 			}
 	));
@@ -398,7 +407,8 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
                 auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), "N", "Rho");
                 auto const g = couplings.get(coupl_str);
 				auto const m_rho = rho->particle()->mass();
-				auto result = 1.i * g/(4*m_rho*m_rho) * CONTRACT_MATRIX(O32c(pRho, mu, kappa) * O32c(pR, mu, lambda) * MT[*mu][*mu], mu);
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), rho->particle(), pR.E().real());
+				auto result = 1.i * g/(4*m_rho*m_rho) * form_factor * CONTRACT_MATRIX(O32c(pRho, mu, kappa) * O32c(pR, mu, lambda) * MT[*mu][*mu], mu);
 				return result;
 			}
 	));
@@ -421,8 +431,9 @@ void init_vertices(Feynumeric::Particle_Manager const& P)
 				auto const& pRho = Rho->four_momentum(kin);
                 auto const coupl_str = coupling_string(R->particle()->name().substr(0, 5), "N", "Rho");
                 auto const g = couplings.get(coupl_str);
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), Rho->particle(), pR.E().real());
 				auto const m_rho = Rho->particle()->mass();
-				auto result = 1.i * g/(4*m_rho*m_rho) *  CONTRACT_MATRIX(O32c(pR, mu, lambda) * O32c(pRho, mu, kappa) * MT[*mu][*mu], mu);
+				auto result = 1.i * g/(4*m_rho*m_rho) * form_factor * CONTRACT_MATRIX(O32c(pR, mu, lambda) * O32c(pRho, mu, kappa) * MT[*mu][*mu], mu);
 				return result;
 			}
 	));
