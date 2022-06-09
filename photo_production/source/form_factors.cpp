@@ -72,7 +72,7 @@ FORM_FACTOR_FUNCTION cutkosky = [](Feynumeric::Particle_Ptr const& R, Feynumeric
 };
 
 FORM_FACTOR_FUNCTION breit_wigner = [](Feynumeric::Particle_Ptr const& R, Feynumeric::Particle_Ptr const& N, Feynumeric::Particle_Ptr const& pi, double E){
-	double const l = 0.7;//4*R->spin().j()*R->width();
+	double const l = 0.8;//4*R->spin().j()*R->width();
 	double const l4 = std::pow(l, 4);
 	double const b = E - R->mass();
 	double const c = 1.;

@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     auto const& Pi_Plus = P.get("pi+");
 
     auto breit_wigner_modified = [](Feynumeric::Particle_Ptr const&, Feynumeric::Particle_Ptr const&, Feynumeric::Particle_Ptr const&, double E, double M){
-        double const l = .7;
+        double const l = .8;
         double const l4 = std::pow(l, 4);
         return l4/(std::pow(E*E-M*M, 2)+l4);
     };
@@ -93,8 +93,8 @@ int main(int argc, char** argv)
     {/// D1232 -> Npi
         std::cout << "D1232\n";
         auto dummypp = std::make_shared<Particle>(*P.get("D1232pp"));
-//        FORM_FACTOR_FUNCTION breit_wigner_d1232 = std::bind(inverse_gaussian_modified, _1, _2, _3, _4, P.get("D1232pp")->mass());
-//        dummypp->user_data("form_factor", identity);
+        FORM_FACTOR_FUNCTION breit_wigner_d1232 = std::bind(breit_wigner_modified, _1, _2, _3, _4, P.get("D1232pp")->mass());
+        dummypp->user_data("form_factor", breit_wigner_d1232);
         auto decay_1 = create_diagram(FORMAT("decay {} to proton pi+", dummypp->name()), Decay_1_to_2, VMP,
                                       {dummypp},
                                       {},
@@ -109,6 +109,7 @@ int main(int argc, char** argv)
             dyson_factor[value] = std::isnan(temp)? 0 : temp;
         }
 		Table(dyson_factor).write(FORMAT("data/dyson_factors/D1232_{}.txt", ff_str));
+        std::cout << FORMAT("data/dyson_factors/D1232_{}.txt", ff_str) << "\n";
     }
     if( N1440 )
     {   /// N1440 -> Npi and N1440 -> Npipi
@@ -362,6 +363,7 @@ int main(int argc, char** argv)
         std::size_t i{0};
         for( auto const& value : values ){
             dummy->mass(value);
+            dyson_factor[value] = 0;
             for( auto& process : processes ){
                 auto temp = process.decay_width();
                 dyson_factor[value] += std::isnan(temp)? 0 : temp;
@@ -383,6 +385,7 @@ int main(int argc, char** argv)
                                          {Proton, Pi_Plus}
         );
         /** D1600 -> Npipi **/
+        /*
         auto diagram_pip_pin_1 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi0 1", dummy->name()), Decay_1_to_M2_1, VMP,
                                             {dummy},
                                             {P.get("D1232pp")},
@@ -419,19 +422,20 @@ int main(int argc, char** argv)
                                                 {P.get("N1440p")},
                                                 {Neutron, Pi_Plus, Pi_Plus}
         );
-
+        */
 
 
         std::vector<Feynman_Process> processes;
         processes.push_back(Feynman_Process({diagram_pi1}));
-        processes.push_back(Feynman_Process({diagram_pip_pin_1, diagram_pip_pin_2, diagram_pip_pin_3}));
-        processes.push_back(Feynman_Process({diagram_pip_pip_1, diagram_pip_pip_2, diagram_pip_pip_3, diagram_pip_pip_4}));
+//        processes.push_back(Feynman_Process({diagram_pip_pin_1, diagram_pip_pin_2, diagram_pip_pin_3}));
+//        processes.push_back(Feynman_Process({diagram_pip_pip_1, diagram_pip_pip_2, diagram_pip_pip_3, diagram_pip_pip_4}));
 
         std::map<double, double> dyson_factor;
         values.back() = dummy->mass();
         std::size_t i{0};
         for( auto const& value : values ){
             dummy->mass(value);
+            dyson_factor[value] = 0;
             for( auto& process : processes ){
                 auto temp = process.decay_width();
                 dyson_factor[value] += std::isnan(temp)? 0 : temp;
@@ -453,6 +457,7 @@ int main(int argc, char** argv)
                                           {Proton, Pi_Plus}
         );
         /** D1620 -> Npipi **/
+        /*
         auto diagram_pip_pin_1 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi0 1", dummy->name()), Decay_1_to_M2_1, VMP,
                                                 {dummy},
                                                 {P.get("D1232pp")},
@@ -481,18 +486,19 @@ int main(int argc, char** argv)
                                                 {Neutron, Pi_Plus, Pi_Plus}
         );
 
-
+        */
 
         std::vector<Feynman_Process> processes;
         processes.push_back(Feynman_Process({diagram_pi1}));
-        processes.push_back(Feynman_Process({diagram_pip_pin_1, diagram_pip_pin_2, diagram_pip_pin_3}));
-        processes.push_back(Feynman_Process({diagram_pip_pip_1, diagram_pip_pip_2}));
+//        processes.push_back(Feynman_Process({diagram_pip_pin_1, diagram_pip_pin_2, diagram_pip_pin_3}));
+//        processes.push_back(Feynman_Process({diagram_pip_pip_1, diagram_pip_pip_2}));
 
         std::map<double, double> dyson_factor;
         values.back() = dummy->mass();
         std::size_t i{0};
         for( auto const& value : values ){
             dummy->mass(value);
+            dyson_factor[value] = 0;
             for( auto& process : processes ){
                 auto temp = process.decay_width();
                 dyson_factor[value] += std::isnan(temp)? 0 : temp;
@@ -514,6 +520,7 @@ int main(int argc, char** argv)
 		                                  {Proton, Pi_Plus}
 		);
 		/** D1700 -> Npipi **/
+		/*
 		auto diagram_pip_pin_1 = create_diagram(FORMAT("decay {} -> D1232 -> p pi+pi0 1", dummy->name()), Decay_1_to_M2_1, VMP,
 		                                        {dummy},
 		                                        {P.get("D1232pp")},
@@ -542,18 +549,20 @@ int main(int argc, char** argv)
 		                                        {Neutron, Pi_Plus, Pi_Plus}
 		);
 
+		*/
 
 
 		std::vector<Feynman_Process> processes;
 		processes.push_back(Feynman_Process({diagram_pi1}));
-		processes.push_back(Feynman_Process({diagram_pip_pin_1, diagram_pip_pin_2, diagram_pip_pin_3}));
-		processes.push_back(Feynman_Process({diagram_pip_pip_1, diagram_pip_pip_2}));
+//		processes.push_back(Feynman_Process({diagram_pip_pin_1, diagram_pip_pin_2, diagram_pip_pin_3}));
+//		processes.push_back(Feynman_Process({diagram_pip_pip_1, diagram_pip_pip_2}));
 
 		std::map<double, double> dyson_factor;
 		values.back() = dummy->mass();
 		std::size_t i{0};
 		for( auto const& value : values ){
 			dummy->mass(value);
+            dyson_factor[value] = 0;
 			for( auto& process : processes ){
 				auto temp = process.decay_width();
 				dyson_factor[value] += std::isnan(temp)? 0 : temp;

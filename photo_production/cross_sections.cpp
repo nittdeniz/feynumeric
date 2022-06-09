@@ -83,6 +83,7 @@ int main(int argc, char** argv)
 	auto n_string  = [](std::string const& p){ return FORMAT("{}n", p);};
 	auto m_string  = [](std::string const& p){ return FORMAT("{}m", p);};
 
+
 	for( auto const& nucleon_resonance : nucleon_resonances ){
         std::ifstream ifs(FORMAT("./data/dyson_factors/{}_breit_wigner.txt", nucleon_resonance));
         std::cout << FORMAT("./data/dyson_factors/{}_breit_wigner.txt", nucleon_resonance) << "\n";
@@ -106,8 +107,12 @@ int main(int argc, char** argv)
 		}
 	}
 	for( auto const& delta_resonance : delta_resonances ){
-        std::ifstream ifs(FORMAT("./data/dyson_factors/{}_none.txt", delta_resonance.substr(0, 5)));
-        std::cout << FORMAT("./data/dyson_factors/{}_none.txt", delta_resonance.substr(0, 5)) << "\n";
+//	    if( delta_resonance == "D1232" ){
+//            ff_temp_str = "breit_wigner";
+//            ff = breit_wigner;
+//	    }
+        std::ifstream ifs(FORMAT("./data/dyson_factors/{}_{}.txt", delta_resonance.substr(0, 5), form_factor));
+        std::cout << FORMAT("./data/dyson_factors/{}_{}.txt", delta_resonance.substr(0, 5), form_factor) << "\n";
 		auto const& Dpp = pp_string(delta_resonance);
 		auto const& Dp  = p_string(delta_resonance);
 		auto const& Dn  = n_string(delta_resonance);
