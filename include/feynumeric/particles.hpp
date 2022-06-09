@@ -1,7 +1,7 @@
 #ifndef PARTICLES_HPP
 #define PARTICLES_HPP
 
-#include <Feynumeric/particle.hpp>
+#include <feynumeric/particle.hpp>
 
 
 namespace Feynumeric

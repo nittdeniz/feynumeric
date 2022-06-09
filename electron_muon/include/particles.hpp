@@ -2,7 +2,7 @@
 #ifndef PARTICLES_HPP
 #define PARTICLES_HPP
 
-#include <Feynumeric/particle.hpp>
+#include <feynumeric/particle.hpp>
 
 // Mesons
 extern Feynumeric::Particle_Ptr Pi_Zero;
