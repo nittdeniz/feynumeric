@@ -31,7 +31,7 @@ find_package(OpenMP REQUIRED)
 
 find_library(FMT_LIB NAMES fmt HINTS "C:\\fmt\\build")
 target_link_libraries(Feynumeric PRIVATE "${FMT_LIB}" OpenMP::OpenMP_CXX)
-target_include_directories(Feynumeric PRIVATE include/Feynumeric)
+target_include_directories(Feynumeric PRIVATE include/feynumeric)
 target_compile_options(Feynumeric PRIVATE -Werror -Wall -Wextra)
 
 
