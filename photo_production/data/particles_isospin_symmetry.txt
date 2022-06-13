@@ -38,7 +38,7 @@ l 1
 phase 0
 mass 1.44GeV
 width 350MeV
-branching_N_pi 65%
+branching_N_pi 100%
 branching_N_pipi 35%
 branching_N_pipi_D1232 15%
 branching_N_pipi_f500 15%
@@ -365,9 +365,9 @@ isospin 1/2 -1/2
 @group D1232
 group R32
 mass 1232MeV
-width 117MeV
+width 150MeV
 parity 1
-phase 135
+phase 0
 branching_N_pi 100%
 branching_proton_photon 0.6%
 branching_neutron_photon 0.6%
@@ -501,7 +501,7 @@ parity -1
 phase 0
 mass 1860MeV
 width 250MeV
-branching_N_pi 8%
+branching_N_pi 100%
 branching_proton_photon 0.25%
 branching_neutron_photon 0.25%
 l 0
@@ -514,6 +514,7 @@ charge 2
 group D1900
 isospin 3/2 1/2
 charge 1
+
 @particle D1900n
 group D1900
 isospin 3/2 -1/2
@@ -522,13 +523,14 @@ charge 0
 group D1900
 isospin 3/2 -3/2
 charge -1
+
 @group D1905
 group R52
 parity 1
 phase 0
 mass 1880MeV
 width 330MeV
-branching_N_pi 12%
+branching_N_pi 100%
 branching_proton_photon 0.024%
 branching_neutron_photon 0.024%
 l 3
@@ -537,25 +539,28 @@ l 3
 group D1905
 isospin 3/2 3/2
 charge 2
+
 @particle D1905p
 group D1905
 isospin 3/2 1/2
 charge 1
+
 @particle D1905n
 group D1905
 isospin 3/2 -1/2
 charge 0
+
 @particle D1905m
 group D1905
 isospin 3/2 -3/2
 charge -1
+
 @group D1910
 group R12
 parity 1
 phase 0
 mass 1900MeV
-width 300MeV
-branching_N_pi 22.5%
+width 300MeVbranching_N_pi 100%%
 branching_proton_photon 0.01%
 branching_neutron_photon 0.01%
 l 1
@@ -564,25 +569,29 @@ l 1
 group D1910
 isospin 3/2 3/2
 charge 2
+
 @particle D1910p
 group D1910
 isospin 3/2 1/2
 charge 1
+
 @particle D1910n
 group D1910
 isospin 3/2 -1/2
 charge 0
+
 @particle D1910m
 group D1910
 isospin 3/2 -3/2
 charge -1
+
 @group D1920
 group R32
 parity 1
 phase 0
 mass 1920MeV
 width 300MeV
-branching_N_pi 12.5%
+branching_N_pi 100%
 branching_proton_photon 0%
 branching_neutron_photon 0%
 l 1
@@ -591,6 +600,7 @@ l 1
 group D1920
 isospin 3/2 3/2
 charge 2
+
 @particle D1920p
 group D1920
 isospin 3/2 1/2
@@ -599,19 +609,20 @@ charge 1
 group D1920
 isospin 3/2 -1/2
 charge 0
+
 @particle D1920m
 group D1920
 isospin 3/2 -3/2
 charge -1
+
 @group D1950
 group R72
 parity 1
 phase 0
+branching_N_pi 100%
+branching_N_pi_pi 0%
 mass 1930MeV
 width 285MeV
-branching_N_pi 40%
-branching_proton_photon 0.0%
-branching_neutron_photon 0.0%
 l 3
 
 @particle D1950pp
