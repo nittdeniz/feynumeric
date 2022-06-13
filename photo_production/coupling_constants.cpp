@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 
 	init_vertices(P);
 
-	std::vector<std::string> particle_strings = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900", "N2060", "N2100", "N2120","D1232", "D1600", "D1620", "D1700", "D1900", "D1910", "D1920"};
+	std::vector<std::string> particle_strings = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900", "N2060", "N2100", "N2120","D1232", "D1600", "D1620", "D1700", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940", "D1950"};
 
 	std::vector<Particle_Ptr> particles_Np;
 	std::vector<Particle_Ptr> particles_Nn;
@@ -65,9 +65,9 @@ int main(int argc, char** argv)
     for( std::size_t i = 0; i < particles_Np.size(); ++i )
     {
         auto& Np = particles_Np[i];
-        if( Np->spin().j() > 2 ){
-            continue;
-        }
+//        if( Np->spin().j() > 2 ){
+//            continue;
+//        }
         auto coupl_str = coupling_string(Np->name().substr(0, 5), "N", "Pion");
         couplings.set(coupl_str, 1.);
 
@@ -95,6 +95,7 @@ int main(int argc, char** argv)
         auto const g = std::sqrt(literature_value / ( w1 + w2 ));
         couplings.set(coupl_str, g);
         buffer <<  FORMAT("{} {}\n", coupl_str, g);
+        std::cout << FORMAT("{} {}\n", coupl_str, g);
     }
     for( std::size_t i = 0; i < particles_Dpp.size(); ++i )
     {

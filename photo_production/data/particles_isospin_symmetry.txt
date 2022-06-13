@@ -495,6 +495,34 @@ group D1700
 isospin 3/2 -3/2
 charge -1
 
+@group D1750
+group R12
+parity 1
+phase 0
+mass 1750MeV
+width 300MeV
+branching_N_pi 100%
+
+@particle D1750pp
+group D1750
+isospin 3/2 3/2
+charge 2
+
+@particle D1750p
+group D1750
+isospin 3/2 1/2
+charge 1
+
+@particle D1750n
+group D1750
+isospin 3/2 -1/2
+charge 0
+
+@particle D1750m
+group D1750
+isospin 3/2 -3/2
+charge -1
+
 @group D1900
 group R12
 parity -1
@@ -560,7 +588,8 @@ group R12
 parity 1
 phase 0
 mass 1900MeV
-width 300MeVbranching_N_pi 100%%
+width 300MeV
+branching_N_pi 100%
 branching_proton_photon 0.01%
 branching_neutron_photon 0.01%
 l 1
@@ -605,6 +634,7 @@ charge 2
 group D1920
 isospin 3/2 1/2
 charge 1
+
 @particle D1920n
 group D1920
 isospin 3/2 -1/2
@@ -612,6 +642,68 @@ charge 0
 
 @particle D1920m
 group D1920
+isospin 3/2 -3/2
+charge -1
+
+@group D1930
+group R52
+parity -1
+phase 0
+mass 1950MeV
+width 300MeV
+branching_N_pi 100%
+branching_proton_photon 0%
+branching_neutron_photon 0%
+l 1
+
+@particle D1930pp
+group D1930
+isospin 3/2 3/2
+charge 2
+
+@particle D1930p
+group D1930
+isospin 3/2 1/2
+charge 1
+
+@particle D1930n
+group D1930
+isospin 3/2 -1/2
+charge 0
+
+@particle D1930m
+group D1930
+isospin 3/2 -3/2
+charge -1
+
+@group D1940
+group R32
+parity -1
+phase 0
+mass 2000MeV
+width 400MeV
+branching_N_pi 100%
+branching_proton_photon 0%
+branching_neutron_photon 0%
+l 1
+
+@particle D1940pp
+group D1940
+isospin 3/2 3/2
+charge 2
+
+@particle D1940p
+group D1940
+isospin 3/2 1/2
+charge 1
+
+@particle D1940n
+group D1940
+isospin 3/2 -1/2
+charge 0
+
+@particle D1940m
+group D1940
 isospin 3/2 -3/2
 charge -1
 
