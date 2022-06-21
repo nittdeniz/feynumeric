@@ -97,27 +97,6 @@ int main(int argc, char** argv)
         buffer <<  FORMAT("{} {}\n", coupl_str, g);
         std::cout << FORMAT("{} {}\n", coupl_str, g);
     }
-    for( std::size_t i = 0; i < particles_Dpp.size(); ++i )
-    {
-        auto& Dpp = particles_Dpp[i];
-        if( Dpp->spin().j() > 2 ){
-            continue;
-        }
-        auto coupl_str = coupling_string(Dpp->name().substr(0, 5), "N", "Pion");
-        couplings.set(coupl_str, 1.);
-
-        auto channel_decay_Dpp1 = create_diagram(FORMAT("decay {} to proton pi+", Dpp->name()), Decay_1_to_2, VMP,
-                                                 {Dpp},
-                                                 {},
-                                                 {Proton, Pi_Plus}
-        );
-        Feynman_Process decay_Dpp1({channel_decay_Dpp1});
-        auto w1 = decay_Dpp1.decay_width();
-        auto const literature_value = Dpp->width() *  Dpp->user_data<double>("branching_N_pi");
-        auto const g = std::sqrt(literature_value / ( w1 ));
-        couplings.set(coupl_str, g);
-        buffer <<  FORMAT("{} {}\n", coupl_str, g);
-    }
 #endif
 #if Nphoton
     for( std::size_t i = 0; i < particles_Np.size(); ++i )

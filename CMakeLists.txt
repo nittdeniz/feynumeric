@@ -3,7 +3,7 @@ project(Feynumeric)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} C:\\fmt)
-set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} "-static")
+#set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} "-static")
 #set(FMT_LIB C:\\fmt\\cmake-build-debug)
 #if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
 #    set(FMT_LIB C:\\fmt\\cmake-build-debug)
@@ -30,7 +30,7 @@ find_package(OpenMP REQUIRED)
 
 
 find_library(FMT_LIB NAMES fmt HINTS "C:\\fmt\\build")
-target_link_libraries(Feynumeric PRIVATE "${FMT_LIB}" OpenMP::OpenMP_CXX)
+target_link_libraries(Feynumeric PRIVATE OpenMP::OpenMP_CXX "${FMT_LIB}")
 target_include_directories(Feynumeric PRIVATE include/feynumeric)
 target_compile_options(Feynumeric PRIVATE -Werror -Wall -Wextra)
 
