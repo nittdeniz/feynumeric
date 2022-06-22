@@ -6,8 +6,14 @@
 #include <fstream>
 #include <sstream>
 
+Couplings::Couplings(){}
+
 Couplings::Couplings(const std::string &file_in)
 {
+    load(file_in);
+}
+
+void Couplings::load(const std::string& file_in){
     std::ifstream ifs(file_in);
     if( !ifs ){
         Feynumeric::critical_error(FORMAT("Could not open {}.", file_in));

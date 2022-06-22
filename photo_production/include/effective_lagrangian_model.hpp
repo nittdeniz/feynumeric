@@ -9,6 +9,6 @@
 
 extern Feynumeric::Vertex_Manager_Ptr VMP;
 extern Couplings couplings;
-void init_vertices(Feynumeric::Particle_Manager const& P);
+void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& coupling_constants);
 
 #endif // EFFECTIVE_LAGRANGIAN_MODEL_HPP

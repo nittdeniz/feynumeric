@@ -12,6 +12,7 @@ int main(int argc, char** argv)
 
     Command_Line_Manager cmd(argc, argv);
     cmd.register_command("particle_file", true, "file with particle parameters");
+    cmd.register_command("coupling_constants", true, "file with coupling constants");
     cmd.register_command("start", std::string("1.0"), "starting point");
     cmd.register_command("end", std::string("3.0"), "end value");
     cmd.register_command("steps", std::string("200"), "steps");
@@ -68,7 +69,7 @@ int main(int argc, char** argv)
         particle->user_data("form_factor", ff);
     }
 
-    init_vertices(P);
+    init_vertices(P, cmd.as_string("coupling_constants"));
 
     double const start = cmd.as_double("start");
     double const end   = cmd.as_double("end");

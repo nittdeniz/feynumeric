@@ -22,16 +22,16 @@ using Feynumeric::Matrix;
 
 Feynumeric::Vertex_Manager_Ptr VMP = std::make_shared<Feynumeric::Vertex_Manager>();
 
-Couplings couplings("data/coupling_constants_isospin_symmetry.txt");
+Couplings couplings;
 
 Feynumeric::Matrix gamma5(int lorentz_parity, int particle_parity){
 	return lorentz_parity == particle_parity ? Matrix(1,1,1) : Feynumeric::GA5;
 }
 
-void init_vertices(Feynumeric::Particle_Manager const& P)
+void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& coupling_constant_file)
 {
 	using Feynumeric::Edge_Direction;
-
+    couplings.load(coupling_constant_file);
 	Feynumeric::QED::init_vertices();
 	VMP->import(*Feynumeric::QED::VMP);
 
