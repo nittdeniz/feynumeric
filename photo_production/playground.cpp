@@ -9,15 +9,13 @@ int main(int argc, char** argv){
     using namespace Feynumeric;
     using namespace Feynumeric::Units;
 
-    //init_particles();
+    Command_Line_Manager cmd(argc, argv);
+    cmd.register_command("particle_file", true, "file with particle parameters");
+    cmd.register_command("coupling_constants", true, "file with coupling constants");
+    cmd.crash_on_missing_mandatory_command();
 
-
-    if( argc != 2 )
-    {
-        critical_error("Program expects filename as a single and only argument.");
-    }
-    Particle_Manager P((std::string(argv[1])));
-    init_vertices(P);
+    Particle_Manager P(cmd.as_string("particle_file"));
+    init_vertices(P, cmd.as_string("coupling_constants"));
     auto const& Proton = P.get("proton");
     auto const& Neutron = P.get("neutron");
     //auto const& Photon = P.get("photon");

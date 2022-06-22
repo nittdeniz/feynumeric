@@ -32,6 +32,7 @@ int main(int argc, char** argv)
 	Command_Line_Manager cmd(argc, argv);
 
 	cmd.register_command("particle_file", true, "file with particle parameters");
+    cmd.register_command("coupling_constants", true, "file with coupling constants");
 	cmd.register_command("form_factor", CMD_FORM_FACTOR_NONE, FORMAT("which form factor to use ({}, {}, {}, {}, {}, {})", CMD_FORM_FACTOR_NONE, CMD_FORM_FACTOR_CASSING, CMD_FORM_FACTOR_CUTKOSKY, CMD_FORM_FACTOR_MANLEY, CMD_FORM_FACTOR_MONIZ, CMD_FORM_FACTOR_BREIT_WIGNER));
 	cmd.register_command("channel", CMD_CHANNEL_S, "which channel to use [s, t, u, c] or any combination.");
 	cmd.register_command("process", CMD_PROCESS_PHOTO_PRODUCTION, FORMAT("which process to use: {} {}", CMD_PROCESS_PHOTO_PRODUCTION, CMD_PROCESS_ELASTIC_SCATTERING));
@@ -152,7 +153,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-	init_vertices(P);
+	init_vertices(P, cmd.as_string("coupling_constants"));
 	Timer stopwatch;
 	stopwatch.start();
 	if( cmd.as_string("process") == CMD_PROCESS_ELASTIC_SCATTERING ){

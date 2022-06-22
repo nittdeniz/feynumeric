@@ -1,3 +1,4 @@
+#include <feynumeric/command_line_manager.hpp>
 #include <feynumeric/core.hpp>
 #include <feynumeric/qed.hpp>
 #include <feynumeric/particle_manager.hpp>
@@ -26,14 +27,14 @@ int main(int argc, char** argv)
 	using namespace Feynumeric;
 	using namespace Feynumeric::Units;
 
-	if( argc != 2 )
-	{
-		critical_error("Program expects filename as a single and only argument.");
-	}
+    Command_Line_Manager cmd(argc, argv);
+    cmd.register_command("particle_file", true, "file with particle parameters");
+    cmd.register_command("coupling_constants", true, "file with coupling constants");
+    cmd.crash_on_missing_mandatory_command();
 
 	std::stringstream buffer;
 
-	Particle_Manager P((std::string(argv[1])));
+	Particle_Manager P(cmd.as_string("particle_file"));
 	auto const& Proton = P.get("proton");
 	auto const& Neutron = P.get("neutron");
 	auto const& Pi_Zero = P.get("pi0");
@@ -44,7 +45,7 @@ int main(int argc, char** argv)
 		particle->user_data("form_factor", identity);
 	}
 
-	init_vertices(P);
+	init_vertices(P, cmd.as_string("coupling_constants"));
 
 	std::vector<std::string> particle_strings = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900", "N2060", "N2100", "N2120","D1232", "D1600", "D1620", "D1700", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940", "D1950"};
 
