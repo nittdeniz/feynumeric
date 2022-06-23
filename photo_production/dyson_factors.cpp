@@ -85,6 +85,7 @@ int main(int argc, char** argv)
     bool D1600 = cmd.is_enabled("D1600");
     bool D1620 = cmd.is_enabled("D1620");
     bool D1700 = cmd.is_enabled("D1700");
+    bool D1750 = cmd.is_enabled("D1750");
     bool D1900 = cmd.is_enabled("D1900");
     bool D1905 = cmd.is_enabled("D1905");
     bool D1910 = cmd.is_enabled("D1910");
@@ -92,9 +93,7 @@ int main(int argc, char** argv)
     bool D1930 = cmd.is_enabled("D1930");
     bool D1940 = cmd.is_enabled("D1940");
     bool D1950 = cmd.is_enabled("D1950");
-    bool N1440 = cmd.is_enabled("N1440");
-    bool N1520 = cmd.is_enabled("N1520");
-    bool N1535 = cmd.is_enabled("N1535");
+
 
     std::cout << FORMAT("start: {} end: {} steps: {}\n", start, end, steps);
     if( D1232 )

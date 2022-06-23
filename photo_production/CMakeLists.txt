@@ -15,11 +15,15 @@ add_executable(cross_sections
         ../electron_muon/include/vertices.hpp ../electron_muon/source/vertices.cpp include/effective_lagrangian_model.hpp
         include/form_factors.hpp source/form_factors.cpp source/couplings.cpp include/couplings.hpp)
 
+add_executable(amplitude amplitude.cpp source/couplings.cpp include/couplings.hpp include/effective_lagrangian_model.hpp source/effective_lagrangian_model.cpp)
+
+target_include_directories(amplitude PRIVATE include)
 target_include_directories(cross_sections PRIVATE include)
 target_include_directories(coupling_constants PRIVATE include)
 target_include_directories(playground PRIVATE include)
 target_include_directories(dyson_factors PRIVATE include)
 
+target_link_libraries(amplitude PRIVATE Feynumeric)
 target_link_libraries(cross_sections PRIVATE Feynumeric)
 target_link_libraries(coupling_constants PRIVATE Feynumeric)
 target_link_libraries(playground PRIVATE Feynumeric)

@@ -7,6 +7,7 @@
 #include <ostream>
 #include <vector>
 
+#include "complex.hpp"
 #include "units.hpp"
 
 namespace Feynumeric
@@ -56,6 +57,8 @@ namespace Feynumeric
 		std::map<double, double> sigma_table(double start, double end, double delta, double epsilon = 1.e-2);
 		std::map<double, double> sigma_table(double start, double end, std::size_t steps, double epsilon = 1.e-2);
 
+		std::vector<Complex> M_costheta(double sqrt_s, double cos_theta);
+		std::vector<Complex> decay_M();
 
 
 		std::map<double, std::vector<double>> dsigma_dcos_table(double sqrt_s, std::size_t steps);

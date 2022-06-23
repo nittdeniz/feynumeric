@@ -200,6 +200,50 @@ namespace Feynumeric
 		return dsigma_dcos_table(sqrt_s, std::move(values));
 	}
 
+	std::vector<Complex> Feynman_Process::M_costheta(double sqrt_s, double cos_theta){
+		using namespace Feynumeric::Units;
+
+		Kinematics kin(sqrt_s, 2, 2);
+
+		auto const& incoming = _diagrams[0]->incoming_particles();
+		auto const& outgoing = _diagrams[0]->outgoing_particles();
+
+		auto qin = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
+		auto qout = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
+
+		kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
+		kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
+
+		for( auto& diagram : _diagrams ){
+			diagram->reset_spins();
+			diagram->reset_indices();
+		}
+
+		std::size_t const N_spins = [&](){
+			std::size_t n = 1;
+			for( auto const& j : _diagrams[0]->_spins ){
+				n *= j->n_states();
+			}
+			return n;
+		}();
+
+		kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
+		kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta));
+
+		//std::vector<double> Ms(_diagrams.size() + 1);
+		std::vector<Complex> Ms(N_spins);
+
+		for( std::size_t i = 0; i < N_spins; ++i ){
+			Complex M{0, 0};
+			for( std::size_t j = 0; j < _diagrams.size(); ++j ){
+				M += _diagrams[j]->evaluate_amplitude(kin);
+				_diagrams[j]->iterate_spins();
+			}
+			Ms[i] = M;
+		}
+		return Ms;
+	}
+
 	double Feynman_Process::no_check_dsigma_dcos(double sqrt_s, double cos_theta){
 		using namespace Feynumeric::Units;
 
@@ -265,6 +309,47 @@ namespace Feynumeric
 		//auto check = dsigma_dcos_table(sqrt_s, 0.1);
 
 		return result[cos_theta].back();
+	}
+
+	std::vector<Complex> Feynman_Process::decay_M(){
+		using namespace Feynumeric::Units;
+		validate_diagram_compatibility();
+
+		auto const& incoming = _diagrams[0]->incoming_particles();
+		auto const& outgoing = _diagrams[0]->outgoing_particles();
+
+		Kinematics kin(incoming[0]->mass(), 1, 2);
+
+		auto const q = momentum(incoming[0]->mass(), outgoing[0]->mass(), outgoing[1]->mass());
+
+		kin.incoming(0, four_momentum(0, incoming[0]->mass()));
+		kin.outgoing(0, four_momentum(q, outgoing[0]->mass()));
+		kin.outgoing(1, four_momentum(-q, outgoing[1]->mass()));
+
+
+		for( auto& diagram : _diagrams ){
+			diagram->reset_spins();
+			diagram->reset_indices();
+		}
+
+		std::size_t const N_spins = [&](){
+			std::size_t n = 1;
+			for( auto const& j : _diagrams[0]->_spins ){
+				n *= j->n_states();
+			}
+			return n;
+		}();
+
+		std::vector<Complex> result(N_spins, 0.);
+
+		for( std::size_t i = 0; i < N_spins; ++i ){
+			Complex M{0, 0};
+			for( auto& diagram : _diagrams ){
+				result[i] += diagram->evaluate_amplitude(kin);
+				diagram->iterate_spins();
+			}
+		}
+		return result;
 	}
 
 	double Feynman_Process::decay_1_2(){
