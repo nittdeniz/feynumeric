@@ -152,6 +152,7 @@ namespace Feynumeric
 		kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
 
 		std::map<double, std::vector<double>> result;
+
         double const phase_space_factor = phase_space2(_n_polarisations, kin.sqrt_s(), qout, qin);
 
 		for( std::size_t k = 0; k < values.size(); ++k ){
@@ -302,6 +303,7 @@ namespace Feynumeric
         }
 
         for( auto& value : Ms_squared ){
+        	std::cout << FORMAT("sqrts: {} costheta: {} value: {} ps: {} cv: {}\n", sqrt_s, cos_theta, value, phase_space_factor, _conversion_factor);
             value *= phase_space_factor * _conversion_factor;
         }
         result[cos_theta] = Ms_squared;

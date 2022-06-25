@@ -365,7 +365,7 @@ isospin 1/2 -1/2
 @group D1232
 group R32
 mass 1232MeV
-width 150MeV
+width 117MeV
 parity 1
 phase 0
 branching_N_pi 100%

@@ -15,7 +15,7 @@ add_executable(cross_sections
         ../electron_muon/include/vertices.hpp ../electron_muon/source/vertices.cpp include/effective_lagrangian_model.hpp
         include/form_factors.hpp source/form_factors.cpp source/couplings.cpp include/couplings.hpp)
 
-add_executable(amplitude amplitude.cpp source/couplings.cpp include/couplings.hpp include/effective_lagrangian_model.hpp source/effective_lagrangian_model.cpp)
+add_executable(amplitude amplitude.cpp source/couplings.cpp include/couplings.hpp include/effective_lagrangian_model.hpp source/effective_lagrangian_model.cpp source/form_factors.cpp include/form_factors.hpp)
 
 target_include_directories(amplitude PRIVATE include)
 target_include_directories(cross_sections PRIVATE include)
