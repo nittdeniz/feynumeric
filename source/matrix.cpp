@@ -2,6 +2,7 @@
 #include "feynumeric/format.hpp"
 #include "feynumeric/matrix.hpp"
 #include "feynumeric/messages.hpp"
+#include "feynumeric/utility.hpp"
 
 namespace Feynumeric
 {
@@ -135,6 +136,59 @@ namespace Feynumeric
 			elem *= rhs;
 		}
 		return *this;
+	}
+
+	Complex Matrix::det() const{
+		auto copy = Matrix(*this);
+		bool swapped = false;
+		bool needed_swapping = false;
+		double sign = 1;
+		for( std::size_t i = 0; i < copy._rows-1; ++i ){
+			if( almost_identical(copy(i, i), 0.) ){
+				swapped = false;
+				needed_swapping = true;
+				for( std::size_t j = i+1; j < copy._rows; ++j ){
+					if( !almost_identical(copy(j, i), 0.) ){
+						copy.swap_row(i, j);
+						swapped = true;
+						sign *= -1;
+						break;
+					}
+				}
+			}
+			if( needed_swapping && !swapped ){
+				return 0.;
+			}
+			for( std::size_t j = i+1; j < copy._rows; ++j ){
+				if( almost_identical(copy(j, i), 0.) ){
+					continue;
+				}
+				Complex factor = -copy(j, i) / copy(i, i);
+				for( std::size_t k = i; k < copy._cols; ++k ){
+					copy._data[j*copy._cols + k] = copy._data[i*copy._cols + k] * factor + copy._data[j*copy._cols + k];
+				}
+			}
+		}
+		Complex det = 1.;
+		for( std::size_t i = 0; i < copy._rows; ++i ){
+			det *= copy(i ,i);
+		}
+		return sign * det;
+	}
+
+	void Matrix::swap_col(std::size_t i, std::vector<Complex>& col){
+		if( col.size() != _rows ){
+			critical_error("Dimensions for column swapping do not match.");
+		}
+		for( std::size_t j = 0; j < _rows; ++j ){
+			std::swap(_data[j*_cols +i], col[j]);
+		}
+	}
+
+	void Matrix::swap_row(std::size_t i, std::size_t j){
+		for( std::size_t a = 0; a < _cols; ++a ){
+			std::swap(_data[i*_cols + a], _data[j*_cols + a]);
+		}
 	}
 
 	Matrix& Matrix::operator*=(int const& rhs)

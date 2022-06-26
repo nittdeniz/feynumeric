@@ -35,8 +35,15 @@ namespace Feynumeric
         std::vector<Complex>::const_iterator cbegin() const;
         std::vector<Complex>::const_iterator cend() const;
 
+        Complex det() const;
+
         std::vector<Complex>::iterator begin();
         std::vector<Complex>::iterator end();
+
+        void swap_row(std::size_t i, std::size_t j);
+        void swap_row(std::size_t i, std::vector<Complex>& row);
+        void swap_col(std::size_t i, std::size_t j);
+        void swap_col(std::size_t i, std::vector<Complex>& col);
 
         Complex const& at(size_t i) const;
         Complex& operator[](size_t i);

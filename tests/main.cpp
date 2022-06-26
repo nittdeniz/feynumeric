@@ -72,6 +72,15 @@ TEST_CASE( "matrix_subtraction", "[matrix]" ){
     REQUIRE( -(10-c) == a);
 }
 
+TEST_CASE("determinant()", "[matrix]"){
+	using  namespace std::complex_literals;
+	Feynumeric::Matrix M(3, 3, {1.+1.i, 1.-1.i,3.,
+	                3.i,5.,3.i-3.,
+	                2.5+1.5i, (-3.i+1.)/(-1.+2.i),0.});
+
+	REQUIRE( Feynumeric::almost_identical(M.det(), Feynumeric::Complex(-56.7, -18.9)));
+}
+
 TEST_CASE( "matrix_operator()", "[matrix]"){
     Feynumeric::Matrix a(3, 3, {1,2,3, 4,5,6, 7,8,9});
     Feynumeric::Matrix b(3, 3, {1,2,13, 4,5,6, 7,8,9});

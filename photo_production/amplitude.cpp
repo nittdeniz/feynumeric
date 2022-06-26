@@ -132,7 +132,7 @@ int main(int argc, char** argv){
 		if( !outer_first ){
 			out1 << ",";
 		}
-		out1 << "Interpolation[{";
+		out1 << "Fit[{";
 		bool first = true;
 		for( auto& [key, value] : item ){
 			if( !first ){
@@ -141,10 +141,10 @@ int main(int argc, char** argv){
 			out1 << FORMAT("{{{:f},{:f}+I {:f}}}", key, value.real(), value.imag());
 			first = false;
 		}
-		out1 << "},InterpolationOrder->8]";
+		out1 << "},{1,s,s^2,s^3,s^4,s^5,s^6,s^7,s^8},s]";
 		outer_first = false;
 	}
-	out1 << "}";
+	out1 << "}//Chop";
 
 	std::ofstream out5(file_name5);
 
@@ -160,21 +160,21 @@ int main(int argc, char** argv){
 			if( !first ){
 				out5 << ",";
 			}
-			out5 << FORMAT("{{{:f},Interpolation[{{", sqrts);
+			out5 << FORMAT("{{{:f},Fit[{{", sqrts);
 			bool inner_first = true;
 			for( auto& [cos, val] : row ){
 				if( !inner_first ){
 					out5 << ",";
 				}
-				out5 << FORMAT("{{{:f},{} + I {}}}", cos, val.real(), val.imag());
+				out5 << FORMAT("{{{:f},{:f} + I {:f}}}", cos, val.real(), val.imag());
 				inner_first = false;
 			}
 			first = false;
-			out5 << "},InterpolationOrder->8]}";
+			out5 << "},{1,c,c^2,c^3,c^4,c^5,c^6,c^7,c^8},c]}";
 		}
 		outer_first = false;
 		out5 << "}";
 	}
-	out5 << "}";
+	out5 << "}//Chop";
 }
 
