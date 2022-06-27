@@ -60,7 +60,7 @@ int main(int argc, char** argv){
 
 
 	auto coupl_str = coupling_string(cmd.as_string("particle"), "N", "Pion");
-	couplings.set(coupl_str, 1.);
+	//couplings.set(coupl_str, 1.);
 
 	#pragma omp parallel for
 	for( int i = 0; i < steps; ++i ){
