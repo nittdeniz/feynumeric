@@ -53,8 +53,8 @@ int main(int argc, char** argv){
 	}
 	cos_theta_values.push_back(0.999);
 
-	std::vector<std::map<double, Complex>> results1;
-	std::vector<std::map<double, std::map<double, Complex>>> results5;
+	std::vector<std::vector<Point>> results1;
+	std::vector<std::map<double, std::vector<Point>>> results5;
 	results1.resize(particle->spin().n_states() * Proton->spin().n_states());
 	results5.resize(2*Proton->spin().n_states());
 
@@ -78,7 +78,7 @@ int main(int argc, char** argv){
 			#pragma omp critical
 			{
 				for( std::size_t j = 0; j < result.size(); ++j ){
-					results1[j][sqrt_s] = result[j];
+					results1[j].push_back(Point{sqrt_s, result[j]});
 				}
 			};
 
@@ -96,7 +96,7 @@ int main(int argc, char** argv){
 			#pragma omp critical
 			{
 				for( std::size_t j = 0; j < result.size(); ++j ){
-					results1[j][sqrt_s] = result[j];
+					results1[j].push_back(Point{sqrt_s, result[j]});
 				}
 			};
 
@@ -115,17 +115,46 @@ int main(int argc, char** argv){
 		{
 			for( auto& [cost, row] : results ){
 				for( std::size_t j = 0; j < row.size(); ++j ){
-					results5[j][sqrt_s][cost] = row[j];
+					results5[j][sqrt_s].push_back(Point{cost,row[j]});
 				}
 			}
 		};
 	}
 	stopwatch.stop();
 	std::cout << "Finished. Time: " << stopwatch.time<std::chrono::milliseconds>()/1000. << "\n";
-	std::string file_name1 = FORMAT("data/amplitude_{}_{}.expr", cmd.as_string("particle"), "N_pi");
-	std::string file_name5 = FORMAT("data/amplitude_{}_{}.expr", cmd.as_string("particle"), "scattering");
+	std::string file_name1 = FORMAT("data/amplitude_{}_{}.txt", cmd.as_string("particle"), "N_pi");
+	std::string file_name5 = FORMAT("data/amplitude_{}_{}.txt", cmd.as_string("particle"), "scattering");
 	std::ofstream out1(file_name1);
 
+	out1 << "{";
+	bool outer_first = true;
+	for( auto& item : results1 ){
+		if( !outer_first ){
+			out1 << ",";
+		}
+		out1 << "{";
+		bool inner_first = true;
+		for( auto& point : item ){
+			if( !inner_first ){
+				out1 << ",";
+			}
+			out1 << FORMAT("{{{:f},{:f}+{:f}I}}", point.x, point.y.real(), point.y.imag());
+			inner_first = false;
+		}
+		out1 << "}";
+		outer_first = false;
+	}
+	out1 << "}\n";
+	for( std::size_t i = 0; i <= 10; ++i ){
+		for( auto& item : results1 ){
+			Polynomial p(i);
+			p.fit(item);
+			out1 << p.to_string('x') << "\n";
+		}
+		out1 << "\n";
+	}
+
+	/*
 	out1 << "{";
 	bool outer_first = true;
 	for( auto& item : results1 ){
@@ -176,5 +205,6 @@ int main(int argc, char** argv){
 		out5 << "}";
 	}
 	out5 << "}//Chop";
+	 */
 }
 

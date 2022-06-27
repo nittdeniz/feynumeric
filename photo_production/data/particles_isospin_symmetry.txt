@@ -26,6 +26,7 @@ spin 5/2
 @group R32
 type TrueBaryon
 spin 3/2
+decay_order 2
 
 @group R12
 type TrueBaryon

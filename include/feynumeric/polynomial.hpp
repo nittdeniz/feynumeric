@@ -9,6 +9,10 @@
 
 namespace Feynumeric
 {
+	struct Point{
+		double x;
+		Complex y;
+	};
 	class Polynomial
 	{
 		std::vector<Complex> _coefficients;
@@ -17,7 +21,8 @@ namespace Feynumeric
 		Polynomial(std::size_t order);
 
 
-		void fit(std::vector<std::pair<double, Complex>> const& data);
+		void fit(std::vector<Point> const& data);
+		std::string to_string(char x) const;
 	};
 }
 

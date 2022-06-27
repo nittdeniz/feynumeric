@@ -24,6 +24,7 @@
 #include "particle.hpp"
 #include "particle_manager.hpp"
 #include "particles.hpp"
+#include "polynomial.hpp"
 #include "product.hpp"
 #include "range.hpp"
 #include "sum.hpp"
