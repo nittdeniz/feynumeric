@@ -42,13 +42,16 @@ namespace Feynumeric{
 	std::string Polynomial::to_string(char x) const{
 		std::stringstream result;
 		for( std::size_t i = 0; i < _coefficients.size(); ++i ){
+			if( i > 0 ){
+				result << "+";
+			}
 			result << FORMAT("({:f}", _coefficients[i].real());
 			if( _coefficients[i].imag() < 0 ){
 				result << FORMAT("{:f}I", _coefficients[i].imag());
 			}else{
 				result << FORMAT("+{:f}I", _coefficients[i].imag());
 			}
-			result << ")*" << x << "^" << i << " + ";
+			result << ")*" << x << "^" << i;
 		}
 		return result.str();
 	}
