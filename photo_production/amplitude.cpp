@@ -65,24 +65,24 @@ int main(int argc, char** argv){
 	#pragma omp parallel for
 	for( int i = 0; i < steps; ++i ){
 		double sqrt_s = start + i * (end-start)/steps;
-		if( cmd.as_string("particle") == "D1232" ){
-			auto dummy = std::make_shared<Particle>(*particle);
-			auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi+", dummy->name()), Decay_1_to_2, VMP,
-		                                  {dummy},
-		                                  {},
-                          {Proton, Pi_Plus}
-			);
-			Feynman_Process processes({diagram_pi1});
-			dummy->mass(sqrt_s);
-			auto result = processes.decay_M();
+		auto dummy = std::make_shared<Particle>(*particle);
+		auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi+", dummy->name()), Decay_1_to_2, VMP,
+	                                  {dummy},
+	                                  {},
+                      {Proton, Pi_Plus}
+		);
+		Feynman_Process processes({diagram_pi1});
+		dummy->mass(sqrt_s);
+		auto result = processes.decay_M();
 			#pragma omp critical
-			{
-				for( std::size_t j = 0; j < result.size(); ++j ){
-					results1[j].push_back(Point{sqrt_s, result[j]});
-				}
-			};
+		{
+			for( std::size_t j = 0; j < result.size(); ++j ){
+				results1[j].push_back(Point{sqrt_s, result[j]});
+			}
+		};
 
-		}
+	}
+	/*
 		if( cmd.as_string("particle") == "D1600" ){
 			auto dummy = std::make_shared<Particle>(*particle);
 			auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi+", dummy->name()), Decay_1_to_2, VMP,
@@ -101,6 +101,8 @@ int main(int argc, char** argv){
 			};
 
 		}
+	 */
+		/*
 		std::map<double, std::vector<Complex>> results;
 		for( auto cos_theta : cos_theta_values ){
 			auto scattering = create_diagram(FORMAT("{} s", particle->name()), s_channel, VMP,
@@ -119,7 +121,8 @@ int main(int argc, char** argv){
 				}
 			}
 		};
-	}
+		 */
+	//}
 	stopwatch.stop();
 	std::cout << "Finished. Time: " << stopwatch.time<std::chrono::milliseconds>()/1000. << "\n";
 	std::string file_name1 = FORMAT("data/amplitude_{}_{}.txt", cmd.as_string("particle"), "N_pi");
