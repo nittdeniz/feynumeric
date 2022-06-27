@@ -200,18 +200,28 @@ int main(int argc, char** argv){
 				if( !inner_first ){
 					out5 << ",";
 				}
-				out5 << FORMAT("{{{:f},{:f} + {:f}I}}", cos, val.real(), val.imag());
+				if( val.imag() < 0 ){
+					out5 << FORMAT("{{{:f},{:f} {:f}I}}", cos, val.real(), val.imag());
+				}else{
+					out5 << FORMAT("{{{:f},{:f} + {:f}I}}", cos, val.real(), val.imag());
+				}
 				inner_first = false;
 			}
 			first = false;
-			out5 << "}";
+			out5 << "}}";
 		}
 		outer_first = false;
 		out5 << "}";
 	}
 	out5 << "}\n";
-	for( std::size_t i = 2; i <= 10; ++i ){
+	for( std::size_t i = 2; i <= 8; ++i ){
+		out5 << "{";
+		bool first2=true;
 		for( auto& item : results5 ){
+			if( !first2 ){
+				out5 << ",";
+			}
+			out5 << "{";
 			bool first = true;
 			for( auto& [sqrts, row] : item ){
 				if( !first ){
@@ -219,13 +229,14 @@ int main(int argc, char** argv){
 				}
 				Polynomial p(i);
 				p.fit(row);
-				out5 << FORMAT("{{{:f},{{", sqrts);
+				out5 << FORMAT("{{{:f},", sqrts);
 				out5 << p.to_string('x') << "}";
 				first = false;
 			}
-			out5 << "\n";
+			out5 << "}";
+			first2=false;
 		}
-		out5 << "\n";
+		out5 << "}\n";
 	}
 }
 
