@@ -48,8 +48,8 @@ int main(int argc, char** argv){
 	std::vector<double> cos_theta_values;
 	cos_theta_values.reserve(201);
 	cos_theta_values.push_back(-0.999);
-	for( std::size_t i = 1; i < 100; ++i ){
-		cos_theta_values.push_back(-1 + 0.02 * i);
+	for( std::size_t i = 1; i < 50; ++i ){
+		cos_theta_values.push_back(-1 + 0.04 * i);
 	}
 	cos_theta_values.push_back(0.999);
 
@@ -66,6 +66,7 @@ int main(int argc, char** argv){
 	for( int i = 0; i < steps; ++i ){
 		double sqrt_s = start + i * (end-start)/steps;
 		auto dummy = std::make_shared<Particle>(*particle);
+		/*
 		auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi+", dummy->name()), Decay_1_to_2, VMP,
 	                                  {dummy},
 	                                  {},
@@ -82,7 +83,7 @@ int main(int argc, char** argv){
 		};
 
 	}
-	/*
+
 		if( cmd.as_string("particle") == "D1600" ){
 			auto dummy = std::make_shared<Particle>(*particle);
 			auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi+", dummy->name()), Decay_1_to_2, VMP,
@@ -102,7 +103,7 @@ int main(int argc, char** argv){
 
 		}
 	 */
-		/*
+
 		std::map<double, std::vector<Complex>> results;
 		for( auto cos_theta : cos_theta_values ){
 			auto scattering = create_diagram(FORMAT("{} s", particle->name()), s_channel, VMP,
@@ -121,12 +122,13 @@ int main(int argc, char** argv){
 				}
 			}
 		};
-		 */
-	//}
+	}
 	stopwatch.stop();
 	std::cout << "Finished. Time: " << stopwatch.time<std::chrono::milliseconds>()/1000. << "\n";
 	std::string file_name1 = FORMAT("data/amplitude_{}_{}.txt", cmd.as_string("particle"), "N_pi");
 	std::string file_name5 = FORMAT("data/amplitude_{}_{}.txt", cmd.as_string("particle"), "scattering");
+
+	/*
 	std::ofstream out1(file_name1);
 
 	out1 << "{";
@@ -177,11 +179,11 @@ int main(int argc, char** argv){
 		outer_first = false;
 	}
 	out1 << "}//Chop";
-
+	*/
 	std::ofstream out5(file_name5);
 
 	out5 << "{";
-	outer_first = true;
+	bool outer_first = true;
 	for( auto& item : results5 ){
 		if( !outer_first ){
 			out5 << ",";
@@ -192,22 +194,38 @@ int main(int argc, char** argv){
 			if( !first ){
 				out5 << ",";
 			}
-			out5 << FORMAT("{{{:f},Fit[{{", sqrts);
+			out5 << FORMAT("{{{:f},{{", sqrts);
 			bool inner_first = true;
 			for( auto& [cos, val] : row ){
 				if( !inner_first ){
 					out5 << ",";
 				}
-				out5 << FORMAT("{{{:f},{:f} + I {:f}}}", cos, val.real(), val.imag());
+				out5 << FORMAT("{{{:f},{:f} + {:f}I}}", cos, val.real(), val.imag());
 				inner_first = false;
 			}
 			first = false;
-			out5 << "},{1,c,c^2,c^3,c^4,c^5,c^6,c^7,c^8},c]}";
+			out5 << "}";
 		}
 		outer_first = false;
 		out5 << "}";
 	}
-	out5 << "}//Chop";
-	 */
+	out5 << "}\n";
+	for( std::size_t i = 2; i <= 10; ++i ){
+		for( auto& item : results5 ){
+			bool first = true;
+			for( auto& [sqrts, row] : item ){
+				if( !first ){
+					out5 << ",";
+				}
+				Polynomial p(i);
+				p.fit(row);
+				out5 << FORMAT("{{{:f},{{", sqrts);
+				out5 << p.to_string('x') << "}";
+				first = false;
+			}
+			out5 << "\n";
+		}
+		out5 << "\n";
+	}
 }
 
