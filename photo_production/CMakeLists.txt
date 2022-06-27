@@ -23,7 +23,7 @@ target_include_directories(coupling_constants PRIVATE include)
 target_include_directories(playground PRIVATE include)
 target_include_directories(dyson_factors PRIVATE include)
 
-target_link_libraries(amplitude PRIVATE Feynumeric)
+target_link_libraries(amplitude PRIVATE Feynumeric OpenMP::OpenMP_CXX)
 target_link_libraries(cross_sections PRIVATE Feynumeric)
 target_link_libraries(coupling_constants PRIVATE Feynumeric)
 target_link_libraries(playground PRIVATE Feynumeric)
