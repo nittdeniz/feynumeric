@@ -78,4 +78,61 @@ namespace Feynumeric{
 		}
 		return result;
 	}
+
+	Polynomial operator+(Polynomial const& lhs, Polynomial const& rhs){
+		Polynomial result(std::max(lhs.n, rhs.n)-1);
+		for( std::size_t i = 0; i < result.n; ++i ){
+			if( i < lhs.n ){
+				result._coefficients[i] += lhs._coefficients.at(i);
+			}
+			if( i < rhs.n ){
+				result._coefficients[i] += rhs._coefficients.at(i);
+			}
+		}
+		return result;
+	}
+
+	Polynomial operator-(Polynomial const& lhs, Polynomial const& rhs){
+		Polynomial result(std::max(lhs.n, rhs.n)-1);
+		for( std::size_t i = 0; i < result.n; ++i ){
+			if( i < lhs.n ){
+				result._coefficients[i] += lhs._coefficients.at(i);
+			}
+			if( i < rhs.n ){
+				result._coefficients[i] -= rhs._coefficients.at(i);
+			}
+		}
+		return result;
+	}
+
+	Polynomial operator*(Polynomial const& lhs, Polynomial const& rhs){
+		Polynomial result(lhs.n * rhs.n - 1);
+		for( std::size_t i = 0; i < lhs.n; ++i ){
+			for( std::size_t j = 0; j < rhs.n; ++j ){
+				result._coefficients[i+j] += lhs._coefficients[i] * rhs._coefficients[j];
+			}
+		}
+		return result;
+	}
+
+	Polynomial Polynomial::conjugate() const{
+		Polynomial result(*this);
+		for( auto& coef : result._coefficients ){
+			coef = std::conj(coef);
+		}
+		return result;
+	}
+
+	Polynomial::Polynomial(Polynomial const& other)
+	: _coefficients(other._coefficients)
+	, n(other.n)
+	{
+
+	}
+
+	Polynomial& Polynomial::operator=(Polynomial const& other){
+		n = other.n;
+		_coefficients = other._coefficients;
+		return *this;
+	}
 }

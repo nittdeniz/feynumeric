@@ -10,11 +10,6 @@
 
 int main(int argc, char** argv){
 	using namespace Feynumeric;
-
-	Polynomial p(4);
-	p.fit({{1.08,-0.610444},{1.205,-5.3766},{1.33,-9.6909},{1.455,-14.6668},{1.58,-20.4498},{1.705,-27.1257},{1.83,-34.7653},{1.955,-43.434},{2.08,-53.1952}});
-	std::cout << p.to_string('x') << "\n";
-
 	Command_Line_Manager cmd(argc, argv);
 	cmd.register_command("particle_file", true, "file with particle parameters");
 	cmd.register_command("coupling_constants", true, "file with coupling constants");
@@ -54,7 +49,7 @@ int main(int argc, char** argv){
 	auto result = process.decay_M_polynomial(dummy, start, end, 4);
 
 	for( auto& p : result ){
-		std::cout << p.to_string('x') << "\n";
+		std::cout << p.to_string('s') << "\n";
 	}
 
 }

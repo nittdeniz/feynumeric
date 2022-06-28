@@ -20,9 +20,17 @@ namespace Feynumeric
 	public:
 		Polynomial(std::size_t order);
 		Polynomial(std::vector<Complex> const& coefficients);
+		Polynomial(Polynomial const& other);
+		Polynomial& operator=(Polynomial const& other);
 		void fit(std::vector<Point> const& data);
 		Complex integrate(double a, double b);
 		std::string to_string(char x) const;
+
+		Polynomial conjugate() const;
+
+		friend Polynomial operator+(Polynomial const& lhs, Polynomial const& rhs);
+		friend Polynomial operator-(Polynomial const& lhs, Polynomial const& rhs);
+		friend Polynomial operator*(Polynomial const& lhs, Polynomial const& rhs);
 	};
 }
 
