@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <iostream>
 #include "feynumeric/format.hpp"
 #include "feynumeric/matrix.hpp"
@@ -144,6 +145,7 @@ namespace Feynumeric
 		bool needed_swapping = false;
 		double sign = 1;
 		for( std::size_t i = 0; i < copy._rows-1; ++i ){
+			std::cout << std::setw(10) << std::fixed << "\n" << copy << "\n";
 			if( almost_identical(copy(i, i), 0.) ){
 				swapped = false;
 				needed_swapping = true;
@@ -152,6 +154,8 @@ namespace Feynumeric
 						copy.swap_row(i, j);
 						swapped = true;
 						sign *= -1;
+						std::cout << "swapped: \n";
+						std::cout << std::setw(10) << std::fixed <<  copy << "\n";
 						break;
 					}
 				}
@@ -161,13 +165,18 @@ namespace Feynumeric
 			}
 			for( std::size_t j = i+1; j < copy._rows; ++j ){
 				if( almost_identical(copy(j, i), 0.) ){
+					std::cout << "almost 0: " << copy(j, i) << "\n";
 					continue;
 				}
 				Complex factor = -copy(j, i) / copy(i, i);
-				for( std::size_t k = i; k < copy._cols; ++k ){
+				std::cout << "factor: " << factor << "\n";
+				copy._data[j*copy._cols + i] = 0;
+				for( std::size_t k = i+1; k < copy._cols; ++k ){
 					copy._data[j*copy._cols + k] = copy._data[i*copy._cols + k] * factor + copy._data[j*copy._cols + k];
 				}
 			}
+			std::cout << "end: \n";
+			std::cout << std::setw(10) << std::fixed << copy << "\n\n";
 		}
 		Complex det = 1.;
 		for( std::size_t i = 0; i < copy._rows; ++i ){

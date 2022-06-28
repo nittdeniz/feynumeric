@@ -13,9 +13,7 @@ namespace Feynumeric
 
     bool almost_identical(Complex aa, Complex bb, double epsilon)
     {
-        double a = (aa * std::conj(aa)).real();
-        double b = (bb * std::conj(bb)).real();
-        return almost_identical(a, b, epsilon);
+        return almost_identical(aa.real(), bb.real(), epsilon) && almost_identical(aa.imag(), bb.imag(), epsilon);
     }
 
     Complex dot3(Matrix const& a, Matrix const& b)

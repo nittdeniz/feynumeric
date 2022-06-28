@@ -34,7 +34,9 @@ namespace Feynumeric{
 		_coefficients.resize(n);
 		for( std::size_t i = 0; i < n; ++i ){
 			cramer.swap_col(i, y_data);
-			_coefficients[i] = cramer.det() / detM;
+			auto temp = cramer.det();
+			auto div = temp / detM;
+			_coefficients[i] = div;
 			cramer.swap_col(i, y_data);
 		}
 	}
