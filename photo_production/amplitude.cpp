@@ -66,7 +66,7 @@ int main(int argc, char** argv){
 	for( int i = 0; i < steps; ++i ){
 		double sqrt_s = start + i * (end-start)/steps;
 		auto dummy = std::make_shared<Particle>(*particle);
-		/*
+
 		auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi+", dummy->name()), Decay_1_to_2, VMP,
 	                                  {dummy},
 	                                  {},
@@ -82,8 +82,7 @@ int main(int argc, char** argv){
 			}
 		};
 
-	}
-
+/*
 		if( cmd.as_string("particle") == "D1600" ){
 			auto dummy = std::make_shared<Particle>(*particle);
 			auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi+", dummy->name()), Decay_1_to_2, VMP,
@@ -102,8 +101,8 @@ int main(int argc, char** argv){
 			};
 
 		}
-	 */
-
+	 s
+	/*
 		std::map<double, std::vector<Complex>> results;
 		for( auto cos_theta : cos_theta_values ){
 			auto scattering = create_diagram(FORMAT("{} s", particle->name()), s_channel, VMP,
@@ -122,13 +121,14 @@ int main(int argc, char** argv){
 				}
 			}
 		};
+	 */
 	}
 	stopwatch.stop();
 	std::cout << "Finished. Time: " << stopwatch.time<std::chrono::milliseconds>()/1000. << "\n";
 	std::string file_name1 = FORMAT("data/amplitude_{}_{}.txt", cmd.as_string("particle"), "N_pi");
 	std::string file_name5 = FORMAT("data/amplitude_{}_{}.txt", cmd.as_string("particle"), "scattering");
 
-	/*
+
 	std::ofstream out1(file_name1);
 
 	out1 << "{";
@@ -180,6 +180,7 @@ int main(int argc, char** argv){
 	}
 	out1 << "}//Chop";
 	*/
+	/*
 	std::ofstream out5(file_name5);
 
 	out5 << "{";
@@ -238,5 +239,6 @@ int main(int argc, char** argv){
 		}
 		out5 << "}\n";
 	}
+	 */
 }
 
