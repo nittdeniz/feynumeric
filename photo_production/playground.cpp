@@ -1,67 +1,60 @@
+#include "effective_lagrangian_model.hpp"
+#include "form_factors.hpp"
+
 #include <feynumeric/matrix.hpp>
 #include <feynumeric/polynomial.hpp>
+#include <feynumeric/feynumeric.hpp>
 
 #include <iomanip>
 #include <iostream>
 
-int main(){
+int main(int argc, char** argv){
 	using namespace Feynumeric;
-	Polynomial p({0.336961, 0.0921614, 0.765718, 0.848827, 0.673792, 0.180325, 0.0422521, 0.478737, 0.735937, 0.0471693, 0.158135});
-			   std::cout << p.integrate(-3.5, 10.7) << "\n";
 
-	/*
-	Matrix test(5, 5, {
-		50, 78.5, 127.41, 213.112, 366.009,
-		78.5, 127.41, 213.112, 366.009,
-		643.026, 127.41, 213.112, 366.009, 643.026,
-		1151.57, 213.112, 366.009, 643.026, 1151.57,
-		2095.71, 366.009, 643.026, 1151.57, 2095.71, 3865.4
-	});
+	Polynomial p(4);
+	p.fit({{1.08,-0.610444},{1.205,-5.3766},{1.33,-9.6909},{1.455,-14.6668},{1.58,-20.4498},{1.705,-27.1257},{1.83,-34.7653},{1.955,-43.434},{2.08,-53.1952}});
+	std::cout << p.to_string('x') << "\n";
 
-	Matrix test2(5, 5, {
-			50, 78.5, 127.41000000000001, 213.11180000000004, 366.00861839999999,
-			78.5, 127.41000000000001, 213.11180000000004, 366.00861839999999, 643.02571639999996,
-			127.41000000000001, 213.11180000000004, 366.00861839999999, 643.02571639999996, 1151.5738787088001,
-			213.11180000000004, 366.00861839999999, 643.02571639999996, 1151.5738787088001, 2095.7056625981118,
-			366.00861839999999, 643.02571639999996, 1151.5738787088001, 2095.7056625981118, 3865.3972890005266
-	});
+	Command_Line_Manager cmd(argc, argv);
+	cmd.register_command("particle_file", true, "file with particle parameters");
+	cmd.register_command("coupling_constants", true, "file with coupling constants");
+	cmd.register_command("start", std::string("1.0"), "starting point");
+	cmd.register_command("end", std::string("3.0"), "end value");
+	cmd.register_command("steps", std::string("200"), "steps");
+	cmd.register_command("form_factor", CMD_FORM_FACTOR_NONE, FORMAT("which form factor to use ({}, {}, {}, {}, {}, {})", CMD_FORM_FACTOR_NONE, CMD_FORM_FACTOR_CASSING, CMD_FORM_FACTOR_CUTKOSKY, CMD_FORM_FACTOR_MANLEY, CMD_FORM_FACTOR_MONIZ, CMD_FORM_FACTOR_BREIT_WIGNER));
 
-	Matrix cramer3(5, 5, {50,78.5,127.41,196.792672,366.0086184,78.5,127.41,213.1118,339.86325418,643.0257164,127.41,213.1118,366.0086184,599.1455452812,1151.5738787088,213.1118,366.0086184,643.0257164,1074.98576498524,2095.705662598112,366.0086184,643.0257164,1151.5738787088,1957.782686947414,3865.397289000526});
+	cmd.crash_on_missing_mandatory_command();
 
-//	std::cerr << test.det() << "\n";
-//	std::cerr << test2.det() << "\n";
-	std::setw(10);
-	std::cout << "cramer3:\n" << cramer3.det() << "\n";
+	Particle_Manager P(cmd.as_string("particle_file"));
+	auto const& Proton = P.get("proton");
+	auto const& Neutron = P.get("neutron");
+	auto const& Pi_Zero = P.get("pi0");
+	auto const& Pi_Minus = P.get("pi-");
+	auto const& Pi_Plus = P.get("pi+");
+
+	init_vertices(P, cmd.as_string("coupling_constants"));
+
+	double const start = cmd.as_double("start");
+	double const end   = cmd.as_double("end");
+	int    const steps = cmd.as_int("steps");
 
 
-	std::vector<Point> list = {{1.08, 0.672001}, {1.1, 0.774902}, {1.12,
-	                                                       0.879698}, {1.14, 0.986391}, {1.16,
-	                                                       1.09498}, {1.18, 1.20546}, {1.2,
-	                                                       1.31784}, {1.22, 1.43212}, {1.24,
-	                                                       1.54829}, {1.26, 1.66635}, {1.28,
-	                                                       1.78631}, {1.3, 1.90816}, {1.32,
-	                                                       2.03191}, {1.34, 2.15756}, {1.36,
-	                                                       2.2851}, {1.38, 2.41453}, {1.4,
-	                                                       2.54586}, {1.42, 2.67908}, {1.44,
-	                                                       2.8142}, {1.46, 2.95121}, {1.48,
-	                                                       3.09012}, {1.5, 3.23092}, {1.52,
-	                                                       3.37361}, {1.54, 3.5182}, {1.56,
-	                                                       3.66468}, {1.58, 3.81306}, {1.6,
-	                                                       3.96333}, {1.62, 4.11549}, {1.64,
-	                                                       4.26955}, {1.66, 4.42551}, {1.68,
-	                                                       4.58335}, {1.7, 4.74309}, {1.72,
-	                                                       4.90472}, {1.74, 5.06825}, {1.76,
-	                                                       5.23367}, {1.78, 5.40099}, {1.8,
-	                                                       5.5702}, {1.82, 5.7413}, {1.84,
-	                                                       5.91429}, {1.86, 6.08918}, {1.88,
-	                                                       6.26596}, {1.9, 6.44464}, {1.92,
-	                                                       6.62521}, {1.94, 6.80767}, {1.96,
-	                                                       6.99202}, {1.98, 7.17827}, {2.,
-	                                                       7.36641}, {2.02, 7.55645}, {2.04,
-	                                                       7.74838}, {2.06, 7.9422}};
+	std::cout << FORMAT("start: {} end: {} steps: {}\n", start, end, steps);
 
-	Polynomial i(4);
-	i.fit(list);
-	std::cout << i.to_string('x') << "\n";
-	 */
+	std::string particle_name = "D1232";
+
+	auto dummy = std::make_shared<Particle>(*P.get(FORMAT("{}pp", particle_name)));
+	dummy->user_data("form_factor", identity);
+	auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi+", dummy->name()), Decay_1_to_2, VMP,
+	                                  {dummy},
+	                                  {},
+	                                  {Proton, Pi_Plus}
+	);
+	Feynman_Process process({diagram_pi1});
+	auto result = process.decay_M_polynomial(dummy, start, end, 4);
+
+	for( auto& p : result ){
+		std::cout << p.to_string('x') << "\n";
+	}
+
 }

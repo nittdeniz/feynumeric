@@ -39,11 +39,15 @@ namespace Feynumeric{
 			y_data.push_back(temp_b);
 		}
 		auto detM = cramer.det();
+		if( almost_identical(detM, 0.) ){
+			_coefficients = std::vector<Complex>(n, 0);
+			return;
+		}
 		_coefficients.resize(n);
 		for( std::size_t i = 0; i < n; ++i ){
 			cramer.swap_col(i, y_data);
 			auto temp = cramer.det();
-			auto div = temp / detM;
+						auto div = temp / detM;
 			_coefficients[i] = div;
 			cramer.swap_col(i, y_data);
 		}
@@ -55,13 +59,14 @@ namespace Feynumeric{
 			if( i > 0 ){
 				result << "+";
 			}
-			result << FORMAT("({:f}", _coefficients[i].real());
-			if( _coefficients[i].imag() < 0 ){
-				result << FORMAT("{:f}I", _coefficients[i].imag());
-			}else{
-				result << FORMAT("+{:f}I", _coefficients[i].imag());
-			}
-			result << ")*" << x << "^" << i;
+			result << _coefficients[i];
+//			result << FORMAT("({:f}", _coefficients[i].real());
+//			if( _coefficients[i].imag() < 0 ){
+//				result << FORMAT("{:f}I", _coefficients[i].imag());
+//			}else{
+//				result << FORMAT("+{:f}I", _coefficients[i].imag());
+//			}
+			result << "*" << x << "^" << i;
 		}
 		return result.str();
 	}

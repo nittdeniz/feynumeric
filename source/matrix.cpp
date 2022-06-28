@@ -141,48 +141,66 @@ namespace Feynumeric
 
 	Complex Matrix::det() const{
 		auto copy = Matrix(*this);
-		bool swapped = false;
-		bool needed_swapping = false;
-		double sign = 1;
+		double scale = 1;
+//		std::cout << std::setprecision(15) << copy << "\n";
 		for( std::size_t i = 0; i < copy._rows-1; ++i ){
-			std::cout << std::setw(10) << std::fixed << "\n" << copy << "\n";
-			if( almost_identical(copy(i, i), 0.) ){
-				swapped = false;
-				needed_swapping = true;
-				for( std::size_t j = i+1; j < copy._rows; ++j ){
-					if( !almost_identical(copy(j, i), 0.) ){
-						copy.swap_row(i, j);
-						swapped = true;
-						sign *= -1;
-						std::cout << "swapped: \n";
-						std::cout << std::setw(10) << std::fixed <<  copy << "\n";
-						break;
-					}
+			// chose max value as pivot point: https://en.wikipedia.org/wiki/Pivot_element
+			auto norm = std::abs(copy(i, i));
+			std::pair<std::size_t, double> max{i, norm};
+			std::pair<std::size_t, double> min{i, norm};
+
+			for( std::size_t j = i+1; j < copy._rows; ++j ){
+				auto temp = std::abs(copy(j, i));
+				if( temp > max.second ){
+					max.first = j;
+					max.second = temp;
+				}
+				if( temp < min.second ){
+					min.first = j;
+					min.second = temp;
 				}
 			}
-			if( needed_swapping && !swapped ){
+
+			if( i != max.first ){
+//				std::cout << "swap: " << i << " <> " << max.first << "\n";
+				copy.swap_row(i, max.first);
+				scale *= -1.;
+			}
+
+			if( almost_identical(copy(i, i), 0.) ){ // not full if max element is zero
 				return 0.;
 			}
+
+			// rescale everything
+			/*
+			auto average = (min.second + max.second)/2.;
+			std::cout << "average: " << average << "\n";
+			copy /= average;
+			scale *= int_pow(average, _rows);
+			 */
+
+//			std::cout << std::setprecision(15) << copy << "\n";
+
 			for( std::size_t j = i+1; j < copy._rows; ++j ){
 				if( almost_identical(copy(j, i), 0.) ){
-					std::cout << "almost 0: " << copy(j, i) << "\n";
+//					std::cout << "almost 0: " << copy(j, i) << "\n";
 					continue;
 				}
 				Complex factor = -copy(j, i) / copy(i, i);
-				std::cout << "factor: " << factor << "\n";
 				copy._data[j*copy._cols + i] = 0;
 				for( std::size_t k = i+1; k < copy._cols; ++k ){
 					copy._data[j*copy._cols + k] = copy._data[i*copy._cols + k] * factor + copy._data[j*copy._cols + k];
 				}
 			}
-			std::cout << "end: \n";
-			std::cout << std::setw(10) << std::fixed << copy << "\n\n";
+//			std::cout << std::setprecision(15) << copy << "\n\n\n";
 		}
 		Complex det = 1.;
 		for( std::size_t i = 0; i < copy._rows; ++i ){
 			det *= copy(i ,i);
 		}
-		return sign * det;
+//		std::cout << "scale: " << scale << "\n";
+//		std::cout << "det: " << std::fixed << std::setw(15) << std::setprecision(15) << scale * det << "\n";
+		return scale * det;
 	}
 
 	void Matrix::swap_col(std::size_t i, std::vector<Complex>& col){
@@ -195,6 +213,7 @@ namespace Feynumeric
 	}
 
 	void Matrix::swap_row(std::size_t i, std::size_t j){
+		if( i == j ) return;
 		for( std::size_t a = 0; a < _cols; ++a ){
 			std::swap(_data[i*_cols + a], _data[j*_cols + a]);
 		}
@@ -320,16 +339,19 @@ namespace Feynumeric
 
     std::ostream &operator<<(std::ostream &out, const Matrix &matrix)
     {
+		out << "{";
         for( std::size_t i = 0; i < matrix._rows; i++ )
         {
-            out << "(";
+        	if( i > 0 ) out << ",";
+            out << "{";
             for( std::size_t j = 0; j < matrix._cols; j++ )
             {
 
-                out << ((j>0)?"\t":"") << matrix.at(i, j);
+                out << ((j>0)?",":"") << matrix.at(i, j);
             }
-            out << ")\n";
+            out << "}\n";
         }
+        out << "}";
         return out;
     }
 

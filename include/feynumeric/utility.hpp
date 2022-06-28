@@ -21,6 +21,8 @@ namespace Feynumeric
 	double int_pow(double c, std::size_t n);
     Complex int_pow(Complex c, std::size_t n);
 
+    std::vector<double> lin_space(double from, double to, std::size_t steps);
+
 //    constexpr std::size_t binomial(std::size_t n, std::size_t k) {
 //        if (k == 0 || n == k) {
 //            return 1;

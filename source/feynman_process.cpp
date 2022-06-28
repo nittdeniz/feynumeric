@@ -10,8 +10,8 @@
 #include "graph_edge.hpp"
 #include "graph_vertex.hpp"
 #include "integrate.hpp"
+#include "particle.hpp"
 #include "phase_space.hpp"
-#include "units.hpp"
 #include "utility.hpp"
 
 void nothing(){}
@@ -231,7 +231,6 @@ namespace Feynumeric
 		kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
 		kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta));
 
-		//std::vector<double> Ms(_diagrams.size() + 1);
 		std::vector<Complex> Ms(N_spins);
 
 		for( std::size_t i = 0; i < N_spins; ++i ){
@@ -311,6 +310,63 @@ namespace Feynumeric
 		//auto check = dsigma_dcos_table(sqrt_s, 0.1);
 
 		return result[cos_theta].back();
+	}
+
+
+
+	std::vector<Polynomial> Feynman_Process::decay_M_polynomial(Particle_Ptr dummy, double from, double to, std::size_t order){
+		validate_diagram_compatibility();
+
+		std::size_t const N_spins = [&](){
+			std::size_t n = 1;
+			for( auto const& j : _diagrams[0]->_spins ){
+				n *= j->n_states();
+			}
+			return n;
+		}();
+
+		std::vector<double> values = lin_space(from, to, order*2);
+		std::vector<std::vector<Point>> point_list(N_spins, std::vector<Point>(values.size()));
+
+
+		for( std::size_t i = 0; i < values.size(); ++i ){
+			auto sqrt_s = values[i];
+			dummy->mass(sqrt_s);
+
+			auto const& incoming = _diagrams[0]->incoming_particles();
+			auto const& outgoing = _diagrams[0]->outgoing_particles();
+			Kinematics kin(incoming[0]->mass(), 1, 2);
+			auto const q = momentum(incoming[0]->mass(), outgoing[0]->mass(), outgoing[1]->mass());
+			kin.incoming(0, four_momentum(0, incoming[0]->mass()));
+			kin.outgoing(0, four_momentum(q, outgoing[0]->mass()));
+			kin.outgoing(1, four_momentum(-q, outgoing[1]->mass()));
+
+			for( auto& diagram : _diagrams ){
+				diagram->reset_spins();
+				diagram->reset_indices();
+			}
+
+			std::vector<Complex> result(N_spins, 0.);
+
+			for( std::size_t j = 0; j < N_spins; ++j ){
+				Complex M{0, 0};
+				for( auto& diagram : _diagrams ){
+					M += diagram->evaluate_amplitude(kin);
+					diagram->iterate_spins();
+				}
+				point_list[j][i] = Point{sqrt_s, M};
+			}
+		}
+
+		std::vector<Polynomial> polynomials;
+		polynomials.reserve(point_list.size());
+		for( auto points : point_list ){
+			Polynomial p(order);
+			p.fit(points);
+			polynomials.push_back(p);
+		}
+		return polynomials;
+
 	}
 
 	std::vector<Complex> Feynman_Process::decay_M(){

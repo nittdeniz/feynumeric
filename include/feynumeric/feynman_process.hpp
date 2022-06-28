@@ -8,11 +8,13 @@
 #include <vector>
 
 #include "complex.hpp"
+#include "polynomial.hpp"
 #include "units.hpp"
 
 namespace Feynumeric
 {
 	class Feynman_Diagram;
+	class Particle;
 	using Feynman_Diagram_Ptr = std::shared_ptr<Feynman_Diagram>;
 
 	class Feynman_Process
@@ -58,7 +60,9 @@ namespace Feynumeric
 		std::map<double, double> sigma_table(double start, double end, std::size_t steps, double epsilon = 1.e-2);
 
 		std::vector<Complex> M_costheta(double sqrt_s, double cos_theta);
+		Polynomial M_costheta_polynomial(double sqrt_s, double cos_theta);
 		std::vector<Complex> decay_M();
+		std::vector<Polynomial> decay_M_polynomial(std::shared_ptr<Particle> dummy, double from, double to, std::size_t order = 4);
 
 
 		std::map<double, std::vector<double>> dsigma_dcos_table(double sqrt_s, std::size_t steps);

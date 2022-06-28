@@ -41,5 +41,16 @@ namespace Feynumeric
 		}
 		return result;
 	}
+
+	std::vector<double> lin_space(double from, double to, std::size_t steps){
+		double delta = (to-from) / steps;
+		std::vector<double> result;
+		result.reserve(steps+1);
+		for( std::size_t i = 0; i < steps; ++i ){
+			result.push_back(from + i * delta);
+		}
+		result.push_back(to);
+		return result;
+	}
 }
 
