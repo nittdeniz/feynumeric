@@ -6,7 +6,10 @@
 
 int main(){
 	using namespace Feynumeric;
+	Polynomial p({0.336961, 0.0921614, 0.765718, 0.848827, 0.673792, 0.180325, 0.0422521, 0.478737, 0.735937, 0.0471693, 0.158135});
+			   std::cout << p.integrate(-3.5, 10.7) << "\n";
 
+	/*
 	Matrix test(5, 5, {
 		50, 78.5, 127.41, 213.112, 366.009,
 		78.5, 127.41, 213.112, 366.009,
@@ -60,4 +63,5 @@ int main(){
 	Polynomial i(4);
 	i.fit(list);
 	std::cout << i.to_string('x') << "\n";
+	 */
 }

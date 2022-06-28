@@ -18,6 +18,9 @@ namespace Feynumeric
     bool almost_identical(double a, double b, double epsilon=1.e-9);
     bool almost_identical(Complex a, Complex b, double epsilon=1.e-9);
 
+	double int_pow(double c, std::size_t n);
+    Complex int_pow(Complex c, std::size_t n);
+
 //    constexpr std::size_t binomial(std::size_t n, std::size_t k) {
 //        if (k == 0 || n == k) {
 //            return 1;

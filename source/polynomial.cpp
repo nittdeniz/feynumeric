@@ -1,6 +1,7 @@
 #include "feynumeric/format.hpp"
 #include "feynumeric/matrix.hpp"
 #include "feynumeric/polynomial.hpp"
+#include "feynumeric/utility.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -9,6 +10,13 @@ namespace Feynumeric{
 	Polynomial::Polynomial(std::size_t order)
 	: n(order+1)
 	{
+	}
+
+	Polynomial::Polynomial(std::vector<Complex> const& coefficients)
+	: _coefficients(coefficients)
+	, n(coefficients.size())
+	{
+
 	}
 
 
@@ -56,5 +64,13 @@ namespace Feynumeric{
 			result << ")*" << x << "^" << i;
 		}
 		return result.str();
+	}
+
+	Complex Polynomial::integrate(double a, double b){
+		Complex result{0.};
+		for( std::size_t i = 0; i < _coefficients.size(); ++i ){
+			result += _coefficients[i]/(i+1.) * (int_pow(b, i+1) - int_pow(a, i+1));
+		}
+		return result;
 	}
 }

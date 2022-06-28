@@ -19,9 +19,9 @@ namespace Feynumeric
 		std::size_t n;
 	public:
 		Polynomial(std::size_t order);
-
-
+		Polynomial(std::vector<Complex> const& coefficients);
 		void fit(std::vector<Point> const& data);
+		Complex integrate(double a, double b);
 		std::string to_string(char x) const;
 	};
 }

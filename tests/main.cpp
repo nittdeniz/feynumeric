@@ -12,6 +12,7 @@
 #include <feynumeric/qed.hpp>
 #include <feynumeric/feynman_diagram.hpp>
 #include <feynumeric/topologies.hpp>
+#include <feynumeric/polynomial.hpp>
 #include <feynumeric/feynman_process.hpp>
 
 #include <cmath>
@@ -109,6 +110,14 @@ TEST_CASE( "matrix transposition", "[matrix]"){
     Feynumeric::Matrix b(3, 3, {1,4,7, 2,5,8, 3,6,9});
 
 //    REQUIRE(a.T() == b);
+}
+
+TEST_CASE("polynomial", "[polynomial]"){
+	using namespace Feynumeric;
+	Polynomial p({0.336961206340701,0.0921614277724814,0.7657183908561174,0.848826536507448,0.6737915866225679,0.1803249149100033,0.04225206025234041,0.47873691516157,0.7359368642105258,0.04716933504137355,0.1581350487121178});
+	double i = p.integrate(-3.5,10.7).real();
+	double j = 3.279502128485622*1.e9;
+    REQUIRE( is_almost_equal(i, j));
 }
 
 TEST_CASE("clebsch_gordan", "[math]"){
