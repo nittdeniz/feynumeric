@@ -312,8 +312,8 @@ namespace Feynumeric
 		return result[cos_theta].back();
 	}
 
-	std::pair<std::vector<Polynomial>, std::vector<Polynomial>> Feynman_Process::M(double from, double to, std::size_t order_cos, std::size_t order_sqrts){
-		std::vector<Polynomial> cos_theta_polynomial = M_costheta_polynomial(to, order_cos);
+	std::pair<std::vector<Polynomial>, std::vector<Polynomial>> Feynman_Process::M(double from, double to, double norm, std::size_t order_cos, std::size_t order_sqrts){
+		std::vector<Polynomial> cos_theta_polynomial = M_costheta_polynomial(norm, order_cos);
 
 		auto s_values = lin_space(from, to, 2*order_sqrts);
 
@@ -326,7 +326,7 @@ namespace Feynumeric
 			return n;
 		}();
 
-		auto const cos_theta = 0.1234;
+		auto const cos_theta = 0.;
 
 		std::vector<std::vector<Point>> point_list(N_spins, std::vector<Point>(s_values.size()));
 		for( std::size_t k = 0; k < s_values.size(); ++k ){
@@ -368,7 +368,14 @@ namespace Feynumeric
 		for( auto points : point_list ){
 			Polynomial p(order_sqrts);
 			p.fit(points);
-			s_polynomials.push_back(p/to); // rescale
+//			std::cout << "evaluate_at: " << evaluate_cos_at << "\n";
+			auto rescale = p(norm);
+//			std::cout << "rescale: " << rescale << "\n";
+			if( rescale == Complex(0., 0.) ){
+				critical_error("rescale factor is zero. Try a different order for sqrt_s polynomial.");
+			}
+			std::cout << "rescale: " << rescale << "\n\n";
+			s_polynomials.push_back(p/rescale); // rescale
 //			std::cout << "{";
 //			for( auto& pp : points ){
 //				std::cout << "{" << pp.x << ", " << pp.y << "},";
@@ -453,7 +460,19 @@ namespace Feynumeric
 			return n;
 		}();
 
-		std::vector<double> values = lin_space(from, to, order*2);
+		auto x2 = dummy->mass() - dummy->width();
+		auto x3 = dummy->mass() + dummy->width();
+
+		std::vector<double> values1 = lin_space(from, x2, order/2-1);
+		std::vector<double> values2 = lin_space(x2, x3, order);
+		std::vector<double> values3 = lin_space(x3, to, order-1);
+
+//		std::vector<double> values = lin_space(from, to, order*2);
+		std::vector<double> values;
+		for( auto& v : values1 ) values.push_back(v);
+		for( auto& v : values2 ) values.push_back(v);
+		for( auto& v : values3 ) values.push_back(v);
+
 		std::vector<std::vector<Point>> point_list(N_spins, std::vector<Point>(values.size()));
 
 
@@ -538,18 +557,18 @@ namespace Feynumeric
 		return result;
 	}
 
-	double Feynman_Process::decay_1_2(){
+	double Feynman_Process::decay_1_2(double sqrt_s){
 		using namespace Feynumeric::Units;
 		validate_diagram_compatibility();
 
 		auto const& incoming = _diagrams[0]->incoming_particles();
 		auto const& outgoing = _diagrams[0]->outgoing_particles();
 
-		Kinematics kin(incoming[0]->mass(), 1, 2);
+		Kinematics kin(sqrt_s, 1, 2);
 
-		auto const q = momentum(incoming[0]->mass(), outgoing[0]->mass(), outgoing[1]->mass());
+		auto const q = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
 
-		kin.incoming(0, four_momentum(0, incoming[0]->mass()));
+		kin.incoming(0, four_momentum(0, sqrt_s));
 		kin.outgoing(0, four_momentum(q, outgoing[0]->mass()));
 		kin.outgoing(1, four_momentum(-q, outgoing[1]->mass()));
 
@@ -585,24 +604,24 @@ namespace Feynumeric
 			}
 			Ms_squared += ( M * std::conj(M)).real();
 		}
-		auto phase_space = 1. / N_polarisations * q / ( 8 * M_PI * incoming[0]->mass() * incoming[0]->mass());
+		auto phase_space = 1. / N_polarisations * q / ( 8 * M_PI * sqrt_s * sqrt_s);
 		return Ms_squared * phase_space;
 	}
 
-	double Feynman_Process::partial_decay_1_3(double const invariant_mass, double const cos_theta, std::size_t const N_spins, std::size_t const N_polarisations){
+	double Feynman_Process::partial_decay_1_3(double sqrt_s, double const invariant_mass, double const cos_theta, std::size_t const N_spins, std::size_t const N_polarisations){
 		using namespace Feynumeric::Units;
 
 		auto const& incoming = _diagrams[0]->incoming_particles();
 		auto const& outgoing = _diagrams[0]->outgoing_particles();
 
-		Kinematics kin(incoming[0]->mass(), 1, 3);
+		Kinematics kin(sqrt_s,1, 3);
 
 		auto const q01 = momentum(invariant_mass, outgoing[0]->mass(), outgoing[1]->mass());
-		auto const q2 = momentum(incoming[0]->mass(), invariant_mass, outgoing[2]->mass());
+		auto const q2 = momentum(sqrt_s, invariant_mass, outgoing[2]->mass());
 
 		//auto const p_out = four_momentum(q2, invariant_mass);
 
-		auto const p_in    = four_momentum(0, incoming[0]->mass());
+		auto const p_in    = four_momentum(0, sqrt_s);
 		auto const p0_rest = four_momentum(q01, outgoing[0]->mass(), cos_theta);
         auto const p1_rest = four_momentum(-q01, outgoing[1]->mass(), cos_theta);
         auto const p01     = four_momentum(q2, invariant_mass);
@@ -647,18 +666,18 @@ namespace Feynumeric
 			Ms_squared += ( M * std::conj(M)).real();
 		}
 
-		auto phase_space = 1. / N_polarisations * std::pow(2 * M_PI, -5) * 1. / (16 *  incoming[0]->mass() * incoming[0]->mass()) * q01 * q2 * 8 * M_PI * M_PI;
+		auto phase_space = 1. / N_polarisations * std::pow(2 * M_PI, -5) * 1. / (16 *  sqrt_s * sqrt_s) * q01 * q2 * 8 * M_PI * M_PI;
 		return Ms_squared * phase_space;
 	}
 
-	double Feynman_Process::decay_1_3(){
+	double Feynman_Process::decay_1_3(double sqrt_s){
 		using namespace std::placeholders;
 		validate_diagram_compatibility();
 
 		auto const M_min = _diagrams[0]->_graph._outgoing[0]->particle()->mass() + _diagrams[0]->_graph._outgoing[1]->particle()->mass();
-		auto const M_max = _diagrams[0]->_graph._incoming[0]->particle()->mass() - _diagrams[0]->_graph._outgoing[2]->particle()->mass();
+		auto const M_max = sqrt_s - _diagrams[0]->_graph._outgoing[2]->particle()->mass();
 		auto partial = [&](double M){
-			auto f = std::bind(&Feynman_Process::partial_decay_1_3, this, M, _1, _n_spins, _n_polarisations);
+			auto f = std::bind(&Feynman_Process::partial_decay_1_3, this, sqrt_s, M, _1, _n_spins, _n_polarisations);
 			auto r = integrate(f, -0.999, 0.999, 1.e-2);
 			return r;
 		};
@@ -666,16 +685,16 @@ namespace Feynumeric
 		return r;
 	}
 
-	double Feynman_Process::decay_width(){
+	double Feynman_Process::decay_width(double sqrt_s){
 		if( _diagrams.empty() ){
 			critical_error("Process has no diagrams.");
 		}
 		if( _diagrams[0]->_graph._incoming.size() == 1 ){
 			if( _diagrams[0]->_graph._outgoing.size() == 2 ){
-				return decay_1_2();
+				return decay_1_2(sqrt_s);
 			}
 			if( _diagrams[0]->_graph._outgoing.size() == 3 ){
-				return decay_1_3();
+				return decay_1_3(sqrt_s);
 			}
 		}
 		critical_error("Only single particle decays into a two or three particle final state are implemented.");

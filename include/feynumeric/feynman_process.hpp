@@ -29,9 +29,9 @@ namespace Feynumeric
 
 		double _conversion_factor = Units::operator""_2barn(1.);
 
-		double decay_1_2();
-		double decay_1_3();
-		double partial_decay_1_3(double const invariant_mass, double const cos_theta, std::size_t const N_spins, std::size_t const N_polarisations);
+		double decay_1_2(double sqrt_s);
+		double decay_1_3(double sqrt_s);
+		double partial_decay_1_3(double sqrt_s, double const invariant_mass, double const cos_theta, std::size_t const N_spins, std::size_t const N_polarisations);
 
 		std::size_t _n_spins;
 		std::size_t _n_polarisations;
@@ -61,7 +61,7 @@ namespace Feynumeric
 
 		std::vector<Complex> M_costheta(double sqrt_s, double cos_theta);
 		std::vector<Polynomial> M_costheta_polynomial(double sqrt_s, std::size_t order);
-		std::pair<std::vector<Polynomial>, std::vector<Polynomial>> M(double from, double to, std::size_t order_cos, std::size_t order_sqrts);
+		std::pair<std::vector<Polynomial>, std::vector<Polynomial>> M(double from, double to, double norm, std::size_t order_cos, std::size_t order_sqrts);
 		std::vector<Complex> decay_M();
 		std::vector<Polynomial> decay_M_polynomial(std::shared_ptr<Particle> dummy, double from, double to, std::size_t order = 4);
 
@@ -70,7 +70,7 @@ namespace Feynumeric
 		std::map<double, std::vector<double>> dsigma_dcos_table(double sqrt_s, double delta);
 		std::map<double, std::vector<double>> dsigma_dcos_table(double sqrt_s, std::vector<double>&& values);
 
-		double decay_width();
+		double decay_width(double sqrt_s);
 	};
 }
 #endif // FEYNUMERIC_FEYNMAN_PROCESS_HPP

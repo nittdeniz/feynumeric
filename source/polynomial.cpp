@@ -9,14 +9,16 @@
 namespace Feynumeric{
 	Polynomial::Polynomial(std::size_t order)
 	: n(order+1)
+	, order(order)
+	, _coefficients(n)
 	{
 	}
 
 	Polynomial::Polynomial(std::vector<Complex> const& coefficients)
-	: _coefficients(coefficients)
-	, n(coefficients.size())
+	: n(coefficients.size())
+	, order(n-1)
+	, _coefficients(coefficients)
 	{
-
 	}
 
 
@@ -39,9 +41,9 @@ namespace Feynumeric{
 			y_data.push_back(temp_b);
 		}
 		auto detM = cramer.det();
-		//std::cout << cramer << "\n";
+//		std::cout << cramer << "\n";
 //		std::cout << "detM: " << detM << "\n";
-		if( almost_identical(detM, 0., 1.e-16, 1.e-16) ){
+		if( detM == Complex(0.,0.) ){
 			_coefficients = std::vector<Complex>(n, 0);
 			return;
 		}
@@ -83,7 +85,7 @@ namespace Feynumeric{
 	}
 
 	Polynomial operator+(Polynomial const& lhs, Polynomial const& rhs){
-		Polynomial result(std::max(lhs.n, rhs.n)-1);
+		Polynomial result(std::max(lhs.order, rhs.order));
 		for( std::size_t i = 0; i < result.n; ++i ){
 			if( i < lhs.n ){
 				result._coefficients[i] += lhs._coefficients.at(i);
@@ -96,7 +98,7 @@ namespace Feynumeric{
 	}
 
 	Polynomial operator-(Polynomial const& lhs, Polynomial const& rhs){
-		Polynomial result(std::max(lhs.n, rhs.n)-1);
+		Polynomial result(std::max(lhs.order, rhs.order));
 		for( std::size_t i = 0; i < result.n; ++i ){
 			if( i < lhs.n ){
 				result._coefficients[i] += lhs._coefficients.at(i);
@@ -109,7 +111,7 @@ namespace Feynumeric{
 	}
 
 	Polynomial operator*(Polynomial const& lhs, Polynomial const& rhs){
-		Polynomial result(lhs.n * rhs.n - 1);
+		Polynomial result(lhs.order + rhs.order);
 		for( std::size_t i = 0; i < lhs.n; ++i ){
 			for( std::size_t j = 0; j < rhs.n; ++j ){
 				result._coefficients[i+j] += lhs._coefficients[i] * rhs._coefficients[j];
@@ -143,14 +145,16 @@ namespace Feynumeric{
 	}
 
 	Polynomial::Polynomial(Polynomial const& other)
-	: _coefficients(other._coefficients)
-	, n(other.n)
+	: n(other.n)
+	, order(other.order)
+	, _coefficients(other._coefficients)
 	{
 
 	}
 
 	Polynomial& Polynomial::operator=(Polynomial const& other){
 		n = other.n;
+		order = other.order;
 		_coefficients = other._coefficients;
 		return *this;
 	}
@@ -161,5 +165,26 @@ namespace Feynumeric{
 			result += _coefficients[i] * int_pow(x, i);
 		}
 		return result;
+	}
+
+	Polynomial& Polynomial::operator+=(Polynomial const& other){
+		n = std::max(n, other.n);
+		_coefficients.resize(n);
+		for( std::size_t i = 0; i < other.n; ++i ){
+			_coefficients[i] += other._coefficients[i];
+		}
+		return *this;
+	}
+
+	Polynomial2D::Polynomial2D(Polynomial const& first, Polynomial const& second)
+	: _coefficients{std::vector<Polynomial>(first.n), std::vector<Polynomial>(second.order)}
+	, _polynomials{std::vector<Complex>(first.n, 1.), std::vector<Complex>(second.n, 1.)}
+	{
+		for( auto& c : first._coefficients ){
+			_coefficients[0].push_back(c * second);
+		}
+		for( auto& c : second._coefficients ){
+			_coefficients[1].push_back(c * first);
+		}
 	}
 }
