@@ -39,7 +39,9 @@ namespace Feynumeric{
 			y_data.push_back(temp_b);
 		}
 		auto detM = cramer.det();
-		if( almost_identical(detM, 0.) ){
+		//std::cout << cramer << "\n";
+//		std::cout << "detM: " << detM << "\n";
+		if( almost_identical(detM, 0., 1.e-16, 1.e-16) ){
 			_coefficients = std::vector<Complex>(n, 0);
 			return;
 		}
@@ -47,7 +49,8 @@ namespace Feynumeric{
 		for( std::size_t i = 0; i < n; ++i ){
 			cramer.swap_col(i, y_data);
 			auto temp = cramer.det();
-						auto div = temp / detM;
+			auto div = temp / detM;
+//			std::cout << "div: " << temp << " /  " << detM << " = " << div << "\n";
 			_coefficients[i] = div;
 			cramer.swap_col(i, y_data);
 		}
@@ -115,6 +118,22 @@ namespace Feynumeric{
 		return result;
 	}
 
+	Polynomial operator*(Polynomial const& lhs, Complex const& rhs){
+		Polynomial copy(lhs);
+		for( auto& c : copy._coefficients ){
+			c *= rhs;
+		}
+		return copy;
+	}
+
+	Polynomial operator*(Complex const& lhs, Polynomial const& rhs){
+		return rhs * lhs;
+	}
+
+	Polynomial operator/(Polynomial const& lhs, Complex const& rhs){
+		return lhs * (1./rhs);
+	}
+
 	Polynomial Polynomial::conjugate() const{
 		Polynomial result(*this);
 		for( auto& coef : result._coefficients ){
@@ -134,5 +153,13 @@ namespace Feynumeric{
 		n = other.n;
 		_coefficients = other._coefficients;
 		return *this;
+	}
+
+	Complex Polynomial::operator()(double x) const{
+		Complex result{0.};
+		for( std::size_t i = 0; i < _coefficients.size(); ++i ){
+			result += _coefficients[i] * int_pow(x, i);
+		}
+		return result;
 	}
 }

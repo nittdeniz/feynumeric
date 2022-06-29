@@ -15,8 +15,8 @@ namespace Feynumeric
         return std::find(container.begin(), container.end(), value) != container.end();
     }
 
-    bool almost_identical(double a, double b, double epsilon=1.e-9);
-    bool almost_identical(Complex a, Complex b, double epsilon=1.e-9);
+    bool almost_identical(double a, double b, double epsilon=1.e-9, double cutoff = 1.e-8);
+    bool almost_identical(Complex a, Complex b, double epsilon=1.e-9, double cutoff = 1.e-8);
 
 	double int_pow(double c, std::size_t n);
     Complex int_pow(Complex c, std::size_t n);

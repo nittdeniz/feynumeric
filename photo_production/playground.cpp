@@ -10,6 +10,7 @@
 
 int main(int argc, char** argv){
 	using namespace Feynumeric;
+
 	Command_Line_Manager cmd(argc, argv);
 	cmd.register_command("particle_file", true, "file with particle parameters");
 	cmd.register_command("coupling_constants", true, "file with coupling constants");
@@ -38,18 +39,33 @@ int main(int argc, char** argv){
 
 	std::string particle_name = "D1232";
 
-	auto dummy = std::make_shared<Particle>(*P.get(FORMAT("{}pp", particle_name)));
-	dummy->user_data("form_factor", identity);
-	auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi+", dummy->name()), Decay_1_to_2, VMP,
-	                                  {dummy},
-	                                  {},
-	                                  {Proton, Pi_Plus}
-	);
-	Feynman_Process process({diagram_pi1});
-	auto result = process.decay_M_polynomial(dummy, start, end, 4);
+	Timer stopwatch;
+	stopwatch.start();
 
-	for( auto& p : result ){
-		std::cout << p.to_string('s') << "\n";
+	auto particle = P.get(FORMAT("{}pp", particle_name));
+	particle->user_data("form_factor", identity);
+	particle->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){ return Projector(e, kin); };
+
+	auto diagram = create_diagram(FORMAT("{} s", particle->name()), s_channel, VMP,
+			               {Proton, Pi_Plus},
+			               {particle},
+			               {Pi_Plus, Proton}
+	);
+
+	Feynman_Process process({diagram});
+
+	auto list = process.M(1.1,2.1,8,4);
+	stopwatch.stop();
+	for( auto const& p : list.first ){
+		std::cout << p.to_string('c') << "\n";
 	}
+
+	std::cout << "\n\n@@@@@@@@@@@@@@@@@@@@\n\n";
+
+	for( auto const& p : list.second ){
+		std::cout << p.to_string('c') << "\n";
+	}
+
+	std::cout << stopwatch.time<std::chrono::milliseconds>()/1000 << "seconds\n";
 
 }

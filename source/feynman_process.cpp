@@ -312,7 +312,135 @@ namespace Feynumeric
 		return result[cos_theta].back();
 	}
 
+	std::pair<std::vector<Polynomial>, std::vector<Polynomial>> Feynman_Process::M(double from, double to, std::size_t order_cos, std::size_t order_sqrts){
+		std::vector<Polynomial> cos_theta_polynomial = M_costheta_polynomial(to, order_cos);
 
+		auto s_values = lin_space(from, to, 2*order_sqrts);
+
+
+		std::size_t const N_spins = [&](){
+			std::size_t n = 1;
+			for( auto const& j : _diagrams[0]->_spins ){
+				n *= j->n_states();
+			}
+			return n;
+		}();
+
+		auto const cos_theta = 0.1234;
+
+		std::vector<std::vector<Point>> point_list(N_spins, std::vector<Point>(s_values.size()));
+		for( std::size_t k = 0; k < s_values.size(); ++k ){
+			auto const& sqrt_s = s_values[k];
+
+			Kinematics kin(sqrt_s, 2, 2);
+
+			auto const& incoming = _diagrams[0]->incoming_particles();
+			auto const& outgoing = _diagrams[0]->outgoing_particles();
+
+			auto qin = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
+			auto qout = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
+
+			kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
+			kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
+
+			for( auto& diagram : _diagrams ){
+				diagram->reset_spins();
+				diagram->reset_indices();
+			}
+
+			kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
+			kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta));
+
+			std::vector<Complex> Ms(N_spins);
+
+			for( std::size_t i = 0; i < N_spins; ++i ){
+				Complex M{0, 0};
+				for( auto& diagram : _diagrams ){
+					M += diagram->evaluate_amplitude(kin);
+					diagram->iterate_spins();
+				}
+				point_list[i][k] = {sqrt_s, M};
+			}
+		}
+
+		std::vector<Polynomial> s_polynomials;
+		s_polynomials.reserve(point_list.size());
+		for( auto points : point_list ){
+			Polynomial p(order_sqrts);
+			p.fit(points);
+			s_polynomials.push_back(p/to); // rescale
+//			std::cout << "{";
+//			for( auto& pp : points ){
+//				std::cout << "{" << pp.x << ", " << pp.y << "},";
+//			}
+//			std::cout << "}\n";
+//			std::cout << p.to_string('c') << "\n\n";
+		}
+		return std::make_pair(cos_theta_polynomial, s_polynomials);
+	}
+
+	std::vector<Polynomial> Feynman_Process::M_costheta_polynomial(double sqrt_s, std::size_t order){
+		using namespace Feynumeric::Units;
+
+		auto cos_values = lin_space(-0.999,0.999, 2*order);
+
+		std::size_t const N_spins = [&](){
+			std::size_t n = 1;
+			for( auto const& j : _diagrams[0]->_spins ){
+				n *= j->n_states();
+			}
+			return n;
+		}();
+
+		std::vector<std::vector<Point>> point_list(N_spins, std::vector<Point>(cos_values.size()));
+
+		for( std::size_t k = 0; k < cos_values.size(); ++k ){
+			auto const& cos_theta = cos_values[k];
+			Kinematics kin(sqrt_s, 2, 2);
+
+			auto const& incoming = _diagrams[0]->incoming_particles();
+			auto const& outgoing = _diagrams[0]->outgoing_particles();
+
+			auto qin = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
+			auto qout = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
+
+			kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
+			kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
+
+			for( auto& diagram : _diagrams ){
+				diagram->reset_spins();
+				diagram->reset_indices();
+			}
+
+			kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
+			kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta));
+
+			std::vector<Complex> Ms(N_spins);
+
+			for( std::size_t i = 0; i < N_spins; ++i ){
+				Complex M{0, 0};
+				for( auto& diagram : _diagrams ){
+					M += diagram->evaluate_amplitude(kin);
+					diagram->iterate_spins();
+				}
+				point_list[i][k] = {cos_theta, M};
+			}
+		}
+		std::vector<Polynomial> polynomials;
+		polynomials.reserve(point_list.size());
+		for( auto points : point_list ){
+			Polynomial p(order);
+			p.fit(points);
+			polynomials.push_back(p);
+//			std::cout << "{";
+//			for( auto& pp : points ){
+//				std::cout << "{" << pp.x << ", " << pp.y << "},";
+//			}
+//			std::cout << "}\n";
+//			std::cout << p.to_string('c') << "\n\n";
+		}
+		return polynomials;
+	}
 
 	std::vector<Polynomial> Feynman_Process::decay_M_polynomial(Particle_Ptr dummy, double from, double to, std::size_t order){
 		validate_diagram_compatibility();

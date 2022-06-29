@@ -60,7 +60,8 @@ namespace Feynumeric
 		std::map<double, double> sigma_table(double start, double end, std::size_t steps, double epsilon = 1.e-2);
 
 		std::vector<Complex> M_costheta(double sqrt_s, double cos_theta);
-		Polynomial M_costheta_polynomial(double sqrt_s, double cos_theta);
+		std::vector<Polynomial> M_costheta_polynomial(double sqrt_s, std::size_t order);
+		std::pair<std::vector<Polynomial>, std::vector<Polynomial>> M(double from, double to, std::size_t order_cos, std::size_t order_sqrts);
 		std::vector<Complex> decay_M();
 		std::vector<Polynomial> decay_M_polynomial(std::shared_ptr<Particle> dummy, double from, double to, std::size_t order = 4);
 

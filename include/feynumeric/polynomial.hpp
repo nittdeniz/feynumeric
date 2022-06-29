@@ -28,9 +28,14 @@ namespace Feynumeric
 
 		Polynomial conjugate() const;
 
+		Complex operator()(double x) const;
+
 		friend Polynomial operator+(Polynomial const& lhs, Polynomial const& rhs);
 		friend Polynomial operator-(Polynomial const& lhs, Polynomial const& rhs);
 		friend Polynomial operator*(Polynomial const& lhs, Polynomial const& rhs);
+		friend Polynomial operator*(Polynomial const& lhs, Complex const& rhs);
+		friend Polynomial operator*(Complex const& lhs, Polynomial const& rhs);
+		friend Polynomial operator/(Polynomial const& lhs, Complex const& rhs);
 	};
 }
 
