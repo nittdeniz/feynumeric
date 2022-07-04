@@ -800,7 +800,7 @@ namespace Feynumeric
     }
 
 
-	std::vector<std::vector<Polynomial>> Feynman_Process::decay_amplitude1_2(double from, double to, std::size_t order, bool overwrite_propagator){
+	std::vector<std::vector<Polynomial>> Feynman_Process::decay_amplitude1_2(std::vector<double> const& s_values, std::size_t order, bool overwrite_propagator){
 		validate_diagram_compatibility();
 
 		std::size_t const N_spins = _diagrams[0]->n_spins();
@@ -817,12 +817,11 @@ namespace Feynumeric
 		}
 
 		auto particle = _diagrams[0]->_incoming_particles[0];
-		auto values = weighted_space(from, particle->mass() - particle->width(), particle->mass() + particle->width(), to, 2*order + 1);
-		std::vector<std::vector<Point>> point_list(N_spins, std::vector<Point>(values.size()));
+		std::vector<std::vector<Point>> point_list(N_spins, std::vector<Point>(s_values.size()));
 
 
-		for( std::size_t i = 0; i < values.size(); ++i ){
-			auto sqrt_s = values[i];
+		for( std::size_t i = 0; i < s_values.size(); ++i ){
+			auto sqrt_s = s_values[i];
 
 			auto const& incoming = _diagrams[0]->incoming_particles();
 			auto const& outgoing = _diagrams[0]->outgoing_particles();
@@ -865,9 +864,9 @@ namespace Feynumeric
 		return {polynomials};
 	}
 
-	std::vector<std::vector<Polynomial>> Feynman_Process::decay_amplitude(double from, double to, std::size_t order, bool overwrite_propagator){
+	std::vector<std::vector<Polynomial>> Feynman_Process::decay_amplitude(std::vector<double> const& s_values, std::size_t order, bool overwrite_propagator){
 		if( _diagrams[0]->_outgoing_particles.size() == 2 ){
-			return decay_amplitude1_2(from, to, order, overwrite_propagator);
+			return decay_amplitude1_2(s_values, order, overwrite_propagator);
 		}
 		critical_error("Only 2 outgoing particles are implemented.");
 	}
@@ -962,14 +961,12 @@ namespace Feynumeric
 			std::vector<Polynomial> polynomials;
 			for( std::size_t k = 0; k < _n_spins; ++k ){
 				Polynomial p(order[h]);
-				std::cout << "h: " << h << " order: " << order[h] << "\n";
 				p.fit(samples[h][k]);
 				if( h == 0 ){
 					auto rescale = p(fixed_s);
 					if( rescale == Complex(0., 0.) ){
 						critical_error("rescale factor is zero. Try a different order for sqrt_s polynomial.");
 					}
-					std::cout << "rescale: " << rescale << "\n";
 					polynomials.push_back(p/rescale); // rescale
 				}else{
 					polynomials.push_back(p);

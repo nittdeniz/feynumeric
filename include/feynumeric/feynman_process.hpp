@@ -39,7 +39,7 @@ namespace Feynumeric
 		std::size_t n_spins();
 		std::size_t n_polarisations();
 
-		std::vector<std::vector<Polynomial>> decay_amplitude1_2(double from, double to, std::size_t order, bool overwrite_propagator);
+		std::vector<std::vector<Polynomial>> decay_amplitude1_2(std::vector<double> const& s_values, std::size_t order, bool overwrite_propagator);
 		std::vector<std::vector<Polynomial>> scattering_amplitude2_2(std::vector<double> const& s_values, std::vector<std::size_t> const& order, bool overwrite_propagator);
 
 	public:
@@ -68,7 +68,7 @@ namespace Feynumeric
 		std::vector<Polynomial> M_costheta_polynomial(double sqrt_s, std::size_t order);
 		std::pair<std::vector<Polynomial>, std::vector<Polynomial>> M(double from, double to, double norm, std::size_t order_cos, std::size_t order_sqrts);
 		std::vector<Complex> decay_M();
-		std::vector<std::vector<Polynomial>> decay_amplitude(double from, double to, std::size_t order = 4, bool overwrite_propagator = true);
+		std::vector<std::vector<Polynomial>> decay_amplitude(std::vector<double> const& s_values, std::size_t order = 4, bool overwrite_propagator = true);
 
 		std::vector<std::vector<Polynomial>> scattering_amplitude(std::vector<double> const& s_values, std::vector<std::size_t> const& order, bool overwrite_propagator = true);
 		std::vector<Polynomial> decay_M_polynomial(std::shared_ptr<Particle> dummy, double from, double to, std::size_t order = 4);

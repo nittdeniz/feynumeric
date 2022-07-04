@@ -93,7 +93,7 @@ namespace Feynumeric
 		std::vector<func_t<N>> _coefficients;
 	public:
 		FPolynomial(std::size_t order = 0);
-		FPolynomial(std::vector<func_t<1>> const& coefficients);
+		FPolynomial(std::vector<func_t<N>> const& coefficients);
 		FPolynomial(func_t<N> const& f, Polynomial const& p);
 		FPolynomial(FPolynomial const& other);
 		func_t<N> integrate(double a, double b);
@@ -125,7 +125,7 @@ namespace Feynumeric
 	};
 
 	template <std::size_t N>
-	FPolynomial<N>::FPolynomial(std::vector<func_t<1>> const& coefficients)
+	FPolynomial<N>::FPolynomial(std::vector<func_t<N>> const& coefficients)
 			: _coefficients(coefficients)
 	{
 
@@ -186,6 +186,8 @@ namespace Feynumeric
 		order = other.order;
 		return *this;
 	}
+
+
 }
 
 #endif

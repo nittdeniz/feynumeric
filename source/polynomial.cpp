@@ -137,6 +137,7 @@ namespace Feynumeric{
 		return lhs * (1./rhs);
 	}
 
+
 	Polynomial Polynomial::conjugate() const{
 		Polynomial result(*this);
 		for( auto& coef : result._coefficients ){
