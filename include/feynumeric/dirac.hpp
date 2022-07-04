@@ -1,18 +1,15 @@
 #ifndef Feynumeric_DIRAC_HPP
 #define Feynumeric_DIRAC_HPP
 
-#include <array>
-#include <functional>
-#include <vector>
 
-//#include "angular_momentum.hpp"
 #include "lorentz_transformation.hpp"
-//#include "feynman_graph.hpp"
 #include "kinematics.hpp"
 #include "matrix.hpp"
 #include "momentum.hpp"
-//#include "particle.hpp"
 
+#include <array>
+#include <functional>
+#include <vector>
 
 namespace Feynumeric
 {

@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include "dirac.hpp"
 #include "feynman_process.hpp"
 #include "feynman_diagram.hpp"
 #include "format.hpp"
@@ -48,7 +49,19 @@ namespace Feynumeric
         }
     }
 
-    void Feynman_Process::add_diagram(Feynman_Diagram_Ptr diagram){
+	Feynman_Process& Feynman_Process::operator=(Feynman_Process const& other){
+		_conversion_factor = other._conversion_factor;
+		_n_spins = other._n_spins;
+		_n_polarisations = other._n_polarisations;
+		_diagrams.reserve(other._diagrams.size());
+		for( auto const& diagram : other._diagrams ){
+			_diagrams.push_back(std::make_shared<Feynman_Diagram>(*diagram));
+			_diagrams.back()->generate_amplitude();
+		}
+		return *this;
+	}
+
+	void Feynman_Process::add_diagram(Feynman_Diagram_Ptr diagram){
 		diagram->generate_amplitude();
 		_diagrams.push_back(diagram);
 		validate_diagram_compatibility();
@@ -785,4 +798,199 @@ namespace Feynumeric
     {
         return sqrt_s + M + cos_theta;
     }
+
+
+	std::vector<std::vector<Polynomial>> Feynman_Process::decay_amplitude1_2(double from, double to, std::size_t order, bool overwrite_propagator){
+		validate_diagram_compatibility();
+
+		std::size_t const N_spins = _diagrams[0]->n_spins();
+
+		std::map<std::size_t, std::vector<std::function<Matrix(Particle::Edge_Ptr, Kinematics const&)>>> virtual_functions;
+
+		for( std::size_t i = 0; i < _diagrams.size() && overwrite_propagator; ++i ){
+			for( auto const& vp : _diagrams[i]->_virtual_particles ){
+				virtual_functions[i].push_back(vp->feynman_virtual);
+				vp->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){
+					return Projector(e, kin);
+				};
+			}
+		}
+
+		auto particle = _diagrams[0]->_incoming_particles[0];
+		auto values = weighted_space(from, particle->mass() - particle->width(), particle->mass() + particle->width(), to, 2*order + 1);
+		std::vector<std::vector<Point>> point_list(N_spins, std::vector<Point>(values.size()));
+
+
+		for( std::size_t i = 0; i < values.size(); ++i ){
+			auto sqrt_s = values[i];
+
+			auto const& incoming = _diagrams[0]->incoming_particles();
+			auto const& outgoing = _diagrams[0]->outgoing_particles();
+			Kinematics kin(sqrt_s, 1, 2);
+			auto const q = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
+			kin.incoming(0, four_momentum(0, sqrt_s));
+			kin.outgoing(0, four_momentum(q, outgoing[0]->mass()));
+			kin.outgoing(1, four_momentum(-q, outgoing[1]->mass()));
+
+			for( auto& diagram : _diagrams ){
+				diagram->reset_spins();
+				diagram->reset_indices();
+			}
+
+			std::vector<Complex> result(N_spins, 0.);
+
+			for( std::size_t j = 0; j < N_spins; ++j ){
+				Complex M{0, 0};
+				for( auto& diagram : _diagrams ){
+					M += diagram->evaluate_amplitude(kin);
+					diagram->iterate_spins();
+				}
+				point_list[j][i] = Point{sqrt_s, M};
+			}
+		}
+
+		std::vector<Polynomial> polynomials;
+		polynomials.reserve(point_list.size());
+		for( auto points : point_list ){
+			Polynomial p(order);
+			p.fit(points);
+			polynomials.push_back(p);
+		}
+
+		for( std::size_t i = 0; i < _diagrams.size() && overwrite_propagator; ++i ){
+			for( std::size_t j = 0; j < _diagrams[i]->_virtual_particles.size(); ++j){
+				_diagrams[i]->_virtual_particles[j]->feynman_virtual = virtual_functions[i][j];
+			}
+		}
+		return {polynomials};
+	}
+
+	std::vector<std::vector<Polynomial>> Feynman_Process::decay_amplitude(double from, double to, std::size_t order, bool overwrite_propagator){
+		if( _diagrams[0]->_outgoing_particles.size() == 2 ){
+			return decay_amplitude1_2(from, to, order, overwrite_propagator);
+		}
+		critical_error("Only 2 outgoing particles are implemented.");
+	}
+
+	std::vector<std::vector<Polynomial>> Feynman_Process::scattering_amplitude2_2(std::vector<double> const& s_values, std::vector<std::size_t> const& order, bool overwrite_propagator){
+		struct vec2{
+			double c, s;
+		};
+		// sampling
+		auto c_values = lin_space(-0.999, 0.999, 2 * order[1] + 1);
+
+		double const fixed_s = *(s_values.begin() + s_values.size()/2);
+		double const fixed_c = 0.1337;
+
+		std::array<std::vector<vec2>, 2> sample_points;
+
+		for( auto const& sv : s_values ){
+			sample_points[0].push_back({fixed_c, sv});
+		}
+		for( auto const& cv : c_values ){
+			sample_points[1].push_back({cv, fixed_s});
+		}
+
+
+		std::map<std::size_t, std::vector<std::function<Matrix(Particle::Edge_Ptr, Kinematics const&)>>> virtual_functions;
+
+		for( std::size_t i = 0; i < _diagrams.size() && overwrite_propagator; ++i ){
+			for( auto const& vp : _diagrams[i]->_virtual_particles ){
+				virtual_functions[i].push_back(vp->feynman_virtual);
+				vp->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){
+					return Projector(e, kin);
+				};
+			}
+			_diagrams[i]->generate_amplitude();
+		}
+
+		std::vector<Feynman_Process> copies(std::max(c_values.size(), s_values.size()), *this);
+
+		std::array<std::vector<std::vector<Point>>, 2> samples{
+				std::vector<std::vector<Point>>(_n_spins),
+				std::vector<std::vector<Point>>(_n_spins)
+		};
+
+		std::vector<std::vector<Polynomial>> result;
+
+		for( std::size_t h = 0; h < sample_points.size(); ++h ){
+			#pragma omp parallel for
+			for( std::size_t i = 0; i < sample_points[h].size(); ++i ){
+				auto const cos_theta = sample_points[h][i].c;
+				auto const sqrt_s    = sample_points[h][i].s;
+
+				auto& process = copies[i];
+				for( auto& diagram : process._diagrams ){
+					diagram->reset_spins();
+					diagram->reset_indices();
+				}
+
+				Kinematics kin(sqrt_s, 2, 2);
+
+				auto const& incoming = process._diagrams[0]->incoming_particles();
+				auto const& outgoing = process._diagrams[0]->outgoing_particles();
+
+				auto qin = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
+				auto qout = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
+
+				kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
+				kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
+				kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
+				kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta));
+
+
+				for( std::size_t k = 0; k < process._n_spins; ++k ){
+					Complex M{0, 0};
+					for( std::size_t j = 0; j < process._diagrams.size(); ++j ){
+						auto const& temp = process._diagrams[j]->evaluate_amplitude(kin);
+						M += temp;
+						process._diagrams[j]->iterate_spins();
+					}
+					#pragma omp critical
+					{
+						if( h == 0 ){
+							samples[h][k].emplace_back(sqrt_s, M);
+						}
+						else if( h == 1 ){
+							samples[h][k].emplace_back(cos_theta, M);
+						}
+					}
+				}
+
+			}
+
+			std::vector<Polynomial> polynomials;
+			for( std::size_t k = 0; k < _n_spins; ++k ){
+				Polynomial p(order[h]);
+				std::cout << "h: " << h << " order: " << order[h] << "\n";
+				p.fit(samples[h][k]);
+				if( h == 0 ){
+					auto rescale = p(fixed_s);
+					if( rescale == Complex(0., 0.) ){
+						critical_error("rescale factor is zero. Try a different order for sqrt_s polynomial.");
+					}
+					std::cout << "rescale: " << rescale << "\n";
+					polynomials.push_back(p/rescale); // rescale
+				}else{
+					polynomials.push_back(p);
+				}
+			}
+			result.push_back(polynomials);
+		}
+
+		for( std::size_t i = 0; i < _diagrams.size() && overwrite_propagator; ++i ){
+			for( std::size_t j = 0; j < _diagrams[i]->_virtual_particles.size(); ++j){
+				_diagrams[i]->_virtual_particles[j]->feynman_virtual = virtual_functions[i][j];
+			}
+		}
+
+		return result;
+	}
+
+	std::vector<std::vector<Polynomial>> Feynman_Process::scattering_amplitude(std::vector<double> const& s_values, std::vector<std::size_t> const& order, bool overwrite_propagator){
+		if( _diagrams[0]->_incoming_particles.size() == 2 && _diagrams[0]->_outgoing_particles.size() == 2){
+			return scattering_amplitude2_2(s_values, order, overwrite_propagator);
+		}
+		critical_error("Only 2->2 scattering processes are implemented.");
+	}
 }

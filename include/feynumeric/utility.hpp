@@ -22,6 +22,7 @@ namespace Feynumeric
     Complex int_pow(Complex c, std::size_t n);
 
     std::vector<double> lin_space(double from, double to, std::size_t steps);
+    std::vector<double> weighted_space(double from, double a, double b, double to, std::size_t N);
 
 //    constexpr std::size_t binomial(std::size_t n, std::size_t k) {
 //        if (k == 0 || n == k) {

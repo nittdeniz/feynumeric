@@ -1,3 +1,4 @@
+#include "amplitude.hpp"
 #include "angular_momentum.hpp"
 #include "command_line_manager.hpp"
 #include "complex.hpp"
@@ -14,6 +15,7 @@
 #include "format.hpp"
 #include "four_vector.hpp"
 #include "function_types.hpp"
+#include "functions.hpp"
 #include "integrate.hpp"
 #include "isospin.hpp"
 #include "kinematics.hpp"

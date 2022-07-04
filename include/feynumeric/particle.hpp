@@ -23,6 +23,7 @@ namespace Feynumeric
 
     class Particle
     {
+    public:
     using Edge_Ptr = std::shared_ptr<Graph_Edge>;
     using Vertex_Ptr = std::shared_ptr<Graph_Vertex>;
 

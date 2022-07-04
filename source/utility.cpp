@@ -51,5 +51,17 @@ namespace Feynumeric
 		result.push_back(to);
 		return result;
 	}
+
+	std::vector<double> weighted_space(double from, double a, double b, double to, std::size_t N){
+		std::vector<double> values1 = lin_space(from, a, N/2-1);
+		std::vector<double> values2 = lin_space(a, b, N);
+		std::vector<double> values3 = lin_space(b, to, N/2-1);
+
+		std::vector<double> values;
+		values.insert(values.end(), values1.begin(), values1.end());
+		values.insert(values.end(), values2.begin(), values2.end());
+		values.insert(values.end(), values3.begin(), values3.end());
+		return values;
+	}
 }
 

@@ -1,12 +1,10 @@
 #include "effective_lagrangian_model.hpp"
 #include "form_factors.hpp"
 
-#include <feynumeric/matrix.hpp>
-#include <feynumeric/polynomial.hpp>
-#include <feynumeric/feynumeric.hpp>
-#include <feynumeric/momentum.hpp>
 
-#include <iomanip>
+#include <feynumeric/feynumeric.hpp>
+#include <feynumeric/utility.hpp>
+
 #include <iostream>
 
 int main(int argc, char** argv){
@@ -18,8 +16,7 @@ int main(int argc, char** argv){
 	cmd.register_command("start", std::string("1.0"), "starting point");
 	cmd.register_command("end", std::string("3.0"), "end value");
 	cmd.register_command("steps", std::string("200"), "steps");
-	cmd.register_command("form_factor", CMD_FORM_FACTOR_NONE, FORMAT("which form factor to use ({}, {}, {}, {}, {}, {})", CMD_FORM_FACTOR_NONE, CMD_FORM_FACTOR_CASSING, CMD_FORM_FACTOR_CUTKOSKY, CMD_FORM_FACTOR_MANLEY, CMD_FORM_FACTOR_MONIZ, CMD_FORM_FACTOR_BREIT_WIGNER));
-
+	cmd.register_command("form_factor", Form_Factor::CMD_FORM_FACTOR_NONE, FORMAT("which form factor to use ({}, {}, {}, {}, {}, {})", Form_Factor::CMD_FORM_FACTOR_NONE, Form_Factor::CMD_FORM_FACTOR_CASSING, Form_Factor::CMD_FORM_FACTOR_CUTKOSKY, Form_Factor::CMD_FORM_FACTOR_MANLEY, Form_Factor::CMD_FORM_FACTOR_MONIZ, Form_Factor::CMD_FORM_FACTOR_BREIT_WIGNER));
 	cmd.crash_on_missing_mandatory_command();
 
 	Particle_Manager P(cmd.as_string("particle_file"));
@@ -28,16 +25,56 @@ int main(int argc, char** argv){
 	auto const& Pi_Zero = P.get("pi0");
 	auto const& Pi_Minus = P.get("pi-");
 	auto const& Pi_Plus = P.get("pi+");
-
 	init_vertices(P, cmd.as_string("coupling_constants"));
 
+
+//	Polynomial s({2.0532073895613170, -2.3407191273658303, 1.0085498885716471, -3.2887394432742036, 1.1399531497684108, 0.9129612019750575, 0.3523629278031232});
+//	Polynomial c({-19.5810353883248531, 0.0000000000000153, 7.1373027221003147, -0.0000000000002493, 22.6949581776302516, (-46.1374835353966546), (-0.0000000000004230), 35.1097108157676558});
+
+	auto particle = P.get("D1232pp");
+	particle->user_data("form_factor", Form_Factor::identity);
+
+	auto s_values = weighted_space(1.1, particle->mass() - particle->width(), particle->mass() + particle->width(), 2.1, 17);
+
+	auto diagram = create_diagram(FORMAT("{} s", particle->name()), s_channel, VMP,
+	                              {Proton, Pi_Plus},
+	                              {particle},
+	                              {Pi_Plus, Proton}
+	);
+
+	Feynman_Process process({diagram});
+
+	auto result = process.scattering_amplitude(s_values, {6, 8});
+
+	for( auto const& row : result ){
+		for( auto const& p : row ){
+			std::cout << p.to_string('x') << "\n";
+		}
+		std::cout << "\n\n\n";
+	}
+
+//	s.save("s.poly");
+//	c.save("c.poly");
+//
+//	Polynomial x, y;
+//	x.load("s.poly");
+//	y.load("c.poly");
+//
+//	std::cout << "s: " << s(1.3) << "\n";
+//	std::cout << "x: " << x(1.3) << "\n";
+//	std::cout << "c: " << c(0.4) << "\n";
+//	std::cout << "y: " << y(0.4) << "\n";
+//
+//
+//	func_t<1> s_func = s;
+//	FPolynomial<1> p(s_func, c);
+
+
+	/*
 	double const start = cmd.as_double("start");
 	double const end   = cmd.as_double("end");
 	int    const steps = cmd.as_int("steps");
 
-
-
-	std::cout << FORMAT("start: {} end: {} steps: {}\n", start, end, steps);
 
 	std::string particle_name = "D1232";
 
@@ -116,7 +153,5 @@ int main(int argc, char** argv){
 //	for( auto const& p : list.second ){
 //		std::cout << p.to_string('s') << "\n";
 //	}
-
-
-
+	*/
 }

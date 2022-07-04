@@ -3,6 +3,7 @@
 #include "feynumeric/polynomial.hpp"
 #include "feynumeric/utility.hpp"
 
+#include <fstream>
 #include <iostream>
 #include <sstream>
 
@@ -152,6 +153,46 @@ namespace Feynumeric{
 
 	}
 
+
+	void Polynomial::save(std::string const& file_name) const{
+		std::ofstream out(file_name);
+		if( !out ){
+			error(FORMAT("Could not open file {} to write.", file_name));
+			return;
+		}
+		out << n;
+		for( auto const& c : _coefficients ){
+			uint64_t storage_real, storage_imag;
+			auto const re = c.real(), im = c.imag();
+			std::memcpy(&storage_real, &re, sizeof(double));
+			std::memcpy(&storage_imag, &im, sizeof(double));
+			out << "\n" << storage_real << " " << storage_imag;
+		}
+	}
+
+	void Polynomial::load(std::string const& file_name){
+		std::ifstream in(file_name);
+		if( !in ){
+			error(FORMAT("Could not open file {} to read.", file_name));
+			return;
+		}
+		std::string buffer;
+		std::getline(in, buffer);
+		n = std::stoi(buffer);
+		_coefficients.clear();
+		_coefficients.reserve(n);
+		while( std::getline(in, buffer) ){
+			std::stringstream stream(buffer);
+			uint64_t storage_real, storage_imag;
+			stream >> storage_real >> storage_imag;
+			double re, im;
+			std::memcpy(&re, &storage_real, sizeof(double));
+			std::memcpy(&im, &storage_imag, sizeof(double));
+			_coefficients.emplace_back(re, im);
+		}
+
+	}
+
 	Polynomial& Polynomial::operator=(Polynomial const& other){
 		n = other.n;
 		order = other.order;
@@ -176,15 +217,62 @@ namespace Feynumeric{
 		return *this;
 	}
 
-	Polynomial2D::Polynomial2D(Polynomial const& first, Polynomial const& second)
-	: _coefficients{std::vector<Polynomial>(first.n), std::vector<Polynomial>(second.order)}
-	, _polynomials{std::vector<Complex>(first.n, 1.), std::vector<Complex>(second.n, 1.)}
-	{
-		for( auto& c : first._coefficients ){
-			_coefficients[0].push_back(c * second);
-		}
-		for( auto& c : second._coefficients ){
-			_coefficients[1].push_back(c * first);
-		}
+
+
+	/*
+	template<std::size_t N>
+	FPolynomial<N>& FPolynomial<N>::operator+=(FPolynomial const& other){
+		return <#initializer#>;
 	}
+
+	template<std::size_t N>
+	FPolynomial<N>& FPolynomial<N>::operator-=(FPolynomial const& other){
+		return <#initializer#>;
+	}
+
+	template<std::size_t N>
+	FPolynomial<N>& FPolynomial<N>::operator*=(FPolynomial const& other){
+		return <#initializer#>;
+	}
+
+	template<std::size_t N>
+	FPolynomial<N>& FPolynomial<N>::operator*=(Complex const& scale){
+		return <#initializer#>;
+	}
+
+	template<std::size_t N>
+	FPolynomial<N>& FPolynomial<N>::operator/=(Complex const& scale){
+		return <#initializer#>;
+	}
+
+	template <std::size_t N>
+	FPolynomial<N> operator+(FPolynomial<N> const& lhs, FPolynomial<N> const& rhs){
+		return FPolynomial<N>();
+	}
+
+	template <std::size_t N>
+	FPolynomial<N> operator-(FPolynomial<N> const& lhs, FPolynomial<N> const& rhs){
+		return FPolynomial<N>();
+	}
+
+	template <std::size_t N>
+	FPolynomial<N> operator*(FPolynomial<N> const& lhs, FPolynomial<N> const& rhs){
+		return FPolynomial<N>();
+	}
+
+	template <std::size_t N>
+	FPolynomial<N> operator*(FPolynomial<N> const& lhs, Complex const& rhs){
+		return FPolynomial<N>();
+	}
+
+	template <std::size_t N>
+	FPolynomial<N> operator*(Complex const& lhs, FPolynomial<N> const& rhs){
+		return FPolynomial<N>();
+	}
+
+	template <std::size_t N>
+	FPolynomial<N> operator/(FPolynomial<N> const& lhs, Complex const& rhs){
+		return FPolynomial<N>();
+	}
+	 */
 }

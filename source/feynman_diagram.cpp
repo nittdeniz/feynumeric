@@ -662,4 +662,12 @@ namespace Feynumeric
 			}
 		}
 	}
+
+	std::size_t Feynman_Diagram::n_spins() const{
+		std::size_t n = 1;
+		for( auto const& j : _spins ){
+			n *= j->n_states();
+		}
+		return n;
+	}
 }

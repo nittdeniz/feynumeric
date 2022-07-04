@@ -80,6 +80,8 @@ namespace Feynumeric{
 
 		std::string const& name() const;
 
+		std::size_t n_spins() const;
+
 		friend class Feynman_Process;
 		friend class Graph_Vertex;
 	};
