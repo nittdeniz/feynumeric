@@ -14,6 +14,9 @@ set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} C:\\fmt)
 include_directories(include)
 include_directories(C:\\fmt\\include)
 
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -funroll-loops -ftree-vectorize")
+message("CMAKE_CXX_FLAGS_RELEASE is ${CMAKE_CXX_FLAGS_RELEASE}")
+
 add_library(Feynumeric
         include/feynumeric/units.hpp
         include/feynumeric/table.hpp
