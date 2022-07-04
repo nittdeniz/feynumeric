@@ -92,10 +92,16 @@ namespace Feynumeric
 		std::size_t order;
 		std::vector<func_t<N>> _coefficients;
 	public:
-		FPolynomial(std::size_t order = 0);
+		FPolynomial()
+		: n(1337)
+		, order(666)
+		, _coefficients({{[](auto&&...){return Complex(4.);}}})
+		{
+			[](){};
+		}
 		FPolynomial(std::vector<func_t<N>> const& coefficients);
 		FPolynomial(func_t<N> const& f, Polynomial const& p);
-		FPolynomial(FPolynomial const& other);
+		FPolynomial(FPolynomial<N> const& other);
 		func_t<N> integrate(double a, double b);
 		std::string to_string(char x) const;
 
@@ -103,10 +109,10 @@ namespace Feynumeric
 		std::enable_if_t<std::conjunction_v<std::is_same<double, T>...>, Complex>
 		operator()(double x, T... args) const;
 
-		FPolynomial& operator=(FPolynomial const& other);
-		FPolynomial& operator+=(FPolynomial const& other);
-		FPolynomial& operator-=(FPolynomial const& other);
-		FPolynomial& operator*=(FPolynomial const& other);
+		FPolynomial& operator=(FPolynomial<N> const& other);
+		FPolynomial& operator+=(FPolynomial<N> const& other);
+		FPolynomial& operator-=(FPolynomial<N> const& other);
+		FPolynomial& operator*=(FPolynomial<N> const& other);
 		FPolynomial& operator*=(Complex const& scale);
 		FPolynomial& operator/=(Complex const& scale);
 
@@ -122,13 +128,17 @@ namespace Feynumeric
 		friend FPolynomial<U> operator*(Complex const& lhs, FPolynomial<U> const& rhs);
 		template<std::size_t U>
 		friend FPolynomial<U> operator/(FPolynomial<U> const& lhs, Complex const& rhs);
+
+		template <std::size_t K>
+		friend class Amplitude;
 	};
 
 	template <std::size_t N>
 	FPolynomial<N>::FPolynomial(std::vector<func_t<N>> const& coefficients)
 			: _coefficients(coefficients)
 	{
-
+				n = coefficients.size();
+				order = n-1;
 	}
 
 	template <std::size_t N>
@@ -136,9 +146,11 @@ namespace Feynumeric
 	{
 		_coefficients.reserve(p.n);
 		for( auto const& coef : p._coefficients ){
-			auto temp = coef * f;
+//			auto temp = coef * f;
 			_coefficients.push_back(coef * f);
 		}
+		n = p.n;
+		order = p.order;
 	}
 
 	template <std::size_t N>
@@ -147,7 +159,16 @@ namespace Feynumeric
 			  , order(other.order)
 			  , _coefficients(other._coefficients)
 	{
+			  	[](){};
 	}
+
+//	template<std::size_t N>
+//	FPolynomial<N>::FPolynomial(FPolynomial&& other){
+//		n = std::move(other.n);
+//		order = std::move(other.order);
+//		_coefficients = std::move(other._coefficients);
+//	}
+
 
 	template <std::size_t N>
 	func_t<N> FPolynomial<N>::integrate(double a, double b){
@@ -169,21 +190,22 @@ namespace Feynumeric
 	FPolynomial<N>::operator()(double arg, Ts... args) const{
 		Complex result{0.};
 		for( std::size_t i = 0; i < _coefficients.size(); ++i ){
+			auto temp_coef = _coefficients[i](args...);
+			auto temp_pow = int_pow(arg, i);
+//			std::cout << "temp_coef: " << temp_coef << "\n";
+//			std::cout << "temp_pow:  " << temp_pow  << "\n";
 			result += _coefficients[i](args...) * int_pow(arg, i);
+//			std::cout << "result:    " << result << "\n";
 		}
 		return result;
 	}
 
 	template<std::size_t N>
-	FPolynomial<N>::FPolynomial(std::size_t order){
-
-	}
-
-	template<std::size_t N>
-	FPolynomial<N>& FPolynomial<N>::operator=(FPolynomial const& other){
+	FPolynomial<N>& FPolynomial<N>::operator=(FPolynomial<N> const& other){
 		_coefficients = other._coefficients;
 		n = other.n;
 		order = other.order;
+		[](){}();
 		return *this;
 	}
 

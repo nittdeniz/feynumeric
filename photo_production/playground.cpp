@@ -27,6 +27,73 @@ int main(int argc, char** argv){
 	auto const& Pi_Plus = P.get("pi+");
 	init_vertices(P, cmd.as_string("coupling_constants"));
 
+	std::vector<Polynomial> s_poly;
+	std::vector<Polynomial> c_poly;
+
+	auto particle = P.get("D1232pp");
+
+	func_t<1> f1 = [](double x){return 3*x;};
+	func_t<1> f2 = [](double x){return 2*x;};
+	func_t<1> f3 = [](double){return 2.;};
+
+	auto ff = f1 * Complex(2., 0);
+
+	std::cout << "f3: " << ff(2) << "\n";
+
+	/* width */
+	/*
+	auto n_spin_states = particle->spin().n_states() * Proton->spin().n_states();
+	std::vector<std::vector<Polynomial>> width_polynomials(1);
+	for( std::size_t i = 0; i < n_spin_states; ++i ){
+		Polynomial temp;
+		temp.load(FORMAT("data/polynomials/polynomial_decay_{}_0_{}.txt", particle->name(), i));
+		width_polynomials[0].push_back(temp);
+	}
+
+	Amplitude<0> width(width_polynomials);
+	*/
+	/* scattering */
+	auto n_spin_states = Proton->spin().n_states() * Proton->spin().n_states();
+	std::vector<std::vector<Polynomial>> scattering_polynomials(2);
+	for( std::size_t i = 0; i < n_spin_states; ++i ){
+		Polynomial temp_s, temp_c;
+		temp_s.load(FORMAT("data/polynomials/polynomial_scattering_{}_0_{}.txt", particle->name(), i));
+		temp_c.load(FORMAT("data/polynomials/polynomial_scattering_{}_1_{}.txt", particle->name(), i));
+		scattering_polynomials[0].push_back(temp_s);
+		scattering_polynomials[1].push_back(temp_c);
+	}
+
+	std::cout << scattering_polynomials[0][1].to_string('s') << "\n";
+	std::cout << scattering_polynomials[1][1].to_string('c') << "\n";
+
+	Amplitude<1> scattering(scattering_polynomials);
+
+	scattering.scale([](double){ return 2.;});
+
+	double sqrt_s = 1.2;
+	double cos    = 0.3;
+
+	std::cout << "scattering: " << scattering(cos, sqrt_s) << "\n";
+
+
+	/*
+	Command_Line_Manager cmd(argc, argv);
+	cmd.register_command("particle_file", true, "file with particle parameters");
+	cmd.register_command("coupling_constants", true, "file with coupling constants");
+	cmd.register_command("start", std::string("1.0"), "starting point");
+	cmd.register_command("end", std::string("3.0"), "end value");
+	cmd.register_command("steps", std::string("200"), "steps");
+	cmd.register_command("form_factor", Form_Factor::CMD_FORM_FACTOR_NONE, FORMAT("which form factor to use ({}, {}, {}, {}, {}, {})", Form_Factor::CMD_FORM_FACTOR_NONE, Form_Factor::CMD_FORM_FACTOR_CASSING, Form_Factor::CMD_FORM_FACTOR_CUTKOSKY, Form_Factor::CMD_FORM_FACTOR_MANLEY, Form_Factor::CMD_FORM_FACTOR_MONIZ, Form_Factor::CMD_FORM_FACTOR_BREIT_WIGNER));
+	cmd.crash_on_missing_mandatory_command();
+
+	Particle_Manager P(cmd.as_string("particle_file"));
+	auto const& Proton = P.get("proton");
+	auto const& Neutron = P.get("neutron");
+	auto const& Pi_Zero = P.get("pi0");
+	auto const& Pi_Minus = P.get("pi-");
+	auto const& Pi_Plus = P.get("pi+");
+	init_vertices(P, cmd.as_string("coupling_constants"));
+
 
 //	Polynomial s({2.0532073895613170, -2.3407191273658303, 1.0085498885716471, -3.2887394432742036, 1.1399531497684108, 0.9129612019750575, 0.3523629278031232});
 //	Polynomial c({-19.5810353883248531, 0.0000000000000153, 7.1373027221003147, -0.0000000000002493, 22.6949581776302516, (-46.1374835353966546), (-0.0000000000004230), 35.1097108157676558});

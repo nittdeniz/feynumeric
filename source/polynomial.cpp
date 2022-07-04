@@ -180,6 +180,7 @@ namespace Feynumeric{
 		std::string buffer;
 		std::getline(in, buffer);
 		n = std::stoi(buffer);
+		order = n-1;
 		_coefficients.clear();
 		_coefficients.reserve(n);
 		while( std::getline(in, buffer) ){
