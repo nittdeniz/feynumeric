@@ -62,11 +62,12 @@ namespace Feynumeric{
 	}
 
 	template <std::size_t N>
-	func_t<1> operator>>(std::function<Complex(Complex)> const& lhs, func_t<N> const& rhs){
+	func_t<1> operator>>(func_t<N> const& lhs, std::function<Complex(Complex)> const& rhs){
 		return [lhs, rhs](auto&&... args){
-			return lhs(rhs(args...));
+			return rhs(lhs(args...));
 		};
 	}
+
 
 
 	inline Complex identity(double x){

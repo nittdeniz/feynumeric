@@ -57,6 +57,7 @@ namespace Feynumeric
 		Polynomial(Polynomial const& other);
 		void fit(std::vector<Point> const& data);
 		Complex integrate(double a, double b);
+
 		std::string to_string(char x) const;
 
 		Polynomial conjugate() const;
@@ -103,18 +104,20 @@ namespace Feynumeric
 		FPolynomial(func_t<N> const& f, Polynomial const& p);
 		FPolynomial(FPolynomial<N> const& other);
 		func_t<N> integrate(double a, double b);
+		Complex integrate(double at, double a, double b);
 		std::string to_string(char x) const;
 
 		template <typename... T>
 		std::enable_if_t<std::conjunction_v<std::is_same<double, T>...>, Complex>
 		operator()(double x, T... args) const;
 
-		FPolynomial& operator=(FPolynomial<N> const& other);
-		FPolynomial& operator+=(FPolynomial<N> const& other);
-		FPolynomial& operator-=(FPolynomial<N> const& other);
-		FPolynomial& operator*=(FPolynomial<N> const& other);
-		FPolynomial& operator*=(Complex const& scale);
-		FPolynomial& operator/=(Complex const& scale);
+		FPolynomial<N>& operator=(FPolynomial<N> const& other);
+		FPolynomial<N>& operator+=(FPolynomial<N> const& other);
+		FPolynomial<N>& operator-=(FPolynomial<N> const& other);
+		FPolynomial<N>& operator*=(FPolynomial<N> const& other);
+		FPolynomial<N>& operator*=(Complex const& scale);
+		FPolynomial<N>& operator/=(Complex const& scale);
+
 
 		template<std::size_t U>
 		friend FPolynomial<U> operator+(FPolynomial<U> const& lhs, FPolynomial<U> const& rhs);
@@ -128,6 +131,9 @@ namespace Feynumeric
 		friend FPolynomial<U> operator*(Complex const& lhs, FPolynomial<U> const& rhs);
 		template<std::size_t U>
 		friend FPolynomial<U> operator/(FPolynomial<U> const& lhs, Complex const& rhs);
+
+
+		friend FPolynomial<1> operator>>(FPolynomial<1> const& fp, std::function<Complex(Complex)> const& f);
 
 		template <std::size_t K>
 		friend class Amplitude;
@@ -169,12 +175,51 @@ namespace Feynumeric
 //		_coefficients = std::move(other._coefficients);
 //	}
 
+	template <std::size_t N>
+	Complex FPolynomial<N>::integrate(double at, double a, double b){
+		func_t<N> result = [](auto&& args...){return 0.;};
+		for( std::size_t i = 0; i < _coefficients.size(); ++i ){
+			func_t<N> temp = [i, a, b](auto&& args...){ return 1./(i+1) * (int_pow(b, i+1) - int_pow(a, i+1));};
+//			std::cout << "cof: " << _coefficients[i](at) << "\n";
+//			std::cout << "product: " << (_coefficients[i] * temp)(at) << "\n";
+			result = result + _coefficients[i] * temp;
+//			std::cout << "result: " << result(at) << "\n";
+//			std::cout << "temp: " << temp(1.5) << "\n";
+//			std::cout << "result: " << result(at) << "\n";
+		}
+//		std::cout << "@@@@@@result: " << result(at) << "\n";
+		return result(at);
+	}
 
 	template <std::size_t N>
 	func_t<N> FPolynomial<N>::integrate(double a, double b){
-		func_t<N> result(identity<N>(0.));
+		func_t<N> result = [](auto&& args...){return 0.;};
 		for( std::size_t i = 0; i < _coefficients.size(); ++i ){
-			result += _coefficients[i] * identity<N>(int_pow(b, i) - int_pow(a, i));
+			func_t<N> temp = [i, a, b](auto&& args...){ return 1./(i+1) * (int_pow(b, i+1) - int_pow(a, i+1));};
+			result = result + _coefficients[i] * temp;
+		}
+		return result;
+	}
+
+	inline FPolynomial<1> operator>>(FPolynomial<1> const& fp, std::function<Complex(Complex)> const& f){
+		auto copy(fp);
+		for( auto& elem : copy._coefficients ){
+			elem = elem >> f;
+		}
+		return copy;
+	}
+
+	template<std::size_t U>
+	FPolynomial<U> operator*(FPolynomial<U> const& lhs, FPolynomial<U> const& rhs){
+		func_t<U> f0 = [](auto&& args...){return 0.;};
+		FPolynomial<U> result;
+		result._coefficients = std::vector<func_t<U>>(lhs.n + rhs.n -1, f0);
+		result.n = lhs.n+rhs.n-1;
+		result.order = result.n-1;
+		for( std::size_t i = 0; i < lhs.n; ++i ){
+			for( std::size_t j = 0; j < rhs.n; ++j ){
+				result._coefficients[i+j] = result._coefficients[i+j] + lhs._coefficients[i] * rhs._coefficients[j];
+			}
 		}
 		return result;
 	}
@@ -194,7 +239,9 @@ namespace Feynumeric
 			auto temp_pow = int_pow(arg, i);
 //			std::cout << "temp_coef: " << temp_coef << "\n";
 //			std::cout << "temp_pow:  " << temp_pow  << "\n";
-			result += _coefficients[i](args...) * int_pow(arg, i);
+			auto cof = _coefficients[i](args...);
+			auto ip = int_pow(arg, i);
+			result +=  cof * ip;
 //			std::cout << "result:    " << result << "\n";
 		}
 		return result;

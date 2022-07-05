@@ -294,6 +294,8 @@ namespace Feynumeric
 
 		double const phase_space_factor = phase_space2(N_polarisations, kin.sqrt_s(), qout, qin);
 
+		std::cout << FORMAT("s: {}\t phi: {}\n", kin.sqrt_s(), phase_space_factor);
+
 		std::map<double, std::vector<double>> result;
 
 

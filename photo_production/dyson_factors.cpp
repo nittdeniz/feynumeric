@@ -80,7 +80,7 @@ int main(int argc, char** argv)
     for( int i = 0; i <= steps; ++i ){
         values[i] = (start + (end - start) / steps * i);
     }
-    values = {1.232};
+//    values = {1.232};
 
 	bool D1232 = cmd.is_enabled("D1232");
     bool D1600 = cmd.is_enabled("D1600");

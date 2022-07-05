@@ -76,6 +76,8 @@ namespace Feynumeric
 
 			std::map<double, double> result;
 
+			std::function<Complex(Complex)> conjugate = [](Complex c){ return std::conj(c);};
+
 			if( N == 1 ){
 				auto qout = std::bind(momentum, _1, _outgoing[0]->mass(), _outgoing[1]->mass());
 				auto qin  = std::bind(momentum, _1, _incoming[0]->mass(), _incoming[1]->mass());
@@ -86,9 +88,15 @@ namespace Feynumeric
 				for( auto const& s : s_values ){
 					double sum{0.};
 					for( auto const& f : _fpolynomials ){
-						auto cf = f.comp(std::conj);
+						auto fc = f >> conjugate;
+						auto full = fc * f;
+						auto integrated = full.integrate(s, -1, 1);
+						auto temp = integrated.real();
+						sum += integrated.real();
 					}
+//					std::cout << FORMAT("s: {}\t phi: {}\n", s, phase_space(s));
 					result[s] = phase_space(s) * sum;
+//					result[s] = sum;
 				}
 			}
 
