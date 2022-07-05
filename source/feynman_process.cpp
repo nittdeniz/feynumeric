@@ -310,12 +310,13 @@ namespace Feynumeric
                 Ms_squared[j] += ( temp * std::conj(temp)).real();
                 _diagrams[j]->iterate_spins();
             }
+            std::cout << "s: " << sqrt_s << " cos: " << cos_theta << " i: " << i << " M: " << M << "\n";
             auto M2 = ( M * std::conj(M)).real();
             Ms_squared[_diagrams.size()] += M2;
         }
 
         for( auto& value : Ms_squared ){
-        	std::cout << FORMAT("sqrts: {} costheta: {} value: {} ps: {} cv: {}\n", sqrt_s, cos_theta, value, phase_space_factor, _conversion_factor);
+//        	std::cout << FORMAT("sqrts: {} costheta: {} value: {} ps: {} cv: {}\n", sqrt_s, cos_theta, value, phase_space_factor, _conversion_factor);
             value *= phase_space_factor * _conversion_factor;
         }
         result[cos_theta] = Ms_squared;
@@ -612,12 +613,17 @@ namespace Feynumeric
 			Complex M{0, 0};
 			for( auto& diagram : _diagrams ){
 				auto const& temp = diagram->evaluate_amplitude(kin);
+				std::cout << "temp: " << temp << "\n";
 				M += temp;
 				diagram->iterate_spins();
 			}
 			Ms_squared += ( M * std::conj(M)).real();
 		}
 		auto phase_space = 1. / N_polarisations * q / ( 8 * M_PI * sqrt_s * sqrt_s);
+		std::cout << "s: " << sqrt_s << "\n";
+		std::cout << "q: " << q << "\n";
+		std::cout << "N: " << N_polarisations << "\n";
+		std::cout << "phase_space: " << phase_space << "\n";
 		return Ms_squared * phase_space;
 	}
 
@@ -728,7 +734,7 @@ namespace Feynumeric
 		std::size_t modulo = static_cast<std::size_t>(0.1 * copies.size());
         modulo = modulo == 0? 1 : modulo;
 
-		#pragma omp parallel for
+		//#pragma omp parallel for
 		for( std::size_t i = 0; i < copies.size(); ++i ){
 //            std::cout << FORMAT("start {}/{} core: {} {}\n", i, copies.size(), omp_get_thread_num(), values[i]) << std::flush;
 			double const sqrt_s = values[i];

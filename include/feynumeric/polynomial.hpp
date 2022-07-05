@@ -93,9 +93,9 @@ namespace Feynumeric
 		std::vector<func_t<N>> _coefficients;
 	public:
 		FPolynomial()
-		: n(1337)
-		, order(666)
-		, _coefficients({{[](auto&&...){return Complex(4.);}}})
+		: n(1)
+		, order(0)
+		, _coefficients({{[](auto&&...){return Complex(1.);}}})
 		{
 			[](){};
 		}

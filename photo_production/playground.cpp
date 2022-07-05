@@ -6,6 +6,7 @@
 #include <feynumeric/utility.hpp>
 
 #include <iostream>
+#include <feynumeric/phase_space.hpp>
 
 int main(int argc, char** argv){
 	using namespace Feynumeric;
@@ -32,16 +33,10 @@ int main(int argc, char** argv){
 
 	auto particle = P.get("D1232pp");
 
-	func_t<1> f1 = [](double x){return 3*x;};
-	func_t<1> f2 = [](double x){return 2*x;};
-	func_t<1> f3 = [](double){return 2.;};
 
-	auto ff = f1 * Complex(2., 0);
-
-	std::cout << "f3: " << ff(2) << "\n";
 
 	/* width */
-	/*
+
 	auto n_spin_states = particle->spin().n_states() * Proton->spin().n_states();
 	std::vector<std::vector<Polynomial>> width_polynomials(1);
 	for( std::size_t i = 0; i < n_spin_states; ++i ){
@@ -50,10 +45,19 @@ int main(int argc, char** argv){
 		width_polynomials[0].push_back(temp);
 	}
 
-	Amplitude<0> width(width_polynomials);
-	*/
+	Amplitude<0> M_width(width_polynomials, {particle}, {}, {Proton, Pi_Plus});
+
+	std::vector<double> wv;
+//	auto wv = lin_space(1.1, 2.1, 20);
+	wv.push_back(particle->mass());
+	auto width_result = M_width.width(wv);
+	for( auto const& [s, w] : width_result ){
+		std::cout << s << " " << w << "\n";
+	}
+
+
 	/* scattering */
-	auto n_spin_states = Proton->spin().n_states() * Proton->spin().n_states();
+	n_spin_states = Proton->spin().n_states() * Proton->spin().n_states();
 	std::vector<std::vector<Polynomial>> scattering_polynomials(2);
 	for( std::size_t i = 0; i < n_spin_states; ++i ){
 		Polynomial temp_s, temp_c;
@@ -66,14 +70,28 @@ int main(int argc, char** argv){
 	std::cout << scattering_polynomials[0][1].to_string('s') << "\n";
 	std::cout << scattering_polynomials[1][1].to_string('c') << "\n";
 
-	Amplitude<1> scattering(scattering_polynomials);
+	func_t<1> phase_space = [&](double sqrt_s){
+		auto qout = momentum(sqrt_s, Proton->mass(), Pi_Plus->mass());
+		auto qin = qout;
+		return phase_space2(4, sqrt_s, qout, qin);
+	};
 
-	scattering.scale([](double){ return 2.;});
+	func_t<1> breit_wigner = [&](double sqrt_s){
+		return 1./(sqrt_s*sqrt_s - particle->mass() * particle->mass() + 1.i * sqrt_s * particle->width());
+	};
+
+	Amplitude<1> M_scattering(scattering_polynomials, {Proton, Pi_Plus}, {particle},{Proton, Pi_Plus});
+	//scattering.scale(phase_space);
+	M_scattering.scale(breit_wigner);
 
 	double sqrt_s = 1.2;
-	double cos    = 0.3;
+	double cos    = 0;
 
-	std::cout << "scattering: " << scattering(cos, sqrt_s) << "\n";
+//	auto fff = [&](double c){return scattering(c, sqrt_s);};
+
+	std::cout << "result: " << M_scattering(cos, sqrt_s) << "\n";
+
+	//std::cout << "scattering: " << phase_space(sqrt_s) * integrate(fff, -1, 1) << "\n";
 
 
 	/*

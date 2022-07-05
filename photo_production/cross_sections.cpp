@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 
 	cmd.register_command("particle_file", true, "file with particle parameters");
     cmd.register_command("coupling_constants", true, "file with coupling constants");
-	cmd.register_command("form_factor", CMD_FORM_FACTOR_NONE, FORMAT("which form factor to use ({}, {}, {}, {}, {}, {})", CMD_FORM_FACTOR_NONE, CMD_FORM_FACTOR_CASSING, CMD_FORM_FACTOR_CUTKOSKY, CMD_FORM_FACTOR_MANLEY, CMD_FORM_FACTOR_MONIZ, CMD_FORM_FACTOR_BREIT_WIGNER));
+	cmd.register_command("form_factor", Form_Factor::CMD_FORM_FACTOR_NONE, FORMAT("which form factor to use ({}, {}, {}, {}, {}, {})", Form_Factor::CMD_FORM_FACTOR_NONE, Form_Factor::CMD_FORM_FACTOR_CASSING, Form_Factor::CMD_FORM_FACTOR_CUTKOSKY, Form_Factor::CMD_FORM_FACTOR_MANLEY, Form_Factor::CMD_FORM_FACTOR_MONIZ, Form_Factor::CMD_FORM_FACTOR_BREIT_WIGNER));
 	cmd.register_command("channel", CMD_CHANNEL_S, "which channel to use [s, t, u, c] or any combination.");
 	cmd.register_command("process", CMD_PROCESS_PHOTO_PRODUCTION, FORMAT("which process to use: {} {}", CMD_PROCESS_PHOTO_PRODUCTION, CMD_PROCESS_ELASTIC_SCATTERING));
 	cmd.register_command("sqrt_s", false, "the energy in the center of mass frame in GeV");
@@ -63,8 +63,8 @@ int main(int argc, char** argv)
 	std::string const& form_factor = cmd.as_string("form_factor");
 
 	FORM_FACTOR_FUNCTION ff;
-	if( ff_dict.contains(form_factor) ){
-	    ff = ff_dict[form_factor];
+	if( Form_Factor::ff_dict.contains(form_factor) ){
+	    ff = Form_Factor::ff_dict[form_factor];
 	}
 	else{
 		critical_error("Unknown form factor");
