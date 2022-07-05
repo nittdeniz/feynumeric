@@ -25,6 +25,9 @@ struct all_same<T, T, Ts...> : all_same<T, Ts...> { };
 
 namespace Feynumeric
 {
+	template<std::size_t U>
+	class Amplitude;
+
 	struct Point{
 		double x;
 		Complex y;
@@ -135,8 +138,13 @@ namespace Feynumeric
 
 		friend FPolynomial<1> operator>>(FPolynomial<1> const& fp, std::function<Complex(Complex)> const& f);
 
+
 		template <std::size_t K>
 		friend class Amplitude;
+
+		template<std::size_t U>
+		friend Amplitude<U> operator+(Amplitude<U> const& lhs, Amplitude<U> const& rhs);
+
 	};
 
 	template <std::size_t N>
