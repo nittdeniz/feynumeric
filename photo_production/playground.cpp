@@ -102,11 +102,15 @@ int main(int argc, char** argv){
 
 	auto add = M_scattering + M_scattering;
 
-	M_scattering.scale(breit_wigner);
-	M_scattering.scale(form_factor);
+//	M_scattering.scale(breit_wigner);
+//	M_scattering.scale(form_factor);
+
+//	add.scale(breit_wigner);
+//	add.scale(form_factor);
 
 	double sqrt_s = 1.2;
 	double cos    = 0;
+
 
 	auto result_scattering = M_scattering.scattering(sqrt_s_values);
 

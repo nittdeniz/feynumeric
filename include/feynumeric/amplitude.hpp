@@ -183,19 +183,20 @@ namespace Feynumeric
 			result._fpolynomials[i]._coefficients.resize(max);
 			for( std::size_t j = 0; j < max; ++j ){
 				if( j < m && j < n ){
-					std::cout << "lhs: " << lhs._fpolynomials[i]._coefficients[j](1.3) << "\n";
-					std::cout << "rhs: " << rhs._fpolynomials[i]._coefficients[j](1.3) << "\n";
 					result._fpolynomials[i]._coefficients[j] = lhs._fpolynomials[i]._coefficients[j] + rhs._fpolynomials[i]._coefficients[j];
-					std::cout << "result: " << result._fpolynomials[i]._coefficients[j](1.3) << "\n\n";
+					std::cout << "2";
 				}else if( j < m ){
 					result._fpolynomials[i]._coefficients[j] = lhs._fpolynomials[i]._coefficients[j];
+					std::cout <<"1";
 				}else if( j < n ){
+					std::cout << "0";
 					result._fpolynomials[i]._coefficients[j] = rhs._fpolynomials[i]._coefficients[j];
 				}else{
 					critical_error("This should not happen.");
 				}
 			}
 		}
+		std::cout << "\n";
 		return result;
 	}
 

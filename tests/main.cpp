@@ -413,6 +413,29 @@ TEST_CASE("Polarisation Sums", "[dirac]")
 //	REQUIRE( check_pol_sum(std::make_shared<Angular_Momentum>(3.5, 3.5)) );
 }
 
+TEST_CASE("func_t operators", "[func_t]"){
+	using namespace Feynumeric;
+	func_t<1> f = [](double x){ return std::sin(x); };
+	func_t<1> g = [](double x){ return std::cos(x); };
+	func_t<1> fag = f + g;
+	func_t<1> fsg = f - g;
+	func_t<1> fmg = f * g;
+	func_t<1> fdg = f / g;
+	func_t<1> ffagg = f*f + g*g;
+	func_t<1> ffag = f * fag;
+	func_t<1> fmgafmg = fmg + fmg;
+	double x = 1.2345;
+	REQUIRE( almost_identical(fag(x), std::sin(x) + std::cos(x)) );
+	REQUIRE( almost_identical(fsg(x), std::sin(x) - std::cos(x)) );
+	REQUIRE( almost_identical(fmg(x), std::sin(x) * std::cos(x)) );
+	REQUIRE( almost_identical(fdg(x), std::sin(x) / std::cos(x)) );
+	REQUIRE( almost_identical(ffagg(x), std::sin(x)*std::sin(x) + std::cos(x) * std::cos(x)));
+	REQUIRE( almost_identical(ffag(x), std::sin(x) * ( std::sin(x) + std::cos(x))));
+	REQUIRE( almost_identical(fmgafmg(x), std::sin(x) * std::cos(x) + std::sin(x) * std::cos(x) ));
+
+
+}
+
 TEST_CASE("projector", "[dirac]"){
 	using namespace Feynumeric;
 	Lorentz_Index_Ptr mu = std::make_shared<Lorentz_Index>();
@@ -448,5 +471,4 @@ TEST_CASE("projector", "[dirac]"){
 		}
 		++(*mu);
 	}
-
 }
