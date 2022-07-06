@@ -52,7 +52,7 @@ namespace Feynumeric
 			double result{0.};
 			for( auto& fp : _fpolynomials ){
 				Complex temp = fp(x, args);
-				std::cout << "temp: " << temp << "\n";
+				//std::cout << "temp: " << temp << "\n";
 				result += (temp * std::conj(temp)).real();
 			}
 			return result;
@@ -69,7 +69,7 @@ namespace Feynumeric
 
 			if( N == 0 ){
 				auto q = std::bind(momentum, _1, _outgoing[0]->mass(), _outgoing[1]->mass());
-				auto phase_space = [&](double s){
+				auto phase_space = [=](double s) mutable{
 					return 1. / N_polarisations * q(s) / ( 8 * M_PI * s * s );
 				};
 				for( auto const& s : s_values ){
@@ -99,25 +99,34 @@ namespace Feynumeric
 			if( N == 1 ){
 				auto qout = std::bind(momentum, _1, _outgoing[0]->mass(), _outgoing[1]->mass());
 				auto qin = std::bind(momentum, _1, _incoming[0]->mass(), _incoming[1]->mass());
-				auto phase_space = [&](double s){
+				auto phase_space = [=](double s) mutable{
 					return phase_space2(N_polarisations, s, qout(s), qin(s));
 				};
 
-				for( auto const& s : s_values ){
+				#pragma omp parallel for
+				for( std::size_t i = 0; i < s_values.size(); ++i ){
+					auto const s = s_values[i];
 					double sum{0.};
 					for( auto const& f : _fpolynomials ){
 						auto fc = f >> conjugate;
+//						std::cout << "f: " << f(1.2, 0.5) << "\n";
+//						std::cout << "fc: " << fc(1.2, 0.5) << "\n";
 						auto full = fc * f;
+//						std::cout << "full: " << full(1.2, 0.5) << "\n";
 						auto integrated = full.integrate(s, -1, 1);
+						auto i12 = full.integrate(1.2, -1, 1);
+//						std::cout << "int: " << integrated << "\n";
 						auto temp = integrated.real();
 						sum += integrated.real();
 					}
 //					std::cout << FORMAT("s: {}\t phi: {}\n", s, phase_space(s));
-					result[s] = phase_space(s) * sum;
+					#pragma omp critical
+					{
+						result[s] = phase_space(s) * sum;
+					}
 //					result[s] = sum;
 				}
 			}
-
 			return result;
 		}
 
@@ -181,22 +190,20 @@ namespace Feynumeric
 			auto n = rhs._fpolynomials[i]._coefficients.size();
 			auto max = std::max(m, n);
 			result._fpolynomials[i]._coefficients.resize(max);
+			result._fpolynomials[i].n = max;
+			result._fpolynomials[i].order = max-1;
 			for( std::size_t j = 0; j < max; ++j ){
 				if( j < m && j < n ){
 					result._fpolynomials[i]._coefficients[j] = lhs._fpolynomials[i]._coefficients[j] + rhs._fpolynomials[i]._coefficients[j];
-					std::cout << "2";
 				}else if( j < m ){
 					result._fpolynomials[i]._coefficients[j] = lhs._fpolynomials[i]._coefficients[j];
-					std::cout <<"1";
 				}else if( j < n ){
-					std::cout << "0";
 					result._fpolynomials[i]._coefficients[j] = rhs._fpolynomials[i]._coefficients[j];
 				}else{
 					critical_error("This should not happen.");
 				}
 			}
 		}
-		std::cout << "\n";
 		return result;
 	}
 

@@ -223,10 +223,18 @@ namespace Feynumeric
 		FPolynomial<U> result;
 		result._coefficients = std::vector<func_t<U>>(lhs.n + rhs.n -1, f0);
 		result.n = lhs.n+rhs.n-1;
+//		std::cout << "lhs.n: " << lhs.n << "\n";
+//		std::cout << "lhs:s: " << lhs._coefficients.size() << "\n";
 		result.order = result.n-1;
 		for( std::size_t i = 0; i < lhs.n; ++i ){
 			for( std::size_t j = 0; j < rhs.n; ++j ){
+//				std::cout << "i: " << i << "\n";
+//				std::cout << "j: " << j << "\n";
+//				std::cout << "result: " << result._coefficients[i+j](1.2) << "\n";
+//				std::cout << "lhs: " << lhs._coefficients[i](1.2) << "\n";
+//				std::cout << "rhs: " << rhs._coefficients[j](1.2) << "\n";
 				result._coefficients[i+j] = result._coefficients[i+j] + lhs._coefficients[i] * rhs._coefficients[j];
+//				std::cout << "result: " << result._coefficients[i+j](1.2);
 			}
 		}
 		return result;
@@ -260,7 +268,6 @@ namespace Feynumeric
 		_coefficients = other._coefficients;
 		n = other.n;
 		order = other.order;
-		[](){}();
 		return *this;
 	}
 
