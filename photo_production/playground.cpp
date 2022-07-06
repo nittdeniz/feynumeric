@@ -109,12 +109,14 @@ int main(int argc, char** argv){
 	std::cout << "config done: " << stopwatch.time<std::chrono::milliseconds>()/1000. << "\n";
 	stopwatch.start();
 
-	auto sqrt_s_values = lin_space(1.1, 2.1, 10);
+	auto sqrt_s_values = lin_space(1.1, 2.1, 100);
 	auto result = interference.scattering(sqrt_s_values);
+
+	using namespace Feynumeric::Units;
 
 	std::cout << "{";
 	for( auto& [s,val] : result ){
-		std::cout << "{" << s << "," << val << "},";
+		std::cout << "{" << s << "," << val * 1._2mbarn << "},";
 	}
 	std::cout << "\b};\n";
 
