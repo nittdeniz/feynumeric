@@ -42,12 +42,12 @@ int main(int argc, char** argv)
 	auto const& Pi_Plus = P.get("pi+");
 
 	for( auto& [key, particle] : P ){
-		particle->user_data("form_factor", identity);
+		particle->user_data("form_factor", Form_Factor::identity);
 	}
 
 	init_vertices(P, cmd.as_string("coupling_constants"));
 
-	std::vector<std::string> particle_strings = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900", "N2060", "N2100", "N2120","D1232", "D1600", "D1620", "D1700", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940", "D1950"};
+	std::vector<std::string> particle_strings = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900", "N2060", "N2100", "N2120","D1232", "D1600", "D1620", "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940", "D1950"};
 
 	std::vector<Particle_Ptr> particles_Np;
 	std::vector<Particle_Ptr> particles_Nn;
@@ -89,8 +89,8 @@ int main(int argc, char** argv)
         Feynman_Process decay_Np1({channel_decay_Np1});
         Feynman_Process decay_Np2({channel_decay_Np2});
 
-        auto w1 = decay_Np1.decay_width();
-        auto w2 = decay_Np2.decay_width();
+        auto w1 = decay_Np1.decay_width(Np->mass());
+        auto w2 = decay_Np2.decay_width(Np->mass());
 
         auto const literature_value = Np->width() * Np->user_data<double>("branching_N_pi");
         auto const g = std::sqrt(literature_value / ( w1 + w2 ));
@@ -127,8 +127,8 @@ int main(int argc, char** argv)
         Feynman_Process decay_Np1({channel_decay_Np1});
         Feynman_Process decay_Nn1({channel_decay_Nn1});
 
-        auto w1 = decay_Np1.decay_width();
-        auto w2 = decay_Nn1.decay_width();
+        auto w1 = decay_Np1.decay_width(Np->mass());
+        auto w2 = decay_Nn1.decay_width(Nn->mass());
 
 
         double const literature_value1 = Np->width() * Np->user_data<double>("branching_proton_photon");
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
 
         Feynman_Process decay1({channel_decay_f0_1});
         Feynman_Process decay2({channel_decay_f0_2});
-        auto g = std::sqrt(particle->width() / (decay1.decay_width() + decay2.decay_width()));
+        auto g = std::sqrt(particle->width() / (decay1.decay_width(particle->mass()) + decay2.decay_width(particle->mass())));
         couplings.set(coupl_str, g);
         buffer <<  FORMAT("{} {}\n", coupl_str, g);
     }
@@ -174,7 +174,7 @@ int main(int argc, char** argv)
                                                   {Pi_Plus, Pi_Minus}
         );
         Feynman_Process decay1({channel_decay_rho_1});
-        auto g = std::sqrt(particle->width() / (decay1.decay_width() ));
+        auto g = std::sqrt(particle->width() / (decay1.decay_width(particle->mass()) ));
         couplings.set(coupl_str, g);
         buffer << FORMAT("{} {}\n", coupl_str, g);
     }

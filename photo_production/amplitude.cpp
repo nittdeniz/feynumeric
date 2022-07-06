@@ -55,7 +55,7 @@ int main(int argc, char** argv){
 		auto const& row = result_decay[i];
 		for( std::size_t j = 0; j < row.size(); ++j ){
 			auto const& poly = row[j];
-			poly.save(FORMAT("data/polynomial_decay_{}_{}_{}.txt", particle->name(), i, j));
+			poly.save(FORMAT("data/polynomials/polynomial_decay_{}_{}_{}.txt", particle->name(), i, j));
 		}
 	}
 
@@ -65,7 +65,7 @@ int main(int argc, char** argv){
 		auto const& row = result_scattering[i];
 		for( std::size_t j = 0; j < row.size(); ++j ){
 			auto const& poly = row[j];
-			poly.save(FORMAT("data/polynomial_scattering_{}_{}_{}.txt", particle->name(), i, j));
+			poly.save(FORMAT("data/polynomials/polynomial_scattering_{}_{}_{}.txt", particle->name(), i, j));
 		}
 	}
 }

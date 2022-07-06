@@ -461,6 +461,45 @@ int main(int argc, char** argv)
 		Table(dyson_factor).write(FORMAT("data/dyson_factors/D1700_{}.txt", ff_str));
 	}
     */
+	if( D1750 )
+	{
+		std::string particle_name = "D1750";
+		auto particle = P.get(FORMAT("{}pp", particle_name));
+		std::cout << particle_name << "\n";
+		std::map<double, double> dyson_factor;
+		values.back() = particle->mass();
+		std::size_t completed = 0;
+#pragma omp parallel for
+		for( std::size_t i = 0; i < values.size(); ++i ){
+			auto value = values[i];
+			++completed;
+			auto dummy = std::make_shared<Particle>(*P.get(FORMAT("{}pp", particle_name)));
+			if( ff_str == Form_Factor::CMD_FORM_FACTOR_BREIT_WIGNER ){
+				FORM_FACTOR_FUNCTION breit_wigner_bind = std::bind(breit_wigner_modified, _1, _2, _3, _4, P.get(FORMAT("{}pp", particle_name))->mass());
+				dummy->user_data("form_factor", breit_wigner_bind);
+			}else{
+				dummy->user_data("form_factor", Form_Factor::identity);
+			}
+			/**  -> Npi **/
+			auto diagram_pi1 = create_diagram(FORMAT("decay {} to proton pi+", dummy->name()), Decay_1_to_2, VMP,
+			                                  {dummy},
+			                                  {},
+			                                  {Proton, Pi_Plus}
+			);
+			std::vector<Feynman_Process> processes;
+			processes.push_back(Feynman_Process({diagram_pi1}));
+//            dummy->mass(value);
+			dyson_factor[value] = 0;
+			for( auto& process : processes ){
+				auto temp = process.decay_width(value);
+				dyson_factor[value] += std::isnan(temp)? 0 : temp;
+			}
+			if( (completed / 10)%10 == 0 ){
+				std::cout << "#" << std::flush;
+			}
+		}
+		Table(dyson_factor).write(FORMAT("data/dyson_factors/{}_{}.txt", particle_name, ff_str));
+	}
     if( D1900 )
     {
         std::string particle_name = "D1900";
