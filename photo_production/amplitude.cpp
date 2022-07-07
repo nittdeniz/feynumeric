@@ -27,45 +27,66 @@ int main(int argc, char** argv){
 	init_vertices(P, cmd.as_string("coupling_constants"));
 
 
+	std::string particle_name = cmd.as_string("particle");
+
+	Particle_Ptr particle = nullptr;
+
+	Feynman_Diagram_Ptr scattering_diagram = nullptr;
+	Feynman_Diagram_Ptr decay_diagram = nullptr;
+
+	std::vector<double> s_values;
+
+	if( particle_name == "Rho" ){
+		s_values = lin_space(1.1, 2.1, 17);
+		particle = P.get("rho0");
+		scattering_diagram = create_diagram(FORMAT("{} u", particle->name()), u_channel, VMP,
+		                                    {Proton, Pi_Plus},
+		                                    {particle},
+		                                    {Pi_Plus, Proton}
+		);
+	}
+	else{
+		s_values = weighted_space(1.1, particle->mass() - particle->width(), particle->mass() + particle->width(), 2.1, 17);
+		particle = P.get(FORMAT("{}pp", cmd.as_string("particle")));
+		scattering_diagram = create_diagram(FORMAT("{} s", particle->name()), s_channel, VMP,
+		                                    {Proton, Pi_Plus},
+		                                    {particle},
+		                                    {Pi_Plus, Proton}
+		);
+		decay_diagram = create_diagram(FORMAT("{} decay", particle->name()), Decay_1_to_2, VMP,
+		                               {particle},
+		                               {},
+		                               {Pi_Plus, Proton});
+	}
 
 
-	auto particle = P.get(FORMAT("{}pp", cmd.as_string("particle")));
 	particle->user_data("form_factor", Form_Factor::identity);
 
-	auto s_values = weighted_space(1.1, particle->mass() - particle->width(), particle->mass() + particle->width(), 2.1, 17);
-
-	auto scattering_diagram = create_diagram(FORMAT("{} s", particle->name()), s_channel, VMP,
-	                                         {Proton, Pi_Plus},
-	                                         {particle},
-	                                         {Pi_Plus, Proton}
-	);
-
-	auto decay_diagram = create_diagram(FORMAT("{} decay", particle->name()), Decay_1_to_2, VMP,
-	                                    {particle},
-	                                    {},
-	                                    {Pi_Plus, Proton});
-
-	Feynman_Process process_decay({decay_diagram});
-
-	Feynman_Process process_scattering({scattering_diagram});
-
-	auto result_decay = process_decay.decay_amplitude(s_values, 4);
-
-	for( std::size_t i = 0; i < result_decay.size(); ++i ){
-		auto const& row = result_decay[i];
-		for( std::size_t j = 0; j < row.size(); ++j ){
-			auto const& poly = row[j];
-			poly.save(FORMAT("data/polynomials/polynomial_decay_{}_{}_{}.txt", particle->name(), i, j));
+	if( decay_diagram ){
+		Feynman_Process process_decay({decay_diagram});
+		auto result_decay = process_decay.decay_amplitude(s_values, 4);
+		for( std::size_t i = 0; i < result_decay.size(); ++i ){
+			auto const& row = result_decay[i];
+			for( std::size_t j = 0; j < row.size(); ++j ){
+				auto const& poly = row[j];
+				poly.save(FORMAT("data/polynomials/polynomial_decay_{}_{}_{}.txt", particle->name(), i, j));
+			}
 		}
 	}
 
-	auto result_scattering = process_scattering.scattering_amplitude(s_values, {6, 8});
+	if( scattering_diagram ){
+		Feynman_Process process_scattering({scattering_diagram});
 
-	for( std::size_t i = 0; i < result_scattering.size(); ++i ){
-		auto const& row = result_scattering[i];
-		for( std::size_t j = 0; j < row.size(); ++j ){
-			auto const& poly = row[j];
-			poly.save(FORMAT("data/polynomials/polynomial_scattering_{}_{}_{}.txt", particle->name(), i, j));
+		auto result_scattering = process_scattering.scattering_amplitude(s_values, {6, 8});
+
+		for( std::size_t i = 0; i < result_scattering.size(); ++i ){
+			auto const& row = result_scattering[i];
+			for( std::size_t j = 0; j < row.size(); ++j ){
+				auto const& poly = row[j];
+				poly.save(FORMAT("data/polynomials/polynomial_scattering_{}_{}_{}.txt", particle->name(), i, j));
+			}
 		}
 	}
+
+
 }

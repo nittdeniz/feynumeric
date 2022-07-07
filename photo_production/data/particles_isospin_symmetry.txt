@@ -400,7 +400,7 @@ parity 1
 phase 0
 mass 1570MeV
 width 250MeV
-branching_N_pi 100%
+branching_N_pi 10%
 branching_N_pi_pi 88%
 branching_N_D1232_pi_pi 70%
 branching_N_N1440_pi_pi 18%
@@ -434,7 +434,7 @@ parity -1
 phase 0
 mass 1610MeV
 width 130MeV
-branching_N_pi 100%
+branching_N_pi 50%
 branching_N_pi_pi 70%
 branching_N_D1232_pi_pi 44%
 branching_N_Rho_pi_pi 22%
@@ -468,7 +468,7 @@ parity -1
 phase 0
 mass 1710MeV
 width 300MeV
-branching_N_pi 100%
+branching_N_pi 50%
 branching_N_pi_pi 85%
 branching_N_D1232_pi_pi 55%
 branching_N_Rho_pi_pi 27%
@@ -502,7 +502,7 @@ parity 1
 phase 0
 mass 1750MeV
 width 300MeV
-branching_N_pi 100%
+branching_N_pi 80%
 
 @particle D1750pp
 group D1750
@@ -530,7 +530,7 @@ parity -1
 phase 0
 mass 1860MeV
 width 250MeV
-branching_N_pi 100%
+branching_N_pi 50%
 branching_proton_photon 0.25%
 branching_neutron_photon 0.25%
 l 0
@@ -559,7 +559,7 @@ parity 1
 phase 0
 mass 1880MeV
 width 330MeV
-branching_N_pi 100%
+branching_N_pi 50%
 branching_proton_photon 0.024%
 branching_neutron_photon 0.024%
 l 3
@@ -590,7 +590,7 @@ parity 1
 phase 0
 mass 1900MeV
 width 300MeV
-branching_N_pi 100%
+branching_N_pi 50%
 branching_proton_photon 0.01%
 branching_neutron_photon 0.01%
 l 1
@@ -621,7 +621,7 @@ parity 1
 phase 0
 mass 1920MeV
 width 300MeV
-branching_N_pi 100%
+branching_N_pi 50%
 branching_proton_photon 0%
 branching_neutron_photon 0%
 l 1
@@ -652,7 +652,7 @@ parity -1
 phase 0
 mass 1950MeV
 width 300MeV
-branching_N_pi 100%
+branching_N_pi 50%
 branching_proton_photon 0%
 branching_neutron_photon 0%
 l 1
@@ -683,7 +683,7 @@ parity -1
 phase 0
 mass 2000MeV
 width 400MeV
-branching_N_pi 100%
+branching_N_pi 50%
 branching_proton_photon 0%
 branching_neutron_photon 0%
 l 1
@@ -712,7 +712,7 @@ charge -1
 group R72
 parity 1
 phase 0
-branching_N_pi 100%
+branching_N_pi 50%
 branching_N_pi_pi 0%
 mass 1930MeV
 width 285MeV

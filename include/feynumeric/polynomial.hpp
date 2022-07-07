@@ -188,14 +188,8 @@ namespace Feynumeric
 		func_t<N> result = [](auto&& args...){return 0.;};
 		for( std::size_t i = 0; i < _coefficients.size(); ++i ){
 			func_t<N> temp = [i, a, b](auto&& args...){ return 1./(i+1) * (int_pow(b, i+1) - int_pow(a, i+1));};
-//			std::cout << "cof: " << _coefficients[i](at) << "\n";
-//			std::cout << "product: " << (_coefficients[i] * temp)(at) << "\n";
 			result = result + _coefficients[i] * temp;
-//			std::cout << "result: " << result(at) << "\n";
-//			std::cout << "temp: " << temp(1.5) << "\n";
-//			std::cout << "result: " << result(at) << "\n";
 		}
-//		std::cout << "@@@@@@result: " << result(at) << "\n";
 		return result(at);
 	}
 
@@ -203,8 +197,9 @@ namespace Feynumeric
 	func_t<N> FPolynomial<N>::integrate(double a, double b){
 		func_t<N> result = [](auto&& args...){return 0.;};
 		for( std::size_t i = 0; i < _coefficients.size(); ++i ){
-			func_t<N> temp = [i, a, b](auto&& args...){ return 1./(i+1) * (int_pow(b, i+1) - int_pow(a, i+1));};
-			result = result + _coefficients[i] * temp;
+			auto temp = 1./(i+1) * (int_pow(b, i+1) - int_pow(a, i+1));
+			func_t<N> f = [temp](auto&& args...){ return temp;};
+			result = result + _coefficients[i] * f;
 		}
 		return result;
 	}
@@ -221,20 +216,19 @@ namespace Feynumeric
 	FPolynomial<U> operator*(FPolynomial<U> const& lhs, FPolynomial<U> const& rhs){
 		func_t<U> f0 = [](auto&& args...){return 0.;};
 		FPolynomial<U> result;
-		result._coefficients = std::vector<func_t<U>>(lhs.n + rhs.n -1, f0);
-		result.n = lhs.n+rhs.n-1;
-//		std::cout << "lhs.n: " << lhs.n << "\n";
-//		std::cout << "lhs:s: " << lhs._coefficients.size() << "\n";
-		result.order = result.n-1;
+		result.order = lhs.order + rhs.order;
+		result.n = result.order+1;
+		result._coefficients = std::vector<func_t<U>>(result.n, f0);
 		for( std::size_t i = 0; i < lhs.n; ++i ){
 			for( std::size_t j = 0; j < rhs.n; ++j ){
 //				std::cout << "i: " << i << "\n";
 //				std::cout << "j: " << j << "\n";
-//				std::cout << "result: " << result._coefficients[i+j](1.2) << "\n";
-//				std::cout << "lhs: " << lhs._coefficients[i](1.2) << "\n";
-//				std::cout << "rhs: " << rhs._coefficients[j](1.2) << "\n";
+//				std::cout << "result: " << result._coefficients[i+j](1.22) << "\n";
+//				std::cout << "lhs: " << lhs._coefficients[i](1.22) << "\n";
+//				std::cout << "rhs: " << rhs._coefficients[j](1.22) << "\n";
+//				std::cout << "prod: " << (lhs._coefficients[i] * rhs._coefficients[j])(1.22) << "\n";
 				result._coefficients[i+j] = result._coefficients[i+j] + lhs._coefficients[i] * rhs._coefficients[j];
-//				std::cout << "result: " << result._coefficients[i+j](1.2);
+//				std::cout << "result: " << result._coefficients[i+j](1.22) << "\n";
 			}
 		}
 		return result;

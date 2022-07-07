@@ -16,29 +16,31 @@ namespace Feynumeric
 	private:
 		std::vector<FPolynomial<N>> _fpolynomials;
 		std::vector<Particle_Ptr> _incoming;
-		std::vector<Particle_Ptr> _virtual;
 		std::vector<Particle_Ptr> _outgoing;
+		int n_pol = 1;
 
 	public:
 		Amplitude() = default;
 		Amplitude(Amplitude<N> const& other )
 		: _fpolynomials(other._fpolynomials)
 		, _incoming(other._incoming)
-		, _virtual(other._virtual)
 		, _outgoing(other._outgoing)
 		{
+			for( auto const& p : _incoming ){
+				n_pol *= p->spin().n_states();
+			}
 		}
 
 
 		Amplitude<N>& operator=(Amplitude<N> const& other){
 			_fpolynomials = other._fpolynomials;
 			_incoming = other._incoming;
-			_virtual = other._virtual;
 			_outgoing = other._outgoing;
+			n_pol = other.n_pol;
 			return *this;
 		}
 
-		Amplitude(std::vector<std::vector<Polynomial>> const& polynomials, std::vector<Particle_Ptr> const& incoming, std::vector<Particle_Ptr> const& virtuals, std::vector<Particle_Ptr> const& outgoing);
+		Amplitude(std::vector<std::vector<Polynomial>> const& polynomials, std::vector<Particle_Ptr> const& incoming, std::vector<Particle_Ptr> const& outgoing);
 
 		void scale(func_t<N> const& func){
 			for( auto& fp : _fpolynomials ){
@@ -48,41 +50,40 @@ namespace Feynumeric
 			}
 		}
 
-		double operator()(double x, auto&& args...){
-			double result{0.};
-			for( auto& fp : _fpolynomials ){
-				Complex temp = fp(x, args);
-				//std::cout << "temp: " << temp << "\n";
-				result += (temp * std::conj(temp)).real();
+		double width(double s){
+			using namespace std::placeholders;
+			if( N == 0 ){
+				auto const q = momentum(s, _outgoing[0]->mass(), _outgoing[1]->mass());
+				auto phase_space = q/n_pol/(8. * M_PI * s * s);
+				double sum{0.};
+				for( auto const& f : _fpolynomials ){
+					auto temp = f(s);
+					sum += (temp * std::conj(temp)).real();
+				}
+				return phase_space * sum;
 			}
-			return result;
 		}
 
-		std::map<double, double> width(std::vector<double> const& s_values){
+		func_t<1> scattering(){
 			using namespace std::placeholders;
-			int N_polarisations = 1;
-			for( auto const& p : _incoming ){
-				N_polarisations *= p->spin().n_states();
-			}
+			std::function<Complex(Complex)> conjugate = [](Complex c){ return std::conj(c); };
 
-			std::map<double, double> result;
-
-			if( N == 0 ){
-				auto q = std::bind(momentum, _1, _outgoing[0]->mass(), _outgoing[1]->mass());
-				auto phase_space = [=](double s) mutable{
-					return 1. / N_polarisations * q(s) / ( 8 * M_PI * s * s );
+			if( N == 1 ){
+				auto qout = std::bind(momentum, _1, _outgoing[0]->mass(), _outgoing[1]->mass());
+				auto qin = std::bind(momentum, _1, _incoming[0]->mass(), _incoming[1]->mass());
+				func_t<1> phase_space = [=, this](double s) mutable{
+					return phase_space2(n_pol, s, qout(s), qin(s));
 				};
-				for( auto const& s : s_values ){
-					double sum{0.};
-					for( auto const& f : _fpolynomials ){
-						auto temp = f(s);
-						sum += (temp * std::conj(temp)).real();
-					}
-					result[s] = phase_space(s) * sum;
+				func_t<1> sum = [](double){return 0.;};
+				for( auto const& f : _fpolynomials ){
+					auto fc = f >> conjugate;
+					auto full = fc * f;
+					auto integrated = full.integrate(-1, 1);
+					sum = sum + integrated;
 				}
+				return phase_space * sum;
 			}
-
-			return result;
+			critical_error("scattering only supports 2 final state particles (i.e. N=1)");
 		}
 
 		std::map<double, double> scattering(std::vector<double> const& s_values){
@@ -114,7 +115,7 @@ namespace Feynumeric
 						auto full = fc * f;
 //						std::cout << "full: " << full(1.2, 0.5) << "\n";
 						auto integrated = full.integrate(s, -1, 1);
-						auto i12 = full.integrate(1.2, -1, 1);
+//						auto i12 = full.integrate(1.2, -1, 1);
 //						std::cout << "int: " << integrated << "\n";
 						auto temp = integrated.real();
 						sum += integrated.real();
@@ -135,11 +136,13 @@ namespace Feynumeric
 	};
 
 	template<>
-	Amplitude<0>::Amplitude(std::vector<std::vector<Polynomial>> const& polynomials, std::vector<Particle_Ptr> const& incoming, std::vector<Particle_Ptr> const& virtuals, std::vector<Particle_Ptr> const& outgoing)
+	Amplitude<0>::Amplitude(std::vector<std::vector<Polynomial>> const& polynomials, std::vector<Particle_Ptr> const& incoming, std::vector<Particle_Ptr> const& outgoing)
 	: _incoming(incoming)
-	, _virtual(virtuals)
 	, _outgoing(outgoing)
 	{
+		for( auto& p : incoming ){
+			n_pol *= p->spin().n_states();
+		}
 		_fpolynomials.reserve(polynomials[0].size());
 		for( std::size_t i = 0; i < polynomials[0].size(); ++i ){
 			func_t<0> f = [&](){return Complex(1.);};
@@ -148,17 +151,18 @@ namespace Feynumeric
 	}
 
 	template<>
-	Amplitude<1>::Amplitude(std::vector<std::vector<Polynomial>> const& polynomials, std::vector<Particle_Ptr> const& incoming, std::vector<Particle_Ptr> const& virtuals, std::vector<Particle_Ptr> const& outgoing)
+	Amplitude<1>::Amplitude(std::vector<std::vector<Polynomial>> const& polynomials, std::vector<Particle_Ptr> const& incoming, std::vector<Particle_Ptr> const& outgoing)
 	: _incoming(incoming)
-    , _virtual(virtuals)
     , _outgoing(outgoing)
 	{
+		for( auto& p : incoming ){
+			n_pol *= p->spin().n_states();
+		}
 		_fpolynomials.reserve(polynomials[0].size());
 		for( std::size_t i = 0; i < polynomials[0].size(); ++i ){
 			func_t<1> f = polynomials[0][i];
 			FPolynomial<1> fp(f, polynomials[1][i]);
-			_fpolynomials.push_back(fp);
-//			_fpolynomials.emplace_back(f, polynomials[1][i]);
+			_fpolynomials.emplace_back(f, polynomials[1][i]);
 		}
 	}
 
@@ -184,6 +188,7 @@ namespace Feynumeric
 		Amplitude<U> result;
 		result._incoming = lhs._incoming;
 		result._outgoing = rhs._outgoing;
+		result.n_pol = lhs.n_pol;
 		result._fpolynomials.resize(lhs._fpolynomials.size());
 		for( std::size_t i = 0; i < result._fpolynomials.size(); ++i ){
 			auto m = lhs._fpolynomials[i]._coefficients.size();
