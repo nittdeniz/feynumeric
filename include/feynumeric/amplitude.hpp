@@ -50,6 +50,10 @@ namespace Feynumeric
 			}
 		}
 
+		Amplitude<N> conjugate() const{
+
+		}
+
 		double width(double s){
 			using namespace std::placeholders;
 			if( N == 0 ){
@@ -211,7 +215,6 @@ namespace Feynumeric
 		}
 		return result;
 	}
-
 }
 
 

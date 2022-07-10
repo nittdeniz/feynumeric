@@ -17,14 +17,18 @@ add_executable(cross_sections
 
 add_executable(amplitude amplitude.cpp source/couplings.cpp include/couplings.hpp include/effective_lagrangian_model.hpp source/effective_lagrangian_model.cpp source/form_factors.cpp include/form_factors.hpp)
 
+add_executable(gradient_descent gradient_descent.cpp source/couplings.cpp include/couplings.hpp include/effective_lagrangian_model.hpp source/effective_lagrangian_model.cpp source/form_factors.cpp include/form_factors.hpp)
+
 target_include_directories(amplitude PRIVATE include)
 target_include_directories(cross_sections PRIVATE include)
 target_include_directories(coupling_constants PRIVATE include)
 target_include_directories(playground PRIVATE include)
 target_include_directories(dyson_factors PRIVATE include)
+target_include_directories(gradient_descent PRIVATE include)
 
 target_link_libraries(amplitude PRIVATE Feynumeric OpenMP::OpenMP_CXX)
 target_link_libraries(cross_sections PRIVATE Feynumeric)
 target_link_libraries(coupling_constants PRIVATE Feynumeric)
 target_link_libraries(playground PRIVATE Feynumeric)
 target_link_libraries(dyson_factors PRIVATE Feynumeric OpenMP::OpenMP_CXX)
+target_link_libraries(gradient_descent PRIVATE Feynumeric)

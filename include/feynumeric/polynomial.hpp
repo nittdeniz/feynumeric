@@ -196,10 +196,19 @@ namespace Feynumeric
 	template <std::size_t N>
 	func_t<N> FPolynomial<N>::integrate(double a, double b){
 		func_t<N> result = [](auto&& args...){return 0.;};
-		for( std::size_t i = 0; i < _coefficients.size(); ++i ){
-			auto temp = 1./(i+1) * (int_pow(b, i+1) - int_pow(a, i+1));
-			func_t<N> f = [temp](auto&& args...){ return temp;};
-			result = result + _coefficients[i] * f;
+		if( a == -b ){
+			for( std::size_t i = 0; i < _coefficients.size(); i += 2 ){
+				auto temp = 1. / ( i + 1 ) * ( int_pow(b, i + 1) - int_pow(a, i + 1));
+				func_t<N> f = [temp](auto&& args...){ return temp; };
+				result = result + _coefficients[i] * f;
+			}
+		}
+		else{
+			for( std::size_t i = 0; i < _coefficients.size(); ++i ){
+				auto temp = 1. / ( i + 1 ) * ( int_pow(b, i + 1) - int_pow(a, i + 1));
+				func_t<N> f = [temp](auto&& args...){ return temp; };
+				result = result + _coefficients[i] * f;
+			}
 		}
 		return result;
 	}
