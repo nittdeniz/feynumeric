@@ -24,6 +24,10 @@ namespace Feynumeric
     std::vector<double> lin_space(double from, double to, std::size_t steps);
     std::vector<double> weighted_space(double from, double a, double b, double to, std::size_t N);
 
+	template <typename T> int sgn(T val) {
+		return (T(0) < val) - (val < T(0));
+	}
+
 //    constexpr std::size_t binomial(std::size_t n, std::size_t k) {
 //        if (k == 0 || n == k) {
 //            return 1;

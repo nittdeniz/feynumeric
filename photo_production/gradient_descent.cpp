@@ -47,6 +47,8 @@ int main(int argc, char** argv){
 	auto const N_EPOCHS = cmd.as_int("n_epochs");
 	auto const rate = cmd.as_double("rate");
 
+	std::cout << FORMAT("n_epochs: {} rate: {}\n", N_EPOCHS, rate);
+
 	auto inverse_sigmoid = [](double x){ return std::log(x/(1.-x));};
 
 	std::vector<double> sigm_branching_ratios(resonances.size());
@@ -56,7 +58,7 @@ int main(int argc, char** argv){
 		if( i > 0 ){
 			sigm_branching_ratios[i] = inverse_sigmoid(dist(eng));
 		}
-		std::cout << FORMAT("{}: {}\n", resonances[i], sigmoid(sigm_branching_ratios[i]));
+		std::cout << FORMAT("{}: {} {}\n", resonances[i], sigm_branching_ratios[i], sigmoid(sigm_branching_ratios[i]));
 	}
 
 
@@ -230,7 +232,8 @@ int main(int argc, char** argv){
 
 		for( std::size_t k = 1; k < N_amplitudes-1; ++k ){
 //			std::cout << "before: " << sigm_branching_ratios[k] << " after: ";
-			sigm_branching_ratios[k] -= rate * derivatives[k] / sample_points.size();
+			double temp = rate * derivatives[k] / sample_points.size();
+			sigm_branching_ratios[k] -= std::abs(temp) > 0.2? sgn(temp) * 0.2 : temp;
 //			std::cout << sigm_branching_ratios[k] << "\n";
 		}
 
@@ -238,10 +241,7 @@ int main(int argc, char** argv){
 		std::cout << "Epoch: " << epoch << " [" << epoch_timer.time<std::chrono::milliseconds>()/1000. << "] loss: [" << loss / sample_points.size() << "]\n";
 
 		for( std::size_t i = 0; i < resonances.size(); ++i ){
-			if( i > 0 ){
-				sigm_branching_ratios[i] = inverse_sigmoid(dist(eng));
-			}
-			std::cout << FORMAT("{}: {}\n", resonances[i], sigmoid(sigm_branching_ratios[i]));
+			std::cout << FORMAT("{}: {} {}\n", resonances[i], sigm_branching_ratios[i], sigmoid(sigm_branching_ratios[i]));
 		}
 
 		if( loss / sample_points.size() < 1.e-3 ){
