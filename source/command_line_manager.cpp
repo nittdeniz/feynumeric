@@ -21,7 +21,7 @@ namespace Feynumeric
 				}
 			}
 			if( !hasValue ){
-				arguments[arg] = "1";
+				arguments[arg] = std::string("1");
 			}
 		}
 	}

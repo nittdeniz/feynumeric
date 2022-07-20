@@ -71,6 +71,24 @@ void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& cou
 			}
 	));
 
+//    VMP->add(Feynumeric::Vertex(
+//            {
+//                    {P["N"]},
+//                    {P["N"]},
+//                    {P["A1"]}
+//            },
+//            [](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+//                using namespace Feynumeric;
+//                auto const& N1 = edges[0];
+//                auto const& N2 = edges[1];
+//                auto const& rho = edges[2];
+//                auto mu = rho->lorentz_indices()[0];
+//                auto const g = 5.96;
+//                auto const iso = (N1->back() == N2->front())? isospin(N1, N2, rho) : isospin(N2, N1, rho);
+//                return g/2. * iso * GAC[*mu];
+//            }
+//    ));
+
 	VMP->add(Feynumeric::Vertex(
 			{
 					{P["Pion"]},

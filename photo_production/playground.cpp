@@ -60,6 +60,8 @@ int main(int argc, char** argv){
 //	std::default_random_engine eng{r()};
 	std::mt19937 random_generator{r()};
 
+    std::cout << "yes\n";
+
 //	std::vector<std::string> resonances = {"D1232","D1600", "D1620", "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940", "D1950"};
 	std::vector<Resonance> resonances{
 			{"D1232", 0.99399999, 0.99400001, random_generator},
@@ -75,6 +77,21 @@ int main(int argc, char** argv){
 			{"D1940", 0.01, 0.07, random_generator},
 			{"D1950", 0.35, 0.45, random_generator},
 	};
+
+    if( cmd.exists("branching_ratios") ){
+        std::ifstream infile(cmd.as_string("branching_ratios"));
+        if( !infile ){
+            std::cerr << "Could not open branching_ratio file.\n" << cmd.as_string("branching_ratios") << "\n";
+        }
+        double a, b;
+        int i = 0;
+        while (infile >> a >> b)
+        {
+            resonances[i].sigm = interval(a, b);
+            resonances[i].start = interval_isigmoid(a,  b, std::uniform_real_distribution<double>(a, b)(random_generator));
+            i++;
+        }
+    }
 
 
 	std::uniform_real_distribution<double> dist(0, 1);
@@ -260,36 +277,39 @@ int main(int argc, char** argv){
 		}
 	}
 
+    std::ofstream out("plot.txt");
+
 	Amplitude<1> interference = scattering_amplitudes[0];
 	for( std::size_t i = 1; i < N_amplitudes - 1; ++i ){
-		scattering_amplitudes[i].scale([=](double){return sigmoid(sigm_branching_ratios[i]);});
+        std::cout << i << ": " << resonances[i].sigm(sigm_branching_ratios[i]).real() << "\n";
+		scattering_amplitudes[i].scale([=](double){return resonances[i].sigm(sigm_branching_ratios[i]).real();});
 		interference = interference + scattering_amplitudes[i];
 	}
 
 	interference = interference + scattering_amplitudes[N_amplitudes-1];
 	auto result = interference.scattering();
 
-	std::cout << "\ninterference={";
+	out << "interference={";
 	for( auto& point : data_points ){
-		std::cout << "{" << point.x << "," << FORMAT("{:.9f}", result(point.x).real() * static_cast<double>(1._2mbarn)) << "},";
+		out << "{" << point.x << "," << FORMAT("{:.9f}", result(point.x).real() * static_cast<double>(1._2mbarn)) << "},";
 	}
-	std::cout << "\b};\n\n";
+	out << "\b};";
 
 	for( std::size_t i = 0; i < resonances.size(); ++i ){
-		std::cout << "\nresonance" << resonances[i].name << "={";
+		out << "\nresonance" << resonances[i].name << "={";
 		result = scattering_amplitudes[i].scattering();
 		for( auto& point : data_points ){
-			std::cout << "{" << point.x << "," << FORMAT("{:.9f}", result(point.x).real() * static_cast<double>(1._2mbarn)) << "},";
+			out << "{" << point.x << "," << FORMAT("{:.9f}", result(point.x).real() * static_cast<double>(1._2mbarn)) << "},";
 		}
-		std::cout << "\b};\n\n";
+		out << "\b};";
 	}
 
 	result = scattering_amplitudes.back().scattering();
-	std::cout << "\ntchanel={";
+	out << "\ntchannel={";
 	for( auto& point : data_points ){
-		std::cout << "{" << point.x << "," << FORMAT("{:.9f}", result(point.x).real() * static_cast<double>(1._2mbarn)) << "},";
+		out << "{" << point.x << "," << FORMAT("{:.9f}", result(point.x).real() * static_cast<double>(1._2mbarn)) << "},";
 	}
-	std::cout << "\b};\n\n";
+	out << "\b};\n";
 
 	stopwatch.stop();
 	std::cout << "Minimization done: " << stopwatch.time<std::chrono::milliseconds>()/1000. << "\n";

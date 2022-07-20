@@ -1,6 +1,8 @@
 #ifndef FEYNUMERIC_COUPLINGS_HPP
 #define FEYNUMERIC_COUPLINGS_HPP
 
+#include <algorithm>
+#include <array>
 #include <map>
 #include <string>
 
