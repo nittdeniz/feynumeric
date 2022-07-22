@@ -8,17 +8,31 @@
 #include <fmt/chrono.h>
 
 #include <chrono>
+#include <cmath>
 #include <iostream>
 #include <random>
 #include <feynumeric/phase_space.hpp>
 
 double sigmoid(double x){ return 1./(1. + std::exp(-x));}
 
+double inverse_sigmoid(double x){
+    return std::log(x/(1.-x));
+}
+
 Feynumeric::func_t<1> interval(double min, double max){
     return [min, max](double x){ return min + (max-min) * sigmoid(x);};
 }
 double interval_isigmoid(double min, double max, double x){
     return std::log( (max-x)/(x-min) );
+}
+
+double slope(double a, double b, double c){
+    return std::max(0., std::abs(c - (b+a)/2.) - (b-a)/2.);
+}
+
+double out_of_interval_cost(double a, double b, double c, double k){
+    auto arg = slope(a, b, c);
+    return std::exp(k * arg * (c-b)) + std::exp(-k * arg * (c-a)) - 2 * std::exp(k/2. * (a-b) * arg);
 }
 
 int main(int argc, char** argv){
@@ -31,11 +45,14 @@ int main(int argc, char** argv){
     cmd.register_command("n_epochs", std::string("100"), "number of epochs to train");
     cmd.register_command("rate", std::string("0.001"), "rate of descent");
     cmd.register_command("data_file", true, "file with fit data");
+    cmd.register_command("k", 1.0, "pdg-deviation rate");
 //	cmd.register_command("start", std::string("1.0"), "starting point");
 //	cmd.register_command("end", std::string("3.0"), "end value");
 //	cmd.register_command("steps", std::string("200"), "steps");
 //	cmd.register_command("form_factor", Form_Factor::CMD_FORM_FACTOR_NONE, FORMAT("which form factor to use ({}, {}, {}, {}, {}, {})", Form_Factor::CMD_FORM_FACTOR_NONE, Form_Factor::CMD_FORM_FACTOR_CASSING, Form_Factor::CMD_FORM_FACTOR_CUTKOSKY, Form_Factor::CMD_FORM_FACTOR_MANLEY, Form_Factor::CMD_FORM_FACTOR_MONIZ, Form_Factor::CMD_FORM_FACTOR_BREIT_WIGNER));
     cmd.crash_on_missing_mandatory_command();
+
+    double const k_factor = cmd.as_double("k");
 
     Particle_Manager P(cmd.as_string("particle_file"));
     auto const& Proton = P.get("proton");
@@ -48,11 +65,13 @@ int main(int argc, char** argv){
     struct Resonance{
         std::string name;
         func_t<1> sigm;
-        double start;
+        double min, max, start;
         Resonance(std::string const& str, double min, double max, std::mt19937& gen)
                 : name(str)
                 , sigm(interval(min, max))
-                , start(interval_isigmoid(min, max, std::uniform_real_distribution<double>(min, max)(gen)))
+                , min(min)
+                , max(max)
+                , start(interval_isigmoid(min, max, std::uniform_real_distribution<double>(inverse_sigmoid(min), inverse_sigmoid(max))(gen)))
         {
         }
     };
@@ -60,8 +79,6 @@ int main(int argc, char** argv){
     std::random_device r;
 //	std::default_random_engine eng{r()};
     std::mt19937 random_generator{r()};
-
-    std::cout << "yes\n";
 
 //	std::vector<std::string> resonances = {"D1232","D1600", "D1620", "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940", "D1950"};
     std::vector<Resonance> resonances{
@@ -84,12 +101,15 @@ int main(int argc, char** argv){
         if( !infile ){
             std::cerr << "Could not open branching_ratio file.\n" << cmd.as_string("branching_ratios") << "\n";
         }
-        double a, b;
+        double min, max;
         int i = 0;
-        while (infile >> a >> b)
+        while (infile >> min >> max)
         {
-            resonances[i].sigm = interval(a, b);
-            resonances[i].start = interval_isigmoid(a,  b, std::uniform_real_distribution<double>(a, b)(random_generator));
+            resonances[i].min = min;
+            resonances[i].max = max;
+            resonances[i].sigm = sigmoid;
+            resonances[i].start = inverse_sigmoid(std::uniform_real_distribution<double>(min, max)(random_generator));
+            auto start = resonances[i].sigm(resonances[i].start);
             i++;
         }
     }
@@ -98,7 +118,7 @@ int main(int argc, char** argv){
     std::uniform_real_distribution<double> dist(0, 1);
 
     auto const N_EPOCHS = cmd.as_int("n_epochs");
-    auto const rate = cmd.as_double("rate");
+    auto rate  = cmd.as_double("rate");
 
     std::cout << FORMAT("n_epochs: {} rate: {}\n", N_EPOCHS, rate);
 
@@ -193,6 +213,10 @@ int main(int argc, char** argv){
 
     std::ifstream in(file);
 
+    if( !in ){
+        critical_error(FORMAT("Could not open: {}", file));
+    }
+
     std::string buffer;
     buffer.reserve(100UL);
 
@@ -224,6 +248,9 @@ int main(int argc, char** argv){
     double const epsilon = 0.001;
 
     Timer epoch_timer;
+
+    double last_loss = std::numeric_limits<double>::max();
+
     for( std::size_t epoch = 0; epoch < N_EPOCHS; ++epoch ){
         epoch_timer.start();
         double loss = 0.;
@@ -283,21 +310,37 @@ int main(int argc, char** argv){
             }
         }
 
+        for( std::size_t k = 0; k < resonances.size(); ++k ){
+            auto const& resonance = resonances[k];
+            loss += out_of_interval_cost(resonance.min, resonance.max, sigmoid(sigm_branching_ratios[k]), k_factor);
+            auto y0 = out_of_interval_cost(resonance.min, resonance.max, sigmoid(sigm_branching_ratios[k] - epsilon), k_factor);
+            auto y1 = out_of_interval_cost(resonance.min, resonance.max, sigmoid(sigm_branching_ratios[k] + epsilon), k_factor);
+            derivatives[k] += (y1-y0)/(2. * epsilon);
+        }
+
         for( std::size_t k = 1; k < N_amplitudes-1; ++k ){
             double temp = rate * derivatives[k] / sample_points.size();
-            sigm_branching_ratios[k] -= std::abs(temp) > 0.2? sgn(temp) * 0.2 : temp;
+            sigm_branching_ratios[k] -= temp;
         }
 
         epoch_timer.stop();
-        std::cout << "Epoch: " << epoch << " [" << epoch_timer.time<std::chrono::milliseconds>()/1000. << "] loss: [" << loss / sample_points.size() << "]\n";
+        std::cout << "Epoch: " << epoch << " [" << epoch_timer.time<std::chrono::milliseconds>()/1000. << "] rate: [" << rate << "] loss: [" << loss / sample_points.size() << "]\n";
+
+        if( loss > last_loss ){
+            rate *= 0.9;
+        }
 
         for( std::size_t i = 0; i < resonances.size(); ++i ){
             std::cout << FORMAT("{}: {} {}\n", resonances[i].name, sigm_branching_ratios[i], sigmoid(sigm_branching_ratios[i]));
         }
 
-        if( loss / sample_points.size() < 1.e-3 ){
+        if( last_loss > loss && (last_loss - loss) / sample_points.size() < 1.e-2 ){
+            std::cout << "last_loss: " << last_loss << "\n";
+            std::cout << "loss: " << loss << "\n";
+            std::cout << "ss: " << sample_points.size() << "\n";
             break;
         }
+        last_loss = loss;
     }
 
 //    std::ofstream out("plot.txt");
