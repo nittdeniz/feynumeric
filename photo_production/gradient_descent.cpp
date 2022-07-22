@@ -109,6 +109,9 @@ int main(int argc, char** argv){
             resonances[i].max = max;
             resonances[i].sigm = sigmoid;
             resonances[i].start = inverse_sigmoid(std::uniform_real_distribution<double>(min, max)(random_generator));
+            if( std::isnan(resonances[i].start) ){
+                critical_error(FORMAT("{} start value is nan.", resonances[i].name));
+            }
             auto start = resonances[i].sigm(resonances[i].start);
             i++;
         }
