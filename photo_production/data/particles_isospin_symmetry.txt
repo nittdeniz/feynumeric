@@ -792,7 +792,7 @@ isospin 1 -1
 @particle f0_500 #https://arxiv.org/pdf/hep-ex/0207067.pdf
 type TrueMeson
 spin 0
-mass 513MeV
+mass 550MeV # old: 513
 width 335MeV
 parity 1
 charge 0

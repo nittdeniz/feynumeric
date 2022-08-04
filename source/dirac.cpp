@@ -379,6 +379,7 @@ namespace Feynumeric
 	}
 
 	Matrix Propagator(std::shared_ptr<Graph_Edge> edge_ptr, const Kinematics& kin){
+//        std::cout << "@@@sqrt_s: " << kin.sqrt_s() << " angle: " << kin.angle(0) << "\n";
 		return Propagator(edge_ptr->particle(), edge_ptr->four_momentum(kin), edge_ptr->lorentz_indices());
 	}
 
@@ -392,8 +393,8 @@ namespace Feynumeric
 		if( spin.is_half_odd_integer()){
 
 			if( spin.j() == 1.5 ){
-				auto mu = lorentz_indices[0];
-				auto nu = lorentz_indices[1];
+				auto const& mu = lorentz_indices[0];
+				auto const& nu = lorentz_indices[1];
 				double m = P->mass();
 				auto I = Matrix(4,4, 1);
 				auto a = -(GS(p)+m * I);
@@ -462,15 +463,18 @@ namespace Feynumeric
 				critical_error("Lorentz_Index_Ptr is nullptr.\n");
 			}
 			auto const mt = metric_tensor.at(*mu, *nu);
-            if( P->mass() == 0 )
-                return -mt;
+//            if( P->mass() == 0 )
+//                return -mt;
 			auto pmu = p.contra(mu);
 			auto pnu = p.contra(nu);
 			auto denominator = p.squared();
 			auto numerator = pmu * pnu;
-			auto momentum_contribution = ( almost_identical(numerator.real(), 0.) && almost_identical(numerator.imag(), 0) && almost_identical(denominator, 0) ) ? 1 :
-			                             numerator / denominator;
+			auto momentum_contribution = numerator/denominator;//( almost_identical(numerator, 0.) && almost_identical(denominator, 0) ) ? 1 :
+			                             //numerator / denominator;
 			auto result = -mt + momentum_contribution;
+            if( ( almost_identical(numerator, 0.) && almost_identical(denominator, 0) ) ){
+                std::cerr << ".";
+            }
 			return result;
 		};
 
@@ -508,8 +512,9 @@ namespace Feynumeric
 
 	Matrix
 	Propagator(const Particle_Ptr& P, const Four_Vector& p, const std::vector<Lorentz_Index_Ptr>& lorentz_indices){
+        double p2 = p.squared();
+//        std::cout << "p: " << p << " p2: " << p2 << "\n";
 		Complex breit_wigner;
-		double p2 = p.squared();
 		if( p2 > 0 ){
 			breit_wigner = -1.i / ( p.squared() - P->mass() * P->mass() + 1.i * std::sqrt(p2) * P->width(p2));
 		} else{

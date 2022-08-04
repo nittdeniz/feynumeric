@@ -9,6 +9,7 @@ namespace Feynumeric
 	, _n_out(n_out)
 	{
 		_momenta.resize(n_in + n_out);
+        _angles.resize(n_out-1);
 	}
 
 	double Kinematics::sqrt_s() const
@@ -40,6 +41,16 @@ namespace Feynumeric
 	{
 		_momenta[_n_in+i] = p;
 	}
+
+    void Kinematics::angle(std::size_t i, double a)
+    {
+        _angles[i] = a;
+    }
+
+    double Kinematics::angle(std::size_t i) const
+    {
+        return _angles[i];
+    }
 
 
 }

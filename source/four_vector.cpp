@@ -276,4 +276,9 @@ namespace Feynumeric
 	{
 		return _spatial.z();
 	}
+
+    std::ostream& operator<<(std::ostream& out, Four_Vector const& v){
+        out << "{" << v.E() << ", " << v.x() << ", " << v.y() << ", " << v.z() << "}";
+        return out;
+    }
 }

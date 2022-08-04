@@ -45,6 +45,17 @@ int main(int argc, char** argv){
 		                                    {Pi_Plus, Proton}
 		);
 	}
+    else if( particle_name == "f0" ){
+            s_values = lin_space(1.1, 2.1, 17);
+            particle = P.get("f0_500");
+            auto const coupl_str = coupling_string("f0_500", "N", "N");
+            couplings.set(coupl_str, 1.);
+            scattering_diagram = create_diagram(FORMAT("{} u", particle->name()), u_channel, VMP,
+                                                {Proton, Pi_Plus},
+                                                {particle},
+                                                {Pi_Plus, Proton}
+            );
+        }
 	else{
 		s_values = weighted_space(1.1, particle->mass() - particle->width(), particle->mass() + particle->width(), 2.1, 17);
 		particle = P.get(FORMAT("{}pp", cmd.as_string("particle")));

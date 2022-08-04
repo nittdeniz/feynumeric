@@ -191,13 +191,13 @@ int main(int argc, char** argv)
 						));
 			}
 			if( t_channel_enabled && particle->charge() == 0){
-				diagrams_proton_pi_plus.push_back(
-						create_diagram(FORMAT("{} t", particle->name()), t_channel, VMP,
-						               {Proton, Pi_Plus},
-						               {particle},
-						               {Pi_Plus, Proton}
-						)
-				);
+                diagrams_proton_pi_plus.push_back(
+                        create_diagram(FORMAT("{} t", particle->name()), t_channel, VMP,
+                                       {Proton, Pi_Plus},
+                                       {particle},
+                                       {Pi_Plus, Proton}
+                        )
+                );
 			}
 		}
 
@@ -219,6 +219,13 @@ int main(int argc, char** argv)
                                    {Pi_Plus, Proton}
                                    )
             );
+//            diagrams_proton_pi_plus.push_back(
+//                    create_diagram(FORMAT("{} u", "f0_500"), u_channel, VMP,
+//                                   {Proton, Pi_Plus},
+//                                   {P.get("f0_500")},
+//                                   {Pi_Plus, Proton}
+//                    )
+//            );
         }
 
 		Feynman_Process scattering_proton_pi_plus(diagrams_proton_pi_plus);
@@ -230,7 +237,11 @@ int main(int argc, char** argv)
 		std::cout << std::flush;
 		std::size_t steps = cmd.exists("steps") ? static_cast<std::size_t>(cmd.as_int("steps")) : 100ULL;
 		scattering_proton_pi_plus.print_sigma_table(std::cout, start, end, steps);
-		std::cout << "\n\n";
+//		std::cout << "\n\n";
+//        scattering_proton_pi_plus.print_dsigma_dcos_table(std::cout, start, 100ULL);
+//        std::cout << "\n\n";
+//        scattering_proton_pi_plus.print_dsigma_dcos_table(std::cout, end, 100ULL);
+
 	}
 	else if( cmd.as_string("process") == CMD_PROCESS_PHOTO_PRODUCTION ){
 		std::vector<Feynman_Diagram_Ptr> diagrams_proton_pi_zero;

@@ -67,5 +67,6 @@ gD1920pPhotonproton 0
 gD1920nPhotonneutron 0
 gD1940pPhotonproton 0
 gD1940nPhotonneutron 0
+gNNf0_500 1
 gPionPionf0_500 1.1873975842413909
 gPionPionRho 5.961848349797139

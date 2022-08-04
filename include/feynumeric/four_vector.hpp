@@ -67,6 +67,8 @@ namespace Feynumeric
 		friend Four_Vector operator/(Four_Vector const& lhs, T const& rhs);
 
 		friend Complex dot(Four_Vector const& lhs, Four_Vector const& rhs);
+
+        friend std::ostream& operator<<(std::ostream& out, Four_Vector const& v);
 	};
 
 	Four_Vector operator+(Four_Vector const& lhs, Four_Vector const& rhs);
@@ -78,6 +80,7 @@ namespace Feynumeric
 	Four_Vector operator*(T const& lhs, Four_Vector const& rhs);
 	template<typename T>
 	Four_Vector operator/(Four_Vector const& lhs, T const& rhs);
+    std::ostream& operator<<(std::ostream& out, Four_Vector const& v);
 
 	Complex dot(Four_Vector const& lhs, Four_Vector const& rhs);
 }

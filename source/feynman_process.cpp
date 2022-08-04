@@ -35,6 +35,8 @@ namespace Feynumeric
 		for( auto& diagram : _diagrams ){
 			diagram->generate_amplitude();
 		}
+        _n_spins = n_spins();
+        _n_polarisations = n_polarisations();
 	}
 
     Feynman_Process::Feynman_Process(const Feynman_Process &other)
@@ -261,6 +263,7 @@ namespace Feynumeric
 		using namespace Feynumeric::Units;
 
 		Kinematics kin(sqrt_s, 2, 2);
+        kin.angle(0, cos_theta);
 
 		auto const& incoming = _diagrams[0]->incoming_particles();
 		auto const& outgoing = _diagrams[0]->outgoing_particles();
@@ -270,6 +273,7 @@ namespace Feynumeric
 
 		kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
 		kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
+
 
 		for( auto& diagram : _diagrams ){
 			diagram->reset_spins();
@@ -294,7 +298,7 @@ namespace Feynumeric
 
 		double const phase_space_factor = phase_space2(N_polarisations, kin.sqrt_s(), qout, qin);
 
-		std::cout << FORMAT("s: {}\t phi: {}\n", kin.sqrt_s(), phase_space_factor);
+//		std::cout << FORMAT("s: {}\t phi: {}\n", kin.sqrt_s(), phase_space_factor);
 
 		std::map<double, std::vector<double>> result;
 
@@ -312,7 +316,7 @@ namespace Feynumeric
                 Ms_squared[j] += ( temp * std::conj(temp)).real();
                 _diagrams[j]->iterate_spins();
             }
-            std::cout << "s: " << sqrt_s << " cos: " << cos_theta << " i: " << i << " M: " << M << "\n";
+//            std::cout << "s: " << sqrt_s << " cos: " << cos_theta << " i: " << i << " M: " << M << "\n";
             auto M2 = ( M * std::conj(M)).real();
             Ms_squared[_diagrams.size()] += M2;
         }
@@ -741,7 +745,8 @@ namespace Feynumeric
 //            std::cout << FORMAT("start {}/{} core: {} {}\n", i, copies.size(), omp_get_thread_num(), values[i]) << std::flush;
 			double const sqrt_s = values[i];
 			auto f = std::bind(&Feynman_Process::no_check_dsigma_dcos, &copies[i], sqrt_s, _1);
-			auto temp = integrate(f, -.999, .999, 0.1);
+			auto temp = integrate(f, -.999, .999, 0.01);
+//            std::cout << "integrate: " << temp << "\n";
 			result[sqrt_s] = std::isnan(temp)? 0 : temp;
 //			std::cout << FORMAT("end {}/{} core: {} {}\n", i, copies.size(), omp_get_thread_num(), sqrt_s) << std::flush;
             completed++;

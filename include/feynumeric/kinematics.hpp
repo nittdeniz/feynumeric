@@ -14,6 +14,7 @@ namespace Feynumeric
         double _sqrt_s;
         std::size_t _n_in, _n_out;
         std::vector<Four_Vector> _momenta;
+        std::vector<double> _angles;
     public:
         Kinematics(double sqrt_s, std::size_t n_in, std::size_t n_out);
         double sqrt_s() const;
@@ -22,6 +23,8 @@ namespace Feynumeric
         Four_Vector const& momentum(std::size_t i) const;
         void incoming(std::size_t i, Four_Vector const& p);
         void outgoing(std::size_t i, Four_Vector const& p);
+        void angle(std::size_t i, double a);
+        double angle(std::size_t i) const;
     };
 }
 
