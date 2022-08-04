@@ -32,9 +32,9 @@ namespace Feynumeric
 		double x;
 		Complex y;
 
-		Point(double x = 0., Complex y = 0.)
-		: x(x)
-		, y(y)
+		Point(double _x = 0., Complex _y = 0.)
+		: x(_x)
+		, y(_y)
 		{}
 		Point(Point const& p)
 		: x(p.x)
