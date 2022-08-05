@@ -219,13 +219,13 @@ int main(int argc, char** argv)
                                    {Pi_Plus, Proton}
                                    )
             );
-//            diagrams_proton_pi_plus.push_back(
-//                    create_diagram(FORMAT("{} u", "f0_500"), u_channel, VMP,
-//                                   {Proton, Pi_Plus},
-//                                   {P.get("f0_500")},
-//                                   {Pi_Plus, Proton}
-//                    )
-//            );
+            diagrams_proton_pi_plus.push_back(
+                    create_diagram(FORMAT("{} u", "f0_500"), u_channel, VMP,
+                                   {Proton, Pi_Plus},
+                                   {P.get("f0_500")},
+                                   {Pi_Plus, Proton}
+                    )
+            );
         }
 
 		Feynman_Process scattering_proton_pi_plus(diagrams_proton_pi_plus);
