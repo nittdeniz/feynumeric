@@ -145,7 +145,9 @@ int main(int argc, char** argv){
         std::vector<std::vector<Polynomial>> width_polynomials(1);
         for( std::size_t i = 0; i < n_spin_states; ++i ){
             Polynomial temp;
-            temp.load(FORMAT("data/polynomials/polynomial_decay_{}_0_{}.txt", particle->name(), i));
+            if( particle->name().starts_with('D') ){
+                temp.load(FORMAT("data/polynomials/polynomial_decay_{}_0_{}.txt", particle->name(), i));
+            }
             width_polynomials[0].push_back(temp);
         }
 
@@ -187,7 +189,7 @@ int main(int argc, char** argv){
         error("No particle selected.");
         return EXIT_SUCCESS;
     }
-
+    /*
     {
         auto particle = P.get("f0_500");
 
@@ -223,7 +225,7 @@ int main(int argc, char** argv){
 
         scattering_amplitudes.push_back(M_scattering);
     }
-
+    */
 
 
 
@@ -292,11 +294,11 @@ int main(int argc, char** argv){
 
 
         Amplitude<1> interference = scattering_mid[0];
-        for( std::size_t i = 1; i < N_amplitudes - 1; ++i ){
+        for( std::size_t i = 1; i < N_amplitudes; ++i ){
             interference = interference + scattering_mid[i];
             Amplitude<1> interference_left = scattering_left[0];
             Amplitude<1> interference_right = scattering_right[0];
-            for( std::size_t j = 1; j < N_amplitudes - 1; ++j ){
+            for( std::size_t j = 1; j < N_amplitudes; ++j ){
                 if( i == j ){
                     interference_left = interference_left + scattering_left[j];
                     interference_right = interference_right + scattering_right[j];
@@ -305,12 +307,12 @@ int main(int argc, char** argv){
                     interference_right = interference_right + scattering_mid[j];
                 }
             }
-            interference_left = interference_left + scattering_mid[N_amplitudes - 1];
-            interference_right = interference_right + scattering_mid[N_amplitudes - 1];
+//            interference_left = interference_left + scattering_mid[N_amplitudes - 1];
+//            interference_right = interference_right + scattering_mid[N_amplitudes - 1];
             y_hat0[i] = interference_left.scattering();
             y_hat1[i] = interference_right.scattering();
         }
-        interference = interference + scattering_mid[N_amplitudes - 1];
+//        interference = interference + scattering_mid[N_amplitudes - 1];
         y_hat = interference.scattering();
 
 
@@ -320,7 +322,7 @@ int main(int argc, char** argv){
         for( auto const& point : sample_points ){
             double diff = point.cross - y_hat(point.srt).real() * static_cast<double>(1._2mbarn);
             loss += diff*diff / (point.dcros * point.dcros);
-            for( std::size_t k = 1; k < N_amplitudes-1; ++k ){
+            for( std::size_t k = 1; k < N_amplitudes; ++k ){
                 double const loss0 = std::pow(point.cross - y_hat0[k](point.srt).real() * static_cast<double>(1._2mbarn), 2) / (point.dcros * point.dcros);
                 double const loss1 = std::pow(point.cross - y_hat1[k](point.srt).real() * static_cast<double>(1._2mbarn), 2) / (point.dcros * point.dcros);
                 double const d = (loss1 - loss0) / (2. * epsilon);
@@ -367,13 +369,13 @@ int main(int argc, char** argv){
     scattering_amplitudes[0].scale([=](double){return particle_fit[0].f(particle_fit[0].fit_value).real();});
     Amplitude<1> interference = scattering_amplitudes[0];
 
-    for( std::size_t i = 1; i < N_amplitudes; ++i ){
-        std::cout << i << ": " << particle_fit[i].f(particle_fit[i].fit_value).real() << "\n";
+    for( std::size_t i = 0; i < N_amplitudes; ++i ){
+        std::cout << particle_fit[i].name << ": " << particle_fit[i].f(particle_fit[i].fit_value).real() << "\n";
         scattering_amplitudes[i].scale([=](double){return particle_fit[i].f(particle_fit[i].fit_value).real();});
         interference = interference + scattering_amplitudes[i];
     }
 
-    interference = interference + scattering_amplitudes[N_amplitudes-1];
+//    interference = interference + scattering_amplitudes[N_amplitudes-1];
     auto result = interference.scattering();
 
     std::cout << "interference={";
