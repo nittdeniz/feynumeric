@@ -165,9 +165,14 @@ int main(int argc, char** argv){
             scattering_polynomials[1].push_back(temp_c);
         }
 
-        func_t<1> breit_wigner = [=](double sqrt_s) mutable {
-            return 1. / ( sqrt_s * sqrt_s - particle->mass() * particle->mass() +
-                          1.i * sqrt_s * M_width.width(sqrt_s) );
+        func_t<1> breit_wigner = [=](double sqrt_s) mutable -> Complex {
+            if( particle->is_fermion() ){
+                return 1. / (sqrt_s * sqrt_s - particle->mass() * particle->mass() +
+                             1.i * sqrt_s * M_width.width(sqrt_s));
+            }
+            else{
+                return 1. / (sqrt_s * sqrt_s - particle->mass() * particle->mass());
+            }
         };
 
         Amplitude<1> M_scattering(scattering_polynomials, {Proton, Pi_Plus}, {Proton, Pi_Plus});
@@ -180,7 +185,9 @@ int main(int argc, char** argv){
         };
 
         M_scattering.scale(breit_wigner);
-        M_scattering.scale(form_factor);
+        if( particle->is_fermion() ){
+            M_scattering.scale(form_factor);
+        }
         scattering_amplitudes.push_back(M_scattering);
 
     }
