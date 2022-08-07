@@ -166,13 +166,7 @@ int main(int argc, char** argv){
         }
 
         func_t<1> breit_wigner = [=](double sqrt_s) mutable -> Complex {
-            if( particle->is_fermion() ){
-                return 1. / (sqrt_s * sqrt_s - particle->mass() * particle->mass() +
-                             1.i * sqrt_s * M_width.width(sqrt_s));
-            }
-            else{
-                return 1. / (sqrt_s * sqrt_s - particle->mass() * particle->mass());
-            }
+            return 1. / (sqrt_s * sqrt_s - particle->mass() * particle->mass() + 1.i * sqrt_s * M_width.width(sqrt_s));
         };
 
         Amplitude<1> M_scattering(scattering_polynomials, {Proton, Pi_Plus}, {Proton, Pi_Plus});
@@ -184,9 +178,9 @@ int main(int argc, char** argv){
             return l4 / ( delta * delta + l4 );
         };
 
-        M_scattering.scale(breit_wigner);
         if( particle->is_fermion() ){
             M_scattering.scale(form_factor);
+            M_scattering.scale(breit_wigner);
         }
         scattering_amplitudes.push_back(M_scattering);
 
@@ -196,45 +190,6 @@ int main(int argc, char** argv){
         error("No particle selected.");
         return EXIT_SUCCESS;
     }
-    /*
-    {
-        auto particle = P.get("f0_500");
-
-        auto n_spin_states = Proton->spin().n_states() * Proton->spin().n_states();
-        std::vector<std::vector<Polynomial>> scattering_polynomials(2);
-        for( std::size_t i = 0; i < n_spin_states; ++i )
-        {
-            Polynomial temp_s, temp_c;
-            temp_s.load(FORMAT("data/polynomials/polynomial_scattering_{}_0_{}.txt", particle->name(), i));
-            temp_c.load(FORMAT("data/polynomials/polynomial_scattering_{}_1_{}.txt", particle->name(), i));
-            scattering_polynomials[0].push_back(temp_s);
-            scattering_polynomials[1].push_back(temp_c);
-        }
-        Amplitude<1> M_scattering(scattering_polynomials, {Proton, Pi_Plus}, {Proton, Pi_Plus});
-
-        scattering_amplitudes.push_back(M_scattering);
-    }
-
-    {
-        auto particle = P.get("rho0");
-
-        auto n_spin_states = Proton->spin().n_states() * Proton->spin().n_states();
-        std::vector<std::vector<Polynomial>> scattering_polynomials(2);
-        for( std::size_t i = 0; i < n_spin_states; ++i )
-        {
-            Polynomial temp_s, temp_c;
-            temp_s.load(FORMAT("data/polynomials/polynomial_scattering_{}_0_{}.txt", particle->name(), i));
-            temp_c.load(FORMAT("data/polynomials/polynomial_scattering_{}_1_{}.txt", particle->name(), i));
-            scattering_polynomials[0].push_back(temp_s);
-            scattering_polynomials[1].push_back(temp_c);
-        }
-        Amplitude<1> M_scattering(scattering_polynomials, {Proton, Pi_Plus}, {Proton, Pi_Plus});
-
-        scattering_amplitudes.push_back(M_scattering);
-    }
-    */
-
-
 
     stopwatch.stop();
     std::cout << "config done: " << stopwatch.time<std::chrono::milliseconds>()/1000. << "\n";
