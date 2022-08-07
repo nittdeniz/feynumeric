@@ -331,7 +331,7 @@ int main(int argc, char** argv){
     scattering_amplitudes[0].scale([=](double){return particle_fit[0].f(particle_fit[0].fit_value).real();});
     Amplitude<1> interference = scattering_amplitudes[0];
 
-    for( std::size_t i = 0; i < N_amplitudes; ++i ){
+    for( std::size_t i = 1; i < N_amplitudes; ++i ){
         std::cout << particle_fit[i].name << ": " << particle_fit[i].f(particle_fit[i].fit_value).real() << "\n";
         scattering_amplitudes[i].scale([=](double){return particle_fit[i].f(particle_fit[i].fit_value).real();});
         interference = interference + scattering_amplitudes[i];

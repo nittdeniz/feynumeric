@@ -1,4 +1,4 @@
-D1232 constant 0.94 0.94
+D1232 constant 1. 1.
 D1600 bounded 0.08 0.24
 D1620 bounded 0.25 0.35
 D1700 bounded 0.1 0.2
