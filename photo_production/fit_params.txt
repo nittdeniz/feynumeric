@@ -10,5 +10,5 @@ D1920 bounded 0.05 0.2
 D1930 bounded 0.05 0.15
 D1940 bounded 0.01 0.07
 D1950 bounded 0.35 0.45
-rho0   constant 5.98 5.98
-f0_500 unbounded 0 20
+rho0   constant 1 1
+f0_500 unbounded 0 30

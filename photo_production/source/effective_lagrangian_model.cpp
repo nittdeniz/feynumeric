@@ -83,16 +83,16 @@ void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& cou
                 using namespace Feynumeric::Units;
                 auto const coupl_str = coupling_string("f0_500", "N", "N");
                 auto const g = couplings.get(coupl_str);
-                auto const& N1 = edges[0];
-                auto const& N2 = edges[1];
-                auto const f0 = edges[2]->particle();
-                auto const m2 = f0->mass() * f0->mass();
-                auto const p1 = N1->four_momentum(kin);
-                auto const p2 = N2->four_momentum(kin);
-                auto const q2 = (p1-p2).squared();
-                auto const Lambda = 2._GeV;
-                auto const Lambda2 = Lambda*Lambda;
-                auto const f = static_cast<double>((Lambda2 - m2)/(Lambda2 - q2));
+//                auto const& N1 = edges[0];
+//                auto const& N2 = edges[1];
+//                auto const f0 = edges[2]->particle();
+//                auto const m2 = f0->mass() * f0->mass();
+//                auto const p1 = N1->four_momentum(kin);
+//                auto const p2 = N2->four_momentum(kin);
+//                auto const q2 = (p1-p2).squared();
+//                auto const Lambda = 2._GeV;
+//                auto const Lambda2 = Lambda*Lambda;
+//                auto const f = static_cast<double>((Lambda2 - m2)/(Lambda2 - q2));
                 return Matrix(1, 1, -1.i * g);
             }
     ));
