@@ -158,7 +158,6 @@ int main(int argc, char** argv)
 	stopwatch.start();
 	if( cmd.as_string("process") == CMD_PROCESS_ELASTIC_SCATTERING ){
 		std::vector<Feynman_Diagram_Ptr> diagrams_proton_pi_plus;
-		//std::vector<double> values = {1.321,1.362,1.390,1.417,1.427,1.443,1.450,1.462,1.470,1.481,1.495,1.501,1.512,1.528,1.540,1.561,1.562,1.572,1.586,1.612,1.621,1.638,1.641,1.643,1.669,1.673,1.688,1.694,1.716,1.738,1.769,1.777,1.783,1.791,1.821,1.851,1.839,1.878,1.881,1.896,1.903,1.911,1.927,1.945,1.955,1.969,1.978,2.016,2.020,2.057,2.071,2.089,2.102,2.115,2.155,2.189,2.194,2.206,2.240,2.286,2.306,2.520,2.556,2.575,2.778,2.785,2.868,2.900,3.207,3.487,3.696,3.999,4.105,4.173,4.601,4.781,4.916,4.992,5.355,5.561,5.678,5.968,9.733,11.500,13.732,16.236,18.147,19.396,21.680};
 		std::vector<Particle_Ptr> particles;
 		for( auto const& R : resonances ){
 			if( cmd.is_enabled(R) ){
@@ -212,20 +211,43 @@ int main(int argc, char** argv)
 			);
 		}
         if( u_channel_enabled ){
-            diagrams_proton_pi_plus.push_back(
-                    create_diagram(FORMAT("{} u", "rho0"), u_channel, VMP,
-                                   {Proton, Pi_Plus},
-                                   {P.get("rho0")},
-                                   {Pi_Plus, Proton}
-                                   )
-            );
-            diagrams_proton_pi_plus.push_back(
-                    create_diagram(FORMAT("{} u", "f0_500"), u_channel, VMP,
-                                   {Proton, Pi_Plus},
-                                   {P.get("f0_500")},
-                                   {Pi_Plus, Proton}
-                    )
-            );
+            if( cmd.exists("photon") ){
+                diagrams_proton_pi_plus.push_back(
+                        create_diagram(FORMAT("{} u", "photon"), u_channel, VMP,
+                                       {Proton, Pi_Plus},
+                                       {QED::Photon},
+                                       {Pi_Plus, Proton}
+                        )
+                );
+            }
+            if( cmd.exists("photonrho") ){
+                diagrams_proton_pi_plus.push_back(
+                        create_diagram(FORMAT("{} u", "photon"), u2_channel, VMP,
+                                       {Proton, Pi_Plus},
+                                       {QED::Photon, P.get("rho0")},
+                                       {Pi_Plus, Proton}
+                        )
+                );
+            }
+            if( cmd.exists("rho0") )
+            {
+                diagrams_proton_pi_plus.push_back(
+                        create_diagram(FORMAT("{} u", "rho0"), u_channel, VMP,
+                                       {Proton, Pi_Plus},
+                                       {P.get("rho0")},
+                                       {Pi_Plus, Proton}
+                        )
+                );
+            }
+            if( cmd.exists("f0") ){
+                diagrams_proton_pi_plus.push_back(
+                        create_diagram(FORMAT("{} u", "f0_500"), u_channel, VMP,
+                                       {Proton, Pi_Plus},
+                                       {P.get("f0_500")},
+                                       {Pi_Plus, Proton}
+                        )
+                );
+            }
         }
 
 		Feynman_Process scattering_proton_pi_plus(diagrams_proton_pi_plus);
@@ -236,7 +258,8 @@ int main(int argc, char** argv)
 		double end = cmd.exists("end") ? cmd.as_double("end") : 2.0;
 		std::cout << std::flush;
 		std::size_t steps = cmd.exists("steps") ? static_cast<std::size_t>(cmd.as_int("steps")) : 100ULL;
-		scattering_proton_pi_plus.print_sigma_table(std::cout, start, end, steps);
+        std::ofstream file_out("cross_section.txt");
+		scattering_proton_pi_plus.print_sigma_table(file_out, start, end, steps);
 //		std::cout << "\n\n";
 //        scattering_proton_pi_plus.print_dsigma_dcos_table(std::cout, start, 100ULL);
 //        std::cout << "\n\n";

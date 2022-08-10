@@ -74,6 +74,62 @@ void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& cou
 
     VMP->add(Feynumeric::Vertex(
             {
+                    {Feynumeric::QED::Photon},
+                    {P["Rho"]}
+            },
+            [](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                using namespace Feynumeric::Units;
+                auto const& photon = edges[0];
+                auto const& rho = edges[1];
+                auto mu = photon->lorentz_indices()[0];
+                auto nu = rho->lorentz_indices()[0];
+                auto q2 = photon->four_momentum(kin).squared();
+                auto const coupl_str = coupling_string("Rho", "Pion", "Pion");
+                auto const g = couplings.get(coupl_str);
+                double e = 1._e;
+                return Matrix(1, 1, -1.i * e * q2/g * MT[*mu][*nu]);
+            }
+    ));
+
+    VMP->add(Feynumeric::Vertex(
+            {
+                    {P["N"]},
+                    {P["N"]},
+                    {Feynumeric::QED::Photon}
+            },
+            [](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                using namespace Feynumeric::Units;
+                double const g = 1._e;
+                auto const& photon = edges[2];
+                auto const& mu = photon->lorentz_indices()[0];
+                return g * GAC[*mu];
+            }
+    ));
+
+    VMP->add(Feynumeric::Vertex(
+            {
+                    {P["Pion"]},
+                    {P["Pion"]},
+                    {Feynumeric::QED::Photon}
+            },
+            [](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                using namespace Feynumeric::Units;
+                auto const& piP = edges[0];
+                auto const& piM = edges[1];
+                auto const& photon = edges[2];
+                auto const& p = piP->particle()->charge() >= 0? piP->four_momentum(kin) : piM->four_momentum(kin);
+                auto const& q = piP->particle()->charge() >= 0? piM->four_momentum(kin) : piP->four_momentum(kin);
+                auto mu = photon->lorentz_indices()[0];
+                double const g = 1._e;
+                return 1. * g * (p-q).co(mu);
+            }
+    ));
+
+    VMP->add(Feynumeric::Vertex(
+            {
                     {P["N"]},
                     {P["N"]},
                     {P["f0_500"]}

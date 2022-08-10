@@ -101,7 +101,6 @@ namespace Feynumeric
 		, order(0)
 		, _coefficients({{[](auto&&...){return Complex(1.);}}})
 		{
-			[](){};
 		}
 		FPolynomial(std::vector<func_t<N>> const& coefficients);
 		FPolynomial(func_t<N> const& f, Polynomial const& p);
@@ -173,7 +172,6 @@ namespace Feynumeric
 			  , order(other.order)
 			  , _coefficients(other._coefficients)
 	{
-			  	[](){};
 	}
 
 //	template<std::size_t N>

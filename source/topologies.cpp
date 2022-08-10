@@ -27,6 +27,15 @@ namespace Feynumeric
                                         {"v1", "o0"}
                                 }};
 
+    const Topology u2_channel = {{
+                                        {"i0", "v0"},
+                                        {"v0", "v1"},
+                                        {"v1", "v2"},
+                                        {"i1", "v2"},
+                                        {"v0", "o1"},
+                                        {"v2", "o0"}
+                                }};
+
     const Topology Decay_1_to_2 = {{
                                            {"i0", "v0"},
                                            {"v0", "o0"},

@@ -619,17 +619,17 @@ namespace Feynumeric
 			Complex M{0, 0};
 			for( auto& diagram : _diagrams ){
 				auto const& temp = diagram->evaluate_amplitude(kin);
-				std::cout << "temp: " << temp << "\n";
+//				std::cout << "temp: " << temp << "\n";
 				M += temp;
 				diagram->iterate_spins();
 			}
 			Ms_squared += ( M * std::conj(M)).real();
 		}
 		auto phase_space = 1. / N_polarisations * q / ( 8 * M_PI * sqrt_s * sqrt_s);
-		std::cout << "s: " << sqrt_s << "\n";
-		std::cout << "q: " << q << "\n";
-		std::cout << "N: " << N_polarisations << "\n";
-		std::cout << "phase_space: " << phase_space << "\n";
+//		std::cout << "s: " << sqrt_s << "\n";
+//		std::cout << "q: " << q << "\n";
+//		std::cout << "N: " << N_polarisations << "\n";
+//		std::cout << "phase_space: " << phase_space << "\n";
 		return Ms_squared * phase_space;
 	}
 
@@ -728,19 +728,22 @@ namespace Feynumeric
 	std::map<double, double> Feynman_Process::sigma_table(std::vector<double> const& values, double){
 		using namespace Feynumeric::Units;
 		using namespace std::placeholders;
+        std::map<double, double> result;
+        if( _diagrams.empty() ){
+            return result;
+        }
+
 		std::vector<Feynman_Process> copies;
 		copies.reserve(values.size());
 		for( std::size_t i = 0; i < values.size(); ++i ){
 			copies.emplace_back(*this);
 		}
 
-		std::map<double, double> result;
-
 		std::size_t completed{0};
 		std::size_t modulo = static_cast<std::size_t>(0.1 * copies.size());
         modulo = modulo == 0? 1 : modulo;
 
-		//#pragma omp parallel for
+		#pragma omp parallel for
 		for( std::size_t i = 0; i < copies.size(); ++i ){
 //            std::cout << FORMAT("start {}/{} core: {} {}\n", i, copies.size(), omp_get_thread_num(), values[i]) << std::flush;
 			double const sqrt_s = values[i];
@@ -787,24 +790,45 @@ namespace Feynumeric
 
 	void Feynman_Process::print_sigma_table(std::ostream& out, std::vector<double> const& values, double epsilon){
 		auto result = sigma_table(values, epsilon);
+        out << "{\n";
+        bool first = true;
 		for( auto const& [key, value] : result ){
-			out << std::setw(10) << std::fixed << std::setprecision(10) << key << "\t" << value << "\n";
+            if( ! first ){
+                out << ",";
+            }
+			out << "{" <<  std::setw(10) << std::fixed << std::setprecision(10) << key << "," << value << "}";
+            first = false;
 		}
+        out << "}\n";
 	}
 
 	void Feynman_Process::print_sigma_table(std::ostream& out, double start, double end, double delta, double epsilon){
 		auto result = sigma_table(start, end, delta, epsilon);
-		for( auto const& [key, value] : result ){
-			out << std::setw(10) << std::fixed << std::setprecision(10) << key << "\t" << value << "\n";
-		}
+        out << "{";
+        bool first = true;
+        for( auto const& [key, value] : result ){
+            if( ! first ){
+                out << ",";
+            }
+            out << "{" <<  std::setw(10) << std::fixed << std::setprecision(10) << key << "," << value << "}";
+            first = false;
+        }
+        out << "}";
 	}
 
 	void
 	Feynman_Process::print_sigma_table(std::ostream& out, double start, double end, std::size_t steps, double epsilon){
 		auto result = sigma_table(start, end, steps, epsilon);
-		for( auto const& [key, value] : result ){
-			out << std::setw(5) << std::fixed <<  std::setprecision(5) << FORMAT("{{{}, {}}},", key, value) << "\n";
-		}
+        out << "{";
+        bool first = true;
+        for( auto const& [key, value] : result ){
+            if( ! first ){
+                out << ",";
+            }
+            out << "{" <<  std::setw(10) << std::fixed << std::setprecision(10) << key << "," << value << "}";
+            first = false;
+        }
+        out << "}";
 	}
 
     double Feynman_Process::no_check_dsigma_dcos_dM(double sqrt_s, double M, double cos_theta)

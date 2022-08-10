@@ -15,28 +15,12 @@
 
 double sigmoid(double x){ return 1./(1. + std::exp(-x));}
 
-double inverse_sigmoid(double x){
-    return std::log(x/(1.-x));
-}
 
 Feynumeric::func_t<1> interval(double min, double max){
     return [min, max](double x){ return min + (max-min) * sigmoid(x);};
 }
 Feynumeric::func_t<1> inverse_interval(double min, double max){
     return [min, max](double x){ return std::log( (max-x)/(x-min) );};
-}
-
-double interval_isigmoid(double min, double max, double x){
-    return std::log( (max-x)/(x-min) );
-}
-
-double slope(double a, double b, double c){
-    return std::max(0., std::abs(c - (b+a)/2.) - (b-a)/2.);
-}
-
-double out_of_interval_cost(double a, double b, double c, double k){
-    auto arg = slope(a, b, c);
-    return std::exp(k * arg * (c-b)) + std::exp(-k * arg * (c-a)) - 2 * std::exp(k/2. * (a-b) * arg);
 }
 
 int main(int argc, char** argv){
@@ -171,15 +155,7 @@ int main(int argc, char** argv){
 
         Amplitude<1> M_scattering(scattering_polynomials, {Proton, Pi_Plus}, {Proton, Pi_Plus});
 
-        func_t<1> form_factor = [=](double sqrt_s) mutable{
-            auto const lambda = 0.8;
-            auto const l4 = std::pow(lambda, 4);
-            auto const delta = sqrt_s * sqrt_s - particle->mass() * particle->mass();
-            return l4 / ( delta * delta + l4 );
-        };
-
         if( particle->is_fermion() ){
-            M_scattering.scale(form_factor);
             M_scattering.scale(breit_wigner);
         }
         scattering_amplitudes.push_back(M_scattering);

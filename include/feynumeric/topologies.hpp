@@ -8,6 +8,7 @@ namespace Feynumeric
     [[maybe_unused]] extern const Topology s_channel;
     [[maybe_unused]] extern const Topology t_channel;
     [[maybe_unused]] extern const Topology u_channel;
+    [[maybe_unused]] extern const Topology u2_channel;
 
 	[[maybe_unused]] extern const Topology Decay_1_to_2;
 

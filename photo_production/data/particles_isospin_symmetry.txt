@@ -503,6 +503,8 @@ phase 0
 mass 1750MeV
 width 300MeV
 branching_N_pi 80%
+branching_proton_photon 0.0%
+branching_neutron_photon 0.0%
 
 @particle D1750pp
 group D1750

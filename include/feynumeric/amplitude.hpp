@@ -83,7 +83,7 @@ namespace Feynumeric
 					auto fc = f >> conjugate;
 					auto full = fc * f;
 					auto integrated = full.integrate(-1, 1);
-					sum = sum + integrated;
+                    sum = sum + integrated;
 				}
 				return phase_space * sum;
 			}

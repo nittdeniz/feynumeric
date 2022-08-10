@@ -58,6 +58,17 @@ int main(int argc, char** argv){
                                                 {Pi_Plus, Proton}
             );
         }
+    else if( particle_name == "photon" ){
+        s_values = lin_space(1.08, 2.08, 100);
+        particle = QED::Photon;
+        auto const coupl_str = coupling_string(particle->name(), "N", "N");
+        couplings.set(coupl_str, 1.);
+        scattering_diagram = create_diagram(FORMAT("{} u", particle->name()), u_channel, VMP,
+                                            {Proton, Pi_Plus},
+                                            {particle},
+                                            {Pi_Plus, Proton}
+        );
+    }
 	else{
 		s_values = weighted_space(1.1, particle->mass() - particle->width(), particle->mass() + particle->width(), 2.1, 17);
 		particle = P.get(FORMAT("{}pp", cmd.as_string("particle")));
@@ -92,7 +103,14 @@ int main(int argc, char** argv){
 	if( scattering_diagram ){
 		Feynman_Process process_scattering({scattering_diagram});
 
-		auto result_scattering = process_scattering.scattering_amplitude(s_values, {6, 8});
+        std::vector<std::vector<Polynomial>> result_scattering;
+
+        if( particle_name == "photon"){
+            result_scattering = process_scattering.scattering_amplitude(s_values, {40, 8});
+        }
+        else{
+            result_scattering = process_scattering.scattering_amplitude(s_values, {6, 8});
+        }
 
 		for( std::size_t i = 0; i < result_scattering.size(); ++i ){
 			auto const& row = result_scattering[i];
