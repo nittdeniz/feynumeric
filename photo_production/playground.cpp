@@ -163,7 +163,7 @@ int main(int argc, char** argv)
                                                    {P[str]},
                                                    {Neutron, Pi_Zero}
                         );
-                        pip_proton_elastic_diagrams.push_back(temp);
+                        pim_proton_charge_ex_diagrams.push_back(temp);
                     }
                     else if( P[str]->charge() == 2 ){
                         auto temp = create_diagram(FORMAT("pi_minus proton elastic {} u", P[str]->name()), u_channel, VMP,
@@ -171,7 +171,7 @@ int main(int argc, char** argv)
                                                    {P[str]},
                                                    {Proton, Pi_Minus}
                         );
-                        pip_proton_elastic_diagrams.push_back(temp);
+                        pim_proton_elastic_diagrams.push_back(temp);
                     }
                 }
                 /*
