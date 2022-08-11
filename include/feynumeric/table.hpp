@@ -7,6 +7,8 @@
 namespace Feynumeric{
 	class Table{
 		std::map<double, double> _values;
+        mutable bool lower_out_of_bounds;
+        mutable bool upper_out_of_bounds;
 	public:
 		Table(std::map<double, double> const& values);
 		double interpolate(double value) const;

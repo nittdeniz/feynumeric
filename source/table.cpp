@@ -9,6 +9,8 @@
 namespace Feynumeric{
 	Table::Table(std::map<double, double> const& values)
 	: _values(values)
+    , lower_out_of_bounds(false)
+    , upper_out_of_bounds(false)
 	{
 
 	}
@@ -18,11 +20,14 @@ namespace Feynumeric{
 			return _values.at(value);
 		}
 		auto upper_bound = _values.upper_bound(value);
-		if( upper_bound == _values.end() ){
+        auto lower_bound = _values.lower_bound(value);
+		if( !upper_out_of_bounds && upper_bound == _values.end() ){
 			warning(FORMAT("Value {} is out of range. Can not interpolate and will return last value.", value));
+            upper_out_of_bounds = true;
 		}
-		if( upper_bound == _values.begin() ){
+		if(  !lower_out_of_bounds && lower_bound == _values.begin() ){
 			warning(FORMAT("Value {} is out of range. Can not interpolate and will return first value.", value));
+            lower_out_of_bounds = true;
 		}
 		auto const a = --upper_bound;
 		auto const b = ++upper_bound;
