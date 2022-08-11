@@ -106,25 +106,17 @@ int main(int argc, char** argv)
             if( P.exists(str))
             {
                 P[str]->user_data("form_factor", ff);
-                auto const &file_name = FORMAT("./data/dyson_factors/{}_{}.txt", resonance, cmd.as_string("form_factor"));
-                std::ifstream ifs(file_name);
-                if( ifs )
-                {
-                    Table dyson({});
-                    ifs >> dyson;
-                    P[str]->user_data("dyson_factors", dyson);
-                    P[str]->width([&, str](double p2)
-                                  {
-                                      auto result = P[str]->user_data<Table>("dyson_factors").interpolate(std::sqrt(p2));
-                                      return result;
-                                  });
-                }else
-                {
-                    P[str]->width([&, str](double p2)
-                                  {
-                                      return P[str]->width();
-                                  });
-                }
+                Polynomial poly;
+                poly.load(FORMAT("widths/{}_width_N_Pi.poly", resonance));
+                P[str]->width([&, str, poly](double p2){
+                    static const auto threshold = (Proton->mass() + Pi_Plus->mass()) * (Proton->mass() + Pi_Plus->mass());
+                    if( p2 < threshold ){
+                        return 0.;
+                    }
+                    auto const sqrt = std::sqrt(p2);
+                    auto const ff = P[str]->user_data<FORM_FACTOR_FUNCTION>("form_factor")(P[str], Proton, Pi_Plus, sqrt);
+                    return poly(sqrt).real() * ff * ff;
+                });
 
                 if( s_channel_enabled ){
                     if( P[str]->charge() == 2 ){

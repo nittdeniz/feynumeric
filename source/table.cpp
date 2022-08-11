@@ -20,15 +20,15 @@ namespace Feynumeric{
 			return _values.at(value);
 		}
 		auto upper_bound = _values.upper_bound(value);
-        auto lower_bound = _values.lower_bound(value);
-		if( !upper_out_of_bounds && upper_bound == _values.end() ){
-			warning(FORMAT("Value {} is out of range. Can not interpolate and will return last value.", value));
-            upper_out_of_bounds = true;
-		}
-		if(  !lower_out_of_bounds && lower_bound == _values.begin() ){
-			warning(FORMAT("Value {} is out of range. Can not interpolate and will return first value.", value));
-            lower_out_of_bounds = true;
-		}
+//        auto lower_bound = _values.lower_bound(value);
+//		if( !upper_out_of_bounds && upper_bound == _values.end() ){
+//			warning(FORMAT("Value {} is out of range. Can not interpolate and will return last value.", value));
+//            upper_out_of_bounds = true;
+//		}
+//		if(  !lower_out_of_bounds && lower_bound == _values.begin() ){
+//			warning(FORMAT("Value {} is out of range. Can not interpolate and will return first value.", value));
+//            lower_out_of_bounds = true;
+//		}
 		auto const a = --upper_bound;
 		auto const b = ++upper_bound;
 		return a->second + (b->second-a->second)/(b->first-a->first) * (value - a->first);

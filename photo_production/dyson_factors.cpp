@@ -1,7 +1,6 @@
 #include <feynumeric/feynumeric.hpp>
 #include "effective_lagrangian_model.hpp"
 #include "form_factors.hpp"
-#include <omp.h>
 
 
 int main(int argc, char** argv)

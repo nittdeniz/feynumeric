@@ -6,6 +6,8 @@ add_executable(coupling_constants
 
 add_executable(playground playground.cpp source/effective_lagrangian_model.cpp source/form_factors.cpp source/couplings.cpp include/couplings.hpp)
 
+add_executable(decay_widths decay_widths.cpp source/effective_lagrangian_model.cpp source/form_factors.cpp source/write_map.cpp source/couplings.cpp include/couplings.hpp)
+
 add_executable(dyson_factors dyson_factors.cpp source/effective_lagrangian_model.cpp source/form_factors.cpp source/write_map.cpp source/couplings.cpp include/couplings.hpp)
 
 add_executable(cross_sections
@@ -24,6 +26,7 @@ target_include_directories(cross_sections PRIVATE include)
 target_include_directories(coupling_constants PRIVATE include)
 target_include_directories(playground PRIVATE include)
 target_include_directories(dyson_factors PRIVATE include)
+target_include_directories(decay_widths PRIVATE include)
 target_include_directories(gradient_descent PRIVATE include)
 
 target_link_libraries(amplitude PRIVATE Feynumeric OpenMP::OpenMP_CXX)
@@ -31,4 +34,5 @@ target_link_libraries(cross_sections PRIVATE Feynumeric)
 target_link_libraries(coupling_constants PRIVATE Feynumeric)
 target_link_libraries(playground PRIVATE Feynumeric)
 target_link_libraries(dyson_factors PRIVATE Feynumeric OpenMP::OpenMP_CXX)
+target_link_libraries(decay_widths PRIVATE Feynumeric)
 target_link_libraries(gradient_descent PRIVATE Feynumeric)
