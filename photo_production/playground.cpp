@@ -159,7 +159,7 @@ int main(int argc, char** argv)
                         pip_proton_elastic_diagrams.push_back(temp);
                     }else if( P[str]->charge() == 1 ){
                         auto temp = create_diagram(FORMAT("pi_minus proton charge_ex {} u", P[str]->name()), u_channel, VMP,
-                                                   {Proton, Pi_Plus},
+                                                   {Proton, Pi_Minus},
                                                    {P[str]},
                                                    {Neutron, Pi_Zero}
                         );
