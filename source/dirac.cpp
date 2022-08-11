@@ -513,7 +513,7 @@ namespace Feynumeric
 	Matrix
 	Propagator(const Particle_Ptr& P, const Four_Vector& p, const std::vector<Lorentz_Index_Ptr>& lorentz_indices){
         double p2 = p.squared();
-//        std::cout << "p: " << p << " p2: " << p2 << "\n";
+        std::cout << P->name() << ": p: " << p << " p2: " << p2 << "\n";
 		Complex breit_wigner;
 		if( p2 > 0 ){
 			breit_wigner = -1.i / ( p.squared() - P->mass() * P->mass() + 1.i * std::sqrt(p2) * P->width(p2));

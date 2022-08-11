@@ -206,6 +206,7 @@ int main(int argc, char** argv)
     }
 
     Timer stopwatch;
+    std::cout << "config done\n" << std::flush;
     stopwatch.start();
 
     Feynman_Process scattering_pip_proton_elastic(pip_proton_elastic_diagrams);
