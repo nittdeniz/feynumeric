@@ -78,7 +78,8 @@ int main(int argc, char** argv)
     status(FORMAT("Form factor: {}", form_factor));
 
     std::vector<std::string> const nucleon_resonances = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900"};
-    std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940", "D1950"};
+    std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
+    std::vector<std::string> const mesons = {"rho0", "rho+", "f0_500"};
 
     std::vector<std::string> resonances;
     resonances.insert(resonances.end(), nucleon_resonances.cbegin(), nucleon_resonances.cend());
@@ -166,33 +167,34 @@ int main(int argc, char** argv)
                         pim_proton_elastic_diagrams.push_back(temp);
                     }
                 }
-                /*
-                if( t_channel_enabled){
-                    if( P[str]->charge() == 0 ){
-                        auto temp = create_diagram(FORMAT("pi_plus proton elastic {} u", P[str]->name()), u_channel, VMP,
-                                                   {Proton, Pi_Plus},
-                                                   {P[str]},
-                                                   {Proton, Pi_Plus}
-                        );
-                        pip_proton_elastic_diagrams.push_back(temp);
-                    }else if( P[str]->charge() == 1 ){
-                        auto temp = create_diagram(FORMAT("pi_minus proton charge_ex {} u", P[str]->name()), u_channel, VMP,
-                                                   {Proton, Pi_Plus},
-                                                   {P[str]},
-                                                   {Neutron, Pi_Zero}
-                        );
-                        pip_proton_elastic_diagrams.push_back(temp);
-                    }
-                    else if( P[str]->charge() == 2 ){
-                        auto temp = create_diagram(FORMAT("pi_minus proton elastic {} u", P[str]->name()), u_channel, VMP,
-                                                   {Proton, Pi_Minus},
-                                                   {P[str]},
-                                                   {Proton, Pi_Minus}
-                        );
-                        pip_proton_elastic_diagrams.push_back(temp);
-                    }
-                }
-                */
+            }
+        }
+    }
+
+    if( t_channel_enabled ){
+        for( auto const& meson_name : mesons ){
+            auto particle = P[meson_name];
+            if( particle->charge() == 0 ){
+                auto temp = create_diagram(FORMAT("pi_plus proton elastic {} t", particle->name()), t_channel, VMP,
+                                           {Proton, Pi_Plus},
+                                           {particle},
+                                           {Proton, Pi_Plus}
+                );
+                pip_proton_elastic_diagrams.push_back(temp);
+                temp = create_diagram(FORMAT("pi_minus proton elastic {} t", particle->name()), t_channel, VMP,
+                                           {Proton, Pi_Minus},
+                                           {particle},
+                                           {Proton, Pi_Minus}
+                );
+                pim_proton_elastic_diagrams.push_back(temp);
+            }
+            else if( particle->charge() == 1 ){
+                auto temp = create_diagram(FORMAT("pi_minus proton charge_ex {} u", particle->name()), t_channel, VMP,
+                                           {Proton, Pi_Minus},
+                                           {particle},
+                                           {Neutron, Pi_Zero}
+                );
+                pim_proton_charge_ex_diagrams.push_back(temp);
             }
         }
     }
