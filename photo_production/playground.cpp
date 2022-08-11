@@ -49,6 +49,10 @@ int main(int argc, char** argv)
 
     cmd.crash_on_missing_mandatory_command();
 
+    double start = cmd.exists("start") ? cmd.as_double("start") : 1.1;
+    double end = cmd.exists("end") ? cmd.as_double("end") : 2.0;
+    std::size_t steps = cmd.exists("steps") ? static_cast<std::size_t>(cmd.as_int("steps")) : 100ULL;
+
     auto const &channel = cmd.as_string("channel");
     bool const s_channel_enabled = channel.find('s') != std::string::npos;
     bool const t_channel_enabled = channel.find('t') != std::string::npos;
@@ -180,6 +184,9 @@ int main(int argc, char** argv)
                                            {particle},
                                            {Proton, Pi_Plus}
                 );
+                Feynman_Process temp_proc({temp});
+                std::cout << "pip: " << particle->name() << "\n";
+                temp_proc.print_sigma_table(std::cout, start, end, steps);
                 pip_proton_elastic_diagrams.push_back(temp);
                 temp = create_diagram(FORMAT("pi_minus proton elastic {} t", particle->name()), t_channel, VMP,
                                            {Proton, Pi_Minus},
@@ -187,6 +194,10 @@ int main(int argc, char** argv)
                                            {Proton, Pi_Minus}
                 );
                 pim_proton_elastic_diagrams.push_back(temp);
+                std::cout << "\n";
+                std::cout << "pim: " << particle->name() << "\n";
+                temp_proc = Feynman_Process({temp});
+                temp_proc.print_sigma_table(std::cout, start, end, steps);
             }
             else if( particle->charge() == 1 ){
                 auto temp = create_diagram(FORMAT("pi_minus proton charge_ex {} u", particle->name()), t_channel, VMP,
@@ -195,6 +206,9 @@ int main(int argc, char** argv)
                                            {Neutron, Pi_Zero}
                 );
                 pim_proton_charge_ex_diagrams.push_back(temp);
+                std::cout << "charge ex: " << particle->name() << "\n";
+                Feynman_Process temp_proc({temp});
+                temp_proc.print_sigma_table(std::cout, start, end, steps);
             }
         }
     }
@@ -210,9 +224,6 @@ int main(int argc, char** argv)
     scattering_pim_proton_elastic.conversion_factor(1._2mbarn);
     scattering_pim_proton_charge_ex.conversion_factor(1._2mbarn);
 
-    double start = cmd.exists("start") ? cmd.as_double("start") : 1.1;
-    double end = cmd.exists("end") ? cmd.as_double("end") : 2.0;
-    std::size_t steps = cmd.exists("steps") ? static_cast<std::size_t>(cmd.as_int("steps")) : 100ULL;
     std::ofstream file_out("cross_section.txt");
     file_out << "pipprotonelastic=";
     scattering_pip_proton_elastic.print_sigma_table(file_out, start, end, steps);
