@@ -1,7 +1,7 @@
 #ifndef FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 #define FEYNUMERIC_FEYNMAN_DIAGRAM_HPP
 
-#define PRINT_AMPLITUDE 0
+#define PRINT_AMPLITUDE 1
 #define DEBUG_AMPLITUDE 0
 
 #include <initializer_list>

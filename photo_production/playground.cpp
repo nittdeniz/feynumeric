@@ -81,9 +81,9 @@ int main(int argc, char** argv)
 
     status(FORMAT("Form factor: {}", form_factor));
 
-    std::vector<std::string> const nucleon_resonances = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900"};
-    std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
-    std::vector<std::string> const mesons = {"rho0", "rho+", "f0_500"};
+    std::vector<std::string> const nucleon_resonances = {};//{"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900"};
+    std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620"};//, "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
+    std::vector<std::string> const mesons = {"rho0", "rho+"};//, "f0_500"};
 
     std::vector<std::string> resonances;
     resonances.insert(resonances.end(), nucleon_resonances.cbegin(), nucleon_resonances.cend());
@@ -178,15 +178,12 @@ int main(int argc, char** argv)
     if( t_channel_enabled ){
         for( auto const& meson_name : mesons ){
             auto particle = P[meson_name];
-            if( particle->charge() == 0 ){
+            if( particle->charge() == 3 ){
                 auto temp = create_diagram(FORMAT("pi_plus proton elastic {} t", particle->name()), t_channel, VMP,
                                            {Proton, Pi_Plus},
                                            {particle},
                                            {Proton, Pi_Plus}
                 );
-                Feynman_Process temp_proc({temp});
-                std::cout << "pip: " << particle->name() << "\n";
-                temp_proc.print_sigma_table(std::cout, start, end, steps);
                 pip_proton_elastic_diagrams.push_back(temp);
                 temp = create_diagram(FORMAT("pi_minus proton elastic {} t", particle->name()), t_channel, VMP,
                                            {Proton, Pi_Minus},
@@ -194,10 +191,6 @@ int main(int argc, char** argv)
                                            {Proton, Pi_Minus}
                 );
                 pim_proton_elastic_diagrams.push_back(temp);
-                std::cout << "\n";
-                std::cout << "pim: " << particle->name() << "\n";
-                temp_proc = Feynman_Process({temp});
-                temp_proc.print_sigma_table(std::cout, start, end, steps);
             }
             else if( particle->charge() == 1 ){
                 auto temp = create_diagram(FORMAT("pi_minus proton charge_ex {} u", particle->name()), t_channel, VMP,
@@ -206,9 +199,6 @@ int main(int argc, char** argv)
                                            {Neutron, Pi_Zero}
                 );
                 pim_proton_charge_ex_diagrams.push_back(temp);
-                std::cout << "charge ex: " << particle->name() << "\n";
-                Feynman_Process temp_proc({temp});
-                temp_proc.print_sigma_table(std::cout, start, end, steps);
             }
         }
     }
@@ -224,16 +214,28 @@ int main(int argc, char** argv)
     scattering_pim_proton_elastic.conversion_factor(1._2mbarn);
     scattering_pim_proton_charge_ex.conversion_factor(1._2mbarn);
 
-    std::ofstream file_out("cross_section.txt");
-    file_out << "pipprotonelastic=";
-    scattering_pip_proton_elastic.print_sigma_table(file_out, start, end, steps);
-    file_out << ";\npimprotonelastic=";
-    scattering_pim_proton_elastic.print_sigma_table(file_out, start, end, steps);
-    file_out << ";\npimprotonchargeex=";
-    scattering_pim_proton_charge_ex.print_sigma_table(file_out, start, end, steps);
-    file_out << ";\n";
+    if( cmd.as_string("cross_section") == CMD_CROSS_SECTION_TOTAL )
+    {
+        std::ofstream file_out("cross_section_total.txt");
+        file_out << "pipprotonelasticTotal=";
+        scattering_pip_proton_elastic.print_sigma_table(file_out, start, end, steps);
+        file_out << ";\npimprotonelasticTotal=";
+        scattering_pim_proton_elastic.print_sigma_table(file_out, start, end, steps);
+        file_out << ";\npimprotonchargeexTotal=";
+        scattering_pim_proton_charge_ex.print_sigma_table(file_out, start, end, steps);
+        file_out << ";\n";
+    }else{
+        double sqrt_s = cmd.exists("sqrt_s")? cmd.as_double("sqrt_s") : 1.5_GeV;
+        std::ofstream file_out(FORMAT("cross_section_differential_{}.txt", sqrt_s));
+        file_out << "pipprotonelasticDiff=";
+        scattering_pip_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
+        file_out << ";\npimprotonelasticDiff=";
+        scattering_pim_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
+        file_out << ";\npimprotonchargeexDiff=";
+        scattering_pim_proton_charge_ex.print_dsigma_dcos_table(file_out, sqrt_s, steps);
+        file_out << ";\n";
+    }
     stopwatch.stop();
-    std::cout << "Time: " << std::setw(5) <<  stopwatch.time<std::chrono::milliseconds>()/1000. << "s\n";
-
+    std::cout << "Time: " << std::setw(5) << stopwatch.time<std::chrono::milliseconds>() / 1000. << "s\n";
     return EXIT_SUCCESS;
 }

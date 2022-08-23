@@ -21,6 +21,9 @@ namespace Feynumeric
 {
 	Feynman_Process::Feynman_Process(std::initializer_list<Feynman_Diagram_Ptr> list)
 			: _diagrams(list){
+        if( std::empty(list) ){
+            return;
+        }
 		validate_diagram_compatibility();
 		for( auto& diagram : _diagrams ){
 			diagram->generate_amplitude();
@@ -31,6 +34,9 @@ namespace Feynumeric
 
 	Feynman_Process::Feynman_Process(std::vector<Feynman_Diagram_Ptr> list)
 			: _diagrams(std::move(list)){
+        if( std::empty(_diagrams) ){
+            return;
+        }
 		validate_diagram_compatibility();
 		for( auto& diagram : _diagrams ){
 			diagram->generate_amplitude();
@@ -85,44 +91,44 @@ namespace Feynumeric
 		}
 	}
 
-	void Feynman_Process::print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::size_t steps){
-		std::vector<double> values(steps + 1);
-		double const delta = 2. / steps;
-		for( std::size_t i = 0; i < steps; ++i ){
-			values[i] = -1 + i * delta;
-		}
-		values[steps] = 1.;
-		print_dsigma_dcos_table(out, sqrt_s, std::move(values));
-	}
-
-	void Feynman_Process::print_dsigma_dcos_table(std::ostream& out, double sqrt_s, double delta){
-		std::size_t const steps = 2. / delta;
-		std::vector<double> values(steps + 1);
-		for( std::size_t i = 0; i < steps; ++i ){
-			values[i] = -1 + i * delta;
-		}
-		values[steps] = 1.;
-		print_dsigma_dcos_table(out, sqrt_s, std::move(values));
-	}
-
-	void Feynman_Process::print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::vector<double>&& values){
-		// table header
-		out << "cos";
-		for( auto const& diagram : _diagrams ){
-			out << FORMAT("\t{}", diagram->_name);
-		}
-		out << "\tsum\n";
-
-		// data
-		auto table = dsigma_dcos_table(sqrt_s, std::move(values));
-		for( auto const&[cosine, results] : table ){
-			out << cosine << "\t";
-			for( auto const& value : results ){
-				out << std::setw(10) << std::fixed << std::setprecision(10) << value << "\t";
-			}
-			out << "\n";
-		}
-	}
+//	void Feynman_Process::print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::size_t steps){
+//		std::vector<double> values(steps + 1);
+//		double const delta = 2. / steps;
+//		for( std::size_t i = 0; i < steps; ++i ){
+//			values[i] = -1 + i * delta;
+//		}
+//		values[steps] = 1.;
+//		print_dsigma_dcos_table(out, sqrt_s, std::move(values));
+//	}
+//
+//	void Feynman_Process::print_dsigma_dcos_table(std::ostream& out, double sqrt_s, double delta){
+//		std::size_t const steps = 2. / delta;
+//		std::vector<double> values(steps + 1);
+//		for( std::size_t i = 0; i < steps; ++i ){
+//			values[i] = -1 + i * delta;
+//		}
+//		values[steps] = 1.;
+//		print_dsigma_dcos_table(out, sqrt_s, std::move(values));
+//	}
+//
+//	void Feynman_Process::print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::vector<double>&& values){
+//		// table header
+//		out << "cos";
+//		for( auto const& diagram : _diagrams ){
+//			out << FORMAT("\t{}", diagram->_name);
+//		}
+//		out << "\tsum\n";
+//
+//		// data
+//		auto table = dsigma_dcos_table(sqrt_s, std::move(values));
+//		for( auto const&[cosine, results] : table ){
+//			out << cosine << "\t";
+//			for( auto const& value : results ){
+//				out << std::setw(10) << std::fixed << std::setprecision(10) << value << "\t";
+//			}
+//			out << "\n";
+//		}
+//	}
 
     std::size_t Feynman_Process::n_spins()
     {
@@ -830,6 +836,29 @@ namespace Feynumeric
         }
         out << "}";
 	}
+
+
+    void Feynman_Process::print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::size_t n_steps){
+        auto result = dsigma_dcos_table(sqrt_s, n_steps);
+        bool first1 = true;
+        out << "{";
+        for( auto const& [cos, row] : result )
+        {
+            if( !first1 ) out << ",";
+            out << "{";
+            bool first2 = true;
+            for( auto const elem : row )
+            {
+                if( !first2 ) out << ",";
+                out << "{" << std::setw(10) << std::fixed << std::setprecision(10) << cos << "," << elem << "}";
+                first2 = false;
+            }
+            out << "}";
+            first1 = false;
+        }
+        out << "}";
+    }
+
 
     double Feynman_Process::no_check_dsigma_dcos_dM(double sqrt_s, double M, double cos_theta)
     {
