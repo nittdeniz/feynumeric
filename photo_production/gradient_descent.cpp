@@ -35,13 +35,8 @@ int main(int argc, char** argv){
     cmd.register_command("data_file", true, "file with fit data");
     cmd.register_command("k", 1.0, "pdg-deviation rate");
     cmd.register_command("fit_params", true, "file with initial parameters and particles");
-//	cmd.register_command("start", std::string("1.0"), "starting point");
-//	cmd.register_command("end", std::string("3.0"), "end value");
-//	cmd.register_command("steps", std::string("200"), "steps");
-//	cmd.register_command("form_factor", Form_Factor::CMD_FORM_FACTOR_NONE, FORMAT("which form factor to use ({}, {}, {}, {}, {}, {})", Form_Factor::CMD_FORM_FACTOR_NONE, Form_Factor::CMD_FORM_FACTOR_CASSING, Form_Factor::CMD_FORM_FACTOR_CUTKOSKY, Form_Factor::CMD_FORM_FACTOR_MANLEY, Form_Factor::CMD_FORM_FACTOR_MONIZ, Form_Factor::CMD_FORM_FACTOR_BREIT_WIGNER));
+    cmd.register_command("observable", true, "total_sigma or diff_sigma");
     cmd.crash_on_missing_mandatory_command();
-
-    double const k_factor = cmd.as_double("k");
 
     Particle_Manager P(cmd.as_string("particle_file"));
     auto const& Proton = P.get("proton");
@@ -81,7 +76,6 @@ int main(int argc, char** argv){
     };
 
     std::random_device r;
-//	std::default_random_engine eng{r()};
     std::mt19937 random_generator{r()};
 
 

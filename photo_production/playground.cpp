@@ -41,6 +41,7 @@ int main(int argc, char** argv)
     cmd.register_command("help", false, "list all command line parameters");
     cmd.register_command("cross_section", CMD_CROSS_SECTION_TOTAL,
                          FORMAT("get {} or {} cross section", CMD_CROSS_SECTION_DIFFERENTIAL, CMD_CROSS_SECTION_TOTAL));
+    cmd.register_command("fit", std::string("0"), "perform a fit for the given cross section.");
 
     if( cmd.is_enabled("help"))
     {
@@ -82,7 +83,7 @@ int main(int argc, char** argv)
     status(FORMAT("Form factor: {}", form_factor));
 
     std::vector<std::string> const nucleon_resonances = {};//{"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900"};
-    std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620"};//, "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
+    std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700", "D1750"};//, "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
     std::vector<std::string> const mesons = {"rho0", "rho+"};//, "f0_500"};
 
     std::vector<std::string> resonances;
@@ -178,7 +179,7 @@ int main(int argc, char** argv)
     if( t_channel_enabled ){
         for( auto const& meson_name : mesons ){
             auto particle = P[meson_name];
-            if( particle->charge() == 3 ){
+            if( particle->charge() == 0 ){
                 auto temp = create_diagram(FORMAT("pi_plus proton elastic {} t", particle->name()), t_channel, VMP,
                                            {Proton, Pi_Plus},
                                            {particle},
