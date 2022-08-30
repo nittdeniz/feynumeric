@@ -91,7 +91,6 @@ namespace Feynumeric
 		_parity          = copy._parity;
 		_width_function  = copy._width_function;
 		_width           = copy._width;
-		_is_group        = copy._is_group;
 		_baryon_number   = copy._baryon_number;
 		_lepton_number   = copy._lepton_number;
 		_user_data       = copy._user_data;
