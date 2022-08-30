@@ -166,7 +166,7 @@ int main(int argc, char** argv)
 
     struct Data
     {
-        double angle, obs, obsx, err, dchi, cos, obsx_GeV, err_GeV;
+        double angle, obs, obsx, err, dchi, cos, obsx_mbarn, err_mbarn;
     };
 
     std::map<double, std::vector<Data>> data_points_pip;
@@ -200,8 +200,8 @@ int main(int argc, char** argv)
             stream >> tlab;
             stream >> row.angle >> row.obs >> row.obsx >> row.err >> row.dchi;
             row.cos = ang2cos(row.angle);
-            row.obsx_GeV = row.obsx / 1._MeV;
-            row.err_GeV = row.err / 1._MeV;
+            row.obsx_mbarn = row.obsx * 10;
+            row.err_mbarn = row.err * 10;
             double converted = std::sqrt(
                     (tlab / 1000. + Pi_Plus->mass()) * 2. * Proton->mass() + Proton->mass() * Proton->mass() + Pi_Plus->mass() * Pi_Plus->mass());
             (*data_pointers[i])[converted].push_back(row);
@@ -374,7 +374,7 @@ int main(int argc, char** argv)
                 }
             }
         }
-        if( t_channel_enabled && P.exists(resonance.name))
+        if( t_channel_enabled && P.exists(resonance.name) && !resonance.name.starts_with('D') && !resonance.name.starts_with('N') )
         {
             auto particle = P[resonance.name];
             if( particle->charge() == 0 )
@@ -429,7 +429,7 @@ int main(int argc, char** argv)
 
         for( auto const &[useless, resonance_outer] : particle_fit )
         {
-            std::cout << "." << std::flush;
+//            std::cout << "." << std::flush;
             derivatives[resonance_outer.name] = {0., 0.};
             for( std::size_t ii = 0; ii < 2; ++ii )
             {
@@ -453,6 +453,7 @@ int main(int argc, char** argv)
                     {
                         couplings.set(coupling_string("N", "Pion", resonance_inner.name),
                                       -epsilon + (initial_values[resonance_inner.name] * resonance_inner.f(resonance_inner.fit_value)).real());
+//                        std::cout << coupling_string("N", "Pion", resonance_inner.name) << ": " << -epsilon + (initial_values[resonance_inner.name] * resonance_inner.f(resonance_inner.fit_value)).real() << "\n";
                     }
                 }
 
@@ -465,87 +466,84 @@ int main(int argc, char** argv)
                         cos_values.push_back(val.cos);
                     }
                     auto result = pip_proton_elastic.dsigma_dcos_table(sqrt_s, std::move(cos_values));
+                    std::size_t jj = 0;
                     for( auto const &[cos, val]: result )
                     {
-                        for( std::size_t jj = 0; jj < val.size(); ++jj )
+                        double const yhat = val.back();
+                        double const y = values[jj].obsx_mbarn;
+                        double const delta = yhat - y;
+                        double const L = delta * delta / values[jj].err_mbarn / result.size();
+                        if( ii == 0 )
                         {
-                            {
-                                double const yhat = val[jj];
-                                double const y = values[jj].obsx_GeV;
-                                double const delta = yhat - y;
-                                double const L = delta * delta / values[jj].err_GeV / val.size();
-                                if( ii == 0 )
-                                {
-                                    loss += L;
-                                }
-                                derivatives[resonance_outer.name][ii] += L;
-                            }
+//                            std::cout << FORMAT("sqrt: {} cos: {} yhat: {} y: {}\n", sqrt_s, cos, yhat, y);
+                            loss += L;
                         }
-                    }
-
-                    for( auto const &[sqrt_s, values]: sample_points_pim )
-                    {
-                        std::vector<double> cos_values;
-                        cos_values.reserve(values.size());
-                        for( auto const &val: values )
-                        {
-                            cos_values.push_back(val.cos);
-                        }
-                        auto result = pim_proton_elastic.dsigma_dcos_table(sqrt_s, std::move(cos_values));
-                        for( auto const &[cos, val]: result )
-                        {
-                            for( std::size_t jj = 0; jj < val.size(); ++jj )
-                            {
-                                {
-                                    double const yhat = val[jj];
-                                    double const y = values[jj].obsx_GeV;
-                                    double const delta = yhat - y;
-                                    double const L = delta * delta / values[jj].err_GeV;
-                                    if( ii == 0 )
-                                    {
-                                        loss += L;
-                                    }
-                                    derivatives[resonance_outer.name][ii] += L;
-                                }
-                            }
-                        }
-
-                        for( auto const &[sqrt_s, values]: sample_points_pimCE )
-                        {
-                            std::vector<double> cos_values;
-                            cos_values.reserve(values.size());
-                            for( auto const &val: values )
-                            {
-                                cos_values.push_back(val.cos);
-                            }
-                            auto result = pim_proton_charge_ex.dsigma_dcos_table(sqrt_s, std::move(cos_values));
-                            for( auto const &[cos, val]: result )
-                            {
-                                for( std::size_t jj = 0; jj < val.size(); ++jj )
-                                {
-                                    {
-                                        double const yhat = val[jj];
-                                        double const y = values[jj].obsx_GeV;
-                                        double const delta = yhat - y;
-                                        double const L = delta * delta / values[jj].err_GeV;
-                                        if( ii == 0 )
-                                        {
-                                            loss += L;
-                                        }
-                                        derivatives[resonance_outer.name][ii] += L;
-                                    }
-                                }
-                            }
-                        }
+                        derivatives[resonance_outer.name][ii] += L;
+                        jj++;
                     }
                 }
+//                for( auto const &[sqrt_s, values]: sample_points_pim )
+//                {
+//                    std::vector<double> cos_values;
+//                    cos_values.reserve(values.size());
+//                    for( auto const &val: values )
+//                    {
+//                        cos_values.push_back(val.cos);
+//                    }
+//                    auto result = pim_proton_elastic.dsigma_dcos_table(sqrt_s, std::move(cos_values));
+//                    for( auto const &[cos, val]: result )
+//                    {
+//                        for( std::size_t jj = 0; jj < val.size(); ++jj )
+//                        {
+//                            {
+//                                double const yhat = val[jj];
+//                                double const y = values[jj].obsx_GeV;
+//                                double const delta = yhat - y;
+//                                double const L = delta * delta / values[jj].err_GeV;
+//                                if( ii == 0 )
+//                                {
+//                                    loss += L;
+//                                }
+//                                derivatives[resonance_outer.name][ii] += L;
+//                            }
+//                        }
+//                    }
+//                }
+
+//                for( auto const &[sqrt_s, values]: sample_points_pimCE )
+//                {
+//                    std::vector<double> cos_values;
+//                    cos_values.reserve(values.size());
+//                    for( auto const &val: values )
+//                    {
+//                        cos_values.push_back(val.cos);
+//                    }
+//                    auto result = pim_proton_charge_ex.dsigma_dcos_table(sqrt_s, std::move(cos_values));
+//                    for( auto const &[cos, val]: result )
+//                    {
+//                        for( std::size_t jj = 0; jj < val.size(); ++jj )
+//                        {
+//                            {
+//                                double const yhat = val[jj];
+//                                double const y = values[jj].obsx_GeV;
+//                                double const delta = yhat - y;
+//                                double const L = delta * delta / values[jj].err_GeV;
+//                                if( ii == 0 )
+//                                {
+//                                    loss += L;
+//                                }
+//                                derivatives[resonance_outer.name][ii] += L;
+//                            }
+//                        }
+//                    }
+//                }
             }
         }
-        std::cout << "\n";
+//        std::cout << "\n";
 
         // update
         for( auto const& [key, value] : derivatives ){
-            std::cout << "diff: " << key << ": " << (value[0] - value[1]) / (2. * eps) << "\n";
+//            std::cout << "diff: " << key << ": " << (value[0] - value[1]) / (2. * eps) << "\n";
             particle_fit[key].fit_value -= rate * (value[0] - value[1]) / (2. * eps);
         }
 

@@ -17,31 +17,20 @@ isospin 1/2 -1/2
 
 @group R72
 type TrueBaryon
-phase 0
 spin 7/2
-branching_proton_photon 0.0%
-branching_neutron_photon 0.0%
 
 @group R52
 type TrueBaryon
-phase 0
 spin 5/2
-branching_proton_photon 0.0%
-branching_neutron_photon 0.0%
 
 @group R32
 type TrueBaryon
 spin 3/2
-phase 0
-branching_proton_photon 0.0%
-branching_neutron_photon 0.0%
+decay_order 2
 
 @group R12
 type TrueBaryon
-phase 0
 spin 1/2
-branching_proton_photon 0.0%
-branching_neutron_photon 0.0%
 
 @group N1440
 group R12
@@ -50,7 +39,7 @@ l 1
 phase 0
 mass 1.44GeV
 width 350MeV
-branching_N_pi 65%
+branching_N_pi 100%
 branching_N_pipi 35%
 branching_N_pipi_D1232 15%
 branching_N_pipi_f500 15%
@@ -73,7 +62,7 @@ parity -1
 phase 0
 mass 1.515GeV
 width 110MeV
-branching_N_pi 60%
+branching_N_pi 100%
 branching_N_pipi 35%
 branching_N_pipi_D1232 23%
 branching_N_pipi_rho 12%
@@ -96,7 +85,7 @@ parity -1
 phase 0
 mass 1.530GeV
 width 150MeV
-branching_N_pi 42%
+branching_N_pi 100%
 branching_N_eta 40%
 branching_N_pi_pi 20%
 branching_N_pi_pi_rho 10%
@@ -122,7 +111,7 @@ parity -1
 phase 0
 mass 1.650GeV
 width 125MeV
-branching_N_pi 60%
+branching_N_pi 100%
 branching_proton_photon 0.12%
 branching_neutron_photon 0.08%
 l 0
@@ -143,7 +132,7 @@ parity -1
 phase 0
 mass 1.675GeV
 width 145MeV
-branching_N_pi 40%
+branching_N_pi 100%
 l 2
 
 @particle N1675p
@@ -162,7 +151,7 @@ parity 1
 phase 0
 mass 1.685GeV
 width 120MeV
-branching_N_pi 65%
+branching_N_pi 100%
 l 3
 
 @particle N1680p
@@ -181,7 +170,7 @@ parity -1
 phase 0
 mass 1.720GeV
 width 200MeV
-branching_N_pi 12%
+branching_N_pi 100%
 branching_proton_photon 0.03%
 branching_neutron_photon 0.07%
 l 2
@@ -203,7 +192,7 @@ parity 1
 phase 0
 mass 1.710GeV
 width 140MeV
-branching_N_pi 12.5%
+branching_N_pi 100%
 branching_proton_photon 0.04%
 branching_neutron_photon 0.01%
 l 2
@@ -225,7 +214,7 @@ parity 1
 phase 0
 mass 1.720GeV
 width 250MeV
-branching_N_pi 11%
+branching_N_pi 100%
 branching_proton_photon 0.15%
 branching_neutron_photon 0.008%
 l 1
@@ -268,7 +257,7 @@ parity 1
 phase 0
 mass 1.880GeV
 width 300MeV
-branching_N_pi 17%
+branching_N_pi 100%
 branching_proton_photon 0%
 branching_neutron_photon 0.31%
 l 1
@@ -289,7 +278,7 @@ parity -1
 phase 0
 mass 1.895GeV
 width 120MeV
-branching_N_pi 10%
+branching_N_pi 100%
 branching_proton_photon 0.035%
 branching_neutron_photon 0.025%
 l 0
@@ -310,7 +299,7 @@ parity 1
 phase 0
 mass 1.920GeV
 width 200MeV
-branching_N_pi 10.5%
+branching_N_pi 100%
 branching_proton_photon 0.013%
 branching_neutron_photon 0.010%
 l 1
@@ -331,7 +320,7 @@ parity -1
 phase 0
 mass 2.100GeV
 width 400MeV
-branching_N_pi 9.5%
+branching_N_pi 100%
 branching_proton_photon 0.11%
 branching_neutron_photon 0.035%
 l 2
@@ -352,7 +341,7 @@ parity 1
 phase 0
 mass 2.100GeV
 width 260MeV
-branching_N_pi 20%
+branching_N_pi 100%
 branching_proton_photon 0.006%
 branching_neutron_photon 0.006%
 l 1
@@ -373,7 +362,7 @@ parity -1
 phase 0
 mass 2.120GeV
 width 300MeV
-branching_N_pi 10%
+branching_N_pi 100%
 branching_proton_photon 0.18%
 branching_neutron_photon 0.36%
 l 2
@@ -393,7 +382,7 @@ mass 1232MeV
 width 117MeV
 parity 1
 phase 0
-branching_N_pi 99.4%
+branching_N_pi 100%
 branching_proton_photon 0.6%
 branching_neutron_photon 0.6%
 l 1
@@ -424,7 +413,7 @@ parity 1
 phase 0
 mass 1570MeV
 width 250MeV
-branching_N_pi 16%
+branching_N_pi 100%
 branching_N_pi_pi 88%
 branching_N_D1232_pi_pi 70%
 branching_N_N1440_pi_pi 18%
@@ -458,7 +447,7 @@ parity -1
 phase 0
 mass 1610MeV
 width 130MeV
-branching_N_pi 30%
+branching_N_pi 100%
 branching_N_pi_pi 70%
 branching_N_D1232_pi_pi 44%
 branching_N_Rho_pi_pi 22%
@@ -492,7 +481,7 @@ parity -1
 phase 0
 mass 1710MeV
 width 300MeV
-branching_N_pi 15%
+branching_N_pi 100%
 branching_N_pi_pi 85%
 branching_N_D1232_pi_pi 55%
 branching_N_Rho_pi_pi 27%
@@ -526,7 +515,7 @@ parity 1
 phase 0
 mass 1750MeV
 width 300MeV
-branching_N_pi 0%
+branching_N_pi 100%
 branching_proton_photon 0.0%
 branching_neutron_photon 0.0%
 
@@ -585,7 +574,7 @@ parity 1
 phase 0
 mass 1880MeV
 width 330MeV
-branching_N_pi 12%
+branching_N_pi 100%
 branching_proton_photon 0.024%
 branching_neutron_photon 0.024%
 l 3
@@ -616,7 +605,7 @@ parity 1
 phase 0
 mass 1900MeV
 width 300MeV
-branching_N_pi 20%
+branching_N_pi 100%
 branching_proton_photon 0.01%
 branching_neutron_photon 0.01%
 l 1
@@ -647,7 +636,7 @@ parity 1
 phase 0
 mass 1920MeV
 width 300MeV
-branching_N_pi 12.5%
+branching_N_pi 100%
 branching_proton_photon 0%
 branching_neutron_photon 0%
 l 1
@@ -678,7 +667,7 @@ parity -1
 phase 0
 mass 1950MeV
 width 300MeV
-branching_N_pi 10%
+branching_N_pi 100%
 branching_proton_photon 0%
 branching_neutron_photon 0%
 l 1
@@ -738,7 +727,7 @@ charge -1
 group R72
 parity 1
 phase 0
-branching_N_pi 40%
+branching_N_pi 100%
 branching_N_pi_pi 0%
 mass 1930MeV
 width 285MeV
@@ -835,355 +824,3 @@ width 1.31keV
 parity -1
 isospin 0 0
 charge 0
-
-@group Fictional12+/12
-group R12
-parity 1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional12+/12p
-group Fictional12+/12
-charge 1
-isospin 1/2 1/2
-
-@particle Fictional12+/12n
-group Fictional12+/12
-charge 0
-isospin 1/2 -1/2
-
-@group Fictional12-/12
-group R12
-parity -1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional12-/12p
-group Fictional12-/12
-charge 1
-isospin 1/2 1/2
-
-@particle Fictional12-/12n
-group Fictional12-/12
-charge 0
-isospin 1/2 -1/2
-
-@group Fictional32+/12
-group R32
-parity 1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional32+/12p
-group Fictional32+/12
-charge 1
-isospin 1/2 1/2
-
-@particle Fictional32+/12n
-group Fictional32+/12
-charge 0
-isospin 1/2 -1/2
-
-@group Fictional32-/12
-group R32
-parity -1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional32-/12p
-group Fictional32-/12
-charge 1
-isospin 1/2 1/2
-
-@particle Fictional32-/12n
-group Fictional32-/12
-charge 0
-isospin 1/2 -1/2
-
-@group Fictional52+/12
-group R52
-parity 1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional52+/12p
-group Fictional52+/12
-charge 1
-isospin 1/2 1/2
-
-@particle Fictional52+/12n
-group Fictional52+/12
-charge 0
-isospin 1/2 -1/2
-
-@group Fictional52-/12
-group R52
-parity -1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional52-/12p
-group Fictional52-/12
-charge 1
-isospin 1/2 1/2
-
-@particle Fictional52-/12n
-group Fictional52-/12
-charge 0
-isospin 1/2 -1/2
-
-@group Fictional72+/12
-group R72
-parity 1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional72+/12p
-group Fictional72+/12
-charge 1
-isospin 1/2 1/2
-
-@particle Fictional72+/12n
-group Fictional72+/12
-charge 0
-isospin 1/2 -1/2
-
-@group Fictional72-/12
-group R72
-parity -1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional72-/12p
-group Fictional72-/12
-charge 1
-isospin 1/2 1/2
-
-@particle Fictional72-/12n
-group Fictional72-/12
-charge 0
-isospin 1/2 -1/2
-
-@group Fictional12+/32
-group R12
-parity 1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional12+/32pp
-group Fictional12+/32
-charge 2
-isospin 3/2 3/2
-
-@particle Fictional12+/32p
-group Fictional12+/32
-charge 1
-isospin 3/2 1/2
-
-@particle Fictional12+/32n
-group Fictional12+/32
-charge 0
-isospin 3/2 -1/2
-
-@particle Fictional12+/32m
-group Fictional12+/32
-charge -1
-isospin 3/2 -3/2
-
-@group Fictional12-/32
-group R12
-parity -1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional12-/32pp
-group Fictional12-/32
-charge 2
-isospin 3/2 3/2
-
-@particle Fictional12-/32p
-group Fictional12-/32
-charge 1
-isospin 3/2 1/2
-
-@particle Fictional12-/32n
-group Fictional12-/32
-charge 0
-isospin 3/2 -1/2
-
-@particle Fictional12-/32m
-group Fictional12-/32
-charge -1
-isospin 3/2 -3/2
-
-@group Fictional32+/32
-group R32
-parity 1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional32+/32pp
-group Fictional32+/32
-charge 2
-isospin 3/2 3/2
-
-@particle Fictional32+/32p
-group Fictional32+/32
-charge 1
-isospin 3/2 1/2
-
-@particle Fictional32+/32n
-group Fictional32+/32
-charge 0
-isospin 3/2 -1/2
-
-@particle Fictional32+/32m
-group Fictional32+/32
-charge -1
-isospin 3/2 -3/2
-
-@group Fictional32-/32
-group R32
-parity -1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional32-/32pp
-group Fictional32-/32
-charge 2
-isospin 3/2 3/2
-
-@particle Fictional32-/32p
-group Fictional32-/32
-charge 1
-isospin 3/2 1/2
-
-@particle Fictional32-/32n
-group Fictional32-/32
-charge 0
-isospin 3/2 -1/2
-
-@particle Fictional32-/32m
-group Fictional32-/32
-charge -1
-isospin 3/2 -3/2
-
-@group Fictional52+/32
-group R52
-parity 1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional52+/32pp
-group Fictional52+/32
-charge 2
-isospin 3/2 3/2
-
-@particle Fictional52+/32p
-group Fictional52+/32
-charge 1
-isospin 3/2 1/2
-
-@particle Fictional52+/32n
-group Fictional52+/32
-charge 0
-isospin 3/2 -1/2
-
-@particle Fictional52+/32m
-group Fictional52+/32
-charge -1
-isospin 3/2 -3/2
-
-@group Fictional52-/32
-group R52
-parity -1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional52-/32pp
-group Fictional52-/32
-charge 2
-isospin 3/2 3/2
-
-@particle Fictional52-/32p
-group Fictional52-/32
-charge 1
-isospin 3/2 1/2
-
-@particle Fictional52-/32n
-group Fictional52-/32
-charge 0
-isospin 3/2 -1/2
-
-@particle Fictional52-/32m
-group Fictional52-/32
-charge -1
-isospin 3/2 -3/2
-
-@group Fictional72+/32
-group R72
-parity 1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional72+/32pp
-group Fictional72+/32
-charge 2
-isospin 3/2 3/2
-
-@particle Fictional72+/32p
-group Fictional72+/32
-charge 1
-isospin 3/2 1/2
-
-@particle Fictional72+/32n
-group Fictional72+/32
-charge 0
-isospin 3/2 -1/2
-
-@particle Fictional72+/32m
-group Fictional72+/32
-charge -1
-isospin 3/2 -3/2
-
-@group Fictional72-/32
-group R72
-parity -1
-mass 1.5GeV
-width 300MeV
-branching_N_pi 100%
-
-@particle Fictional72-/32pp
-group Fictional72-/32
-charge 2
-isospin 3/2 3/2
-
-@particle Fictional72-/32p
-group Fictional72-/32
-charge 1
-isospin 3/2 1/2
-
-@particle Fictional72-/32n
-group Fictional72-/32
-charge 0
-isospin 3/2 -1/2
-
-@particle Fictional72-/32m
-group Fictional72-/32
-charge -1
-isospin 3/2 -3/2

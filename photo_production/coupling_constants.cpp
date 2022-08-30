@@ -21,6 +21,12 @@
 #define D1620 0
 #define D1700 0
 
+std::string remove_charge_ending(std::string const& str){
+    if( str.ends_with('p') || str.ends_with('n') || str.ends_with('m') ){
+        return remove_charge_ending(str.substr(0, str.length()-1));
+    }
+    return str;
+}
 
 int main(int argc, char** argv)
 {
@@ -47,7 +53,11 @@ int main(int argc, char** argv)
 
 	init_vertices(P, cmd.as_string("coupling_constants"));
 
-	std::vector<std::string> particle_strings = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900", "N2060", "N2100", "N2120","D1232", "D1600", "D1620", "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940", "D1950"};
+	std::vector<std::string> particle_strings = {
+            "N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900", "N2060", "N2100", "N2120",
+            "D1232", "D1600", "D1620", "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940", "D1950",
+            "Fictional12+/12", "Fictional12-/12", "Fictional32+/12", "Fictional32-/12", "Fictional52+/12", "Fictional52-/12", "Fictional72+/12", "Fictional72-/12"
+    };
 
 	std::vector<Particle_Ptr> particles_Np;
 	std::vector<Particle_Ptr> particles_Nn;
@@ -69,7 +79,8 @@ int main(int argc, char** argv)
 //        if( Np->spin().j() > 2 ){
 //            continue;
 //        }
-        auto coupl_str = coupling_string(Np->name().substr(0, 5), "N", "Pion");
+
+        auto coupl_str = coupling_string(remove_charge_ending(Np->name()), "N", "Pion");
         couplings.set(coupl_str, 1.);
 
         if( !Np->exists_user_data("branching_N_pi") ){

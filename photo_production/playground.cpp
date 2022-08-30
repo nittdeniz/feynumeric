@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 
     status(FORMAT("Form factor: {}", form_factor));
 
-    std::vector<std::string> const nucleon_resonances = {};//{"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900"};
+    std::vector<std::string> const nucleon_resonances = {"N1440", "N1520", "N1535"};//, "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900"};
     std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700", "D1750"};//, "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
     std::vector<std::string> const mesons = {"rho0", "rho+"};//, "f0_500"};
 
@@ -215,9 +215,19 @@ int main(int argc, char** argv)
     scattering_pim_proton_elastic.conversion_factor(1._2mbarn);
     scattering_pim_proton_charge_ex.conversion_factor(1._2mbarn);
 
+//    couplings.set(coupling_string("N", "Pion", "D1600"), couplings.get(coupling_string("N", "Pion", "D1600")) * 0.6445);
+//    couplings.set(coupling_string("N", "Pion", "D1620"), couplings.get(coupling_string("N", "Pion", "D1620")) * 0.8114);
+//    couplings.set(coupling_string("N", "Pion", "D1700"), couplings.get(coupling_string("N", "Pion", "D1700")) * 0.0330);
+//    couplings.set(coupling_string("N", "Pion", "D1750"), couplings.get(coupling_string("N", "Pion", "D1750")) * 0.18227);
+
+//    couplings.set(coupling_string("N", "Pion", "D1600"), couplings.get(coupling_string("N", "Pion", "D1600")) * 1);
+//    couplings.set(coupling_string("N", "Pion", "D1620"), couplings.get(coupling_string("N", "Pion", "D1620")) * 1);
+//    couplings.set(coupling_string("N", "Pion", "D1700"), couplings.get(coupling_string("N", "Pion", "D1700")) * 0.07);
+//    couplings.set(coupling_string("N", "Pion", "D1750"), couplings.get(coupling_string("N", "Pion", "D1750")) * 0.6688);
+
     if( cmd.as_string("cross_section") == CMD_CROSS_SECTION_TOTAL )
     {
-        std::ofstream file_out("cross_section_total.txt");
+        std::ofstream file_out("cross_section_total.mat");
         file_out << "pipprotonelasticTotal=";
         scattering_pip_proton_elastic.print_sigma_table(file_out, start, end, steps);
         file_out << ";\npimprotonelasticTotal=";
@@ -227,7 +237,7 @@ int main(int argc, char** argv)
         file_out << ";\n";
     }else{
         double sqrt_s = cmd.exists("sqrt_s")? cmd.as_double("sqrt_s") : 1.5_GeV;
-        std::ofstream file_out(FORMAT("cross_section_differential_{}.txt", sqrt_s));
+        std::ofstream file_out(FORMAT("cross_section_differential_{}.mat", sqrt_s));
         file_out << "pipprotonelasticDiff=";
         scattering_pip_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
         file_out << ";\npimprotonelasticDiff=";
