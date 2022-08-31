@@ -28,13 +28,6 @@ Feynumeric::Matrix gamma5(int lorentz_parity, int particle_parity){
 	return lorentz_parity == particle_parity ? Matrix(1,1,1) : Feynumeric::GA5;
 }
 
-std::string remove_charge_ending(std::string const& str){
-    if( str.ends_with('p') || str.ends_with('n') || str.ends_with('m') ){
-        return remove_charge_ending(str.substr(0, str.length()-1));
-    }
-    return str;
-}
-
 void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& coupling_constant_file)
 {
 	using Feynumeric::Edge_Direction;

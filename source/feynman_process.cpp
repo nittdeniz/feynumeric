@@ -152,6 +152,61 @@ namespace Feynumeric
 		_conversion_factor = static_cast<double>(x);
 	}
 
+    std::vector<std::map<double, std::pair<std::vector<Complex>, std::vector<double>>>>
+    Feynman_Process::dsigma_dcos_table_trace(double sqrt_s, std::vector<double>&& values){
+        using namespace Feynumeric::Units;
+
+        for( auto& diagram : _diagrams ){
+            diagram->reset_spins();
+            diagram->reset_indices();
+        }
+
+        Kinematics kin(sqrt_s, 2, 2);
+
+        auto const& incoming = _diagrams[0]->incoming_particles();
+        auto const& outgoing = _diagrams[0]->outgoing_particles();
+
+        auto qin = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
+        auto qout = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
+
+        kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
+        kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
+
+        std::vector<std::map<double, std::pair<std::vector<Complex>, std::vector<double>>>> result(_n_spins);
+
+        double const phase_space_factor = phase_space2(_n_polarisations, kin.sqrt_s(), qout, qin);
+
+        for( std::size_t k = 0; k < values.size(); ++k ){
+            auto const& cos_theta = values[k];
+            kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
+            kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta));
+
+
+//            std::vector<Complex> Ms(_diagrams.size() + 1);
+//            std::vector<double> Ms_squared(_diagrams.size() + 1);
+
+            for( std::size_t i = 0; i < _n_spins; ++i ){
+                result[i][cos_theta].first = std::vector<Complex>(_diagrams.size() + 1);
+                result[i][cos_theta].second = std::vector<double>(_diagrams.size() + 1);
+                Complex M{0, 0};
+                for( std::size_t j = 0; j < _diagrams.size(); ++j ){
+                    auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
+                    M += temp;
+                    result[i][cos_theta].first[j] += temp;
+                    result[i][cos_theta].second[j] += (temp * std::conj(temp)).real();
+                    _diagrams[j]->iterate_spins();
+                }
+                auto M2 = M * std::conj(M);
+                result[i][cos_theta].first[_diagrams.size()] += M;
+                result[i][cos_theta].second[_diagrams.size()] += (M2).real();
+                for( auto& value : result[i][cos_theta].second ){
+                    value *= phase_space_factor * _conversion_factor;
+                }
+            }
+        }
+        return result;
+    }
+
 	std::map<double, std::vector<double>>
 	Feynman_Process::dsigma_dcos_table(double sqrt_s, std::vector<double>&& values){
 		using namespace Feynumeric::Units;

@@ -70,8 +70,8 @@ int main(int argc, char** argv){
         );
     }
 	else{
-		s_values = weighted_space(1.1, particle->mass() - particle->width(), particle->mass() + particle->width(), 2.1, 17);
 		particle = P.get(FORMAT("{}pp", cmd.as_string("particle")));
+		s_values = weighted_space(1.1, particle->mass() - particle->width(), particle->mass() + particle->width(), 2.1, 17);
         auto const coupl_str = coupling_string(particle->name(), "N", "Pion");
         couplings.set(coupl_str, 1.);
 		scattering_diagram = create_diagram(FORMAT("{} s", particle->name()), s_channel, VMP,
@@ -117,6 +117,13 @@ int main(int argc, char** argv){
 			for( std::size_t j = 0; j < row.size(); ++j ){
 				auto const& poly = row[j];
 				poly.save(FORMAT("data/polynomials/polynomial_scattering_{}_{}_{}.txt", particle->name(), i, j));
+                if( i == 0 ){
+                    std::cout << poly.to_string('s') << "\n";
+                }
+                if( i == 1 ){
+                    std::cout << poly.to_string('c') << "\n";
+                }
+
 			}
 		}
 	}

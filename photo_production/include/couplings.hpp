@@ -28,5 +28,11 @@ inline std::string coupling_string(std::string a, std::string b, std::string c){
     return "g"+arr[0]+arr[1]+arr[2];
 }
 
+inline std::string remove_charge_ending(std::string const& str){
+    if( str.ends_with('p') || str.ends_with('n') || str.ends_with('m') ){
+        return remove_charge_ending(str.substr(0, str.length()-1));
+    }
+    return str;
+}
 
 #endif //FEYNUMERIC_COUPLINGS_HPP

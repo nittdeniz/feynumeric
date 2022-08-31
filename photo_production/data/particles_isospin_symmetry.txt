@@ -836,354 +836,354 @@ parity -1
 isospin 0 0
 charge 0
 
-@group Fictional12+/12
+@group Fictional12+_12
 group R12
 parity 1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional12+/12p
-group Fictional12+/12
+@particle Fictional12+_12p
+group Fictional12+_12
 charge 1
 isospin 1/2 1/2
 
-@particle Fictional12+/12n
-group Fictional12+/12
+@particle Fictional12+_12n
+group Fictional12+_12
 charge 0
 isospin 1/2 -1/2
 
-@group Fictional12-/12
+@group Fictional12-_12
 group R12
 parity -1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional12-/12p
-group Fictional12-/12
+@particle Fictional12-_12p
+group Fictional12-_12
 charge 1
 isospin 1/2 1/2
 
-@particle Fictional12-/12n
-group Fictional12-/12
+@particle Fictional12-_12n
+group Fictional12-_12
 charge 0
 isospin 1/2 -1/2
 
-@group Fictional32+/12
+@group Fictional32+_12
 group R32
 parity 1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional32+/12p
-group Fictional32+/12
+@particle Fictional32+_12p
+group Fictional32+_12
 charge 1
 isospin 1/2 1/2
 
-@particle Fictional32+/12n
-group Fictional32+/12
+@particle Fictional32+_12n
+group Fictional32+_12
 charge 0
 isospin 1/2 -1/2
 
-@group Fictional32-/12
+@group Fictional32-_12
 group R32
 parity -1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional32-/12p
-group Fictional32-/12
+@particle Fictional32-_12p
+group Fictional32-_12
 charge 1
 isospin 1/2 1/2
 
-@particle Fictional32-/12n
-group Fictional32-/12
+@particle Fictional32-_12n
+group Fictional32-_12
 charge 0
 isospin 1/2 -1/2
 
-@group Fictional52+/12
+@group Fictional52+_12
 group R52
 parity 1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional52+/12p
-group Fictional52+/12
+@particle Fictional52+_12p
+group Fictional52+_12
 charge 1
 isospin 1/2 1/2
 
-@particle Fictional52+/12n
-group Fictional52+/12
+@particle Fictional52+_12n
+group Fictional52+_12
 charge 0
 isospin 1/2 -1/2
 
-@group Fictional52-/12
+@group Fictional52-_12
 group R52
 parity -1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional52-/12p
-group Fictional52-/12
+@particle Fictional52-_12p
+group Fictional52-_12
 charge 1
 isospin 1/2 1/2
 
-@particle Fictional52-/12n
-group Fictional52-/12
+@particle Fictional52-_12n
+group Fictional52-_12
 charge 0
 isospin 1/2 -1/2
 
-@group Fictional72+/12
+@group Fictional72+_12
 group R72
 parity 1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional72+/12p
-group Fictional72+/12
+@particle Fictional72+_12p
+group Fictional72+_12
 charge 1
 isospin 1/2 1/2
 
-@particle Fictional72+/12n
-group Fictional72+/12
+@particle Fictional72+_12n
+group Fictional72+_12
 charge 0
 isospin 1/2 -1/2
 
-@group Fictional72-/12
+@group Fictional72-_12
 group R72
 parity -1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional72-/12p
-group Fictional72-/12
+@particle Fictional72-_12p
+group Fictional72-_12
 charge 1
 isospin 1/2 1/2
 
-@particle Fictional72-/12n
-group Fictional72-/12
+@particle Fictional72-_12n
+group Fictional72-_12
 charge 0
 isospin 1/2 -1/2
 
-@group Fictional12+/32
+@group Fictional12+_32
 group R12
 parity 1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional12+/32pp
-group Fictional12+/32
+@particle Fictional12+_32pp
+group Fictional12+_32
 charge 2
 isospin 3/2 3/2
 
-@particle Fictional12+/32p
-group Fictional12+/32
+@particle Fictional12+_32p
+group Fictional12+_32
 charge 1
 isospin 3/2 1/2
 
-@particle Fictional12+/32n
-group Fictional12+/32
+@particle Fictional12+_32n
+group Fictional12+_32
 charge 0
 isospin 3/2 -1/2
 
-@particle Fictional12+/32m
-group Fictional12+/32
+@particle Fictional12+_32m
+group Fictional12+_32
 charge -1
 isospin 3/2 -3/2
 
-@group Fictional12-/32
+@group Fictional12-_32
 group R12
 parity -1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional12-/32pp
-group Fictional12-/32
+@particle Fictional12-_32pp
+group Fictional12-_32
 charge 2
 isospin 3/2 3/2
 
-@particle Fictional12-/32p
-group Fictional12-/32
+@particle Fictional12-_32p
+group Fictional12-_32
 charge 1
 isospin 3/2 1/2
 
-@particle Fictional12-/32n
-group Fictional12-/32
+@particle Fictional12-_32n
+group Fictional12-_32
 charge 0
 isospin 3/2 -1/2
 
-@particle Fictional12-/32m
-group Fictional12-/32
+@particle Fictional12-_32m
+group Fictional12-_32
 charge -1
 isospin 3/2 -3/2
 
-@group Fictional32+/32
+@group Fictional32+_32
 group R32
 parity 1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional32+/32pp
-group Fictional32+/32
+@particle Fictional32+_32pp
+group Fictional32+_32
 charge 2
 isospin 3/2 3/2
 
-@particle Fictional32+/32p
-group Fictional32+/32
+@particle Fictional32+_32p
+group Fictional32+_32
 charge 1
 isospin 3/2 1/2
 
-@particle Fictional32+/32n
-group Fictional32+/32
+@particle Fictional32+_32n
+group Fictional32+_32
 charge 0
 isospin 3/2 -1/2
 
-@particle Fictional32+/32m
-group Fictional32+/32
+@particle Fictional32+_32m
+group Fictional32+_32
 charge -1
 isospin 3/2 -3/2
 
-@group Fictional32-/32
+@group Fictional32-_32
 group R32
 parity -1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional32-/32pp
-group Fictional32-/32
+@particle Fictional32-_32pp
+group Fictional32-_32
 charge 2
 isospin 3/2 3/2
 
-@particle Fictional32-/32p
-group Fictional32-/32
+@particle Fictional32-_32p
+group Fictional32-_32
 charge 1
 isospin 3/2 1/2
 
-@particle Fictional32-/32n
-group Fictional32-/32
+@particle Fictional32-_32n
+group Fictional32-_32
 charge 0
 isospin 3/2 -1/2
 
-@particle Fictional32-/32m
-group Fictional32-/32
+@particle Fictional32-_32m
+group Fictional32-_32
 charge -1
 isospin 3/2 -3/2
 
-@group Fictional52+/32
+@group Fictional52+_32
 group R52
 parity 1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional52+/32pp
-group Fictional52+/32
+@particle Fictional52+_32pp
+group Fictional52+_32
 charge 2
 isospin 3/2 3/2
 
-@particle Fictional52+/32p
-group Fictional52+/32
+@particle Fictional52+_32p
+group Fictional52+_32
 charge 1
 isospin 3/2 1/2
 
-@particle Fictional52+/32n
-group Fictional52+/32
+@particle Fictional52+_32n
+group Fictional52+_32
 charge 0
 isospin 3/2 -1/2
 
-@particle Fictional52+/32m
-group Fictional52+/32
+@particle Fictional52+_32m
+group Fictional52+_32
 charge -1
 isospin 3/2 -3/2
 
-@group Fictional52-/32
+@group Fictional52-_32
 group R52
 parity -1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional52-/32pp
-group Fictional52-/32
+@particle Fictional52-_32pp
+group Fictional52-_32
 charge 2
 isospin 3/2 3/2
 
-@particle Fictional52-/32p
-group Fictional52-/32
+@particle Fictional52-_32p
+group Fictional52-_32
 charge 1
 isospin 3/2 1/2
 
-@particle Fictional52-/32n
-group Fictional52-/32
+@particle Fictional52-_32n
+group Fictional52-_32
 charge 0
 isospin 3/2 -1/2
 
-@particle Fictional52-/32m
-group Fictional52-/32
+@particle Fictional52-_32m
+group Fictional52-_32
 charge -1
 isospin 3/2 -3/2
 
-@group Fictional72+/32
+@group Fictional72+_32
 group R72
 parity 1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional72+/32pp
-group Fictional72+/32
+@particle Fictional72+_32pp
+group Fictional72+_32
 charge 2
 isospin 3/2 3/2
 
-@particle Fictional72+/32p
-group Fictional72+/32
+@particle Fictional72+_32p
+group Fictional72+_32
 charge 1
 isospin 3/2 1/2
 
-@particle Fictional72+/32n
-group Fictional72+/32
+@particle Fictional72+_32n
+group Fictional72+_32
 charge 0
 isospin 3/2 -1/2
 
-@particle Fictional72+/32m
-group Fictional72+/32
+@particle Fictional72+_32m
+group Fictional72+_32
 charge -1
 isospin 3/2 -3/2
 
-@group Fictional72-/32
+@group Fictional72-_32
 group R72
 parity -1
 mass 1.5GeV
 width 300MeV
 branching_N_pi 100%
 
-@particle Fictional72-/32pp
-group Fictional72-/32
+@particle Fictional72-_32pp
+group Fictional72-_32
 charge 2
 isospin 3/2 3/2
 
-@particle Fictional72-/32p
-group Fictional72-/32
+@particle Fictional72-_32p
+group Fictional72-_32
 charge 1
 isospin 3/2 1/2
 
-@particle Fictional72-/32n
-group Fictional72-/32
+@particle Fictional72-_32n
+group Fictional72-_32
 charge 0
 isospin 3/2 -1/2
 
-@particle Fictional72-/32m
-group Fictional72-/32
+@particle Fictional72-_32m
+group Fictional72-_32
 charge -1
 isospin 3/2 -3/2

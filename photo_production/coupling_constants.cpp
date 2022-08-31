@@ -21,13 +21,6 @@
 #define D1620 0
 #define D1700 0
 
-std::string remove_charge_ending(std::string const& str){
-    if( str.ends_with('p') || str.ends_with('n') || str.ends_with('m') ){
-        return remove_charge_ending(str.substr(0, str.length()-1));
-    }
-    return str;
-}
-
 int main(int argc, char** argv)
 {
 	using namespace Feynumeric;
@@ -56,7 +49,8 @@ int main(int argc, char** argv)
 	std::vector<std::string> particle_strings = {
             "N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900", "N2060", "N2100", "N2120",
             "D1232", "D1600", "D1620", "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940", "D1950",
-            "Fictional12+/12", "Fictional12-/12", "Fictional32+/12", "Fictional32-/12", "Fictional52+/12", "Fictional52-/12", "Fictional72+/12", "Fictional72-/12"
+            "Fictional12+_12", "Fictional12-_12", "Fictional32+_12", "Fictional32-_12", "Fictional52+_12", "Fictional52-_12", "Fictional72+_12", "Fictional72-_12",
+            "Fictional12+_32", "Fictional12-_32", "Fictional32+_32", "Fictional32-_32", "Fictional52+_32", "Fictional52-_32", "Fictional72+_32", "Fictional72-_32"
     };
 
 	std::vector<Particle_Ptr> particles_Np;

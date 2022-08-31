@@ -235,8 +235,9 @@ int main(int argc, char** argv)
         file_out << ";\npimprotonchargeexTotal=";
         scattering_pim_proton_charge_ex.print_sigma_table(file_out, start, end, steps);
         file_out << ";\n";
-    }else{
-        double sqrt_s = cmd.exists("sqrt_s")? cmd.as_double("sqrt_s") : 1.5_GeV;
+    }else
+    {
+        double sqrt_s = cmd.exists("sqrt_s") ? cmd.as_double("sqrt_s") : 1.5_GeV;
         std::ofstream file_out(FORMAT("cross_section_differential_{}.mat", sqrt_s));
         file_out << "pipprotonelasticDiff=";
         scattering_pip_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
@@ -245,7 +246,62 @@ int main(int argc, char** argv)
         file_out << ";\npimprotonchargeexDiff=";
         scattering_pim_proton_charge_ex.print_dsigma_dcos_table(file_out, sqrt_s, steps);
         file_out << ";\n";
+
+        auto result = scattering_pip_proton_elastic.dsigma_dcos_table_trace(sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
+
+        std::ofstream file_out2(FORMAT("cross_section_differential_amplitudes{}.json", sqrt_s));
+
+        file_out2 << "{";
+        bool outer_first = true;
+        for( std::size_t i = 0; i < resonances.size(); ++i )
+        {
+            if( !s_channel_enabled || !P.exists(resonances[i] + "pp") || P[resonances[i] + "pp"]->charge() != 2 ) continue;
+            if( !outer_first ) file_out2 << ",";
+            file_out2 << '"' << resonances[i] << '"' << ": [";
+            for( std::size_t n_spins = 0; n_spins < 4; ++n_spins )
+            {
+                if( n_spins > 0 ) file_out2 << ",";
+                file_out2 << "[";
+                bool first = true;
+                for( auto const &[cos, values]: result[n_spins] )
+                {
+                    if( !first ) file_out2 << ",";
+                    file_out2 << "[" << cos << "," << values.first[i].real() << "," << values.first[i].imag()<< "]";
+                    first = false;
+                }
+                file_out2 << "]";
+            }
+            file_out2 << "]";
+            outer_first = false;
+        }
+        file_out2 << "}";
+
+        std::ofstream file_out3(FORMAT("cross_section_differential_squared_amplitudes{}.json", sqrt_s));
+
+        file_out3 << "{";
+        for( std::size_t i = 0; i < resonances.size(); ++i )
+        {
+            if( i > 0 ) file_out3 << ",";
+            file_out3 << '"' << resonances[i] << '"' << ":[";
+            for( std::size_t n_spins = 0; n_spins < 4; ++n_spins )
+            {
+                if( n_spins > 0 ) file_out3 << ",";
+                file_out3 << "[";
+                bool first = true;
+                for( auto const &[cos, values]: result[n_spins] )
+                {
+                    if( !first ) file_out3 << ",";
+                    file_out3 << "[" << cos << "," << values.second[i] << "]";
+                    first = false;
+                }
+                file_out3 << "]";
+            }
+            file_out3 << "]";
+        }
+        file_out3 << "}";
+        file_out3 << "\n\n";
     }
+
     stopwatch.stop();
     std::cout << "Time: " << std::setw(5) << stopwatch.time<std::chrono::milliseconds>() / 1000. << "s\n";
     return EXIT_SUCCESS;
