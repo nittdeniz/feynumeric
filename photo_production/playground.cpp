@@ -86,7 +86,7 @@ int main(int argc, char** argv)
     std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700", "D1750"};//, "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
     std::vector<std::string> const mesons = {"rho0", "rho+"};//, "f0_500"};
 
-    std::vector<std::string> resonances;
+    std::vector<std::string> resonances;// = {"Fictional12+_32", "Fictional12-_32", "Fictional32+_32", "Fictional32-_32", "Fictional52+_32", "Fictional52-_32"};
     resonances.insert(resonances.end(), nucleon_resonances.cbegin(), nucleon_resonances.cend());
     resonances.insert(resonances.end(), delta_resonances.cbegin(), delta_resonances.cend());
 
@@ -247,59 +247,16 @@ int main(int argc, char** argv)
         scattering_pim_proton_charge_ex.print_dsigma_dcos_table(file_out, sqrt_s, steps);
         file_out << ";\n";
 
-        auto result = scattering_pip_proton_elastic.dsigma_dcos_table_trace(sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
+        std::ofstream file_out2(FORMAT("cross_section_pipprotonelastic_differential_amplitudes{}.json", sqrt_s));
+        std::ofstream file_out3(FORMAT("cross_section_pipprotonelastic_differential_squared_amplitudes{}.json", sqrt_s));
+        scattering_pip_proton_elastic.print_dsigma_dcos_table_trace(file_out2, file_out3, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
+        std::ofstream file_out4(FORMAT("cross_section_pimprotonelastic_differential_amplitudes{}.json", sqrt_s));
+        std::ofstream file_out5(FORMAT("cross_section_pimprotonelastic_differential_squared_amplitudes{}.json", sqrt_s));
+        scattering_pim_proton_elastic.print_dsigma_dcos_table_trace(file_out4, file_out5, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
+        std::ofstream file_out6(FORMAT("cross_section_pimprotonCE_differential_amplitudes{}.json", sqrt_s));
+        std::ofstream file_out7(FORMAT("cross_section_pimprotonCE_differential_squared_amplitudes{}.json", sqrt_s));
+        scattering_pim_proton_charge_ex.print_dsigma_dcos_table_trace(file_out6, file_out7, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
 
-        std::ofstream file_out2(FORMAT("cross_section_differential_amplitudes{}.json", sqrt_s));
-
-        file_out2 << "{";
-        bool outer_first = true;
-        for( std::size_t i = 0; i < resonances.size(); ++i )
-        {
-            if( !s_channel_enabled || !P.exists(resonances[i] + "pp") || P[resonances[i] + "pp"]->charge() != 2 ) continue;
-            if( !outer_first ) file_out2 << ",";
-            file_out2 << '"' << resonances[i] << '"' << ": [";
-            for( std::size_t n_spins = 0; n_spins < 4; ++n_spins )
-            {
-                if( n_spins > 0 ) file_out2 << ",";
-                file_out2 << "[";
-                bool first = true;
-                for( auto const &[cos, values]: result[n_spins] )
-                {
-                    if( !first ) file_out2 << ",";
-                    file_out2 << "[" << cos << "," << values.first[i].real() << "," << values.first[i].imag()<< "]";
-                    first = false;
-                }
-                file_out2 << "]";
-            }
-            file_out2 << "]";
-            outer_first = false;
-        }
-        file_out2 << "}";
-
-        std::ofstream file_out3(FORMAT("cross_section_differential_squared_amplitudes{}.json", sqrt_s));
-
-        file_out3 << "{";
-        for( std::size_t i = 0; i < resonances.size(); ++i )
-        {
-            if( i > 0 ) file_out3 << ",";
-            file_out3 << '"' << resonances[i] << '"' << ":[";
-            for( std::size_t n_spins = 0; n_spins < 4; ++n_spins )
-            {
-                if( n_spins > 0 ) file_out3 << ",";
-                file_out3 << "[";
-                bool first = true;
-                for( auto const &[cos, values]: result[n_spins] )
-                {
-                    if( !first ) file_out3 << ",";
-                    file_out3 << "[" << cos << "," << values.second[i] << "]";
-                    first = false;
-                }
-                file_out3 << "]";
-            }
-            file_out3 << "]";
-        }
-        file_out3 << "}";
-        file_out3 << "\n\n";
     }
 
     stopwatch.stop();

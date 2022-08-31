@@ -152,7 +152,63 @@ namespace Feynumeric
 		_conversion_factor = static_cast<double>(x);
 	}
 
-    std::vector<std::map<double, std::pair<std::vector<Complex>, std::vector<double>>>>
+
+    void
+    Feynman_Process::print_dsigma_dcos_table_trace(std::ostream& file_out1, std::ostream& file_out2, double sqrt_s, std::vector<double>&& values){
+        auto result = dsigma_dcos_table_trace(sqrt_s, std::move(values));
+        file_out1 << "{";
+        bool outer_first = true;
+        for( auto const& [particle_name, omit] : result[0].begin()->second.first )
+        {
+//            if( !s_channel_enabled || P[particle_name]->charge() != 2 ) continue;
+            if( !outer_first ) file_out1 << ",";
+            file_out1 << '"' << particle_name << '"' << ": [";
+            for( std::size_t n_spins = 0; n_spins < 4; ++n_spins )
+            {
+                if( n_spins > 0 ) file_out1 << ",";
+                file_out1 << "[";
+                bool first = true;
+                for( auto const &[cos, pairs]: result[n_spins] )
+                {
+                    if( !first ) file_out1 << ",";
+                    file_out1 << "[" << cos << "," << pairs.first.at(particle_name).real() << "," << pairs.first.at(particle_name).imag() << "]";
+                    first = false;
+                }
+                file_out1 << "]";
+            }
+            file_out1 << "]";
+            outer_first = false;
+        }
+        file_out1 << "}";
+        file_out2 << "{";
+        outer_first = true;
+
+        for( auto const& [particle_name, omit] : result[0].begin()->second.first )
+        {
+//            if( !s_channel_enabled || P[particle_name]->charge() != 2 ) continue;
+            if( !outer_first ) file_out2 << ",";
+            file_out2 << '"' << particle_name << '"' << ": [";
+            for( std::size_t n_spins = 0; n_spins < 4; ++n_spins )
+            {
+                if( n_spins > 0 ) file_out2 << ",";
+                file_out2 << "[";
+                bool first = true;
+                for( auto const &[cos, pairs]: result[n_spins] )
+                {
+                    if( !first ) file_out2 << ",";
+                    file_out2 << "[" << cos << "," << pairs.second.at(particle_name) << "]";
+                    first = false;
+                }
+                file_out2 << "]";
+            }
+            file_out2 << "]";
+            outer_first = false;
+        }
+        file_out2 << "}";
+    }
+
+
+    std::vector<std::map<double, std::pair<std::map<std::string, Complex>, std::map<std::string, double>>>>
     Feynman_Process::dsigma_dcos_table_trace(double sqrt_s, std::vector<double>&& values){
         using namespace Feynumeric::Units;
 
@@ -172,7 +228,7 @@ namespace Feynumeric
         kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
         kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
 
-        std::vector<std::map<double, std::pair<std::vector<Complex>, std::vector<double>>>> result(_n_spins);
+        std::vector<std::map<double, std::pair<std::map<std::string, Complex>, std::map<std::string, double>>>> result(_n_spins);
 
         double const phase_space_factor = phase_space2(_n_polarisations, kin.sqrt_s(), qout, qin);
 
@@ -186,20 +242,23 @@ namespace Feynumeric
 //            std::vector<double> Ms_squared(_diagrams.size() + 1);
 
             for( std::size_t i = 0; i < _n_spins; ++i ){
-                result[i][cos_theta].first = std::vector<Complex>(_diagrams.size() + 1);
-                result[i][cos_theta].second = std::vector<double>(_diagrams.size() + 1);
+                result[i][cos_theta].first;
+                result[i][cos_theta].second;
                 Complex M{0, 0};
                 for( std::size_t j = 0; j < _diagrams.size(); ++j ){
                     auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
                     M += temp;
-                    result[i][cos_theta].first[j] += temp;
-                    result[i][cos_theta].second[j] += (temp * std::conj(temp)).real();
+                    result[i][cos_theta].first[_diagrams[j]->_virtual_particles[0]->name()] += temp;
+                    result[i][cos_theta].second[_diagrams[j]->_virtual_particles[0]->name()] += (temp * std::conj(temp)).real();
                     _diagrams[j]->iterate_spins();
                 }
                 auto M2 = M * std::conj(M);
-                result[i][cos_theta].first[_diagrams.size()] += M;
-                result[i][cos_theta].second[_diagrams.size()] += (M2).real();
-                for( auto& value : result[i][cos_theta].second ){
+                result[i][cos_theta].first["All"] += M;
+                result[i][cos_theta].second["All"] += (M2).real();
+                for( auto& [key, value] : result[i][cos_theta].first ){
+                    value *= std::sqrt(phase_space_factor * _conversion_factor);
+                }
+                for( auto& [key, value] : result[i][cos_theta].second ){
                     value *= phase_space_factor * _conversion_factor;
                 }
             }
@@ -210,6 +269,10 @@ namespace Feynumeric
 	std::map<double, std::vector<double>>
 	Feynman_Process::dsigma_dcos_table(double sqrt_s, std::vector<double>&& values){
 		using namespace Feynumeric::Units;
+
+        if( _diagrams.empty() ){
+            return {};
+        }
 
         for( auto& diagram : _diagrams ){
             diagram->reset_spins();

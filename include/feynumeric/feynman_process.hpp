@@ -56,7 +56,10 @@ namespace Feynumeric
 		void print_dsigma_dcos_table(std::ostream& out, double sqrt_s, double delta);
 		void print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::vector<double>&& values);
 
-        std::vector<std::map<double, std::pair<std::vector<Complex>, std::vector<double>>>>
+
+        void
+        print_dsigma_dcos_table_trace(std::ostream& file_out1, std::ostream& file_out2, double sqrt_s, std::vector<double>&& values);
+        std::vector<std::map<double, std::pair<std::map<std::string, Complex>, std::map<std::string, double>>>>
         dsigma_dcos_table_trace(double sqrt_s, std::vector<double>&& values);
 
 		void print_sigma_table(std::ostream& out, std::vector<double> const& values, double epsilon = 1.e-2);
