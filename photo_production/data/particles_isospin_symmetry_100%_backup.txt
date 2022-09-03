@@ -19,29 +19,21 @@ isospin 1/2 -1/2
 type TrueBaryon
 spin 7/2
 phase 0
-branching_proton_photon 0.0%
-branching_neutron_photon 0.0%
 
 @group R52
 type TrueBaryon
 spin 5/2
 phase 0
-branching_proton_photon 0.0%
-branching_neutron_photon 0.0%
 
 @group R32
 type TrueBaryon
 spin 3/2
 phase 0
-branching_proton_photon 0.0%
-branching_neutron_photon 0.0%
 
 @group R12
 type TrueBaryon
 spin 1/2
 phase 0
-branching_proton_photon 0.0%
-branching_neutron_photon 0.0%
 
 @group N1440
 group R12
@@ -71,7 +63,7 @@ isospin 1/2 -1/2
 group R32
 parity -1
 phase 0
-mass 1.5GeV
+mass 1.515GeV
 width 110MeV
 branching_N_pi 100%
 branching_N_pipi 35%

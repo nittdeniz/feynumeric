@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 
     status(FORMAT("Form factor: {}", form_factor));
 
-    std::vector<std::string> const nucleon_resonances = {"N1440", "N1520", "N1535"};//, "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900"};
+    std::vector<std::string> const nucleon_resonances = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720"};//, "N1875", "N1880", "N1895", "N1900"};
     std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700", "D1750"};//, "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
     std::vector<std::string> const mesons = {"rho0", "rho+"};//, "f0_500"};
 
@@ -238,7 +238,7 @@ int main(int argc, char** argv)
     }else
     {
         double sqrt_s = cmd.exists("sqrt_s") ? cmd.as_double("sqrt_s") : 1.5_GeV;
-        std::ofstream file_out(FORMAT("cross_section_differential_{}.mat", sqrt_s));
+        std::ofstream file_out(FORMAT("mathematica/cross_section_differential_{}.mat", sqrt_s));
         file_out << "pipprotonelasticDiff=";
         scattering_pip_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
         file_out << ";\npimprotonelasticDiff=";
@@ -247,14 +247,14 @@ int main(int argc, char** argv)
         scattering_pim_proton_charge_ex.print_dsigma_dcos_table(file_out, sqrt_s, steps);
         file_out << ";\n";
 
-        std::ofstream file_out2(FORMAT("cross_section_pipprotonelastic_differential_amplitudes{}.json", sqrt_s));
-        std::ofstream file_out3(FORMAT("cross_section_pipprotonelastic_differential_squared_amplitudes{}.json", sqrt_s));
+        std::ofstream file_out2(FORMAT("mathematica/cross_section_pipprotonelastic_differential_amplitudes{}.json", sqrt_s));
+        std::ofstream file_out3(FORMAT("mathematica/cross_section_pipprotonelastic_differential_squared_amplitudes{}.json", sqrt_s));
         scattering_pip_proton_elastic.print_dsigma_dcos_table_trace(file_out2, file_out3, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
-        std::ofstream file_out4(FORMAT("cross_section_pimprotonelastic_differential_amplitudes{}.json", sqrt_s));
-        std::ofstream file_out5(FORMAT("cross_section_pimprotonelastic_differential_squared_amplitudes{}.json", sqrt_s));
+        std::ofstream file_out4(FORMAT("mathematica/cross_section_pimprotonelastic_differential_amplitudes{}.json", sqrt_s));
+        std::ofstream file_out5(FORMAT("mathematica/cross_section_pimprotonelastic_differential_squared_amplitudes{}.json", sqrt_s));
         scattering_pim_proton_elastic.print_dsigma_dcos_table_trace(file_out4, file_out5, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
-        std::ofstream file_out6(FORMAT("cross_section_pimprotonCE_differential_amplitudes{}.json", sqrt_s));
-        std::ofstream file_out7(FORMAT("cross_section_pimprotonCE_differential_squared_amplitudes{}.json", sqrt_s));
+        std::ofstream file_out6(FORMAT("mathematica/cross_section_pimprotonCE_differential_amplitudes{}.json", sqrt_s));
+        std::ofstream file_out7(FORMAT("mathematica/cross_section_pimprotonCE_differential_squared_amplitudes{}.json", sqrt_s));
         scattering_pim_proton_charge_ex.print_dsigma_dcos_table_trace(file_out6, file_out7, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
 
     }

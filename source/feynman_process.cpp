@@ -324,9 +324,9 @@ namespace Feynumeric
 		std::vector<double> values(steps + 1);
 		double const delta = 2. / steps;
 		for( std::size_t i = 0; i < steps; ++i ){
-			values[i] = -1 + i * delta;
+			values[i] = -0.999 + i * delta;
 		}
-		values[steps] = 1.;
+		values[steps] = .999;
 		return dsigma_dcos_table(sqrt_s, std::move(values));
 	}
 
