@@ -71,7 +71,7 @@ isospin 1/2 -1/2
 group R32
 parity -1
 phase 0
-mass 1.5GeV
+mass 1.515GeV
 width 110MeV
 branching_N_pi 100%
 branching_N_pipi 35%
