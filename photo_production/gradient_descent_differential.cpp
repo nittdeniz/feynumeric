@@ -166,7 +166,7 @@ int main(int argc, char** argv)
 
     struct Data
     {
-        double angle, obs, obsx, err, dchi, cos, obsx_mbarn, err_mbarn;
+        double angle, obs, obsx, err, dchi, cos;
     };
 
     std::map<double, std::vector<Data>> data_points_pip;
@@ -200,8 +200,6 @@ int main(int argc, char** argv)
             stream >> tlab;
             stream >> row.angle >> row.obs >> row.obsx >> row.err >> row.dchi;
             row.cos = ang2cos(row.angle);
-            row.obsx_mbarn = row.obsx * 10;
-            row.err_mbarn = row.err * 10;
             double converted = std::sqrt(
                     (tlab / 1000. + Pi_Plus->mass()) * 2. * Proton->mass() + Proton->mass() * Proton->mass() + Pi_Plus->mass() * Pi_Plus->mass());
             (*data_pointers[i])[converted].push_back(row);
@@ -469,10 +467,10 @@ int main(int argc, char** argv)
                     std::size_t jj = 0;
                     for( auto const &[cos, val]: result )
                     {
-                        double const yhat = val.back();
-                        double const y = values[jj].obsx_mbarn;
+                        double const yhat = val.back() / (2*M_PI);
+                        double const y = values[jj].obsx;
                         double const delta = yhat - y;
-                        double const L = delta * delta / values[jj].err_mbarn / result.size();
+                        double const L = delta * delta / values[jj].err / result.size();
                         if( ii == 0 )
                         {
 //                            std::cout << FORMAT("sqrt: {} cos: {} yhat: {} y: {}\n", sqrt_s, cos, yhat, y);

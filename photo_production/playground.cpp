@@ -124,7 +124,7 @@ int main(int argc, char** argv)
                     auto const ff = P[str]->user_data<FORM_FACTOR_FUNCTION>("form_factor")(P[str], Proton, Pi_Plus, sqrt);
                     return poly(sqrt).real() * ff * ff;
                 });
-                
+
 
                 if( s_channel_enabled ){
                     if( P[str]->charge() == 2 ){
