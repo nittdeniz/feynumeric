@@ -111,6 +111,7 @@ int main(int argc, char** argv)
         {
             if( P.exists(str))
             {
+                /*
                 P[str]->user_data("form_factor", ff);
                 Polynomial poly;
                 poly.load(FORMAT("widths/{}_width_N_Pi.poly", resonance));
@@ -123,6 +124,7 @@ int main(int argc, char** argv)
                     auto const ff = P[str]->user_data<FORM_FACTOR_FUNCTION>("form_factor")(P[str], Proton, Pi_Plus, sqrt);
                     return poly(sqrt).real() * ff * ff;
                 });
+                */
 
                 if( s_channel_enabled ){
                     if( P[str]->charge() == 2 ){
