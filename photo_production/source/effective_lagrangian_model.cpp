@@ -49,14 +49,14 @@ void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& cou
 				auto const g = 0.97;
 				auto const m_pi = pi->particle()->mass();
 				auto const iso = (R->back() == N->front())? isospin(R, N, pi) : isospin(N, R, pi);
-				return g/m_pi * iso * GA5 * GS(pi->four_momentum(kin));
+				return -1.i * g/m_pi * iso * GA5 * GS(pi->four_momentum(kin));
 			}
 	));
 
 	VMP->add(Feynumeric::Vertex(
 			{
-					{P["N"]},
-					{P["N"]},
+					{P["N"], Edge_Direction::OUT},
+					{P["N"], Edge_Direction::IN},
 					{P["Rho"]}
 			},
 			[](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
@@ -66,8 +66,9 @@ void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& cou
 				auto const& rho = edges[2];
 				auto mu = rho->lorentz_indices()[0];
 				auto const g = 5.96;
-				auto const iso = (N1->back() == N2->front())? isospin(N1, N2, rho) : isospin(N2, N1, rho);
-				return g/2. * iso * GAC[*mu];
+                auto const kappa = 3.71;
+				auto const iso = isospin(N1, N2, rho);//(N1->back() == N2->front())? isospin(N1, N2, rho) : isospin(N2, N1, rho);
+				return 1.i * g/2. * iso * (/*GAC[*mu] +*/ kappa/(.1*rho->particle()->mass()) * dirac_sigma(mu, N1->four_momentum(kin)));
 			}
 	));
 

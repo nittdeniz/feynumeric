@@ -392,18 +392,18 @@ namespace Feynumeric
 		int const n = static_cast<int>(spin.j());
 		if( spin.is_half_odd_integer()){
 
-			if( spin.j() == 1.5 ){
-				auto const& mu = lorentz_indices[0];
-				auto const& nu = lorentz_indices[1];
-				double m = P->mass();
-				auto I = Matrix(4,4, 1);
-				auto a = -(GS(p)+m * I);
-				auto b = MT[*mu][*nu] * I;
-				auto c = GA[*mu]*GA[*nu]/3.;
-				auto d = 2./3. * p.contra(*mu) * p.contra(*nu)/(m*m) * I;
-				auto e = GS(p)*(p.contra(*mu) * GA[*nu] - p.contra(*nu) * GA[*mu])/(3*m*m);
-				return a * (b - c - d + e);
-			}
+//			if( spin.j() == 1.5 ){
+//				auto const& mu = lorentz_indices[0];
+//				auto const& nu = lorentz_indices[1];
+//				double m = P->mass();
+//				auto I = Matrix(4,4, 1);
+//				auto a = -(GS(p)+m * I);
+//				auto b = MT[*mu][*nu] * I;
+//				auto c = GA[*mu]*GA[*nu]/3.;
+//				auto d = 2./3. * p.contra(*mu) * p.contra(*nu)/(m*m) * I;
+//				auto e = GS(p)*(p.contra(*mu) * GA[*nu] - p.contra(*nu) * GA[*mu])/(3*m*m);
+//				return a * (b - c - d + e);
+//			}
 
 			Angular_Momentum new_spin(spin.j() + 0.5, spin.j() + 0.5);
 			auto copy = lorentz_indices;

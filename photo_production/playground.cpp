@@ -1,5 +1,6 @@
 #include <feynumeric/command_line_manager.hpp>
 #include <feynumeric/core.hpp>
+#include <feynumeric/qed.hpp>
 #include <feynumeric/table.hpp>
 #include <feynumeric/messages.hpp>
 #include <feynumeric/timer.hpp>
@@ -103,6 +104,11 @@ int main(int argc, char** argv)
     std::vector<Feynman_Diagram_Ptr> pim_proton_elastic_diagrams;
     std::vector<Feynman_Diagram_Ptr> pim_proton_charge_ex_diagrams;
 
+    std::vector<Feynman_Diagram_Ptr> photoprod_Pi0P_diagrams;
+    std::vector<Feynman_Diagram_Ptr> photoprod_Pi0N_diagrams;
+    std::vector<Feynman_Diagram_Ptr> photoprod_PipN_diagrams;
+    std::vector<Feynman_Diagram_Ptr> photoprod_PimP_diagrams;
+
     for( auto const &resonance : resonances )
     {
         std::vector<std::string> strs = {pp_string(resonance), p_string(resonance), n_string(resonance), m_string(resonance)};
@@ -134,7 +140,22 @@ int main(int argc, char** argv)
                                                    {Proton, Pi_Plus}
                         );
                         pip_proton_elastic_diagrams.push_back(temp);
-                    }else if( P[str]->charge() == 0 ){
+                    }else if( P[str]->charge() == 1 ){
+                        auto temp = create_diagram(FORMAT("gamma + proton -> pi0 p ({}) s", P[str]->name()), s_channel, VMP,
+                                                   {Proton, QED::Photon},
+                                                   {P[str]},
+                                                   {Proton, Pi_Zero}
+                        );
+                        photoprod_Pi0P_diagrams.push_back(temp);
+                        temp = create_diagram(FORMAT("gamma + proton -> pi+ n ({}) s", P[str]->name()), s_channel, VMP,
+                                              {Proton, QED::Photon},
+                                              {P[str]},
+                                              {Neutron, Pi_Plus}
+                        );
+                        photoprod_Pi0P_diagrams.push_back(temp);
+                    }
+                    else if( P[str]->charge() == 0 )
+                    {
                         auto temp = create_diagram(FORMAT("pi_minus proton elastic {} s", P[str]->name()), s_channel, VMP,
                                                    {Proton, Pi_Minus},
                                                    {P[str]},
@@ -147,6 +168,20 @@ int main(int argc, char** argv)
                                               {Neutron, Pi_Zero}
                         );
                         pim_proton_charge_ex_diagrams.push_back(temp);
+
+                        temp = create_diagram(FORMAT("gamma + neutron -> pi0 n ({}) s", P[str]->name()), s_channel, VMP,
+                                              {Neutron, QED::Photon},
+                                              {P[str]},
+                                              {Neutron, Pi_Zero}
+                        );
+                        photoprod_Pi0N_diagrams.push_back(temp);
+
+                        temp = create_diagram(FORMAT("gamma + neutron -> pi- p ({}) s", P[str]->name()), s_channel, VMP,
+                                              {Neutron, QED::Photon},
+                                              {P[str]},
+                                              {Proton, Pi_Minus}
+                        );
+                        photoprod_PimP_diagrams.push_back(temp);
                     }
                 }
                 if( u_channel_enabled){
