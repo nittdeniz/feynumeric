@@ -660,7 +660,7 @@ namespace Feynumeric
 
 	}
 
-	std::vector<Complex> Feynman_Process::decay_M(){
+	std::vector<Complex> Feynman_Process::decay_M(double sqrt_s){
 		using namespace Feynumeric::Units;
 		validate_diagram_compatibility();
 
@@ -669,9 +669,9 @@ namespace Feynumeric
 
 		Kinematics kin(incoming[0]->mass(), 1, 2);
 
-		auto const q = momentum(incoming[0]->mass(), outgoing[0]->mass(), outgoing[1]->mass());
+		auto const q = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
 
-		kin.incoming(0, four_momentum(0, incoming[0]->mass()));
+		kin.incoming(0, four_momentum(0, sqrt_s));
 		kin.outgoing(0, four_momentum(q, outgoing[0]->mass()));
 		kin.outgoing(1, four_momentum(-q, outgoing[1]->mass()));
 

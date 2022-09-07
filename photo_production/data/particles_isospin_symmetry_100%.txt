@@ -15,6 +15,18 @@ group N
 charge 0
 isospin 1/2 -1/2
 
+@group R0
+type Meson
+spin 0
+
+@group R1
+type Meson
+spin 1
+
+@group R2
+type Meson
+spin 2
+
 @group R72
 type TrueBaryon
 spin 7/2

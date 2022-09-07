@@ -73,7 +73,7 @@ namespace Feynumeric
 		std::vector<Complex> M_costheta(double sqrt_s, double cos_theta);
 		std::vector<Polynomial> M_costheta_polynomial(double sqrt_s, std::size_t order);
 		std::pair<std::vector<Polynomial>, std::vector<Polynomial>> M(double from, double to, double norm, std::size_t order_cos, std::size_t order_sqrts);
-		std::vector<Complex> decay_M();
+		std::vector<Complex> decay_M(double sqrt_s);
 		std::vector<std::vector<Polynomial>> decay_amplitude(std::vector<double> const& s_values, std::size_t order = 4, bool overwrite_propagator = true);
 
 		std::vector<std::vector<Polynomial>> scattering_amplitude(std::vector<double> const& s_values, std::vector<std::size_t> const& order, bool overwrite_propagator = true);
