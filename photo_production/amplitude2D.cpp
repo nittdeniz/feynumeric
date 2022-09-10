@@ -1,4 +1,5 @@
 #include <feynumeric/command_line_manager.hpp>
+#include <feynumeric/dirac.hpp>
 #include <feynumeric/feynman_diagram.hpp>
 #include <feynumeric/feynman_process.hpp>
 #include <feynumeric/format.hpp>
@@ -69,6 +70,10 @@ int main(int argc, char** argv) {
     init_vertices(P, cmd.as_string("coupling_file"));
 
     Particle_Ptr particle_ptr = P.get(cmd.as_string("particle"));
+    particle_ptr->feynman_virtual = [](Feynumeric::Vertex::Edge_Ptr e, Kinematics const& kin){
+        return Projector(e, kin);
+    };
+
     particle_ptr->user_data("form_factor", Form_Factor::identity);
     couplings.set(coupling_string(remove_charge_ending(particle_ptr->name()), "N", "Pion"), 1.);
 
