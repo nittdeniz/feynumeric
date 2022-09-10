@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     cmd.register_command("end", std::string("3.0"), "end value");
     cmd.register_command("steps", std::string("200"), "steps");
     cmd.register_command("form_factor", Form_Factor::CMD_FORM_FACTOR_NONE, FORMAT("which form factor to use ({}, {}, {}, {}, {}, {})", Form_Factor::CMD_FORM_FACTOR_NONE, Form_Factor::CMD_FORM_FACTOR_CASSING, Form_Factor::CMD_FORM_FACTOR_CUTKOSKY, Form_Factor::CMD_FORM_FACTOR_MANLEY, Form_Factor::CMD_FORM_FACTOR_MONIZ, Form_Factor::CMD_FORM_FACTOR_BREIT_WIGNER));
-    cmd.register_command("particle", true, "particle name");
+//    cmd.register_command("particle", true, "particle name");
 
     cmd.crash_on_missing_mandatory_command();
 
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
         auto particle_str = FORMAT("{}p", p_str);
         auto particle = P.get(particle_str);
 
-        particle->user_data("form_factor", Form_Factor::identity);
+        particle->user_data("form_factor", Form_Factor::breit_wigner);
 
         auto diag1 = create_diagram(FORMAT("Decay {} -> p pi0", particle->name()), Decay_1_to_2, VMP,
                                     {particle}, {}, {Proton, Pi_Zero});

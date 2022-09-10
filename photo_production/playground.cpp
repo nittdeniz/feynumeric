@@ -84,7 +84,7 @@ int main(int argc, char** argv)
     status(FORMAT("Form factor: {}", form_factor));
 
     std::vector<std::string> const nucleon_resonances = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720"};//, "N1875", "N1880", "N1895", "N1900"};
-    std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700", "D1750"};//, "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
+    std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700"};//, "D1750"};//, "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
     std::vector<std::string> const mesons = {"rho0", "rho+"};//, "f0_500"};
 
     std::vector<std::string> resonances;// = {"Fictional12+_32", "Fictional12-_32", "Fictional32+_32", "Fictional32-_32", "Fictional52+_32", "Fictional52-_32"};
