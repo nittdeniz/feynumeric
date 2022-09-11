@@ -119,19 +119,68 @@ int main(int argc, char** argv)
             {
 
                 P[str]->user_data("form_factor", ff);
-                Polynomial poly;
-                poly.load(FORMAT("widths/{}_width_N_Pi.poly", resonance));
-                P[str]->width([&, str, poly](double p2){
-                    static const auto threshold = (Proton->mass() + Pi_Plus->mass()) * (Proton->mass() + Pi_Plus->mass());
-                    if( p2 < threshold ){
-                        return 0.;
+
+                double const g = couplings.get(coupling_string(remove_charge_ending(str), "N", "Pion"));
+                double const mR = P[str]->mass();
+                double const mN = Proton->mass();
+                double const mpi = Pi_Plus->mass();
+
+                if( P[str]->spin().j() == 0.5 ){
+                    if( P[str]->parity() == 1 ){
+                        P[str]->width(
+                                [g, mR, mN, mpi](double s)
+                                {
+                                    auto lambda = Feynumeric::kallen_lambda(s, mN * mN, mpi * mpi);
+                                    return 1. / (16 * mpi * mpi * M_PI) * g * g
+                                           * std::sqrt(s * lambda) * (lambda + mpi * mpi * (mN * mN - 2 * mN * mR - mpi * mpi + s));
+                                });
+                    }else{
+                        P[str]->width(
+                                [g, mR, mN, mpi](double s)
+                                {
+                                    auto lambda = Feynumeric::kallen_lambda(s, mN * mN, mpi * mpi);
+                                    return 1. / (16 * mpi * mpi * M_PI) * g * g
+                                           * std::sqrt(s * lambda) * (lambda + mpi * mpi * (mN * mN + 2 * mN * mR - mpi * mpi + s));
+                                });
                     }
-                    auto const sqrt = std::sqrt(p2);
-                    auto const ff = P[str]->user_data<FORM_FACTOR_FUNCTION>("form_factor")(P[str], Proton, Pi_Plus, sqrt);
-                    return poly(sqrt).real() * ff * ff;
-                });
-
-
+                }else if( P[str]->spin().j() == 1.5 ){
+                    if( P[str]->parity() == 1 ){
+                        P[str]->width(
+                                [g, mR, mN, mpi](double s)
+                                {
+                                    return
+                                            1. / (192 * mR * mR * mpi * mpi * mpi * mpi * M_PI) * g * g *
+                                            std::pow(Feynumeric::kallen_lambda(s, mN * mN, mpi * mpi), 1.5)/s *
+                                            (2 * mN * mR * mR * mR + s * (mN * mN - mpi * mpi + s));
+                                }
+                        );
+                    }else{
+                        P[str]->width(
+                                [g, mR, mN, mpi](double s)
+                                {
+                                    return
+                                            1. / (192 * mR * mR * mpi * mpi * mpi * mpi * M_PI) * g * g *
+                                            std::pow(Feynumeric::kallen_lambda(s, mN*mN, mpi*mpi), 1.5)/s *
+                                            (-2*mN * mR*mR*mR + s * (mN*mN-mpi*mpi +s));
+                                }
+                        );
+                    }
+                }else if( P[str]->spin().j() == 2.5 ){
+                    if( P[str]->parity() == 1 ){
+                        critical_error("width 5/2 not implemented");
+                    }else{
+                        critical_error("width 5/2 not implemented");
+                    }
+                }else if( P[str]->spin().j() == 3.5 ){
+                    if( P[str]->parity() == 1 ){
+                        critical_error("width 5/2 not implemented");
+                    }else{
+                        critical_error("width 5/2 not implemented");
+                    }
+                }else{
+                    critical_error("width not implemented");
+                }
+                std::cout << FORMAT("Particle: {} Width: {}", str, P[str]->width(mR*mR)) << "\n";
                 if( s_channel_enabled ){
                     if( P[str]->charge() == 2 ){
                         auto temp = create_diagram(FORMAT("pi_plus proton elastic {} s", P[str]->name()), s_channel, VMP,

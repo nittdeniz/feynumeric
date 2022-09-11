@@ -163,3 +163,8 @@ namespace Form_Factor
 			{CMD_FORM_FACTOR_INVERSE_GAUSS,  inverse_gaussian}
 	};
 }
+
+void setup_width(const Feynumeric::Particle_Ptr &P, double mpi, double mN, FORM_FACTOR_FUNCTION f)
+{
+
+}
