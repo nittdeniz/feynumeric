@@ -34,4 +34,7 @@ namespace Form_Factor
 
 	extern std::map<std::string, FORM_FACTOR_FUNCTION> ff_dict;
 }
+
+void setup_width(Feynumeric::Particle_Ptr const& P, double mpi, double mN, FORM_FACTOR_FUNCTION f);
+
 #endif
