@@ -40,10 +40,10 @@ namespace Feynumeric
 		Complex y() const;
 		Complex z() const;
 
-		Complex co(Lorentz_Index mu) const;
-		Complex co(Lorentz_Index_Ptr mu) const;
-		Complex contra(Lorentz_Index mu) const;
-		Complex contra(Lorentz_Index_Ptr mu) const;
+		Complex co(Lorentz_Index const& mu) const;
+		Complex co(Lorentz_Index_Ptr const& mu) const;
+		Complex contra(Lorentz_Index const& mu) const;
+		Complex contra(Lorentz_Index_Ptr const& mu) const;
 
 		Four_Vector boost(Four_Vector const& p) const;
 		Four_Vector align(Four_Vector const& p) const;

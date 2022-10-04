@@ -420,7 +420,7 @@ namespace Feynumeric
 				}
 				++( *mu );
 			}
-			return ( P->is_true_fermion() ? ( GS(p) + P->mass()) : ( GS(p) - P->mass()))
+			return ( P->is_true_fermion() ? 1.i * (GS(p) + P->mass()) : 1.i * ( GS(p) - P->mass()))
 			       * ( n + 1. ) / ( 2. * n + 3. ) * contraction;
 		}
 
@@ -516,9 +516,9 @@ namespace Feynumeric
 //        std::cout << P->name() << ": p: " << p << " p2: " << p2 << "\n";
 		Complex breit_wigner;
 		if( p2 > 0 ){
-			breit_wigner = -1.i / ( p.squared() - P->mass() * P->mass() + 1.i * std::sqrt(p2) * P->width(p2));
+			breit_wigner = 1. / ( p.squared() - P->mass() * P->mass() + 1.i * std::sqrt(p2) * P->width(p2));
 		} else{
-			breit_wigner = -1.i / ( p.squared() - P->mass() * P->mass());
+			breit_wigner = 1. / ( p.squared() - P->mass() * P->mass());
 		}
 		auto project = Projector(P, p, lorentz_indices);
 //		status(FORMAT("Breit_Wigner: real: {} imag: {}", breit_wigner.real(), breit_wigner.imag()));

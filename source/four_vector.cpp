@@ -171,22 +171,22 @@ namespace Feynumeric
 		return (_temporal * std::conj(_temporal) - spatial_squared()).real();
 	}
 
-	Complex Four_Vector::co(Lorentz_Index mu) const
+	Complex Four_Vector::co(Lorentz_Index const& mu) const
 	{
 		return mu == 0 ? _temporal : -_spatial.at(static_cast<int>(mu) - 1);
 	}
 
-	Complex Four_Vector::co(Lorentz_Index_Ptr mu) const
+	Complex Four_Vector::co(Lorentz_Index_Ptr const& mu) const
 	{
 		return *mu == 0 ? _temporal : -_spatial.at(static_cast<int>(*mu) - 1);
 	}
 
-	Complex Four_Vector::contra(Lorentz_Index mu) const
+	Complex Four_Vector::contra(Lorentz_Index const& mu) const
 	{
 		return mu == 0 ? _temporal : _spatial.at(static_cast<int>(mu) - 1);
 	}
 
-	Complex Four_Vector::contra(Lorentz_Index_Ptr mu) const
+	Complex Four_Vector::contra(Lorentz_Index_Ptr const& mu) const
 	{
 		return *mu == 0 ? _temporal : _spatial.at(static_cast<int>(*mu) - 1);
 	}

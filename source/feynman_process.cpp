@@ -91,45 +91,6 @@ namespace Feynumeric
 		}
 	}
 
-//	void Feynman_Process::print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::size_t steps){
-//		std::vector<double> values(steps + 1);
-//		double const delta = 2. / steps;
-//		for( std::size_t i = 0; i < steps; ++i ){
-//			values[i] = -1 + i * delta;
-//		}
-//		values[steps] = 1.;
-//		print_dsigma_dcos_table(out, sqrt_s, std::move(values));
-//	}
-//
-//	void Feynman_Process::print_dsigma_dcos_table(std::ostream& out, double sqrt_s, double delta){
-//		std::size_t const steps = 2. / delta;
-//		std::vector<double> values(steps + 1);
-//		for( std::size_t i = 0; i < steps; ++i ){
-//			values[i] = -1 + i * delta;
-//		}
-//		values[steps] = 1.;
-//		print_dsigma_dcos_table(out, sqrt_s, std::move(values));
-//	}
-//
-//	void Feynman_Process::print_dsigma_dcos_table(std::ostream& out, double sqrt_s, std::vector<double>&& values){
-//		// table header
-//		out << "cos";
-//		for( auto const& diagram : _diagrams ){
-//			out << FORMAT("\t{}", diagram->_name);
-//		}
-//		out << "\tsum\n";
-//
-//		// data
-//		auto table = dsigma_dcos_table(sqrt_s, std::move(values));
-//		for( auto const&[cosine, results] : table ){
-//			out << cosine << "\t";
-//			for( auto const& value : results ){
-//				out << std::setw(10) << std::fixed << std::setprecision(10) << value << "\t";
-//			}
-//			out << "\n";
-//		}
-//	}
-
     std::size_t Feynman_Process::n_spins()
     {
         std::size_t n = 1;
@@ -151,7 +112,6 @@ namespace Feynumeric
     void Feynman_Process::conversion_factor(long double x){
 		_conversion_factor = static_cast<double>(x);
 	}
-
 
     void
     Feynman_Process::print_dsigma_dcos_table_trace(std::ostream& file_out1, std::ostream& file_out2, double sqrt_s, std::vector<double>&& values){
@@ -207,7 +167,6 @@ namespace Feynumeric
         file_out2 << "}";
     }
 
-
     std::vector<std::map<double, std::pair<std::map<std::string, Complex>, std::map<std::string, double>>>>
     Feynman_Process::dsigma_dcos_table_trace(double sqrt_s, std::vector<double>&& values){
         using namespace Feynumeric::Units;
@@ -216,6 +175,8 @@ namespace Feynumeric
             diagram->reset_spins();
             diagram->reset_indices();
         }
+
+
 
         Kinematics kin(sqrt_s, 2, 2);
 
@@ -248,8 +209,9 @@ namespace Feynumeric
                 for( std::size_t j = 0; j < _diagrams.size(); ++j ){
                     auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
                     M += temp;
-                    result[i][cos_theta].first[_diagrams[j]->_virtual_particles[0]->name()] += temp;
-                    result[i][cos_theta].second[_diagrams[j]->_virtual_particles[0]->name()] += (temp * std::conj(temp)).real();
+                    auto name = _diagrams[j]->_virtual_particles.empty()? "contact" : _diagrams[j]->_virtual_particles[0]->name();
+                    result[i][cos_theta].first[name] += temp;
+                    result[i][cos_theta].second[name] += (temp * std::conj(temp)).real();
                     _diagrams[j]->iterate_spins();
                 }
                 auto M2 = M * std::conj(M);
@@ -279,45 +241,96 @@ namespace Feynumeric
             diagram->reset_indices();
         }
 
-		Kinematics kin(sqrt_s, 2, 2);
+        auto const& incoming = _diagrams[0]->incoming_particles();
+        auto const& outgoing = _diagrams[0]->outgoing_particles();
 
-		auto const& incoming = _diagrams[0]->incoming_particles();
-		auto const& outgoing = _diagrams[0]->outgoing_particles();
 
-		auto qin = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
-		auto qout = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
+        std::map<double, std::vector<double>> result;
 
-		kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
-		kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
+        if( outgoing.size() == 2 )
+        {
+            auto qin = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
+            auto qout = momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
 
-		std::map<double, std::vector<double>> result;
+            Kinematics kin(sqrt_s, incoming.size(), outgoing.size());
 
-        double const phase_space_factor = phase_space2(_n_polarisations, kin.sqrt_s(), qout, qin);
+            kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
+            kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
+            double const phase_space_factor = phase_space2(_n_polarisations, kin.sqrt_s(), qout, qin);
 
-		for( std::size_t k = 0; k < values.size(); ++k ){
-			auto const& cos_theta = values[k];
-			kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
-			kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta));
+            for( std::size_t k = 0; k < values.size(); ++k )
+            {
+                auto const &cos_theta = values[k];
+                kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
+                kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta));
 
-			std::vector<double> Ms_squared(_diagrams.size() + 1);
+                std::vector<double> Ms_squared(_diagrams.size() + 1);
 
-			for( std::size_t i = 0; i < _n_spins; ++i ){
-				Complex M{0, 0};
-				for( std::size_t j = 0; j < _diagrams.size(); ++j ){
-					auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
-					M += temp;
-					Ms_squared[j] += (temp * std::conj(temp)).real();
-					_diagrams[j]->iterate_spins();
-				}
-				auto M2 = M * std::conj(M);
-				Ms_squared[_diagrams.size()] += (M2).real();
-			}
-			for( auto& value : Ms_squared ){
-				value *= phase_space_factor * _conversion_factor;
-			}
-			result[cos_theta] = Ms_squared;
-		}
-		return result;
+                for( std::size_t i = 0; i < _n_spins; ++i )
+                {
+                    Complex M{0, 0};
+                    for( std::size_t j = 0; j < _diagrams.size(); ++j )
+                    {
+                        auto const &temp = _diagrams[j]->evaluate_amplitude(kin);
+                        M += temp;
+                        Ms_squared[j] += (temp * std::conj(temp)).real();
+                        _diagrams[j]->iterate_spins();
+                    }
+                    auto M2 = M * std::conj(M);
+                    Ms_squared[_diagrams.size()] += (M2).real();
+                }
+                for( auto &value: Ms_squared )
+                {
+                    value *= phase_space_factor * _conversion_factor;
+                }
+                result[cos_theta] = Ms_squared;
+            }
+        }
+//        else if( outgoing.size() == 3 ){
+//            auto qin = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
+//            auto qout = momentum(sqrt_s, invariant_mass, outgoing[1]->mass());
+//
+//            Kinematics kin(sqrt_s, incoming.size(), outgoing.size());
+//
+//            kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
+//            kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
+//            double const phase_space_factor = phase_space3(kin.sqrt_s()*kin.sqrt_s(), qout, qin, qout_star);
+//            for( std::size_t k = 0; k < values.size(); ++k )
+//            {
+//                auto const &cos_theta = values[k];
+//                kin.outgoing(0, four_momentum(qout, outgoing[0]->mass(), cos_theta));
+//                kin.outgoing(1, four_momentum(-qout, outgoing[1]->mass(), cos_theta));
+//
+//                std::vector<double> Ms_squared(_diagrams.size() + 1);
+//
+//                for( std::size_t i = 0; i < _n_spins; ++i )
+//                {
+//                    Complex M{0, 0};
+//                    for( std::size_t j = 0; j < _diagrams.size(); ++j )
+//                    {
+//                        auto const &temp = _diagrams[j]->evaluate_amplitude(kin);
+//                        M += temp;
+//                        Ms_squared[j] += (temp * std::conj(temp)).real();
+//                        _diagrams[j]->iterate_spins();
+//                    }
+//                    auto M2 = M * std::conj(M);
+//                    Ms_squared[_diagrams.size()] += (M2).real();
+//                }
+//                for( auto &value: Ms_squared )
+//                {
+//                    value *= phase_space_factor * _conversion_factor;
+//                }
+//                result[cos_theta] = Ms_squared;
+//            }
+//
+//            auto partial = [&](double M){
+//                auto f = std::bind(&Feynman_Process::partial_decay_1_3, this, sqrt_s, M, _1, _n_spins, _n_polarisations);
+//                auto r = integrate(f, -0.999, 0.999, 1.e-2);
+//                return r;
+//            };
+//            auto r = integrate(partial, M_min + 1.e-6, M_max-1.e-6, 1.e-2);
+//        }
+        return result;
 	}
 
 	std::map<double, std::vector<double>> Feynman_Process::dsigma_dcos_table(double sqrt_s, std::size_t steps){
@@ -977,10 +990,77 @@ namespace Feynumeric
         out << "}";
     }
 
-
-    double Feynman_Process::no_check_dsigma_dcos_dM(double sqrt_s, double M, double cos_theta)
+    double Feynman_Process::no_check_dsigma_dcos_dM_dcosStar_dphiStar(double sqrt_s, double invariant_mass, double cos_theta, double cos_theta_star,
+                                                                      double phi_star)
     {
-        return sqrt_s + M + cos_theta;
+        using namespace Feynumeric::Units;
+
+        Kinematics kin(sqrt_s, 2, 3);
+        kin.angle(0, cos_theta);
+
+        auto const& incoming = _diagrams[0]->incoming_particles();
+        auto const& outgoing = _diagrams[0]->outgoing_particles();
+
+        auto const qin = momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
+        auto const qout_star = momentum(invariant_mass, outgoing[0]->mass(), outgoing[1]->mass());
+        auto const qout = momentum(sqrt_s, invariant_mass, outgoing[2]->mass());
+
+        auto const boost = four_momentum(qout, invariant_mass, cos_theta);
+
+        kin.incoming(0, four_momentum(qin, incoming[0]->mass(), 1));
+        kin.incoming(1, four_momentum(-qin, incoming[1]->mass(), 1));
+        auto const cosphi = std::cos(phi_star);
+        kin.outgoing(0, four_momentum(qout_star, outgoing[1]->mass(), cos_theta_star, cosphi).boost(boost));
+        kin.outgoing(1, four_momentum(-qout_star, outgoing[1]->mass(), cos_theta_star, cosphi).boost(boost));
+        kin.outgoing(2, four_momentum(-qout, outgoing[2]->mass(), cos_theta));
+
+
+        for( auto& diagram : _diagrams ){
+            diagram->reset_spins();
+            diagram->reset_indices();
+        }
+
+        std::size_t const N_spins = [&](){
+            std::size_t n = 1;
+            for( auto const& j : _diagrams[0]->_spins ){
+                n *= j->n_states();
+            }
+            return n;
+        }();
+
+        std::size_t const N_polarisations = [&](){
+            std::size_t n = 1;
+            for( auto const& p : _diagrams[0]->_graph._incoming ){
+                n *= p->spin()->n_states();
+            }
+            return n;
+        }();
+
+        double M_squared = 0.;
+
+        for( std::size_t i = 0; i < N_spins; ++i ){
+            Complex M{0, 0};
+            for( std::size_t j = 0; j < _diagrams.size(); ++j ){
+                auto const& temp = _diagrams[j]->evaluate_amplitude(kin);
+                M += temp;
+                _diagrams[j]->iterate_spins();
+            }
+            M_squared += ( M * std::conj(M)).real();
+        }
+        auto phase_space_factor = 1./N_polarisations * phase_space3(sqrt_s, qout, qin, qout_star);
+        return phase_space_factor * M_squared;
+    }
+
+    double Feynman_Process::no_check_dsigma_dcos_dM(double sqrt_s, double invariant_mass, double cos_theta)
+    {
+        auto dPhi_integrated = [&](double cos_theta_star){
+            using namespace std::placeholders;
+            auto f = std::bind(&Feynman_Process::no_check_dsigma_dcos_dM_dcosStar_dphiStar, this, sqrt_s, invariant_mass, cos_theta, cos_theta_star, _1);
+            auto r = integrate(f, 0, 2*M_PI, 1.e-2);
+            return r;
+        };
+        auto dCosTheta_integrated = integrate(dPhi_integrated, -0.99, 0.99, 1.e-2);
+        return dCosTheta_integrated;
     }
 
 

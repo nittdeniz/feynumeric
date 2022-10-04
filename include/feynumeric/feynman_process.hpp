@@ -25,7 +25,8 @@ namespace Feynumeric
 		void validate_diagram_compatibility() const;
 
 		double no_check_dsigma_dcos(double sqrt_s, double cos_theta);
-		double no_check_dsigma_dcos_dM(double sqrt_s, double M, double cos_theta);
+        double no_check_dsigma_dcos_dM(double sqrt_s, double invariant_mass, double cos_theta);
+        double no_check_dsigma_dcos_dM_dcosStar_dphiStar(double sqrt_s, double invariant_mass, double cos_theta, double cos_theta_star, double phi_star);
 
 		double _conversion_factor = Units::operator""_2barn(1.);
 
