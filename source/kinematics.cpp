@@ -48,6 +48,21 @@ namespace Feynumeric
 		return _sqrt_s;
 	}
 
+//    double Kinematics::phi(){
+//        double s = _sqrt_s * _sqrt_s;
+//        double s2 = s*s;
+//        double m1_2 = _momenta[_n_in+0].squared();
+//        double m2_2 = _momenta[_n_in+1].squared();
+//        auto beta = [](double M1, double M2, double s){
+//            return std::sqrt(1- 2*(M1+M2)/s + (M1-M2)*(M1-M2)/(s*s));
+//        };
+//        if( _n_out == 2 ){
+//            return beta(m1_2, m2_2, s)/(32*M_PI * M_PI);
+//        }else if( _n_out == 3 ){
+//            beta()
+//        }
+//    }
+
 	Four_Vector const& Kinematics::incoming(std::size_t i) const
 	{
 		return _momenta[i];

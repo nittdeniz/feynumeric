@@ -8,7 +8,7 @@ namespace Feynumeric{
 	double
 	isospin(std::shared_ptr<Graph_Edge> out, std::shared_ptr<Graph_Edge> in, std::shared_ptr<Graph_Edge> pi){
 		static const Matrix T_12_12_pi_in(2, 2, {
-			1, -std::sqrt(2),
+			1, std::sqrt(2),
 			std::sqrt(2), -1
 		});
 		static const Matrix T_12_12_pi_out(T_12_12_pi_in.T());
@@ -20,8 +20,8 @@ namespace Feynumeric{
 		});
 		static const Matrix T_32_12_pi_out(4, 2, {
 			1, 0,
-			-std::sqrt(2/3.), std::sqrt(1/3.),
-			std::sqrt(1/3.), -std::sqrt(2/3.),
+			std::sqrt(2/3.), std::sqrt(1/3.),
+			std::sqrt(1/3.), std::sqrt(2/3.),
 			0, 1
 		});
 		static const Matrix T_12_32_pi_in(T_32_12_pi_in.T());

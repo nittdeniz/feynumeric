@@ -88,7 +88,7 @@ int main(int argc, char** argv)
         auto channel_decay_Np2 = create_diagram(FORMAT("decay {} to neutron pi+", Np->name()), Decay_1_to_2, VMP,
                                                 {Np},
                                                 {},
-                                                {Neutron, Pi_Plus}
+                                                {Neutron,Pi_Plus}
         );
 
         Feynman_Process decay_Np1({channel_decay_Np1});
@@ -96,6 +96,9 @@ int main(int argc, char** argv)
 
         auto w1 = decay_Np1.decay_width(Np->mass());
         auto w2 = decay_Np2.decay_width(Np->mass());
+
+//        std::cout << "w1: " << w1 << "\n";
+//        std::cout << "w2: " << w2 << "\n";
 
         auto const literature_value = Np->width() * Np->user_data<double>("branching_N_pi");
         auto const g = std::sqrt(literature_value / ( w1 + w2 ));
@@ -109,7 +112,7 @@ int main(int argc, char** argv)
     {
         auto& Np = particles_Np[i];
         auto& Nn = particles_Nn[i];
-        if( Np->spin().j() > 2 ){
+        if( Np->spin().j() > 3 ){
             continue;
         }
         auto coupl_str1 = coupling_string(Np->name(), Proton->name(), QED::Photon->name());
@@ -798,7 +801,7 @@ int main(int argc, char** argv)
         buffer << FORMAT("{} {}\n", coupl_str, g);
     }
     #endif
-    std::ofstream coupling_constants_out("./data/coupling_constants_isospin_symmetry.txt");
+    std::ofstream coupling_constants_out(cmd.as_string("coupling_constants"));
     coupling_constants_out << buffer.str();
 	return EXIT_SUCCESS;
 }

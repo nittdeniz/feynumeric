@@ -85,7 +85,7 @@ int main(int argc, char** argv)
 
 
     std::vector<std::string> const nucleon_resonances = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720"};//, "N1875", "N1880", "N1895", "N1900"};
-    std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700"};//, "D1750"};//, "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
+    std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700", "D1750"};//, "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
     std::vector<std::string> const mesons = {"rho0", "rho+"};//, "f0_500"};
 
     std::vector<std::string> resonances;// = {"Fictional12+_32", "Fictional12-_32", "Fictional32+_32", "Fictional32-_32", "Fictional52+_32", "Fictional52-_32"};
@@ -164,27 +164,15 @@ int main(int argc, char** argv)
                     }
                 }else if( P[str]->spin().j() == 2.5 ){
                     if( P[str]->parity() == 1 ){
-                        P[str]->width(
-                                [g, mR, mN, mpi, iso, form_factor, br](double s)
-                                {
-                                    auto q = Feynumeric::momentum(std::sqrt(s), mN, mpi);
-                                    return g*g * form_factor(s)/br * iso * g * g * std::pow(q, 5) * s * (-mN * mR + std::sqrt(s*(mN*mN+q*q)) * s) / (30 * std::pow(mpi, 6) * M_PI);
-                                }
-                            );
+                        critical_error("width 5/2 not implemented");
                     }else{
-                        P[str]->width(
-                                [g, mR, mN, mpi, iso, form_factor, br](double s)
-                                {
-                                    auto q = Feynumeric::momentum(std::sqrt(s), mN, mpi);
-                                    return g*g * form_factor(s)/br * iso * g * g * std::pow(q, 5) * s * (mN * mR + std::sqrt(s*(mN*mN+q*q)) * s) / (30 * std::pow(mpi, 6) * M_PI);
-                                }
-                        );
+                        critical_error("width 5/2 not implemented");
                     }
                 }else if( P[str]->spin().j() == 3.5 ){
                     if( P[str]->parity() == 1 ){
-                        critical_error("width 7/2 not implemented");
+                        critical_error("width 5/2 not implemented");
                     }else{
-                        critical_error("width 7/2 not implemented");
+                        critical_error("width 5/2 not implemented");
                     }
                 }else{
                     critical_error("width not implemented");
@@ -199,7 +187,6 @@ int main(int argc, char** argv)
                         );
                         pip_proton_elastic_diagrams.push_back(temp);
                     }else if( P[str]->charge() == 1 ){
-                        /// Pion Photo Production
                         auto temp = create_diagram(FORMAT("gamma + proton -> pi0 p ({}) s", P[str]->name()), s_channel, VMP,
                                                    {Proton, QED::Photon},
                                                    {P[str]},
@@ -211,11 +198,10 @@ int main(int argc, char** argv)
                                               {P[str]},
                                               {Neutron, Pi_Plus}
                         );
-                        photoprod_PipN_diagrams.push_back(temp);
+                        photoprod_Pi0P_diagrams.push_back(temp);
                     }
                     else if( P[str]->charge() == 0 )
                     {
-                        /// Pion Nucleon Scattering
                         auto temp = create_diagram(FORMAT("pi_minus proton elastic {} s", P[str]->name()), s_channel, VMP,
                                                    {Proton, Pi_Minus},
                                                    {P[str]},
@@ -229,7 +215,6 @@ int main(int argc, char** argv)
                         );
                         pim_proton_charge_ex_diagrams.push_back(temp);
 
-                        /// Pion Photo Production
                         temp = create_diagram(FORMAT("gamma + neutron -> pi0 n ({}) s", P[str]->name()), s_channel, VMP,
                                               {Neutron, QED::Photon},
                                               {P[str]},
