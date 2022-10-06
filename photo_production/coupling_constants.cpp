@@ -112,7 +112,7 @@ int main(int argc, char** argv)
     {
         auto& Np = particles_Np[i];
         auto& Nn = particles_Nn[i];
-        if( Np->spin().j() > 2 ){
+        if( Np->spin().j() > 3 ){
             continue;
         }
         auto coupl_str1 = coupling_string(Np->name(), Proton->name(), QED::Photon->name());
@@ -801,7 +801,7 @@ int main(int argc, char** argv)
         buffer << FORMAT("{} {}\n", coupl_str, g);
     }
     #endif
-    std::ofstream coupling_constants_out("./data/coupling_constants_isospin_symmetry.txt");
+    std::ofstream coupling_constants_out(cmd.as_string("coupling_constants"));
     coupling_constants_out << buffer.str();
 	return EXIT_SUCCESS;
 }

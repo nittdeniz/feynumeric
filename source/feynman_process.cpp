@@ -86,7 +86,7 @@ namespace Feynumeric
 			auto temp_i = diagram->incoming_particles();
 			auto temp_o = diagram->outgoing_particles();
 			if( temp_i != incoming_particles || temp_o != outgoing_particles ){
-				critical_error("Diagrams are not compatible.");
+				critical_error(FORMAT("Diagrams are not compatible: {} // {}", _diagrams[0]->name(), diagram->name()));
 			}
 		}
 	}

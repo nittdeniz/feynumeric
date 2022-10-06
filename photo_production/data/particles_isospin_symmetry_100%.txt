@@ -156,6 +156,8 @@ phase 0
 mass 1.675GeV
 width 145MeV
 branching_N_pi 100%
+branching_proton_photon 0.02%
+branching_neutron_photon 0.15%
 l 2
 
 @particle N1675p
@@ -175,6 +177,8 @@ phase 0
 mass 1.685GeV
 width 120MeV
 branching_N_pi 100%
+branching_proton_photon 0.26%
+branching_neutron_photon 0.34%
 l 3
 
 @particle N1680p
@@ -660,8 +664,8 @@ phase 0
 mass 1920MeV
 width 300MeV
 branching_N_pi 100%
-branching_proton_photon 0%
-branching_neutron_photon 0%
+branching_proton_photon 0.42%
+branching_neutron_photon 0.42%
 l 1
 
 @particle D1920pp
@@ -691,8 +695,8 @@ phase 0
 mass 1950MeV
 width 300MeV
 branching_N_pi 100%
-branching_proton_photon 0%
-branching_neutron_photon 0%
+branching_proton_photon 0.005%
+branching_neutron_photon 0.005%
 l 1
 
 @particle D1930pp
@@ -752,6 +756,8 @@ parity 1
 phase 0
 branching_N_pi 100%
 branching_N_pi_pi 0%
+branching_proton_photon 0.1%
+branching_neutron_photon 0.1%
 mass 1930MeV
 width 285MeV
 l 3

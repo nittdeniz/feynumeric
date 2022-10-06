@@ -730,7 +730,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& cou
 				int const lorentz_parity = 1;
 				int const particle_parity = R->particle()->parity() * N->particle()->parity() * photon->particle()->parity();
                 auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), photon->particle(), pR.E().real());
-				auto result = 1.i * g/(4*m_rho*m_rho) * form_factor * CONTRACT_MATRIX(O32c(pR, mu, lambda) * O32c(pPhoton, mu, kappa) * MT[*mu][*mu], mu) * gamma5(lorentz_parity, particle_parity);
+				auto result = 1.i * g/(4*m_rho*m_rho) * form_factor * CONTRACT_MATRIX(O32c(pR, mu,lambda) * O32c(pPhoton, mu, kappa) * MT[*mu][*mu], mu) * gamma5(lorentz_parity, particle_parity);
 				return result;
 			}
 	));
@@ -788,6 +788,171 @@ void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& cou
 				return result;
 			}
 	));
+
+
+    VMP->add(Feynumeric::Vertex(
+            {
+                    {P["R52"], Edge_Direction::IN},
+                    {P["N"], Edge_Direction::OUT},
+                    {Feynumeric::QED::Photon}
+            },
+            [&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                auto const& R = edges[0];
+                auto const& N = edges[1];
+                auto const& photon = edges[2];
+                auto kappa = photon->lorentz_indices()[0];
+                auto mu = R->lorentz_indices()[0];
+                auto nu = R->lorentz_indices()[1];
+                auto const& pN = N->four_momentum(kin);
+                auto const& pR = R->four_momentum(kin);
+                auto const& pPhoton = photon->four_momentum(kin);
+                auto const coupl_str = coupling_string(R->particle()->name(), N->particle()->name(), photon->particle()->name());
+                auto const g = couplings.get(coupl_str);
+                auto const m_rho = P["rho0"]->mass();
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), photon->particle(), pR.E().real());
+                int const lorentz_parity = 1;
+                int const particle_parity = R->particle()->parity() * N->particle()->parity() * photon->particle()->parity();
+//                auto result = 1.i * g/(4*m_rho*m_rho) * form_factor * CONTRACT_MATRIX(O32c(pPhoton, mu, kappa) * O32c(pR, mu, lambda) * MT[*mu][*mu], mu)  * gamma5(lorentz_parity, particle_parity);
+
+                Matrix result(4, 4, 1.);
+
+                auto alpha = std::make_shared<Lorentz_Index>();
+                auto beta = std::make_shared<Lorentz_Index>();
+
+                for( int i = 0; i < 4; ++i ){
+                    for( int j = 0; j < 4; ++j ){
+                        result += O32c(pPhoton, alpha, kappa) * Oc(pR, {alpha, beta}, {mu, nu}) * pN.contra(beta) * MT[*alpha][*alpha];
+                        ++(*beta);
+                    }
+                    ++(*alpha);
+                }
+                return 1.i * g/std::pow(2*m_rho, 3) * form_factor * result;
+            }
+    ));
+
+    VMP->add(Feynumeric::Vertex(
+            {
+                    {P["R52"], Edge_Direction::OUT},
+                    {P["N"], Edge_Direction::IN},
+                    {Feynumeric::QED::Photon}
+            },
+            [&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                using namespace Feynumeric;
+                auto const& R = edges[0];
+                auto const& N = edges[1];
+                auto const& photon = edges[2];
+                auto kappa = photon->lorentz_indices()[0];
+                auto mu = R->lorentz_indices()[0];
+                auto nu = R->lorentz_indices()[0];
+                auto const& pN = R->four_momentum(kin);
+                auto const& pR = R->four_momentum(kin);
+                auto const& pPhoton = photon->four_momentum(kin);
+                auto const coupl_str = coupling_string(R->particle()->name(), N->particle()->name(), photon->particle()->name());
+                auto const g = couplings.get(coupl_str);
+                auto const m_rho = P["rho0"]->mass();
+                int const lorentz_parity = 1;
+                int const particle_parity = R->particle()->parity() * N->particle()->parity() * photon->particle()->parity();
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), photon->particle(), pR.E().real());
+                Matrix result(4, 4, 1.);
+
+                auto alpha = std::make_shared<Lorentz_Index>();
+                auto beta = std::make_shared<Lorentz_Index>();
+
+                for( int i = 0; i < 4; ++i ){
+                    for( int j = 0; j < 4; ++j ){
+                        result += Oc(pR, {alpha, beta}, {mu, nu}) * O32c(pPhoton, alpha, kappa) * pN.contra(beta) * MT[*alpha][*alpha];
+                        ++(*beta);
+                    }
+                    ++(*alpha);
+                }
+                return 1.i * g/std::pow(2*m_rho, 3) * form_factor * result;
+            }
+    ));
+
+
+    VMP->add(Feynumeric::Vertex(
+            {
+                    {P.get("R52"), Edge_Direction::IN},
+                    {P.get("N"), Edge_Direction::OUT},
+                    {P.get("Rho")}
+            },
+            [&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                auto const& R = edges[0];
+                auto const& N = edges[1];
+                auto const& rho = edges[2];
+                auto kappa = rho->lorentz_indices()[0];
+                auto mu = R->lorentz_indices()[0];
+                auto nu = R->lorentz_indices()[0];
+                auto const& pN = N->four_momentum(kin);
+                auto const& pR = R->four_momentum(kin);
+                auto const& pRho = rho->four_momentum(kin);
+                auto const coupl_str = coupling_string(remove_charge_ending(R->particle()->name()), "N", "Rho");
+                auto const g = couplings.get(coupl_str);
+                auto const m_rho = rho->particle()->mass();
+                int const lorentz_parity = 1;
+                int const particle_parity = R->particle()->parity() * N->particle()->parity() * rho->particle()->parity();
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), rho->particle(), pR.E().real());
+
+
+                Matrix result(4, 4, 1.);
+
+                auto alpha = std::make_shared<Lorentz_Index>();
+                auto beta = std::make_shared<Lorentz_Index>();
+
+                for( int i = 0; i < 4; ++i ){
+                    for( int j = 0; j < 4; ++j ){
+                        result += O32c(pRho, alpha, kappa) * Oc(pR, {alpha, beta}, {mu, nu}) * pN.contra(beta) * MT[*alpha][*alpha];
+                        ++(*beta);
+                    }
+                    ++(*alpha);
+                }
+                return 1.i * g/std::pow(2*m_rho, 3) * form_factor * result;
+            }
+    ));
+
+    VMP->add(Feynumeric::Vertex(
+            {
+                    {P["R52"], Edge_Direction::OUT},
+                    {P["N"], Edge_Direction::IN},
+                    {P.get("Rho")}
+            },
+            [&](Feynumeric::Kinematics const& kin, std::vector<std::shared_ptr<Feynumeric::Graph_Edge>> const& edges){
+                using namespace Feynumeric;
+                using namespace Feynumeric;
+                auto const& R = edges[0];
+                auto const& N = edges[1];
+                auto const& Rho = edges[2];
+                auto kappa = Rho->lorentz_indices()[0];
+                auto mu = R->lorentz_indices()[0];
+                auto nu = R->lorentz_indices()[1];
+                auto const& pN = N->four_momentum(kin);
+                auto const& pR = R->four_momentum(kin);
+                auto const& pRho = Rho->four_momentum(kin);
+                auto const coupl_str = coupling_string(remove_charge_ending(R->particle()->name()), "N", "Rho");
+                auto const g = couplings.get(coupl_str);
+                auto form_factor = R->particle()->user_data<FORM_FACTOR_FUNCTION>("form_factor")(R->particle(), N->particle(), Rho->particle(), pR.E().real());
+                auto const m_rho = Rho->particle()->mass();
+                int const lorentz_parity = 1;
+                int const particle_parity = R->particle()->parity() * N->particle()->parity() * Rho->particle()->parity();
+
+                Matrix result(4, 4, 1.);
+
+                auto alpha = std::make_shared<Lorentz_Index>();
+                auto beta = std::make_shared<Lorentz_Index>();
+
+                for( int i = 0; i < 4; ++i ){
+                    for( int j = 0; j < 4; ++j ){
+                        result += Oc(pR, {alpha, beta}, {mu, nu}) * O32c(pRho, alpha, kappa) * pN.contra(beta) * MT[*alpha][*alpha];
+                        ++(*beta);
+                    }
+                    ++(*alpha);
+                }
+                return 1.i * g/std::pow(2*m_rho, 3) * form_factor * result;
+            }
+    ));
 
     VMP->add(Feynumeric::Vertex(
             {
