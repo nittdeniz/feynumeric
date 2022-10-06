@@ -1,4 +1,5 @@
 #include "feynumeric/kinematics.hpp"
+#include "feynumeric/particle.hpp"
 
 namespace Feynumeric
 {
@@ -12,7 +13,37 @@ namespace Feynumeric
         _angles.resize(n_out-1);
 	}
 
-	double Kinematics::sqrt_s() const
+    Kinematics::Kinematics(double sqrt_s, std::vector<std::shared_ptr<Particle>> incoming,
+                           std::vector<std::shared_ptr<Particle>> outgoing, Reference_Frame system)
+       : _sqrt_s(sqrt_s)
+       , _n_in(incoming.size())
+       , _n_out(outgoing.size())
+       {
+        _momenta.resize(_n_in+_n_out);
+        _angles.resize(_n_out-1);
+        if(system == Reference_Frame::CENTER_OF_MASS ){
+            if( incoming.size() == 1 && outgoing.size() == 2 ){
+                auto const q = ::Feynumeric::momentum(incoming[0]->mass(), outgoing[0]->mass(), outgoing[1]->mass());
+                this->incoming(0, four_momentum(0, incoming[0]->mass()));
+                this->outgoing(0, four_momentum(q, outgoing[0]->mass()));
+                this->outgoing(1, four_momentum(-q, outgoing[1]->mass()));
+            }
+            if( incoming.size() == 2 && outgoing.size() == 2 ){
+                Kinematics kin(sqrt_s, 2, 2);
+
+                auto qin = ::Feynumeric::momentum(sqrt_s, incoming[0]->mass(), incoming[1]->mass());
+//                auto qout = ::Feynumeric::momentum(sqrt_s, outgoing[0]->mass(), outgoing[1]->mass());
+
+                _momenta[0] = four_momentum(qin, incoming[0]->mass(), 1);
+                _momenta[1] = four_momentum(-qin, incoming[1]->mass(), 1);
+            }
+        }else if(system == Reference_Frame::LABORATORY ){
+
+        }
+
+    }
+
+    double Kinematics::sqrt_s() const
 	{
 		return _sqrt_s;
 	}
