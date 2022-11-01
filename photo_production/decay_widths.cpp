@@ -28,8 +28,8 @@ int main(int argc, char** argv)
 
     init_vertices(P, cmd.as_string("coupling_constants"));
 
-    std::vector<std::string> const nucleon_resonances = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900"};
-    std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940", "D1950"};
+    std::vector<std::string> const nucleon_resonances = {};//{"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720", "N1875", "N1880", "N1895", "N1900"};
+    std::vector<std::string> const delta_resonances = {};//{"D1232", "D1600", "D1620", "D1700", "D1750", "D1900", "D1905", "D1910", "D1920", "D1930", "D1940", "D1950"};
 
     std::vector<std::string> resonances = {"Fictional12+_32", "Fictional12-_32", "Fictional32+_32", "Fictional32-_32", "Fictional52+_32", "Fictional52-_32", "Fictional72+_32", "Fictional72-_32"};
     resonances.insert(resonances.end(), nucleon_resonances.cbegin(), nucleon_resonances.cend());
@@ -37,11 +37,15 @@ int main(int argc, char** argv)
 
     for( auto const& p_str : resonances )
     {
-
         auto particle_str = FORMAT("{}p", p_str);
         auto particle = P.get(particle_str);
 
-        particle->user_data("form_factor", Form_Factor::breit_wigner);
+        auto coupl_str = coupling_string(p_str, "N", "Pion");
+        couplings.set(coupl_str, 1.);
+
+
+
+        particle->user_data("form_factor", Form_Factor::identity);
 
         auto diag1 = create_diagram(FORMAT("Decay {} -> p pi0", particle->name()), Decay_1_to_2, VMP,
                                     {particle}, {}, {Proton, Pi_Zero});
@@ -54,10 +58,18 @@ int main(int argc, char** argv)
                                      2.5, N);
         std::vector<Point> data;
         data.reserve(N + 1);
+        std::ofstream file_out(FORMAT("mathematica/width_data_{}.json", p_str));
+        file_out << "[";
+        bool first = true;
         for( auto const &value: values )
         {
-            data.emplace_back(value, proc1.decay_width(value) + proc2.decay_width(value));
+            if( !first ) file_out << ",";
+            auto w = proc1.decay_width(value) + proc2.decay_width(value);
+            data.emplace_back(value, w);
+            file_out << "[" << value << "," << w << "]";
+            first = false;
         }
+        file_out << "]";
         Polynomial p(6);
         p.fit(data);
         std::cout << FORMAT("{}: {} / {}\n", particle->name(), p(particle->mass()).real(), proc1.decay_width(particle->mass())+ proc2.decay_width(particle->mass()));

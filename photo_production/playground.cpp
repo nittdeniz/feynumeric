@@ -1,9 +1,13 @@
 #include <feynumeric/command_line_manager.hpp>
-#include <feynumeric/core.hpp>
+#include <feynumeric/dirac.hpp>
+#include <feynumeric/feynman_diagram.hpp>
+#include <feynumeric/feynman_process.hpp>
+#include <feynumeric/messages.hpp>
 #include <feynumeric/qed.hpp>
 #include <feynumeric/table.hpp>
-#include <feynumeric/messages.hpp>
 #include <feynumeric/timer.hpp>
+#include <feynumeric/topologies.hpp>
+#include <feynumeric/units.hpp>
 
 
 #include "effective_lagrangian_model.hpp"
@@ -27,6 +31,8 @@ int main(int argc, char** argv)
     using namespace Feynumeric;
     using namespace Feynumeric::Units;
 
+
+
     Command_Line_Manager cmd(argc, argv);
 
     cmd.register_command("particle_file", true, "file with particle parameters");
@@ -37,7 +43,7 @@ int main(int argc, char** argv)
                                 Form_Factor::CMD_FORM_FACTOR_BREIT_WIGNER));
     cmd.register_command("channel", CMD_CHANNEL_S, "which channel to use [s, t, u, c] or any combination.");
     cmd.register_command("process", CMD_PROCESS_PHOTO_PRODUCTION,
-                         FORMAT("which process to use: {} {}", CMD_PROCESS_PHOTO_PRODUCTION, CMD_PROCESS_ELASTIC_SCATTERING));
+                         FORMAT("which process to use: 1: {} 2: {} 3: both", CMD_PROCESS_ELASTIC_SCATTERING, CMD_PROCESS_PHOTO_PRODUCTION));
     cmd.register_command("sqrt_s", false, "the energy in the center of mass frame in GeV");
     cmd.register_command("help", false, "list all command line parameters");
     cmd.register_command("cross_section", CMD_CROSS_SECTION_TOTAL,
@@ -54,6 +60,7 @@ int main(int argc, char** argv)
     double start = cmd.exists("start") ? cmd.as_double("start") : 1.1;
     double end = cmd.exists("end") ? cmd.as_double("end") : 2.0;
     std::size_t steps = cmd.exists("steps") ? static_cast<std::size_t>(cmd.as_int("steps")) : 100ULL;
+    int process = cmd.as_int("process");
 
     auto const &channel = cmd.as_string("channel");
     bool const s_channel_enabled = channel.find('s') != std::string::npos;
@@ -67,6 +74,7 @@ int main(int argc, char** argv)
     Particle_Ptr const &Pi_Plus = P.get("pi+");
     Particle_Ptr const &Pi_Minus = P.get("pi-");
     Particle_Ptr const &Pi_Zero = P.get("pi0");
+
 
     init_vertices(P, cmd.as_string("coupling_constants"));
 
@@ -84,13 +92,16 @@ int main(int argc, char** argv)
     status(FORMAT("Form factor: {}", form_factor));
 
 
-    std::vector<std::string> const nucleon_resonances = {"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720"};//, "N1875", "N1880", "N1895", "N1900"};
-    std::vector<std::string> const delta_resonances = {"D1232", "D1600", "D1620", "D1700"};//, "D1750"};//, "D1900", "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
+    std::vector<std::string> const nucleon_resonances = {};//{"N1440", "N1520", "N1535", "N1650", "N1675", "N1680", "N1700", "N1710", "N1720"};//, "N1875", "N1880", "N1895", "N1900"};
+    std::vector<std::string> const delta_resonances = {};//{"D1600"};//{"D1232"};//, "D1600", "D1620", "D1700", "D1750", "D1900"};//, "D1905", "D1910", "D1920", "D1930", "D1940"};//, "D1950"};
     std::vector<std::string> const mesons = {"rho0", "rho+"};//, "f0_500"};
 
     std::vector<std::string> resonances;// = {"Fictional12+_32", "Fictional12-_32", "Fictional32+_32", "Fictional32-_32", "Fictional52+_32", "Fictional52-_32"};
     resonances.insert(resonances.end(), nucleon_resonances.cbegin(), nucleon_resonances.cend());
     resonances.insert(resonances.end(), delta_resonances.cbegin(), delta_resonances.cend());
+
+    auto particle = cmd.as_string("particle");
+    resonances.push_back(particle);
 
     auto pp_string = [](std::string const &p)
     { return FORMAT("{}pp", p); };
@@ -124,6 +135,12 @@ int main(int argc, char** argv)
                 auto form_factor = [&P, str, &Proton, &Pi_Plus, ff](double s){
                     return ff(P[str], Proton, Pi_Plus, std::sqrt(s));
                 };
+
+                if( P[str]->is_fermion() ){
+                    P[str]->feynman_virtual = [](std::shared_ptr<Graph_Edge> e, Kinematics const& kin){
+                        return Projector(e, kin);
+                    };;
+                }
 
                 if( P[str]->spin().j() == 0.5 ){
                     if( P[str]->parity() == 1 ){
@@ -355,80 +372,121 @@ int main(int argc, char** argv)
 //    couplings.set(coupling_string("N", "Pion", "D1700"), couplings.get(coupling_string("N", "Pion", "D1700")) * 0.07);
 //    couplings.set(coupling_string("N", "Pion", "D1750"), couplings.get(coupling_string("N", "Pion", "D1750")) * 0.6688);
 
+    double sqrt_s = cmd.exists("sqrt_s") ? cmd.as_double("sqrt_s") : 1.5_GeV;
+
     if( cmd.as_string("cross_section") == CMD_CROSS_SECTION_TOTAL )
     {
-        std::ofstream file_out("cross_section_total.mat");
-        file_out << "pipprotonelasticTotal=";
+        std::ofstream file_out(FORMAT("mathematica/cross_section_total_{}.mat", particle));
+        file_out << FORMAT("pipprotonelasticTotal[\"{}\"]=", particle);
         scattering_pip_proton_elastic.print_sigma_table(file_out, start, end, steps);
-        file_out << ";\npimprotonelasticTotal=";
-        scattering_pim_proton_elastic.print_sigma_table(file_out, start, end, steps);
-        file_out << ";\npimprotonchargeexTotal=";
-        scattering_pim_proton_charge_ex.print_sigma_table(file_out, start, end, steps);
-        file_out << ";\n";
-
-        file_out << "photoprodPipN=";
-        scattering_photoprod_pip_n.print_sigma_table(file_out, start, end, steps);
-        file_out << "\nphotoprodPimP=";
-        scattering_photoprod_pim_p.print_sigma_table(file_out, start, end, steps);
-        file_out << "\nphotoprodPi0P=";
-        scattering_photoprod_pi0_p.print_sigma_table(file_out, start, end, steps);
-        file_out << "\nphotoprodPi0N=";
-        scattering_photoprod_pi0_n.print_sigma_table(file_out, start, end, steps);
+//        file_out << ";\npimprotonelasticTotal=";
+//        scattering_pim_proton_elastic.print_sigma_table(file_out, start, end, steps);
+//        file_out << ";\npimprotonchargeexTotal=";
+//        scattering_pim_proton_charge_ex.print_sigma_table(file_out, start, end, steps);
+//        file_out << ";\n";
+//
+//        file_out << "photoprodPipN=";
+//        scattering_photoprod_pip_n.print_sigma_table(file_out, start, end, steps);
+//        file_out << "\nphotoprodPimP=";
+//        scattering_photoprod_pim_p.print_sigma_table(file_out, start, end, steps);
+//        file_out << "\nphotoprodPi0P=";
+//        scattering_photoprod_pi0_p.print_sigma_table(file_out, start, end, steps);
+//        file_out << "\nphotoprodPi0N=";
+//        scattering_photoprod_pi0_n.print_sigma_table(file_out, start, end, steps);
     }else
     {
-        double sqrt_s = cmd.exists("sqrt_s") ? cmd.as_double("sqrt_s") : 1.5_GeV;
-        std::ofstream file_out(FORMAT("mathematica/cross_section_differential_{}.mat", sqrt_s));
-        file_out << "pipprotonelasticDiff=";
-        scattering_pip_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
-        file_out << ";\npimprotonelasticDiff=";
-        scattering_pim_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
-        file_out << ";\npimprotonchargeexDiff=";
-        scattering_pim_proton_charge_ex.print_dsigma_dcos_table(file_out, sqrt_s, steps);
-        file_out << ";\n";
+//        std::ofstream file_out(FORMAT("mathematica/cross_section_differential_{}.mat", sqrt_s));
 
-        file_out << "pipneutronDiff=";
-        scattering_pip_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
-        file_out << ";\npimprotonelasticDiff=";
-        scattering_pim_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
-        file_out << ";\npimprotonchargeexDiff=";
-        scattering_pim_proton_charge_ex.print_dsigma_dcos_table(file_out, sqrt_s, steps);
-        file_out << ";\n";
+//        if( (process & 1) > 0 ) {
+//
+//            file_out << "pipprotonelasticDiff=";
+//            scattering_pip_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
+//            file_out << ";\npimprotonelasticDiff=";
+//            scattering_pim_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
+//            file_out << ";\npimprotonchargeexDiff=";
+//            scattering_pim_proton_charge_ex.print_dsigma_dcos_table(file_out, sqrt_s, steps);
+//            file_out << ";\n";
+//        }
+//
+//        file_out << "pipneutronDiff=";
+//        scattering_pip_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
+//        file_out << ";\npimprotonelasticDiff=";
+//        scattering_pim_proton_elastic.print_dsigma_dcos_table(file_out, sqrt_s, steps);
+//        file_out << ";\npimprotonchargeexDiff=";
+//        scattering_pim_proton_charge_ex.print_dsigma_dcos_table(file_out, sqrt_s, steps);
+//        file_out << ";\n";
 
-        file_out << "photoprodPipN=";
-        scattering_photoprod_pip_n.print_sigma_table(file_out, start, end, steps);
-        file_out << "\nphotoprodPimP=";
-        scattering_photoprod_pim_p.print_sigma_table(file_out, start, end, steps);
-        file_out << "\nphotoprodPi0P=";
-        scattering_photoprod_pi0_p.print_sigma_table(file_out, start, end, steps);
-        file_out << "\nphotoprodPi0N=";
-        scattering_photoprod_pi0_n.print_sigma_table(file_out, start, end, steps);
+//        if( (process & 2) > 0 ) {
+//
+//            file_out << "photoprodPipN=";
+//            scattering_photoprod_pip_n.print_sigma_table(file_out, start, end, steps);
+//            file_out << "\nphotoprodPimP=";
+//            scattering_photoprod_pim_p.print_sigma_table(file_out, start, end, steps);
+//            file_out << "\nphotoprodPi0P=";
+//            scattering_photoprod_pi0_p.print_sigma_table(file_out, start, end, steps);
+//            file_out << "\nphotoprodPi0N=";
+//            scattering_photoprod_pi0_n.print_sigma_table(file_out, start, end, steps);
+//        }
 
-        std::ofstream file_out2(FORMAT("mathematica/cross_section_pipprotonelastic_differential_amplitudes{}.json", sqrt_s));
-        std::ofstream file_out3(FORMAT("mathematica/cross_section_pipprotonelastic_differential_squared_amplitudes{}.json", sqrt_s));
-        scattering_pip_proton_elastic.print_dsigma_dcos_table_trace(file_out2, file_out3, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
-        std::ofstream file_out4(FORMAT("mathematica/cross_section_pimprotonelastic_differential_amplitudes{}.json", sqrt_s));
-        std::ofstream file_out5(FORMAT("mathematica/cross_section_pimprotonelastic_differential_squared_amplitudes{}.json", sqrt_s));
-        scattering_pim_proton_elastic.print_dsigma_dcos_table_trace(file_out4, file_out5, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
-        std::ofstream file_out6(FORMAT("mathematica/cross_section_pimprotonCE_differential_amplitudes{}.json", sqrt_s));
-        std::ofstream file_out7(FORMAT("mathematica/cross_section_pimprotonCE_differential_squared_amplitudes{}.json", sqrt_s));
-        scattering_pim_proton_charge_ex.print_dsigma_dcos_table_trace(file_out6, file_out7, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
+        std::cout << "sqrt_s: "  << sqrt_s << "\n";
+        std::cout << "Process: "  << process << "\n";
+        std::cout << (process&1) << "\n";
+        std::cout << (process&2) << "\n";
 
+        if( (process & 1) > 0 ) {
 
-        std::ofstream file_out10(FORMAT("mathematica/cross_section_photoprod_pipN_differential_amplitudes{}.json", sqrt_s));
-        std::ofstream file_out11(FORMAT("mathematica/cross_section_photoprod_pipN_differential_squared_amplitudes{}.json", sqrt_s));
-        scattering_photoprod_pip_n.print_dsigma_dcos_table_trace(file_out10, file_out11, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
+            std::ofstream file_out2(
+                    FORMAT("mathematica/cross_section_pipprotonelastic_differential_amplitudes{}.json", sqrt_s));
+            std::ofstream file_out3(
+                    FORMAT("mathematica/cross_section_pipprotonelastic_differential_squared_amplitudes{}.json",
+                           sqrt_s));
+            scattering_pip_proton_elastic.print_dsigma_dcos_table_trace(file_out2, file_out3, sqrt_s,
+                                                                        Feynumeric::lin_space(-0.999, 0.999, steps));
+//            std::ofstream file_out4(
+//                    FORMAT("mathematica/cross_section_pimprotonelastic_differential_amplitudes{}.json", sqrt_s));
+//            std::ofstream file_out5(
+//                    FORMAT("mathematica/cross_section_pimprotonelastic_differential_squared_amplitudes{}.json",
+//                           sqrt_s));
+//            scattering_pim_proton_elastic.print_dsigma_dcos_table_trace(file_out4, file_out5, sqrt_s,
+//                                                                        Feynumeric::lin_space(-0.999, 0.999, steps));
+//            std::ofstream file_out6(
+//                    FORMAT("mathematica/cross_section_pimprotonCE_differential_amplitudes{}.json", sqrt_s));
+//            std::ofstream file_out7(
+//                    FORMAT("mathematica/cross_section_pimprotonCE_differential_squared_amplitudes{}.json", sqrt_s));
+//            scattering_pim_proton_charge_ex.print_dsigma_dcos_table_trace(file_out6, file_out7, sqrt_s,
+//                                                                          Feynumeric::lin_space(-0.999, 0.999, steps));
+        }
 
-        std::ofstream file_out12(FORMAT("mathematica/cross_section_photoprod_pimP_differential_amplitudes{}.json", sqrt_s));
-        std::ofstream file_out13(FORMAT("mathematica/cross_section_photoprod_pimP_differential_squared_amplitudes{}.json", sqrt_s));
-        scattering_photoprod_pim_p.print_dsigma_dcos_table_trace(file_out12, file_out13, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
+        if( (process & 2) > 0 ) {
 
-        std::ofstream file_out14(FORMAT("mathematica/cross_section_photoprod_pi0p_differential_amplitudes{}.json", sqrt_s));
-        std::ofstream file_out15(FORMAT("mathematica/cross_section_photoprod_pi0p_differential_squared_amplitudes{}.json", sqrt_s));
-        scattering_photoprod_pi0_p.print_dsigma_dcos_table_trace(file_out14, file_out15, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
+            std::ofstream file_out10(
+                    FORMAT("mathematica/cross_section_photoprod_pipN_differential_amplitudes{}.json", sqrt_s));
+            std::ofstream file_out11(
+                    FORMAT("mathematica/cross_section_photoprod_pipN_differential_squared_amplitudes{}.json", sqrt_s));
+            scattering_photoprod_pip_n.print_dsigma_dcos_table_trace(file_out10, file_out11, sqrt_s,
+                                                                     Feynumeric::lin_space(-0.999, 0.999, steps));
 
-        std::ofstream file_out16(FORMAT("mathematica/cross_section_photoprod_pi0n_differential_amplitudes{}.json", sqrt_s));
-        std::ofstream file_out17(FORMAT("mathematica/cross_section_photoprod_pi0n_differential_squared_amplitudes{}.json", sqrt_s));
-        scattering_photoprod_pi0_n.print_dsigma_dcos_table_trace(file_out16, file_out17, sqrt_s, Feynumeric::lin_space(-0.999, 0.999, steps));
+            std::ofstream file_out12(
+                    FORMAT("mathematica/cross_section_photoprod_pimP_differential_amplitudes{}.json", sqrt_s));
+            std::ofstream file_out13(
+                    FORMAT("mathematica/cross_section_photoprod_pimP_differential_squared_amplitudes{}.json", sqrt_s));
+            scattering_photoprod_pim_p.print_dsigma_dcos_table_trace(file_out12, file_out13, sqrt_s,
+                                                                     Feynumeric::lin_space(-0.999, 0.999, steps));
+
+            std::ofstream file_out14(
+                    FORMAT("mathematica/cross_section_photoprod_pi0p_differential_amplitudes{}.json", sqrt_s));
+            std::ofstream file_out15(
+                    FORMAT("mathematica/cross_section_photoprod_pi0p_differential_squared_amplitudes{}.json", sqrt_s));
+            scattering_photoprod_pi0_p.print_dsigma_dcos_table_trace(file_out14, file_out15, sqrt_s,
+                                                                     Feynumeric::lin_space(-0.999, 0.999, steps));
+
+            std::ofstream file_out16(
+                    FORMAT("mathematica/cross_section_photoprod_pi0n_differential_amplitudes{}.json", sqrt_s));
+            std::ofstream file_out17(
+                    FORMAT("mathematica/cross_section_photoprod_pi0n_differential_squared_amplitudes{}.json", sqrt_s));
+            scattering_photoprod_pi0_n.print_dsigma_dcos_table_trace(file_out16, file_out17, sqrt_s,
+                                                                     Feynumeric::lin_space(-0.999, 0.999, steps));
+        }
 
 
     }

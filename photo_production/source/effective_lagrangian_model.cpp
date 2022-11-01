@@ -358,7 +358,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& cou
 				int const particle_parity = R->particle()->parity() * N->particle()->parity() * pi->particle()->parity();
 				Complex phase = std::exp(2.i * M_PI/360. * R->particle()->user_data<double>("phase"));
 				auto const g5 = gamma5(lorentz_parity, particle_parity);
-				return 1.i * phase * form_factor * iso * g/(m_pi*m_pi) * O32c(pR, pPi, mu) * g5;
+				return 1.i * phase * form_factor * iso * g/(m_pi*m_pi) * g5 * O32c(pR, pPi, mu);
 			}
 	));
 
@@ -560,7 +560,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& cou
                 int const particle_parity = R->particle()->parity() * N->particle()->parity() * pi->particle()->parity();
                 Complex phase = std::exp(2.i * M_PI/360. * R->particle()->user_data<double>("phase"));
                 auto const g5 = gamma5(lorentz_parity, particle_parity);
-                return -1.i * phase * form_factor * iso * g/(m_pi*m_pi) * Oc(pR, {pPi, pPi}, R->lorentz_indices()) * g5;
+                return -1.i * phase * form_factor * iso * g/(m_pi*m_pi)  * g5 * Oc(pR, {pPi, pPi}, R->lorentz_indices());
             }
     ));
 
@@ -784,7 +784,7 @@ void init_vertices(Feynumeric::Particle_Manager const& P, std::string const& cou
 				auto const m_rho = Rho->particle()->mass();
 				int const lorentz_parity = 1;
 				int const particle_parity = R->particle()->parity() * N->particle()->parity() * Rho->particle()->parity();
-				auto result = 1.i * g/(4*m_rho*m_rho) * form_factor * CONTRACT_MATRIX(O32c(pR, mu, lambda) * O32c(pRho, mu, kappa) * MT[*mu][*mu], mu) * gamma5(lorentz_parity, particle_parity);
+				auto result = 1.i * g/(4*m_rho*m_rho) * form_factor * gamma5(lorentz_parity, particle_parity) * CONTRACT_MATRIX(O32c(pR, mu, lambda) * O32c(pRho, mu, kappa) * MT[*mu][*mu], mu);
 				return result;
 			}
 	));
